@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         HF Backup My Library (Bulk JSON)
 // @namespace    hf-bulk-backup
-// @version      0.4.1
+// @version      0.4.2
 // @description  Backup your entire Hero Forge library locally with one click. Keeps projects organized by your save folders. Depending on library size, this may take a while; let it finish. Progress is shown in the dock.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
 // @grant        none
-// @updateURL   https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSON_Bulk_Download.user.js
-// @downloadURL https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSON_Bulk_Download.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSON_Bulk_Download.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSON_Bulk_Download.user.js
 // ==/UserScript==
 
 (function () {
