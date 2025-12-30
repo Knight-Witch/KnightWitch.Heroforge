@@ -2,7 +2,7 @@
 // @name         Body Editor
 // @namespace    body-editor
 // @version      0.1.0
-// @description  n advanced body editor tool that allows you to sync the pose/scale for various bodyparts, and more.
+// @description  An advanced body editor tool that allows you to sync the pose/scale for various bodyparts, and more.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        unsafeWindow
@@ -15,7 +15,7 @@
 ────────────────────────────────────────
 Changelog
 ────────────────────────────────────────
-/*
+
 Body Editor — v0.1.0
 
 This is a new script that replaces the old Extra Arms & Limbs Sync tool.
@@ -28,18 +28,17 @@ All body-editing features will live inside this script as it continues to grow.
 
 New features and changes:
 - Rebuilt arm syncing with toggles for position, rotation, scale, and hands
-- Ability to choose whether to sync the 2nd arm set, 3rd arm set, or both
-- No longer requires using the Advanced Pose menu to initialize extra arms
-- Automatically injects missing pose data for extra arms when syncing
-- Adds breast mirroring to sync left/right breasts
+- Choose whether to sync the 2nd arm set, 3rd arm set, or both
+- No longer requires touching the Advanced Pose menu
+- Automatically injects missing pose data for extra arms
+- Adds left/right breast mirroring
 - Tool now lives in a draggable floating dock
 - Dock can be minimized or closed
-- Adds hotkey support to toggle or minimize the dock
-- Adds undo/redo support (Ctrl+Z / Ctrl+Shift+Z)
+- Hotkey support to toggle/minimize the dock
+- Undo/redo support (Ctrl+Z / Ctrl+Shift+Z)
 
 Migration note:
-The old Extra Arms & Limbs Sync script is deprecated and will no longer receive
-updates. Install Body Editor to access new and future body-editing features.
+The old Extra Arms & Limbs Sync script is deprecated and will no longer receive updates.
 */
 
 
