@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Body Editor
-// @namespace    body-editor
+// @namespace    knight-witch-body-editor
 // @version      0.1.0
-// @description  An advanced body editor tool that allows you to sync the pose/scale for various bodyparts, and more.
+// @description  Advanced body editing tools (Extra Arms Sync + Breast Mirror) that dock into Witch Dock.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        unsafeWindow
@@ -11,71 +11,47 @@
 // @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
 // ==/UserScript==
 
-/*
-────────────────────────────────────────
-Changelog
-────────────────────────────────────────
-
-Body Editor — v0.1.0
-
-This is a new script that replaces the old Extra Arms & Limbs Sync tool.
-
-This script now REQUIRES the shared Witch Dock UI, which provides the floating
-interface used by this and future Knight Witch tools:
-https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_Dock.user.js
-
-All body-editing features will live inside this script as it continues to grow.
-
-New features and changes:
-- Rebuilt arm syncing with toggles for position, rotation, scale, and hands
-- Choose whether to sync the 2nd arm set, 3rd arm set, or both
-- No longer requires touching the Advanced Pose menu
-- Automatically injects missing pose data for extra arms
-- Adds left/right breast mirroring
-- Tool now lives in a draggable floating dock
-- Dock can be minimized or closed
-- Hotkey support to toggle/minimize the dock
-- Undo/redo support (Ctrl+Z / Ctrl+Shift+Z)
-
-Migration note:
-The old Extra Arms & Limbs Sync script is deprecated and will no longer receive updates.
-*/
-
-
-(function () {
+(() => {
   'use strict';
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
-  const STORE_KEY = 'hfBodyEditorDock.v1';
-  const DOCK_ID = 'hf-body-editor-dock';
-  const PILL_ID = 'hf-body-editor-pill';
-
-  const UI = {
-    width: 360,
-  };
+  const STORE_KEY = 'kw.bodyEditor.v1';
+  const SECTION_ID = 'kw.bodyEditor.section';
+  const TAB_ID = 'sync';
 
   const state = {
-    visible: true,
-    minimized: false,
-    pos: { left: 16, top: 120 },
     arms: {
       target2: true,
       target3: true,
-      copyPos: true,
-      copyQtn: true,
-      copyScl: true,
+      pos: true,
+      qtn: true,
+      scl: true,
       syncHands: true,
     },
     breast: {
       from: 'L',
-      copyPos: true,
-      copyQtn: true,
-      copyScl: true,
+      pos: true,
+      qtn: true,
+      scl: true,
     },
   };
 
-  const history = { undo: [], redo: [] };
+  const history = {
+    undo: [],
+    redo: [],
+    max: 40,
+  };
+
+  const ui = {
+    mounted: false,
+    root: null,
+    arms: {},
+    breast: {},
+    btnUndo: null,
+    btnRedo: null,
+    status: null,
+  };
 
   function loadState() {
     try {
@@ -84,533 +60,23 @@ The old Extra Arms & Limbs Sync script is deprecated and will no longer receive 
       const saved = JSON.parse(raw);
       if (!saved || typeof saved !== 'object') return;
 
-      if (typeof saved.visible === 'boolean') state.visible = saved.visible;
-      if (typeof saved.minimized === 'boolean') state.minimized = saved.minimized;
-
-      if (saved.pos && typeof saved.pos === 'object') {
-        if (typeof saved.pos.left === 'number' && typeof saved.pos.top === 'number') {
-          state.pos.left = saved.pos.left;
-          state.pos.top = saved.pos.top;
-        } else if (typeof saved.pos.right === 'number' || typeof saved.pos.bottom === 'number') {
-          const right = typeof saved.pos.right === 'number' ? saved.pos.right : 16;
-          const bottom = typeof saved.pos.bottom === 'number' ? saved.pos.bottom : 16;
-          state.pos.left = Math.max(0, (UW.innerWidth || 1200) - right - UI.width);
-          state.pos.top = Math.max(0, (UW.innerHeight || 800) - bottom - 220);
-        }
+      if (saved.arms && typeof saved.arms === 'object') {
+        Object.assign(state.arms, saved.arms);
       }
-
-      if (saved.arms && typeof saved.arms === 'object') Object.assign(state.arms, saved.arms);
-      if (saved.breast && typeof saved.breast === 'object') Object.assign(state.breast, saved.breast);
+      if (saved.breast && typeof saved.breast === 'object') {
+        Object.assign(state.breast, saved.breast);
+      }
     } catch {}
   }
 
   function saveState() {
     try {
-      UW.localStorage.setItem(
-        STORE_KEY,
-        JSON.stringify({
-          visible: state.visible,
-          minimized: state.minimized,
-          pos: state.pos,
-          arms: state.arms,
-          breast: state.breast,
-        })
-      );
+      UW.localStorage.setItem(STORE_KEY, JSON.stringify({ arms: state.arms, breast: state.breast }));
     } catch {}
   }
 
-  function injectStyle() {
-    const css = `
-#${DOCK_ID}{
-  position:fixed;
-  z-index:2147483647;
-  left:${state.pos.left}px;
-  top:${state.pos.top}px;
-  width:${UI.width}px;
-  background:rgba(10,10,10,0.92);
-  color:#e8e8e8;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:10px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.45);
-  font:12px/1.25 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  display:${state.visible ? 'block' : 'none'};
-}
-#${DOCK_ID}[data-min="1"] .b{ display:none; }
-#${DOCK_ID} .h{
-  cursor:move;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:8px 10px;
-  user-select:none;
-  border-bottom:1px solid rgba(255,255,255,0.10);
-}
-#${DOCK_ID} .t{ font-weight:600; letter-spacing:0.2px; }
-#${DOCK_ID} .btns{ display:flex; gap:6px; align-items:center; }
-#${DOCK_ID} button{
-  background:rgba(255,255,255,0.10);
-  color:#e8e8e8;
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:8px;
-  padding:4px 8px;
-  cursor:pointer;
-}
-#${DOCK_ID} button:hover{ background:rgba(255,255,255,0.16); }
-#${DOCK_ID} button:disabled{ opacity:0.45; cursor:not-allowed; }
-#${DOCK_ID} .b{
-  padding:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-#${DOCK_ID} .sec{
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:10px;
-  padding:10px;
-  background:rgba(255,255,255,0.04);
-}
-#${DOCK_ID} .secTitle{
-  font-weight:600;
-  margin-bottom:8px;
-  opacity:0.95;
-}
-#${DOCK_ID} .row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:8px;
-}
-#${DOCK_ID} .row:last-child{ margin-bottom:0; }
-#${DOCK_ID} label{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  user-select:none;
-}
-#${DOCK_ID} input[type="checkbox"]{ transform:translateY(1px); }
-#${DOCK_ID} .primary{
-  padding:7px 10px;
-  font-weight:600;
-}
-#${DOCK_ID} .split{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-}
-#${DOCK_ID} .mono{
-  font-variant-numeric:tabular-nums;
-  opacity:0.8;
-}
-#${DOCK_ID} .ghost{
-  background:rgba(255,255,255,0.06);
-}
-#${PILL_ID}{
-  position:fixed;
-  z-index:2147483647;
-  left:${state.pos.left}px;
-  top:${state.pos.top}px;
-  background:rgba(10,10,10,0.92);
-  color:#e8e8e8;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:999px;
-  padding:6px 10px;
-  font:12px/1.25 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  cursor:pointer;
-  display:${state.visible ? 'none' : 'block'};
-  user-select:none;
-}
-`;
-    let el = document.getElementById(`${DOCK_ID}-style`);
-    if (!el) {
-      el = document.createElement('style');
-      el.id = `${DOCK_ID}-style`;
-      document.head.appendChild(el);
-    }
-    el.textContent = css;
-  }
-
-  function clampDockToViewport() {
-    const dock = document.getElementById(DOCK_ID);
-    if (!dock) return;
-
-    const rect = dock.getBoundingClientRect();
-    const w = rect.width || UI.width;
-    const h = rect.height || 220;
-
-    const maxLeft = Math.max(0, (UW.innerWidth || 1200) - w);
-    const maxTop = Math.max(0, (UW.innerHeight || 800) - h);
-
-    state.pos.left = Math.min(Math.max(0, state.pos.left), maxLeft);
-    state.pos.top = Math.min(Math.max(0, state.pos.top), maxTop);
-
-    dock.style.left = `${state.pos.left}px`;
-    dock.style.top = `${state.pos.top}px`;
-
-    const pill = document.getElementById(PILL_ID);
-    if (pill) {
-      pill.style.left = `${state.pos.left}px`;
-      pill.style.top = `${state.pos.top}px`;
-    }
-  }
-
-  function renderVisibility() {
-    const dock = document.getElementById(DOCK_ID);
-    const pill = document.getElementById(PILL_ID);
-    if (!dock || !pill) return;
-
-    dock.style.display = state.visible ? 'block' : 'none';
-    pill.style.display = state.visible ? 'none' : 'block';
-
-    dock.style.left = `${state.pos.left}px`;
-    dock.style.top = `${state.pos.top}px`;
-    pill.style.left = `${state.pos.left}px`;
-    pill.style.top = `${state.pos.top}px`;
-
-    dock.setAttribute('data-min', state.minimized ? '1' : '0');
-
-    injectStyle();
-    clampDockToViewport();
-  }
-
-  function waitForCK() {
-    try {
-      if (UW && UW.CK && UW.CK.UndoQueue) init();
-      else setTimeout(waitForCK, 250);
-    } catch {
-      setTimeout(waitForCK, 500);
-    }
-  }
-
-  function init() {
-    if (document.getElementById(DOCK_ID)) return;
-
-    loadState();
-    injectStyle();
-
-    const dock = document.createElement('div');
-    dock.id = DOCK_ID;
-    dock.setAttribute('data-min', state.minimized ? '1' : '0');
-
-    const header = document.createElement('div');
-    header.className = 'h';
-
-    const title = document.createElement('div');
-    title.className = 't';
-    title.textContent = 'Body Editor';
-
-    const btns = document.createElement('div');
-    btns.className = 'btns';
-
-    const minBtn = document.createElement('button');
-    minBtn.textContent = '_';
-    minBtn.addEventListener('click', () => {
-      state.minimized = !state.minimized;
-      saveState();
-      renderVisibility();
-    });
-
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'x';
-    closeBtn.addEventListener('click', () => {
-      state.visible = false;
-      saveState();
-      renderVisibility();
-    });
-
-    btns.appendChild(minBtn);
-    btns.appendChild(closeBtn);
-
-    header.appendChild(title);
-    header.appendChild(btns);
-
-    const body = document.createElement('div');
-    body.className = 'b';
-
-    body.appendChild(renderArmsSection());
-    body.appendChild(renderBreastSection());
-
-    dock.appendChild(header);
-    dock.appendChild(body);
-
-    document.body.appendChild(dock);
-
-    const pill = document.createElement('div');
-    pill.id = PILL_ID;
-    pill.textContent = 'Body Editor';
-    pill.addEventListener('click', () => {
-      state.visible = true;
-      state.minimized = false;
-      saveState();
-      renderVisibility();
-    });
-    document.body.appendChild(pill);
-
-    setupDrag(header, dock);
-
-    UW.addEventListener('resize', () => {
-      clampDockToViewport();
-      saveState();
-    });
-
-    document.addEventListener('keydown', onHotkeyDock, true);
-    document.addEventListener('keydown', onHotkeyUndoRedo, true);
-
-    renderVisibility();
-    updateUndoRedoButtons();
-  }
-
-  function checkbox(labelText, checked, onChange) {
-    const lab = document.createElement('label');
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = !!checked;
-    input.addEventListener('change', () => onChange(!!input.checked));
-    const span = document.createElement('span');
-    span.textContent = labelText;
-    lab.appendChild(input);
-    lab.appendChild(span);
-    return lab;
-  }
-
-  function renderArmsSection() {
-    const sec = document.createElement('div');
-    sec.className = 'sec';
-
-    const st = document.createElement('div');
-    st.className = 'secTitle';
-    st.textContent = 'Extra Arms Sync';
-    sec.appendChild(st);
-
-    const row1 = document.createElement('div');
-    row1.className = 'row';
-
-    row1.appendChild(
-      checkbox('2nd Arm', state.arms.target2, (v) => {
-        state.arms.target2 = v;
-        saveState();
-        updateButtons();
-      })
-    );
-
-    row1.appendChild(
-      checkbox('3rd Arm', state.arms.target3, (v) => {
-        state.arms.target3 = v;
-        saveState();
-        updateButtons();
-      })
-    );
-
-    const syncBtn = document.createElement('button');
-    syncBtn.className = 'primary';
-    syncBtn.id = 'hf-body-editor-arms-sync';
-    syncBtn.textContent = 'Sync Extra Arms';
-    syncBtn.addEventListener('click', () => doArmsSync());
-
-    row1.appendChild(syncBtn);
-    sec.appendChild(row1);
-
-    const row2 = document.createElement('div');
-    row2.className = 'row';
-
-    row2.appendChild(
-      checkbox('Position', state.arms.copyPos, (v) => {
-        state.arms.copyPos = v;
-        saveState();
-      })
-    );
-    row2.appendChild(
-      checkbox('Rotation', state.arms.copyQtn, (v) => {
-        state.arms.copyQtn = v;
-        saveState();
-      })
-    );
-    row2.appendChild(
-      checkbox('Scale', state.arms.copyScl, (v) => {
-        state.arms.copyScl = v;
-        saveState();
-      })
-    );
-
-    sec.appendChild(row2);
-
-    const row3 = document.createElement('div');
-    row3.className = 'row';
-
-    row3.appendChild(
-      checkbox('Sync Hands/Fingers', state.arms.syncHands, (v) => {
-        state.arms.syncHands = v;
-        saveState();
-      })
-    );
-
-    const undoBtn = document.createElement('button');
-    undoBtn.id = 'hf-body-editor-arms-undo';
-    undoBtn.textContent = 'Undo';
-    undoBtn.addEventListener('click', () => undoGlobal());
-
-    const redoBtn = document.createElement('button');
-    redoBtn.id = 'hf-body-editor-arms-redo';
-    redoBtn.textContent = 'Redo';
-    redoBtn.addEventListener('click', () => redoGlobal());
-
-    const hint = document.createElement('div');
-    hint.className = 'mono';
-    hint.textContent = 'Dock: 1  |  Undo: Ctrl+Z  |  Redo: Ctrl+Shift+Z';
-
-    row3.appendChild(undoBtn);
-    row3.appendChild(redoBtn);
-    row3.appendChild(hint);
-
-    sec.appendChild(row3);
-
-    function updateButtons() {
-      const b = document.getElementById('hf-body-editor-arms-sync');
-      if (!b) return;
-      b.disabled = !state.arms.target2 && !state.arms.target3;
-    }
-
-    setTimeout(updateButtons, 0);
-    return sec;
-  }
-
-  function renderBreastSection() {
-    const sec = document.createElement('div');
-    sec.className = 'sec';
-
-    const st = document.createElement('div');
-    st.className = 'secTitle';
-    st.textContent = 'Breast Mirror';
-    sec.appendChild(st);
-
-    const row1 = document.createElement('div');
-    row1.className = 'row';
-
-    const split = document.createElement('div');
-    split.className = 'split';
-
-    const leftLabel = document.createElement('button');
-    leftLabel.className = 'ghost';
-    leftLabel.disabled = true;
-
-    const arrowBtn = document.createElement('button');
-    arrowBtn.textContent = '→';
-    arrowBtn.addEventListener('click', () => {
-      state.breast.from = state.breast.from === 'L' ? 'R' : 'L';
-      saveState();
-      updateBreastLabels();
-    });
-
-    const rightLabel = document.createElement('button');
-    rightLabel.className = 'ghost';
-    rightLabel.disabled = true;
-
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'primary';
-    copyBtn.id = 'hf-body-editor-breast-copy';
-    copyBtn.textContent = '';
-    copyBtn.addEventListener('click', () => doBreastMirror());
-
-    split.appendChild(leftLabel);
-    split.appendChild(arrowBtn);
-    split.appendChild(rightLabel);
-    row1.appendChild(split);
-    row1.appendChild(copyBtn);
-
-    sec.appendChild(row1);
-
-    const row2 = document.createElement('div');
-    row2.className = 'row';
-
-    row2.appendChild(
-      checkbox('Position', state.breast.copyPos, (v) => {
-        state.breast.copyPos = v;
-        saveState();
-      })
-    );
-    row2.appendChild(
-      checkbox('Rotation', state.breast.copyQtn, (v) => {
-        state.breast.copyQtn = v;
-        saveState();
-      })
-    );
-    row2.appendChild(
-      checkbox('Scale', state.breast.copyScl, (v) => {
-        state.breast.copyScl = v;
-        saveState();
-      })
-    );
-
-    const undoBtn = document.createElement('button');
-    undoBtn.id = 'hf-body-editor-breast-undo';
-    undoBtn.textContent = 'Undo';
-    undoBtn.addEventListener('click', () => undoGlobal());
-
-    const redoBtn = document.createElement('button');
-    redoBtn.id = 'hf-body-editor-breast-redo';
-    redoBtn.textContent = 'Redo';
-    redoBtn.addEventListener('click', () => redoGlobal());
-
-    row2.appendChild(undoBtn);
-    row2.appendChild(redoBtn);
-
-    sec.appendChild(row2);
-
-    function updateBreastLabels() {
-      const from = state.breast.from === 'L' ? 'L' : 'R';
-      const to = from === 'L' ? 'R' : 'L';
-      leftLabel.textContent = from === 'L' ? 'Left Breast' : 'Right Breast';
-      rightLabel.textContent = to === 'L' ? 'Left Breast' : 'Right Breast';
-      copyBtn.textContent = to === 'L' ? 'Copy to Left Breast' : 'Copy to Right Breast';
-    }
-
-    updateBreastLabels();
-    return sec;
-  }
-
-  function setupDrag(header, dock) {
-    let dragging = false;
-    let startX = 0;
-    let startY = 0;
-    let startLeft = 0;
-    let startTop = 0;
-
-    header.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      dragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      startLeft = state.pos.left;
-      startTop = state.pos.top;
-      e.preventDefault();
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-
-      state.pos.left = startLeft + dx;
-      state.pos.top = startTop + dy;
-
-      dock.style.left = `${state.pos.left}px`;
-      dock.style.top = `${state.pos.top}px`;
-
-      const pill = document.getElementById(PILL_ID);
-      if (pill) {
-        pill.style.left = `${state.pos.left}px`;
-        pill.style.top = `${state.pos.top}px`;
-      }
-    });
-
-    window.addEventListener('mouseup', () => {
-      if (!dragging) return;
-      dragging = false;
-      clampDockToViewport();
-      saveState();
-      renderVisibility();
-    });
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 
   function isTypingTarget(el) {
@@ -621,129 +87,107 @@ The old Extra Arms & Limbs Sync script is deprecated and will no longer receive 
     return false;
   }
 
-  function onHotkeyDock(e) {
-    if (e.defaultPrevented) return;
-    if (isTypingTarget(e.target)) return;
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.code !== 'Digit1') return;
-
-    if (!state.visible) {
-      state.visible = true;
-      state.minimized = false;
-      saveState();
-      renderVisibility();
+  function waitForDock() {
+    if (UW.WitchDock && typeof UW.WitchDock.registerSection === 'function') {
+      init();
       return;
     }
-
-    state.minimized = !state.minimized;
-    saveState();
-    renderVisibility();
+    setTimeout(waitForDock, 250);
   }
 
-  function onHotkeyUndoRedo(e) {
-    if (e.defaultPrevented) return;
-    if (isTypingTarget(e.target)) return;
-    if (!(e.ctrlKey || e.metaKey)) return;
-    if (e.code !== 'KeyZ') return;
-
-    if (e.shiftKey) {
-      redoGlobal();
-      e.preventDefault();
-      return;
+  function waitForCK(cb) {
+    try {
+      if (UW.CK && UW.CK.UndoQueue && UW.CK.tryLoadCharacter) cb();
+      else setTimeout(() => waitForCK(cb), 250);
+    } catch {
+      setTimeout(() => waitForCK(cb), 500);
     }
-
-    undoGlobal();
-    e.preventDefault();
-  }
-
-  function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
   }
 
   function snapshotCurrentCharacter() {
     const CK = UW.CK;
     if (!CK || !CK.UndoQueue || !CK.UndoQueue.queue || CK.UndoQueue.queue.length === 0) return null;
     const u = CK.UndoQueue;
-    const current = u.queue[u.currentIndex];
-    if (!current) return null;
-    return deepClone(current);
+    const cur = u.queue[u.currentIndex];
+    if (!cur) return null;
+    return deepClone(cur);
   }
 
-  function applyCharacter(json) {
+  function applyCharacter(json, onDone) {
     const CK = UW.CK;
-    if (!CK || typeof CK.tryLoadCharacter !== 'function') return false;
-    try {
-      CK.tryLoadCharacter(json, 'Body Editor: invalid character data', () => {});
-      return true;
-    } catch {
-      return false;
-    }
+    if (!CK || !CK.tryLoadCharacter) return false;
+    CK.tryLoadCharacter(json, 'Body Editor: invalid character data', () => {
+      if (typeof onDone === 'function') onDone();
+    });
+    return true;
   }
 
-  function pushHistory(before, after) {
-    history.undo.push({ before, after });
+  function pushHistory(snapshot) {
+    if (!snapshot) return;
+    history.undo.push(snapshot);
+    if (history.undo.length > history.max) history.undo.shift();
     history.redo.length = 0;
-    updateUndoRedoButtons();
-  }
-
-  function updateUndoRedoButtons() {
-    const armsUndo = document.getElementById('hf-body-editor-arms-undo');
-    const armsRedo = document.getElementById('hf-body-editor-arms-redo');
-    const breastUndo = document.getElementById('hf-body-editor-breast-undo');
-    const breastRedo = document.getElementById('hf-body-editor-breast-redo');
-
-    const canUndo = history.undo.length > 0;
-    const canRedo = history.redo.length > 0;
-
-    if (armsUndo) armsUndo.disabled = !canUndo;
-    if (armsRedo) armsRedo.disabled = !canRedo;
-    if (breastUndo) breastUndo.disabled = !canUndo;
-    if (breastRedo) breastRedo.disabled = !canRedo;
+    updateUndoRedoUI();
   }
 
   function undoGlobal() {
-    if (!history.undo.length) return;
-    const entry = history.undo.pop();
-    history.redo.push(entry);
-    applyCharacter(entry.before);
-    updateUndoRedoButtons();
+    const prev = history.undo.pop();
+    if (!prev) return;
+    const cur = snapshotCurrentCharacter();
+    if (cur) history.redo.push(cur);
+    applyCharacter(prev, updateUndoRedoUI);
+    updateUndoRedoUI();
   }
 
   function redoGlobal() {
-    if (!history.redo.length) return;
-    const entry = history.redo.pop();
-    history.undo.push(entry);
-    applyCharacter(entry.after);
-    updateUndoRedoButtons();
+    const next = history.redo.pop();
+    if (!next) return;
+    const cur = snapshotCurrentCharacter();
+    if (cur) history.undo.push(cur);
+    applyCharacter(next, updateUndoRedoUI);
+    updateUndoRedoUI();
   }
 
-  function ensurePath(obj, path) {
-    let cur = obj;
+  function updateUndoRedoUI() {
+    if (ui.btnUndo) ui.btnUndo.disabled = history.undo.length === 0;
+    if (ui.btnRedo) ui.btnRedo.disabled = history.redo.length === 0;
+  }
+
+  function ensurePath(obj, path, fallback) {
+    let o = obj;
     for (let i = 0; i < path.length; i++) {
       const k = path[i];
-      if (!cur[k] || typeof cur[k] !== 'object') cur[k] = {};
-      cur = cur[k];
+      if (o[k] == null || typeof o[k] !== 'object') o[k] = {};
+      o = o[k];
     }
-    return cur;
+    if (fallback && typeof fallback === 'object') Object.assign(o, fallback);
+    return o;
   }
 
-  function cloneSelectedTransforms(src, dst, opts) {
-    if (!src || typeof src !== 'object') return;
-    if (!dst || typeof dst !== 'object') return;
-
-    if (opts.copyPos && src.pos && typeof src.pos === 'object') dst.pos = deepClone(src.pos);
-    if (opts.copyQtn && src.qtn && typeof src.qtn === 'object') dst.qtn = deepClone(src.qtn);
-    if (opts.copyScl && src.scl && typeof src.scl === 'object') dst.scl = deepClone(src.scl);
-    if (src.isKitbashed && typeof src.isKitbashed === 'object') dst.isKitbashed = deepClone(src.isKitbashed);
+  function invertVec3(v) {
+    if (!v || typeof v !== 'object') return { x: 0, y: 0, z: 0 };
+    return { x: -Number(v.x || 0), y: Number(v.y || 0), z: Number(v.z || 0) };
   }
 
-  function shouldCopyNamedKey(key) {
-    if (typeof key !== 'string') return false;
-    if (key.startsWith('main_arm')) return true;
-    if (!state.arms.syncHands) return false;
-    if (key.startsWith('main_hand')) return true;
-    if (key.startsWith('main_finger')) return true;
-    return false;
+  function isArmHandFingerKey(key) {
+    return (
+      typeof key === 'string' &&
+      (key.startsWith('main_arm') ||
+        key.startsWith('main_hand') ||
+        key.startsWith('main_finger') ||
+        key.startsWith('main_thumb') ||
+        key.startsWith('main_wrist'))
+    );
+  }
+
+  function isHandishKey(key) {
+    return (
+      typeof key === 'string' &&
+      (key.startsWith('main_hand') ||
+        key.startsWith('main_finger') ||
+        key.startsWith('main_thumb') ||
+        key.startsWith('main_wrist'))
+    );
   }
 
   function syncOneSecondary(main, secondary, cleanExtras, opts) {
@@ -751,8 +195,15 @@ The old Extra Arms & Limbs Sync script is deprecated and will no longer receive 
 
     Object.keys(main).forEach((key) => {
       if (/^\d+$/.test(key)) {
-        if (!secondary[key] || typeof secondary[key] !== 'object') secondary[key] = {};
-        cloneSelectedTransforms(main[key], secondary[key], opts);
+        const src = main[key];
+        if (opts.pos || opts.qtn || opts.scl) {
+          const dst = secondary[key] && typeof secondary[key] === 'object' ? secondary[key] : {};
+          if (opts.pos && src.pos) dst.pos = deepClone(src.pos);
+          if (opts.qtn && src.qtn) dst.qtn = deepClone(src.qtn);
+          if (opts.scl && src.scl) dst.scl = deepClone(src.scl);
+          if (src.isKitbashed) dst.isKitbashed = deepClone(src.isKitbashed);
+          secondary[key] = dst;
+        }
       }
     });
 
@@ -762,169 +213,380 @@ The old Extra Arms & Limbs Sync script is deprecated and will no longer receive 
       });
     }
 
-    const mainNamedKeys = new Set(Object.keys(main).filter((k) => shouldCopyNamedKey(k)));
+    const mainArmKeys = new Set(Object.keys(main).filter((key) => isArmHandFingerKey(key)));
 
     Object.keys(main).forEach((key) => {
-      if (!shouldCopyNamedKey(key)) return;
-      if (!secondary[key] || typeof secondary[key] !== 'object') secondary[key] = {};
-      cloneSelectedTransforms(main[key], secondary[key], opts);
+      if (!isArmHandFingerKey(key)) return;
+      if (!opts.syncHands && isHandishKey(key)) return;
+
+      const src = main[key];
+      const dst = secondary[key] && typeof secondary[key] === 'object' ? secondary[key] : {};
+      if (opts.pos && src.pos) dst.pos = deepClone(src.pos);
+      if (opts.qtn && src.qtn) dst.qtn = deepClone(src.qtn);
+      if (opts.scl && src.scl) dst.scl = deepClone(src.scl);
+      if (src.isKitbashed) dst.isKitbashed = deepClone(src.isKitbashed);
+      secondary[key] = dst;
     });
 
     if (cleanExtras) {
       Object.keys(secondary).forEach((key) => {
-        if (shouldCopyNamedKey(key) && !mainNamedKeys.has(key)) delete secondary[key];
+        if (isArmHandFingerKey(key) && !mainArmKeys.has(key)) delete secondary[key];
       });
     }
   }
 
-  function ensureHandPoseSlots(json, targets) {
-    if (!state.arms.syncHands) return;
-    const hp = ensurePath(json, ['custom', 'handPoses']);
-    if (!hp.human) return;
-
-    if (targets.includes('bodyUpper0')) hp.human_0 = deepClone(hp.human);
-    if (targets.includes('bodyUpper1')) hp.human_1 = deepClone(hp.human);
+  function ensureHandPoseSlots(json) {
+    ensurePath(json, ['custom'], {});
+    ensurePath(json, ['custom', 'handPoses'], {});
+    const hp = json.custom.handPoses;
+    if (!hp.human) hp.human = hp.human_0 || hp.human_1 || hp.human_2 || {};
+    for (let i = 0; i < 5; i++) {
+      const k = `human_${i}`;
+      if (!(k in hp)) hp[k] = deepClone(hp.human);
+    }
   }
 
-  function ensureArmLengthSlots(json, targets) {
-    if (!json.sliders || typeof json.sliders !== 'object') return;
+  function ensureArmLengthSlots(json) {
+    if (!json.sliders) json.sliders = {};
     const s = json.sliders;
-
     ['L', 'R'].forEach((side) => {
       const baseKey = 'arms' + side;
       if (s[baseKey] == null) return;
       const baseVal = s[baseKey];
-
-      if (targets.includes('bodyUpper0')) {
-        const k0 = 'arms0' + side;
-        if (!(k0 in s)) s[k0] = baseVal;
-        else s[k0] = baseVal;
-      }
-      if (targets.includes('bodyUpper1')) {
-        const k1 = 'arms1' + side;
-        if (!(k1 in s)) s[k1] = baseVal;
-        else s[k1] = baseVal;
+      for (let i = 0; i < 5; i++) {
+        const extraKey = 'arms' + i + side;
+        if (!(extraKey in s)) s[extraKey] = baseVal;
       }
     });
   }
 
   function doArmsSync() {
-    const before = snapshotCurrentCharacter();
-    if (!before) return;
+    waitForCK(() => {
+      const current = snapshotCurrentCharacter();
+      if (!current) return;
 
-    if (!state.arms.target2 && !state.arms.target3) return;
+      const opts = {
+        pos: !!state.arms.pos,
+        qtn: !!state.arms.qtn,
+        scl: !!state.arms.scl,
+        syncHands: !!state.arms.syncHands,
+      };
 
-    const json = deepClone(before);
-    const transforms = ensurePath(json, ['transforms']);
-    const main = transforms.bodyUpper || {};
+      const targets = [];
+      if (state.arms.target2) targets.push('bodyUpper0');
+      if (state.arms.target3) targets.push('bodyUpper1');
 
-    const targets = [];
-    if (state.arms.target2) targets.push('bodyUpper0');
-    if (state.arms.target3) targets.push('bodyUpper1');
+      if (!targets.length) return;
 
-    const opts = { copyPos: !!state.arms.copyPos, copyQtn: !!state.arms.copyQtn, copyScl: !!state.arms.copyScl };
+      pushHistory(current);
 
-    targets.forEach((key) => {
-      if (!transforms[key] || typeof transforms[key] !== 'object') transforms[key] = {};
-      const cleanExtras = key === 'bodyUpper0';
-      syncOneSecondary(main, transforms[key], cleanExtras, opts);
+      const json = deepClone(current);
+      ensurePath(json, ['transforms'], {});
+      const transforms = json.transforms;
+
+      const main = transforms.bodyUpper || {};
+
+      targets.forEach((key) => {
+        if (!transforms[key]) transforms[key] = {};
+        const secondary = transforms[key];
+        const cleanExtras = key === 'bodyUpper0';
+        syncOneSecondary(main, secondary, cleanExtras, opts);
+      });
+
+      transforms.bodyUpper = main;
+
+      if (state.arms.syncHands) ensureHandPoseSlots(json);
+      ensureArmLengthSlots(json);
+
+      applyCharacter(json);
     });
-
-    transforms.bodyUpper = main;
-    json.transforms = transforms;
-
-    ensureHandPoseSlots(json, targets);
-    ensureArmLengthSlots(json, targets);
-
-    if (!applyCharacter(json)) return;
-
-    pushHistory(before, json);
   }
 
-  function breastSignature(key) {
-    if (typeof key !== 'string') return null;
-
-    const l = 'main_chestL_';
-    const r = 'main_chestR_';
-    let side = null;
-    let rest = null;
-
-    if (key.startsWith(l)) {
-      side = 'L';
-      rest = key.slice(l.length);
-    } else if (key.startsWith(r)) {
-      side = 'R';
-      rest = key.slice(r.length);
-    } else {
-      return null;
-    }
-
-    if (!rest.endsWith('_bind_jnt')) return null;
-    rest = rest.slice(0, -'_bind_jnt'.length);
-
-    const tokens = rest.split('_').filter(Boolean);
-    const filtered = [];
-    for (const t of tokens) {
-      if (/^\d+$/.test(t)) continue;
-      filtered.push(t);
-    }
-    return { side, sig: filtered.join('_') };
-  }
-
-  function invertVec3(v) {
+  function breastSignature(side) {
+    const s = side === 'R' ? 'R' : 'L';
     return {
-      x: typeof v?.x === 'number' ? -v.x : v?.x,
-      y: typeof v?.y === 'number' ? -v.y : v?.y,
-      z: typeof v?.z === 'number' ? -v.z : v?.z,
+      base: `main_chest${s}_01_`,
+      fat: `main_chest${s}_01_fat_`,
+      horiz: `main_chest${s}_horizontal_`,
+      kitbash: `main_chest${s}_kitbash_`,
+      vert: `main_chest${s}_vertical_`,
     };
   }
 
   function doBreastMirror() {
-    const before = snapshotCurrentCharacter();
-    if (!before) return;
+    waitForCK(() => {
+      const current = snapshotCurrentCharacter();
+      if (!current) return;
 
-    const json = deepClone(before);
-    const rig = json?.transforms?.bodyUpper;
-    if (!rig || typeof rig !== 'object') return;
+      const from = state.breast.from === 'R' ? 'R' : 'L';
+      const to = from === 'L' ? 'R' : 'L';
 
-    const left = {};
-    const right = {};
+      pushHistory(current);
 
-    Object.keys(rig).forEach((k) => {
-      const s = breastSignature(k);
-      if (!s) return;
-      if (s.side === 'L') left[s.sig] = k;
-      else right[s.sig] = k;
+      const json = deepClone(current);
+      ensurePath(json, ['transforms'], {});
+      const t = json.transforms;
+
+      const main = t.bodyUpper || {};
+
+      const fromSig = breastSignature(from);
+      const toSig = breastSignature(to);
+
+      Object.keys(main).forEach((k) => {
+        const isFrom =
+          k.startsWith(fromSig.base) ||
+          k.startsWith(fromSig.fat) ||
+          k.startsWith(fromSig.horiz) ||
+          k.startsWith(fromSig.kitbash) ||
+          k.startsWith(fromSig.vert);
+
+        if (!isFrom) return;
+
+        const src = main[k];
+        const mapped = k
+          .replace(fromSig.base, toSig.base)
+          .replace(fromSig.fat, toSig.fat)
+          .replace(fromSig.horiz, toSig.horiz)
+          .replace(fromSig.kitbash, toSig.kitbash)
+          .replace(fromSig.vert, toSig.vert);
+
+        if (!main[mapped]) main[mapped] = {};
+        const dst = main[mapped];
+
+        if (state.breast.pos && src.pos) dst.pos = invertVec3(src.pos);
+        if (state.breast.qtn && src.qtn) dst.qtn = deepClone(src.qtn);
+        if (state.breast.scl && src.scl) dst.scl = deepClone(src.scl);
+        if (src.isKitbashed) dst.isKitbashed = deepClone(src.isKitbashed);
+      });
+
+      t.bodyUpper = main;
+      applyCharacter(json);
     });
-
-    const fromSide = state.breast.from === 'L' ? 'L' : 'R';
-    const toSide = fromSide === 'L' ? 'R' : 'L';
-
-    const fromMap = fromSide === 'L' ? left : right;
-    const toMap = toSide === 'L' ? left : right;
-
-    const opts = { copyPos: !!state.breast.copyPos, copyQtn: !!state.breast.copyQtn, copyScl: !!state.breast.copyScl };
-
-    const shared = Object.keys(fromMap).filter((sig) => sig in toMap);
-    if (!shared.length) return;
-
-    for (const sig of shared) {
-      const fromKey = fromMap[sig];
-      const toKey = toMap[sig];
-      const src = rig[fromKey];
-      const dst = rig[toKey];
-      if (!src || typeof src !== 'object' || !dst || typeof dst !== 'object') continue;
-
-      if (opts.copyPos && src.pos && typeof src.pos === 'object') dst.pos = invertVec3(src.pos);
-      if (opts.copyQtn && src.qtn && typeof src.qtn === 'object') dst.qtn = deepClone(src.qtn);
-      if (opts.copyScl && src.scl && typeof src.scl === 'object') dst.scl = deepClone(src.scl);
-      if (src.isKitbashed && typeof src.isKitbashed === 'object') dst.isKitbashed = deepClone(src.isKitbashed);
-    }
-
-    if (!applyCharacter(json)) return;
-
-    pushHistory(before, json);
   }
 
-  waitForCK();
+  function onHotkeys(e) {
+    if (e.defaultPrevented) return;
+    if (isTypingTarget(e.target)) return;
+
+    const isMac = /Mac|iPhone|iPad|iPod/.test(UW.navigator.platform || '');
+    const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+    if (ctrl && !e.shiftKey && e.code === 'KeyZ') {
+      e.preventDefault();
+      undoGlobal();
+      return;
+    }
+
+    if (ctrl && e.shiftKey && e.code === 'KeyZ') {
+      e.preventDefault();
+      redoGlobal();
+      return;
+    }
+
+    if (!e.ctrlKey && !e.metaKey && !e.altKey && e.code === 'Digit1') {
+      if (UW.WitchDock && typeof UW.WitchDock.show === 'function') {
+        UW.WitchDock.show();
+        state.__flash = Date.now();
+        UW.WitchDock.render();
+      }
+    }
+  }
+
+  function checkbox(label, checked, onChange) {
+    const wrap = document.createElement('label');
+    wrap.style.display = 'inline-flex';
+    wrap.style.alignItems = 'center';
+    wrap.style.gap = '6px';
+    wrap.style.userSelect = 'none';
+    wrap.style.cursor = 'pointer';
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!checked;
+    cb.addEventListener('change', () => onChange(cb.checked));
+
+    const text = document.createElement('span');
+    text.textContent = label;
+
+    wrap.appendChild(cb);
+    wrap.appendChild(text);
+    return { wrap, cb };
+  }
+
+  function hr() {
+    const d = document.createElement('div');
+    d.style.height = '1px';
+    d.style.background = 'rgba(255,255,255,0.10)';
+    d.style.margin = '10px 0';
+    return d;
+  }
+
+  function render(container) {
+    container.innerHTML = '';
+
+    const status = document.createElement('div');
+    status.style.opacity = '0.75';
+    status.style.marginBottom = '8px';
+    status.style.fontSize = '11px';
+    container.appendChild(status);
+    ui.status = status;
+
+    const topRow = document.createElement('div');
+    topRow.style.display = 'flex';
+    topRow.style.gap = '8px';
+    topRow.style.alignItems = 'center';
+    topRow.style.marginBottom = '10px';
+
+    const undoBtn = document.createElement('button');
+    undoBtn.textContent = 'Undo';
+    undoBtn.addEventListener('click', undoGlobal);
+
+    const redoBtn = document.createElement('button');
+    redoBtn.textContent = 'Redo';
+    redoBtn.addEventListener('click', redoGlobal);
+
+    ui.btnUndo = undoBtn;
+    ui.btnRedo = redoBtn;
+
+    topRow.appendChild(undoBtn);
+    topRow.appendChild(redoBtn);
+
+    const hk = document.createElement('div');
+    hk.style.opacity = '0.65';
+    hk.style.marginLeft = 'auto';
+    hk.textContent = 'Hotkeys: Ctrl+Z / Ctrl+Shift+Z';
+    topRow.appendChild(hk);
+
+    container.appendChild(topRow);
+
+    const armsTitle = document.createElement('div');
+    armsTitle.style.fontWeight = '650';
+    armsTitle.textContent = 'Extra Arms Sync';
+    container.appendChild(armsTitle);
+
+    const targetRow = document.createElement('div');
+    targetRow.style.display = 'flex';
+    targetRow.style.gap = '12px';
+    targetRow.style.margin = '8px 0';
+
+    const c2 = checkbox('2nd Arm', state.arms.target2, (v) => { state.arms.target2 = v; saveState(); });
+    const c3 = checkbox('3rd Arm', state.arms.target3, (v) => { state.arms.target3 = v; saveState(); });
+
+    targetRow.appendChild(c2.wrap);
+    targetRow.appendChild(c3.wrap);
+
+    const syncBtn = document.createElement('button');
+    syncBtn.textContent = 'Sync Arms';
+    syncBtn.style.marginLeft = 'auto';
+    syncBtn.addEventListener('click', doArmsSync);
+
+    targetRow.appendChild(syncBtn);
+    container.appendChild(targetRow);
+
+    const whatRow = document.createElement('div');
+    whatRow.style.display = 'flex';
+    whatRow.style.gap = '12px';
+    whatRow.style.flexWrap = 'wrap';
+
+    const p = checkbox('Position', state.arms.pos, (v) => { state.arms.pos = v; saveState(); });
+    const q = checkbox('Rotation', state.arms.qtn, (v) => { state.arms.qtn = v; saveState(); });
+    const s = checkbox('Scale', state.arms.scl, (v) => { state.arms.scl = v; saveState(); });
+
+    whatRow.appendChild(p.wrap);
+    whatRow.appendChild(q.wrap);
+    whatRow.appendChild(s.wrap);
+
+    container.appendChild(whatRow);
+
+    const handsRow = document.createElement('div');
+    handsRow.style.marginTop = '8px';
+    const hcb = checkbox('Sync Hands/Fingers', state.arms.syncHands, (v) => { state.arms.syncHands = v; saveState(); });
+    handsRow.appendChild(hcb.wrap);
+    container.appendChild(handsRow);
+
+    container.appendChild(hr());
+
+    const bTitle = document.createElement('div');
+    bTitle.style.fontWeight = '650';
+    bTitle.textContent = 'Breast Mirror';
+    container.appendChild(bTitle);
+
+    const bRow = document.createElement('div');
+    bRow.style.display = 'flex';
+    bRow.style.alignItems = 'center';
+    bRow.style.gap = '10px';
+    bRow.style.margin = '8px 0';
+
+    const fromLabel = document.createElement('div');
+    fromLabel.textContent = state.breast.from === 'R' ? 'Right Breast' : 'Left Breast';
+
+    const dirBtn = document.createElement('button');
+    dirBtn.textContent = '→';
+    dirBtn.addEventListener('click', () => {
+      state.breast.from = state.breast.from === 'R' ? 'L' : 'R';
+      saveState();
+      render(container);
+    });
+
+    const toLabel = document.createElement('div');
+    const toSide = state.breast.from === 'R' ? 'L' : 'R';
+    toLabel.textContent = toSide === 'R' ? 'Right Breast' : 'Left Breast';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = `Copy to ${toLabel.textContent}`;
+    copyBtn.style.marginLeft = 'auto';
+    copyBtn.addEventListener('click', doBreastMirror);
+
+    bRow.appendChild(fromLabel);
+    bRow.appendChild(dirBtn);
+    bRow.appendChild(toLabel);
+    bRow.appendChild(copyBtn);
+
+    container.appendChild(bRow);
+
+    const bOpts = document.createElement('div');
+    bOpts.style.display = 'flex';
+    bOpts.style.gap = '12px';
+    bOpts.style.flexWrap = 'wrap';
+
+    const bp = checkbox('Position', state.breast.pos, (v) => { state.breast.pos = v; saveState(); });
+    const bq = checkbox('Rotation', state.breast.qtn, (v) => { state.breast.qtn = v; saveState(); });
+    const bs = checkbox('Scale', state.breast.scl, (v) => { state.breast.scl = v; saveState(); });
+
+    bOpts.appendChild(bp.wrap);
+    bOpts.appendChild(bq.wrap);
+    bOpts.appendChild(bs.wrap);
+
+    container.appendChild(bOpts);
+
+    updateUndoRedoUI();
+    refreshStatus();
+  }
+
+  function refreshStatus() {
+    if (!ui.status) return;
+    const ok = UW.CK && UW.CK.UndoQueue && UW.CK.tryLoadCharacter;
+    ui.status.textContent = ok ? 'Ready.' : 'Waiting for HeroForge to finish loading…';
+  }
+
+  function init() {
+    loadState();
+
+    UW.WitchDock.addTab?.({ id: TAB_ID, title: 'Sync', order: 10 });
+
+    UW.WitchDock.registerSection({
+      id: SECTION_ID,
+      tab: TAB_ID,
+      title: 'Body Editor',
+      order: 10,
+      render,
+      onShow: refreshStatus,
+    });
+
+    document.addEventListener('keydown', onHotkeys, true);
+
+    setInterval(refreshStatus, 1000);
+  }
+
+  waitForDock();
 })();
