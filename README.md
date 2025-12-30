@@ -23,6 +23,7 @@ Advanced body manipulation tools to help sync proportions from left / right, mul
 👉 Install:
 https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
 
+---
 
 ## **Scripts That DO NOT Require Witch Dock**
 Some scripts are independant of Witch Dock and can be installed as standalone tools.
