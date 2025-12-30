@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Extra Arms & Limbs Kitbash Sync
 // @namespace    extra-arms-sync
-// @version      0.3.1
+// @version      0.3.2
 // @description  Deprecated. Use "Body Editor" instead (click banner to install).
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-idle
-// @grant        none
+// @grant        unsafeWindow
 // @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Extra_Arms_And_Hands_Sync.user.js
 // @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Extra_Arms_And_Hands_Sync.user.js
 // ==/UserScript==
