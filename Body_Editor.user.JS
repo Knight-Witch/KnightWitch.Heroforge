@@ -15,22 +15,34 @@
 ────────────────────────────────────────
 Changelog
 ────────────────────────────────────────
-0.6.1
-- Added undo/redo support for arm sync and breast mirror
-- Fixed dock vertical dragging
-- Auto-inject missing extra-arm pose fields
-- Renamed tool to "Body Editor"
+/*
+Body Editor — v0.1.0
 
-0.6.0
-- Introduced Breast Mirror tool
-- Added docked UI with tabs and hotkeys
-- Added per-axis sync toggles (pos / qtn / scl)
+This is a new script that replaces the old Extra Arms & Limbs Sync tool.
 
-0.5.x
-- Initial dock refactor
-- Extra arms sync improvements
-────────────────────────────────────────
+This script now REQUIRES the shared Witch Dock UI, which provides the floating
+interface used by this and future Knight Witch tools:
+https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_Dock.user.js
+
+All body-editing features will live inside this script as it continues to grow.
+
+New features and changes:
+- Rebuilt arm syncing with toggles for position, rotation, scale, and hands
+- Ability to choose whether to sync the 2nd arm set, 3rd arm set, or both
+- No longer requires using the Advanced Pose menu to initialize extra arms
+- Automatically injects missing pose data for extra arms when syncing
+- Adds breast mirroring to sync left/right breasts
+- Tool now lives in a draggable floating dock
+- Dock can be minimized or closed
+- Adds hotkey support to toggle or minimize the dock
+- Adds undo/redo support (Ctrl+Z / Ctrl+Shift+Z)
+
+Migration note:
+The old Extra Arms & Limbs Sync script is deprecated and will no longer receive
+updates. Install Body Editor to access new and future body-editing features.
 */
+
+
 (function () {
   'use strict';
 
