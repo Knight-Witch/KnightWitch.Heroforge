@@ -1,216 +1,108 @@
 // ==UserScript==
-// @name        Extra Arms & Limbs Kitbash Sync
-// @namespace   extra-arms-sync
-// @version     0.3.0
-// @description Copies main arm/hand/finger pose and kitbash to extra arms in HeroForge (supports multiple extra arm sets). ADDS BONE NODES TO EXTRA ARMS FOR KITBASH ADJUSTMENTS - READ THIS FIRST: TO USE: Before you can adjust, you need a FRESH placement of Extra Arms 1 & 2 (often loading an existing multi arm set doesn't generate bone nodes). Go to the Kitbash menu and select the shoulder/upper arm bone and make a quick adjustment. This kicks the UI into gear assigning placement values. NOW you can hit the "sync" button in the bottom left corner of your browser and it will automatically sync the 2nd and 3rd arm sets to match the first. Any time you adjust your figure's position, you can hit that button and re-sync all the arms. 
+// @name         Extra Arms & Limbs Kitbash Sync
+// @namespace    extra-arms-sync
+// @version      0.3.1
+// @description  Deprecated. Use "Body Editor" instead (click banner to install).
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
-// @run-at       document-end
+// @run-at       document-idle
 // @grant        none
 // @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Extra_Arms_And_Hands_Sync.user.js
 // @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Extra_Arms_And_Hands_Sync.user.js
 // ==/UserScript==
 
-(function () {
-  'use strict';
+(() => {
+  const NEW_URL = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js';
+  const STORE_KEY = 'kw.deprecated.extraArmsSync.dismissUntil';
+  const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
-  function waitForCK() {
-    try {
-      if (unsafeWindow && unsafeWindow.CK && unsafeWindow.CK.UndoQueue) {
-        init();
-      } else {
-        setTimeout(waitForCK, 250);
-      }
-    } catch (e) {
-      console.error('HF Sync Extra Arms: waiting error', e);
-      setTimeout(waitForCK, 500);
-    }
-  }
+  const now = Date.now();
+  const dismissUntil = Number(localStorage.getItem(STORE_KEY) || '0');
+  if (Number.isFinite(dismissUntil) && dismissUntil > now) return;
 
-  function init() {
-    if (document.getElementById('hf-sync-extra-arms-btn')) return;
+  const ID = 'kw-deprecated-banner-extra-arms';
+  if (document.getElementById(ID)) return;
 
-    const btn = document.createElement('button');
-    btn.id = 'hf-sync-extra-arms-btn';
-    btn.textContent = 'Sync Extra Arms';
+  const style = document.createElement('style');
+  style.textContent = `
+#${ID}{
+  position:fixed;
+  z-index:2147483647;
+  left:16px;
+  right:16px;
+  top:16px;
+  background:rgba(10,10,10,0.94);
+  color:#e8e8e8;
+  border:1px solid rgba(255,255,255,0.16);
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  font:13px/1.25 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  padding:12px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+#${ID} .msg{
+  flex:1;
+}
+#${ID} .title{
+  font-weight:700;
+  margin-right:6px;
+}
+#${ID} .btn{
+  background:rgba(255,255,255,0.12);
+  color:#e8e8e8;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:8px;
+  padding:7px 10px;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+#${ID} .btn:hover{
+  background:rgba(255,255,255,0.18);
+}
+#${ID} .x{
+  width:32px;
+  text-align:center;
+  padding:7px 0;
+}
+`;
+  document.head.appendChild(style);
 
-    Object.assign(btn.style, {
-      position: 'fixed',
-      bottom: '1rem',
-      left: '1rem',
-      zIndex: 99999,
-      padding: '0.4rem 0.8rem',
-      fontSize: '12px',
-      fontFamily: 'sans-serif',
-      background: 'rgba(0,0,0,0.8)',
-      color: '#fff',
-      border: '1px solid #666',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      userSelect: 'none'
-    });
+  const banner = document.createElement('div');
+  banner.id = ID;
 
-    btn.addEventListener('mouseenter', () => {
-      btn.style.background = 'rgba(32,32,32,0.95)';
-    });
+  const msg = document.createElement('div');
+  msg.className = 'msg';
+  msg.innerHTML = `<span class="title">This script is deprecated.</span>Extra Arms Sync has been replaced by <b>Body Editor</b>. Install the new script to keep receiving updates.`;
 
-    btn.addEventListener('mouseleave', () => {
-      btn.style.background = 'rgba(0,0,0,0.8)';
-    });
+  const install = document.createElement('button');
+  install.className = 'btn';
+  install.textContent = 'Install Body Editor';
+  install.addEventListener('click', () => {
+    window.open(NEW_URL, '_blank', 'noopener,noreferrer');
+  });
 
-    btn.addEventListener('click', syncExtraArms);
+  const dismiss = document.createElement('button');
+  dismiss.className = 'btn';
+  dismiss.textContent = 'Dismiss 7 days';
+  dismiss.addEventListener('click', () => {
+    localStorage.setItem(STORE_KEY, String(Date.now() + DISMISS_MS));
+    banner.remove();
+  });
 
-    document.body.appendChild(btn);
-    console.log('HF Sync Extra Arms: button added');
-  }
+  const close = document.createElement('button');
+  close.className = 'btn x';
+  close.textContent = 'x';
+  close.addEventListener('click', () => {
+    banner.remove();
+  });
 
-  function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  }
+  banner.appendChild(msg);
+  banner.appendChild(install);
+  banner.appendChild(dismiss);
+  banner.appendChild(close);
 
-  function isArmHandFingerKey(key) {
-    return (
-      typeof key === 'string' &&
-      (key.startsWith('main_arm') ||
-       key.startsWith('main_hand') ||
-       key.startsWith('main_finger'))
-    );
-  }
-
-  function syncOneSecondary(main, secondary, cleanExtras) {
-    // Numeric (advanced pose) bones
-    const mainNumericKeys = new Set(
-      Object.keys(main).filter((k) => /^\d+$/.test(k))
-    );
-
-    Object.keys(main).forEach((key) => {
-      if (/^\d+$/.test(key)) {
-        secondary[key] = deepClone(main[key]);
-      }
-    });
-
-    if (cleanExtras) {
-      Object.keys(secondary).forEach((key) => {
-        if (/^\d+$/.test(key) && !mainNumericKeys.has(key)) {
-          delete secondary[key];
-        }
-      });
-    }
-
-    // Named arm/hand/finger kitbash joints
-    const mainArmKeys = new Set(
-      Object.keys(main).filter((key) => isArmHandFingerKey(key))
-    );
-
-    Object.keys(main).forEach((key) => {
-      if (isArmHandFingerKey(key)) {
-        secondary[key] = deepClone(main[key]);
-      }
-    });
-
-    if (cleanExtras) {
-      Object.keys(secondary).forEach((key) => {
-        if (isArmHandFingerKey(key) && !mainArmKeys.has(key)) {
-          delete secondary[key];
-        }
-      });
-    }
-  }
-
-  function syncExtraArms() {
-    try {
-      const CK = unsafeWindow.CK;
-      if (!CK || !CK.UndoQueue || !CK.UndoQueue.queue || CK.UndoQueue.queue.length === 0) {
-        console.warn('HF Sync Extra Arms: CK.UndoQueue not ready');
-        return;
-      }
-
-      const u = CK.UndoQueue;
-      const current = u.queue[u.currentIndex];
-      if (!current) {
-        console.warn('HF Sync Extra Arms: no current character in undo queue');
-        return;
-      }
-
-      const json = deepClone(current);
-
-      if (!json.transforms) json.transforms = {};
-      const transforms = json.transforms;
-
-      const main = transforms.bodyUpper || {};
-
-      // Find all extra bodyUpper rigs: bodyUpper0, bodyUpper1, bodyUpper2, ...
-      const secondaryKeys = Object.keys(transforms).filter(
-        (k) => k.startsWith('bodyUpper') && k !== 'bodyUpper'
-      );
-
-      if (secondaryKeys.length === 0) {
-        console.log('HF Sync Extra Arms: no extra arm rigs found');
-        return;
-      }
-
-      secondaryKeys.forEach((key) => {
-        if (!transforms[key]) transforms[key] = {};
-        const secondary = transforms[key];
-
-        // For the first extra set (bodyUpper0), keep the "clean extras" behavior
-        // that fixed the slight drift on your Revenant.
-        // For additional sets (bodyUpper1, bodyUpper2, ...), do NOT delete
-        // extra numeric keys—those may be required for their unique attachment.
-        const cleanExtras = (key === 'bodyUpper0');
-
-        syncOneSecondary(main, secondary, cleanExtras);
-      });
-
-      transforms.bodyUpper = main;
-      json.transforms = transforms;
-
-      // Sync hand pose presets:
-      // base: custom.handPoses.human
-      // extras: human_0, human_1, human_2, ...
-      if (!json.custom) json.custom = {};
-      if (!json.custom.handPoses) json.custom.handPoses = {};
-      const hp = json.custom.handPoses;
-      if (hp.human) {
-        Object.keys(hp).forEach((k) => {
-          if (k.startsWith('human_')) {
-            hp[k] = deepClone(hp.human);
-          }
-        });
-      }
-
-      // Sync arm length sliders: armsL/armsR → arms0L/arms0R, arms1L/arms1R, ...
-      if (json.sliders) {
-        const s = json.sliders;
-        ['L', 'R'].forEach((side) => {
-          const baseKey = 'arms' + side;
-          if (s[baseKey] != null) {
-            const baseVal = s[baseKey];
-            // arms0L / arms0R, arms1L / arms1R, etc., if present
-            for (let i = 0; i < 5; i++) {
-              const extraKey = 'arms' + i + side;
-              if (extraKey in s) {
-                s[extraKey] = baseVal;
-              }
-            }
-          }
-        });
-      }
-
-      CK.tryLoadCharacter(
-        json,
-        'HF Sync Extra Arms: invalid character data',
-        () => {
-          console.log(
-            'HF Sync Extra Arms: applied to extra rigs:',
-            secondaryKeys.join(', ')
-          );
-        }
-      );
-    } catch (e) {
-      console.error('HF Sync Extra Arms: error during sync', e);
-    }
-  }
-
-  waitForCK();
+  document.body.appendChild(banner);
 })();
