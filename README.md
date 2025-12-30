@@ -15,10 +15,10 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_
 ---
 
 ## **Scripts Requiring Witch Dock**
-All tools requiring Witch Dock are listed here - without Witchdock, these tools will not function on their own. You do NOT have to install all the below tools and are free to choose which ones you want, but you MUST have Witch Dock for these to work.
+All tools requiring Witch Dock are listed here - without Witch Dock, these tools will not function on their own. You do NOT have to install all the below tools and are free to choose which ones you want, but you MUST have Witch Dock for these to work.
 
 ### **Body Editor**
-Advanced body manipulation tools to help sync proportions from left / right, multiple arms, & more.
+Advanced body manipulation tools for syncing proportions, multiple arms, mirrored body parts, and precision editing.
 
 👉 Install:
 https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
@@ -40,6 +40,7 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSO
 
 ### Sync Extra Arms
 This script is no longer updated and has instead been merged into the above "Body Editor" script. If you still have this Sync Extra Arms script installed, please uninstall and update to Body Editor for more features and the latest updates!
+👉 https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
 
 
 
