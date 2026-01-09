@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        (BETA) Body Editor
 // @namespace   http://tampermonkey.net/
-// @version     0.1.3
+// @version     0.1.4
 // @description  BETA TEST TOOL - Advanced body editing tools (Extra Arms Sync + Breast Mirror + Buttcheek Mirror). This is a BETA TEST and will eventually need to be replaced when Witch Dock officially releases.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
