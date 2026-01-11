@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Extra Arms & Limbs Kitbash Sync
 // @namespace    extra-arms-sync
-// @version      0.3.2
+// @version      0.3.3
 // @description  Deprecated. Use "Body Editor" instead (click banner to install).
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -12,7 +12,7 @@
 // ==/UserScript==
 
 (() => {
-  const NEW_URL = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js';
+  const NEW_URL = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/BETA/BETA_Body_Editor.user.js';
   const STORE_KEY = 'kw.deprecated.extraArmsSync.dismissUntil';
   const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
