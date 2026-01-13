@@ -14,6 +14,11 @@
 // @grant        GM_setValue
 // ==/UserScript==
 
+// BASELINE SNAPSHOT
+// Witch Dock
+// Verified working: 01/12/2026
+// Do not modify this version
+
 (function () {
   "use strict";
 
