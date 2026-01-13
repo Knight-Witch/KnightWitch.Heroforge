@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock
 // @namespace    KnightWitch
-// @version      0.2.1
+// @version      0.2.3
 // @description  Core dock + tab system for Knight Witch tools
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
