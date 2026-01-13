@@ -1,3 +1,4 @@
+
 (function () {
   'use strict';
 
@@ -619,24 +620,7 @@
 
     left.appendChild(syncBtn);
 
-    const right = document.createElement('div');
-    right.className = 'right';
-
-    const undoBtn = iconButton('↶', 'Undo', function () {
-      undoHF();
-    });
-    undoBtn.setAttribute('data-kwbe-undo', '1');
-
-    const redoBtn = iconButton('↷', 'Redo', function () {
-      redoHF();
-    });
-    redoBtn.setAttribute('data-kwbe-redo', '1');
-
-    right.appendChild(undoBtn);
-    right.appendChild(redoBtn);
-
     row1.appendChild(left);
-    row1.appendChild(right);
     body.appendChild(row1);
 
     const row2 = document.createElement('div');
@@ -720,24 +704,7 @@
 
     left.appendChild(copyBtn);
 
-    const right = document.createElement('div');
-    right.className = 'right';
-
-    const undoBtn = iconButton('↶', 'Undo', function () {
-      undoHF();
-    });
-    undoBtn.setAttribute('data-kwbe-undo', '1');
-
-    const redoBtn = iconButton('↷', 'Redo', function () {
-      redoHF();
-    });
-    redoBtn.setAttribute('data-kwbe-redo', '1');
-
-    right.appendChild(undoBtn);
-    right.appendChild(redoBtn);
-
     row1.appendChild(left);
-    row1.appendChild(right);
     body.appendChild(row1);
 
     const row2 = document.createElement('div');
@@ -830,24 +797,7 @@
 
     left.appendChild(copyBtn);
 
-    const right = document.createElement('div');
-    right.className = 'right';
-
-    const undoBtn = iconButton('↶', 'Undo', function () {
-      undoHF();
-    });
-    undoBtn.setAttribute('data-kwbe-undo', '1');
-
-    const redoBtn = iconButton('↷', 'Redo', function () {
-      redoHF();
-    });
-    redoBtn.setAttribute('data-kwbe-redo', '1');
-
-    right.appendChild(undoBtn);
-    right.appendChild(redoBtn);
-
     row1.appendChild(left);
-    row1.appendChild(right);
     body.appendChild(row1);
 
     const row2 = document.createElement('div');
@@ -953,7 +903,7 @@
     wd.registerTool({
       id: 'body-editor',
       tab: 'Body Editor',
-      title: 'Body Editor',
+      title: 'Body Editor WITCH DOCK TEST v4',
       render: function (container, api) {
         renderTool(container, api);
       }
