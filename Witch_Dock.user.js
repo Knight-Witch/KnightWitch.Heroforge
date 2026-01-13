@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock
 // @namespace    KnightWitch
-// @version      0.2.4
+// @version      0.2.5
 // @description  Core dock + tab system for Knight Witch tools
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -232,73 +232,12 @@ async function loadManifestAndTools() {
 
 #kwWDTabs{
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 6px;
+  flex-wrap: wrap;
   padding: 6px 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
 }
-#kwWDTabsLeft{
-  flex: 1 1 auto;
-  display: flex;
-  gap: 6px;
-  overflow: auto;
-  scrollbar-width: thin;
-}
-#kwWDTabsLeft::-webkit-scrollbar{ height: 8px; }
-#kwWDTabsLeft::-webkit-scrollbar-thumb{
-  background: rgba(255,255,255,0.18);
-  border-radius: 10px;
-}
-#kwWDTabsRight{
-  flex: 0 0 auto;
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-}
-.kwWDActionBtn{
-  width: 34px;
-  height: 30px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 900;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  color: #eee;
-  cursor: pointer;
-  position: relative;
-}
-.kwWDActionBtn:hover{ background: rgba(255,255,255,0.14); }
-
-#kwWDFooter{
-  flex: 0 0 auto;
-  padding: 8px 10px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.78);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  user-select: none;
-}
-#kwWDFooterLeft, #kwWDFooterRight{
-  display: inline-flex;
-  gap: 12px;
-  align-items: center;
-  white-space: nowrap;
-}
-.kwWDKey{
-  font-weight: 900;
-  color: rgba(255,255,255,0.9);
-}
-.kwWDMinimized #kwWDFooter{ display: none; }
 .kwWDTab{
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
@@ -893,38 +832,6 @@ async function loadManifestAndTools() {
       prefs.lastOpenHeight = prefs.height;
     }
 
-
-  function dispatchKeyCombo({ key, code, ctrl, shift }) {
-    const evDown = new KeyboardEvent("keydown", {
-      key,
-      code,
-      bubbles: true,
-      cancelable: true,
-      ctrlKey: !!ctrl,
-      shiftKey: !!shift
-    });
-    const evUp = new KeyboardEvent("keyup", {
-      key,
-      code,
-      bubbles: true,
-      cancelable: true,
-      ctrlKey: !!ctrl,
-      shiftKey: !!shift
-    });
-    document.dispatchEvent(evDown);
-    window.dispatchEvent(evDown);
-    document.dispatchEvent(evUp);
-    window.dispatchEvent(evUp);
-  }
-
-  function triggerUndo() {
-    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: false });
-  }
-
-  function triggerRedo() {
-    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: true });
-  }
-
     savePrefs(prefs);
     enforceSizeConstraints();
     applyMinimizedState();
@@ -1024,33 +931,7 @@ async function loadManifestAndTools() {
     window.addEventListener("pointerup", up);
   }
 
-  
-  function isEditableTarget(t) {
-    if (!t) return false;
-    const tag = (t.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea" || tag === "select") return true;
-    if (t.isContentEditable) return true;
-    return false;
-  }
-
-  function installDockHotkey() {
-    document.addEventListener("keydown", (e) => {
-      if (e.repeat) return;
-      if (e.ctrlKey || e.altKey || e.metaKey) return;
-      if (isEditableTarget(e.target)) return;
-      if (e.code !== "Backquote") return;
-
-      e.preventDefault();
-
-      if (prefs.closed) {
-        expandFromCompact();
-      } else {
-        closeDock();
-      }
-    }, true);
-  }
-
-function buildUI() {
+  function buildUI() {
     if (state.uiReady) return;
     state.uiReady = true;
 
@@ -1064,24 +945,14 @@ function buildUI() {
           el("button", { class: "kwWDBtn", type: "button", text: "×", title: "Close", "data-tooltip": "Closes to small icon", onclick: closeDock })
         ])
       ]),
-      el("div", { id: "kwWDTabs" }, [
-        el("div", { id: "kwWDTabsLeft" }),
-        el("div", { id: "kwWDTabsRight" }, [
-          el("button", { id: "kwWDUndoBtn", class: "kwWDActionBtn", type: "button", title: "Undo (Ctrl+Z)", text: "↶", onclick: triggerUndo }),
-          el("button", { id: "kwWDRedoBtn", class: "kwWDActionBtn", type: "button", title: "Redo (Ctrl+Shift+Z)", text: "↷", onclick: triggerRedo })
-        ])
-      ]),
+      el("div", { id: "kwWDTabs" }),
       el("div", { id: "kwWDBody" }),
       el("div", { id: "kwWDResizeHandleBottom", onpointerdown: startResizeBottom }),
       el("div", { id: "kwWDResizeHandleCorner", onpointerdown: startResizeCorner })
     ]);
 
     state.header = state.root.querySelector("#kwWDHeader");
-    state.tabsBar = state.root.querySelector("#kwWDTabsLeft");
-    state.tabsBarRight = state.root.querySelector("#kwWDTabsRight");
-    state.footer = state.root.querySelector("#kwWDFooter");
-    state.undoBtn = state.root.querySelector("#kwWDUndoBtn");
-    state.redoBtn = state.root.querySelector("#kwWDRedoBtn");
+    state.tabsBar = state.root.querySelector("#kwWDTabs");
     state.body = state.root.querySelector("#kwWDBody");
     state.resizeBottom = state.root.querySelector("#kwWDResizeHandleBottom");
     state.resizeCorner = state.root.querySelector("#kwWDResizeHandleCorner");
@@ -1136,8 +1007,7 @@ function buildUI() {
   UW.WitchDock.ensureDock = buildUI;
 
   buildUI();
-    installDockHotkey();
-loadManifestAndTools();
+  loadManifestAndTools();
 })();
 
 
