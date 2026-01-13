@@ -641,7 +641,7 @@
       })
     );
     row2.appendChild(
-      checkbox('Sync Hands/Fingers', state.arms.syncHands, function (v) {
+      checkbox('Hands', state.arms.syncHands, function (v) {
         state.arms.syncHands = v;
         saveState();
       })
@@ -770,8 +770,8 @@
     function updateLabels() {
       const from = state.breast.from === 'L' ? 'L' : 'R';
       const to = from === 'L' ? 'R' : 'L';
-      leftLabel.textContent = from === 'L' ? 'Left Breast' : 'Right Breast';
-      rightLabel.textContent = to === 'L' ? 'Left Breast' : 'Right Breast';
+      leftLabel.textContent = from === 'L' ? 'Left' : 'Right';
+      rightLabel.textContent = to === 'L' ? 'Left' : 'Right';
       copyBtn.textContent = to === 'L' ? 'Copy to Left Breast' : 'Copy to Right Breast';
     }
 
@@ -863,8 +863,8 @@
     function updateLabels() {
       const from = state.butt.from === 'L' ? 'L' : 'R';
       const to = from === 'L' ? 'R' : 'L';
-      leftLabel.textContent = from === 'L' ? 'Left Cheek' : 'Right Cheek';
-      rightLabel.textContent = to === 'L' ? 'Left Cheek' : 'Right Cheek';
+      leftLabel.textContent = from === 'L' ? 'Left' : 'Right';
+      rightLabel.textContent = to === 'L' ? 'Left' : 'Right';
       copyBtn.textContent = to === 'L' ? 'Copy to Left Cheek' : 'Copy to Right Cheek';
     }
 
