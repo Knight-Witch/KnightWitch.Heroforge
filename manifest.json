@@ -1,1 +1,12 @@
-// Placeholder
+{
+  "version": 1,
+  "tools": [
+    {
+      "id": "body-editor",
+      "title": "Body Editor",
+      "tab": "Body",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
+      "enabledByDefault": true
+    }
+  ]
+}
