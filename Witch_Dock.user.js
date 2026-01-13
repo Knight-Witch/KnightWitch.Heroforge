@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock
 // @namespace    KnightWitch
-// @version      0.2.3
+// @version      0.2.4
 // @description  Core dock + tab system for Knight Witch tools
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -1043,7 +1043,7 @@ async function loadManifestAndTools() {
       e.preventDefault();
 
       if (prefs.closed) {
-        restoreFromCompact();
+        expandFromCompact();
       } else {
         closeDock();
       }
@@ -1139,4 +1139,5 @@ function buildUI() {
     installDockHotkey();
 loadManifestAndTools();
 })();
+
 
