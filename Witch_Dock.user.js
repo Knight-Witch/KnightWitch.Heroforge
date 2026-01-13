@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Witch Dock
 // @namespace    KnightWitch
-// @version      0.1.0-wd1
+// @version      0.2.0-wd1
 // @description  Core dock + tab system for Knight Witch tools
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_Dock.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_Dock.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
