@@ -11,6 +11,11 @@
 // @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
 // ==/UserScript==
 
+// BASELINE SNAPSHOT
+// Witch Dock + Body Editor integration
+// Verified working: 01/12/2026
+// Do not modify this version
+
 (function () {
   'use strict';
 
