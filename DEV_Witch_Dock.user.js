@@ -6,8 +6,8 @@
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/Witch_Dock.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/Witch_Dock.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/DEV_Witch_Dock.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/DEV_Witch_Dock.user.js
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
