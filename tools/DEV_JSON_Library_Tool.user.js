@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         JSON Library Tool
+// @name         JSON Library Tool (GPT DEV ONLY)
 // @namespace    hf-bulk-backup
 // @version      0.4.3
-// @description  Backup your entire Hero Forge library locally with one click. Keeps projects organized by your save folders. Depending on library size, this may take a while; let it finish. Progress is shown in the dock. Download file size is usually pretty small.
+// @description  FOR DEVELOPMENT ONLY
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
 // @grant        none
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/JSON_Library_Tool.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/JSON_Library_Tool.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/DEV_JSON_Library_Tool.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/DEV_JSON_Library_Tool.user.js
 // ==/UserScript==
 
 (function () {
