@@ -1,17 +1,18 @@
 // ==UserScript==
-// @name         Witch Dock v6
+// @name         Witch Dock - GPT DEV FILE
 // @namespace    KnightWitch
-// @version      0.6.0
-// @description  Core dock + tab system for Knight Witch tools
+// @version      0.1.0
+// @description  Witch Dock DEVELOPMENT FILE ONLY
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/Witch_Dock.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/GPT_DEV/Witch_Dock.user.js
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
 // @connect      raw.githubusercontent.com
 // ==/UserScript==
@@ -100,7 +101,12 @@ async function loadManifestAndTools() {
   };
 
   const state = {
-    uiReady: false,
+    
+    boneBar: null,
+    boneText: null,
+    boneCopyBtn: null,
+    lastBoneName: "",
+uiReady: false,
     root: null,
     header: null,
     tabsBar: null,
@@ -117,8 +123,105 @@ async function loadManifestAndTools() {
     activeTab: null,
     isResizing: false,
     resizeStart: null,
-    minWidth: 260
+    minWidth: 260,
+    draggingTool: null,
+    draggingSectionId: null,
+    draggingSectionTool: null
   };
+
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function getUndoQueue() {
+    const CK = UW.CK;
+    const u = CK && CK.UndoQueue ? CK.UndoQueue : null;
+    if (!u || !Array.isArray(u.queue) || typeof u.currentIndex !== "number") return null;
+    return u;
+  }
+
+  function tryLoadCharacter(json) {
+    const CK = UW.CK;
+    if (!CK || typeof CK.tryLoadCharacter !== "function") return false;
+    try {
+      CK.tryLoadCharacter(deepClone(json), "Witch Dock: invalid character data", function () {});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function updateDockUndoRedoButtons() {
+    if (!state.uiReady || !state.undoBtn || !state.redoBtn) return;
+    const u = getUndoQueue();
+    const canUndo = !!u && u.currentIndex > 0;
+    const canRedo = !!u && u.currentIndex < u.queue.length - 1;
+    state.undoBtn.disabled = !canUndo;
+    state.redoBtn.disabled = !canRedo;
+  }
+
+  function triggerUndo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.undo === "function") {
+      try {
+        u.undo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex <= 0) return;
+    u.currentIndex -= 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function triggerRedo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.redo === "function") {
+      try {
+        u.redo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex >= u.queue.length - 1) return;
+    u.currentIndex += 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function hookUndoQueueForDockButtons() {
+    const u = getUndoQueue();
+    if (!u) return;
+
+    function wrap(obj, key) {
+      const fn = obj && typeof obj[key] === "function" ? obj[key] : null;
+      if (!fn || fn.__kwDockWrapped) return;
+      obj[key] = function () {
+        const r = fn.apply(this, arguments);
+        try {
+          updateDockUndoRedoButtons();
+        } catch (e) {}
+        return r;
+      };
+      obj[key].__kwDockWrapped = true;
+    }
+
+    wrap(u, "push");
+    wrap(u, "enqueue");
+    wrap(u, "add");
+    wrap(u, "record");
+    wrap(u, "undo");
+    wrap(u, "redo");
+  }
 
   function loadPrefs() {
     try {
@@ -137,6 +240,101 @@ async function loadManifestAndTools() {
       GM_setValue(STORE_KEY, JSON.stringify(p));
     } catch {}
   }
+
+  function copyToClipboard(text) {
+    if (!text) return;
+    try {
+      if (typeof GM_setClipboard === "function") {
+        GM_setClipboard(text);
+        return;
+      }
+    } catch (e) {}
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+        return;
+      }
+    } catch (e) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      ta.style.top = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    } catch (e) {}
+  }
+
+  function isProbableBoneName(name) {
+    if (!name || typeof name !== "string") return false;
+    if (!name.includes("_bind_jnt")) return false;
+    const bad = ["Kitbash_Bone_Container", "Kitbash Helpers", "KitbashHelpers", "Kitbash"];
+    if (bad.some((b) => name.includes(b))) return false;
+    return true;
+  }
+
+  function setLastBoneName(name) {
+    if (!state.boneBar || !state.boneText || !state.boneCopyBtn) return;
+    if (!name || typeof name !== "string") return;
+
+    state.lastBoneName = name;
+    state.boneText.textContent = name;
+    state.boneText.title = name;
+    state.boneCopyBtn.disabled = false;
+
+    // show only when dock is expanded (not minimized/collapsed)
+    state.boneBar.style.display = prefs.minimized ? "none" : "flex";
+  }
+
+  function ensureBoneBarVisibility() {
+    if (!state.boneBar) return;
+    if (prefs.minimized) {
+      state.boneBar.style.display = "none";
+      return;
+    }
+    // Only show if we have something to show
+    state.boneBar.style.display = state.lastBoneName ? "flex" : "none";
+  }
+
+  function getHFSelectionName() {
+    try {
+      const HF = window.HF;
+      const rig = HF?.summonCircle?.parent?.parent?.parent?.children?.[5];
+      const name = rig?.object?.name;
+      return name;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function installBoneSelectionWatcher() {
+    let lastSeen = null;
+
+    const handler = (ev) => {
+      if (!state.root) return;
+      if (!prefs || prefs.minimized) return;
+
+      // Ignore clicks inside Witch Dock UI itself.
+      if (ev && ev.target && state.root.contains(ev.target)) return;
+
+      // Let HF update its selection state.
+      setTimeout(() => {
+        const name = getHFSelectionName();
+        if (!isProbableBoneName(name)) return;
+        if (name === lastSeen) return;
+        lastSeen = name;
+        setLastBoneName(name);
+      }, 0);
+    };
+
+    window.addEventListener("pointerup", handler, true);
+    window.addEventListener("click", handler, true);
+  }
+
 
   const prefs = loadPrefs();
 
@@ -191,7 +389,7 @@ async function loadManifestAndTools() {
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
-  cursor: pointer;
+  cursor: default;
   position: relative;
 }
 .kwWDBtn:hover{
@@ -232,19 +430,99 @@ async function loadManifestAndTools() {
 
 #kwWDTabs{
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   padding: 6px 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
 }
+#kwWDTabsLeft{
+  flex: 1 1 auto;
+  display: flex;
+  gap: 6px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+#kwWDTabsLeft::-webkit-scrollbar{ height: 8px; }
+#kwWDTabsLeft::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,0.18);
+  border-radius: 10px;
+}
+#kwWDTabsRight{
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.kwWDActionBtn{
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  cursor: default;
+  position: relative;
+}
+.kwWDActionBtn:hover{ background: rgba(255,255,255,0.14); }
+
+.kwWDMinimized #kwWDFooter{ display: none; }
+
+  #kwWDBoneNameBar{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 8px 2px 8px;
+    font-size:11px;
+    font-weight:400;
+    color:rgba(255,255,255,0.78);
+    user-select:text;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #kwWDBoneNameText{
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #kwWDBoneCopyBtn{
+    flex:0 0 auto;
+    width:22px;
+    height:18px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.05);
+    color:rgba(255,255,255,0.86);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  #kwWDBoneCopyBtn:hover{
+    background:rgba(255,255,255,0.09);
+    border-color:rgba(255,255,255,0.22);
+  }
+  #kwWDBoneCopyBtn[disabled]{
+    opacity:0.45;
+    cursor:default;
+  }
+  .kwWDMinimized #kwWDBoneNameBar{ display:none; }
 .kwWDTab{
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
   border-radius: 10px;
   padding: 5px 10px;
-  cursor: pointer;
+  cursor: default;
   font-weight: 700;
 }
 .kwWDTab[aria-selected="true"]{
@@ -255,8 +533,26 @@ async function loadManifestAndTools() {
   overflow: auto;
   padding: 8px;
 }
+#kwWDFooter{
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.65);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
 .kwWDPanel{
   display: none;
+}
+.kwWDToolList{
+  display: flex;
+  flex-direction: column;
 }
 .kwWDPanel[aria-hidden="false"]{
   display: block;
@@ -323,7 +619,7 @@ async function loadManifestAndTools() {
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
-  cursor: pointer;
+  cursor: default;
 }
 #kwWDCompactExpand:hover{ background: rgba(255,255,255,0.14); }
 
@@ -339,11 +635,15 @@ async function loadManifestAndTools() {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
   background: rgba(255,255,255,0.03);
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+.kwWDSectionHeader:active{ cursor: grabbing; }
+.kwWDSection.dragging{ opacity: 0.65; }
+.kwWDSection.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDSection.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
 .kwWDSectionHeader:hover{ background: rgba(255,255,255,0.06); }
 .kwWDSectionHeaderBox{
   width: 16px;
@@ -354,10 +654,22 @@ async function loadManifestAndTools() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  line-height: 1;
   opacity: 0.95;
 }
+.kwWDSectionHeaderBox svg{
+  display: block;
+}
+
+.kwWDSectionHeaderBox svg{
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: currentColor;
+  color: rgba(255,255,255,0.90);
+}
+
+.kwWDDragHandle{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:18px;opacity:0.75;cursor:grab;user-select:none;margin-left:auto;}
+.kwWDSectionHeader.dragging .kwWDDragHandle{cursor:grabbing;opacity:0.95;}
 .kwWDSectionHeaderName{
   font-weight: 800;
   font-size: 13px;
@@ -370,6 +682,36 @@ async function loadManifestAndTools() {
   gap: 10px;
 }
 .kwWDSection[data-collapsed="1"] .kwWDSectionBody{ display: none; }
+.kwWDTool{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.kwWDToolHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  user-select: none;
+  cursor: default;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.kwWDToolHeader:active{ cursor: grabbing; }
+.kwWDToolTitle{
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+.kwWDToolBody{
+  padding: 0;
+}
+.kwWDTool.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDTool.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
+.kwWDToolList.drag-over-empty{ box-shadow: inset 0 0 0 2px rgba(170,85,255,0.55); border-radius: 10px; }
     `);
   }
 
@@ -474,7 +816,9 @@ async function loadManifestAndTools() {
     } else {
       state.root.style.height = `${prefs.height}px`;
     }
-  }
+  
+    ensureBoneBarVisibility();
+}
 
   function showClosedCompact() {
     if (!state.root || !state.compact) return;
@@ -561,6 +905,9 @@ async function loadManifestAndTools() {
 
     state.minWidth = computeMinDockWidthForActiveTab();
     enforceSizeConstraints();
+
+    hookUndoQueueForDockButtons();
+    updateDockUndoRedoButtons();
   }
 
   function ensureTab(name) {
@@ -568,13 +915,15 @@ async function loadManifestAndTools() {
 
     const btn = el("button", { class: "kwWDTab", type: "button", text: name, "aria-selected": "false" });
     const panel = el("div", { class: "kwWDPanel", "aria-hidden": "true" });
+    const list = el("div", { class: "kwWDToolList" });
+    panel.appendChild(list);
 
     btn.addEventListener("click", () => setActiveTab(name));
 
     state.tabsBar.appendChild(btn);
     state.body.appendChild(panel);
 
-    const tab = { name, btn, panel };
+    const tab = { name, btn, panel, list };
     state.tabs.set(name, tab);
 
     if (!prefs.activeTab) prefs.activeTab = name;
@@ -585,7 +934,65 @@ async function loadManifestAndTools() {
   }
 
 
-  function toolSectionKey(toolId, sectionId) {
+
+function makeIconBase() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("width", "12");
+  svg.setAttribute("height", "12");
+  return svg;
+}
+
+function makeIconMinus() {
+  const svg = makeIconBase();
+  const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  l.setAttribute("x1", "3");
+  l.setAttribute("y1", "8");
+  l.setAttribute("x2", "13");
+  l.setAttribute("y2", "8");
+  l.setAttribute("stroke", "currentColor");
+  l.setAttribute("stroke-width", "2");
+  l.setAttribute("stroke-linecap", "round");
+  l.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(l);
+  return svg;
+}
+
+function makeIconPlus() {
+  const svg = makeIconBase();
+  const h = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  h.setAttribute("x1", "3");
+  h.setAttribute("y1", "8");
+  h.setAttribute("x2", "13");
+  h.setAttribute("y2", "8");
+  h.setAttribute("stroke", "currentColor");
+  h.setAttribute("stroke-width", "2");
+  h.setAttribute("stroke-linecap", "round");
+  h.setAttribute("vector-effect", "non-scaling-stroke");
+  const v = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  v.setAttribute("x1", "8");
+  v.setAttribute("y1", "3");
+  v.setAttribute("x2", "8");
+  v.setAttribute("y2", "13");
+  v.setAttribute("stroke", "currentColor");
+  v.setAttribute("stroke-width", "2");
+  v.setAttribute("stroke-linecap", "round");
+  v.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(h);
+  svg.appendChild(v);
+  return svg;
+}
+function setCollapseIcon(boxEl, collapsed) {
+  while (boxEl.firstChild) boxEl.removeChild(boxEl.firstChild);
+  boxEl.appendChild(collapsed ? makeIconPlus() : makeIconMinus());
+}
+
+function slugify(str) {
+  return String(str || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function toolSectionKey(toolId, sectionId) {
     return `kw.witchDock.ui.${toolId}.${sectionId}.collapsed`;
   }
 
@@ -606,28 +1013,31 @@ async function loadManifestAndTools() {
   }
 
   function createSection(toolId, opts) {
-    const sectionId = opts && typeof opts.id === "string" ? opts.id : "";
+    let sectionId = opts && typeof opts.id === "string" ? opts.id : "";
     const title = opts && typeof opts.title === "string" ? opts.title : "";
+    if (!sectionId) sectionId = slugify(title) || "section";
     const defaultCollapsed = !!(opts && opts.defaultCollapsed);
 
-    const root = el("div", { class: "kwWDSection", "data-collapsed": "0" });
+    const root = el("div", { class: "kwWDSection", "data-collapsed": "0", "data-section-id": sectionId });
+    const headerBox = el("div", { class: "kwWDSectionHeaderBox" });
     const header = el("div", { class: "kwWDSectionHeader" }, [
-      el("div", { class: "kwWDSectionHeaderBox", text: "–" }),
+      headerBox,
       el("div", { class: "kwWDSectionHeaderName", text: title })
     ]);
     const body = el("div", { class: "kwWDSectionBody" });
 
-    const box = header.querySelector(".kwWDSectionHeaderBox");
+    const box = headerBox;
 
     function apply(collapsed) {
       root.setAttribute("data-collapsed", collapsed ? "1" : "0");
-      if (box) box.textContent = collapsed ? "+" : "–";
+      if (box) setCollapseIcon(box, collapsed);
     }
 
     const initial = getSectionCollapsed(toolId, sectionId, defaultCollapsed);
     apply(initial);
 
-    header.addEventListener("click", () => {
+    header.addEventListener("click", (e) => {
+      if (header.__kwDraggedRecently) return;
       const now = root.getAttribute("data-collapsed") !== "1";
       apply(now);
       if (sectionId) setSectionCollapsed(toolId, sectionId, now);
@@ -649,30 +1059,243 @@ async function loadManifestAndTools() {
       }
     };
   }
-  function mountTool(def) {
-    const tabName = def.tab || "Misc Tools";
-    const tab = ensureTab(tabName);
+const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";
 
-    if (state.toolsById.has(def.id)) {
-      const existing = state.toolsById.get(def.id);
-      if (existing && existing.container && existing.container.parentNode) existing.container.remove();
-      state.toolsById.delete(def.id);
-    }
+function sectionOrderKey(toolId) {
+  return SECTION_ORDER_PREFIX + toolId;
+}
 
-    const container = document.createElement("div");
-    tab.panel.appendChild(container);
-
-    state.toolsById.set(def.id, { def, container, tab: tabName });
-
-    try {
-      def.render(container, buildToolApi(def));
-    } catch {
-      container.textContent = "Tool failed to render.";
-    }
-
-    state.minWidth = computeMinDockWidthForActiveTab();
-    enforceSizeConstraints();
+function getSectionOrder(toolId) {
+  try {
+    const raw = GM_getValue(sectionOrderKey(toolId), null);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
   }
+}
+
+function setSectionOrder(toolId, order) {
+  try {
+    GM_setValue(sectionOrderKey(toolId), JSON.stringify(order));
+  } catch {}
+}
+
+function saveSectionOrderFromDom(toolId, container) {
+  if (!container) return;
+  const ids = Array.from(container.children)
+    .filter((n) => n && n.classList && n.classList.contains("kwWDSection"))
+    .map((n) => n.getAttribute("data-section-id"))
+    .filter(Boolean);
+  if (ids.length) setSectionOrder(toolId, ids);
+}
+
+function applySectionOrder(toolId, container) {
+  if (!container) return;
+  const sections = Array.from(container.children).filter((n) => n.classList && n.classList.contains("kwWDSection"));
+  if (!sections.length) return;
+
+  const saved = getSectionOrder(toolId);
+  if (!saved.length) return;
+
+  const map = new Map();
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (id) map.set(id, s);
+  }
+
+  const ordered = [];
+  for (const id of saved) {
+    const el = map.get(id);
+    if (el) ordered.push(el);
+  }
+
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (!id || !saved.includes(id)) ordered.push(s);
+  }
+
+  for (const el of ordered) container.appendChild(el);
+}
+
+function clearSectionDragIndicators(container) {
+  if (!container) return;
+  for (const s of Array.from(container.querySelectorAll(":scope > .kwWDSection"))) {
+    if (s.classList) {
+      s.classList.remove("drag-over-top");
+      s.classList.remove("drag-over-bottom");
+      s.classList.remove("dragging");
+    }
+  }
+}
+
+function getSectionAtY(container, y) {
+  const sections = Array.from(container.children).filter((n) => n && n.classList && n.classList.contains("kwWDSection"));
+  for (const s of sections) {
+    const r = s.getBoundingClientRect();
+    if (y >= r.top && y <= r.bottom) return s;
+  }
+  return null;
+}
+
+function startSectionPointerDrag(toolId, sectionRoot, header, container, e) {
+  if (!e.isPrimary) return;
+  const sectionId = sectionRoot.getAttribute("data-section-id");
+  if (!sectionId) return;
+
+  const pointerId = e.pointerId;
+  try { header.setPointerCapture(pointerId); } catch {}
+  const startX = e.clientX;
+  const startY = e.clientY;
+
+  let dragging = false;
+  let dragEl = null;
+
+  function onMove(ev) {
+    if (ev.pointerId !== pointerId) return;
+
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+
+    if (!dragging) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      dragging = true;
+
+      state.draggingSectionId = sectionId;
+      state.draggingSectionTool = toolId;
+
+      sectionRoot.classList.add("dragging");
+
+      header.__kwDraggedRecently = true;
+      setTimeout(() => { header.__kwDraggedRecently = false; }, 0);
+    }
+
+    ev.preventDefault();
+
+    clearSectionDragIndicators(container);
+
+    const target = getSectionAtY(container, ev.clientY);
+    if (!target || target === sectionRoot) return;
+
+    const r = target.getBoundingClientRect();
+    const before = ev.clientY < r.top + r.height / 2;
+
+    target.classList.add(before ? "drag-over-top" : "drag-over-bottom");
+  }
+
+  function onUp(ev) {
+    if (ev.pointerId !== pointerId) return;
+
+    window.removeEventListener("pointermove", onMove, true);
+    window.removeEventListener("pointerup", onUp, true);
+    window.removeEventListener("pointercancel", onUp, true);
+
+    if (!dragging) return;
+
+    const dropTarget = getSectionAtY(container, ev.clientY);
+    if (dropTarget && dropTarget !== sectionRoot) {
+      const r = dropTarget.getBoundingClientRect();
+      const before = ev.clientY < r.top + r.height / 2;
+      if (before) container.insertBefore(sectionRoot, dropTarget);
+      else container.insertBefore(sectionRoot, dropTarget.nextSibling);
+      saveSectionOrderFromDom(toolId, container);
+    }
+
+    clearSectionDragIndicators(container);
+
+    sectionRoot.classList.remove("dragging");
+    state.draggingSectionId = null;
+    state.draggingSectionTool = null;
+  }
+
+  window.addEventListener("pointermove", onMove, true);
+  window.addEventListener("pointerup", onUp, true);
+  window.addEventListener("pointercancel", onUp, true);
+}
+
+function bindSectionPointerDrag(toolId, sectionRoot, container) {
+  const header = sectionRoot.querySelector(".kwWDSectionHeader");
+  if (!header) return;
+  const handle = header.querySelector(".kwWDDragHandle") || header;
+  if (handle.__kwPointerDragBound) return;
+  handle.__kwPointerDragBound = true;
+
+  handle.style.touchAction = "none";
+
+  handle.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      startSectionPointerDrag(toolId, sectionRoot, handle, container, e);
+    },
+    true
+  );
+}
+
+function ensureSectionDragHandle(sectionRoot) {
+  const header = sectionRoot.querySelector(".kwWDSectionHeader");
+  if (!header) return;
+  if (header.querySelector(".kwWDDragHandle")) return;
+  const h = document.createElement("span");
+  h.className = "kwWDDragHandle";
+  h.textContent = "≡";
+  header.appendChild(h);
+}
+
+function finalizeToolSections(toolId, toolContainer) {
+  if (!toolContainer) return;
+
+  const sections = Array.from(toolContainer.querySelectorAll(".kwWDSection"));
+  if (!sections.length) return;
+
+  const parents = new Map();
+  for (const s of sections) {
+    const p = s.parentElement;
+    if (!p) continue;
+    if (!parents.has(p)) parents.set(p, []);
+    parents.get(p).push(s);
+  }
+
+  for (const [parent, secs] of parents.entries()) {
+    applySectionOrder(toolId, parent);
+    for (const sec of secs) {
+      ensureSectionDragHandle(sec);
+      bindSectionPointerDrag(toolId, sec, parent);
+    }
+  }
+}
+
+function mountTool(def) {
+  const tabName = def.tab || "Misc Tools";
+  const tab = ensureTab(tabName);
+
+  if (state.toolsById.has(def.id)) {
+    const existing = state.toolsById.get(def.id);
+    if (existing && existing.container && existing.container.parentNode) existing.container.remove();
+    state.toolsById.delete(def.id);
+  }
+
+  const container = document.createElement("div");
+  container.setAttribute("data-tool-id", def.id);
+
+  tab.list.appendChild(container);
+
+  state.toolsById.set(def.id, { def, container, tab: tabName });
+
+  try {
+    def.render(container, buildToolApi(def));
+  } catch {
+    container.textContent = "Tool failed to render.";
+  }
+
+  finalizeToolSections(def.id, container);
+
+  state.minWidth = computeMinDockWidthForActiveTab();
+  enforceSizeConstraints();
+}
 
   function registerTool(def) {
     if (!def || typeof def !== "object") return;
@@ -832,6 +1455,38 @@ async function loadManifestAndTools() {
       prefs.lastOpenHeight = prefs.height;
     }
 
+
+  function dispatchKeyCombo({ key, code, ctrl, shift }) {
+    const evDown = new KeyboardEvent("keydown", {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: !!ctrl,
+      shiftKey: !!shift
+    });
+    const evUp = new KeyboardEvent("keyup", {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: !!ctrl,
+      shiftKey: !!shift
+    });
+    document.dispatchEvent(evDown);
+    window.dispatchEvent(evDown);
+    document.dispatchEvent(evUp);
+    window.dispatchEvent(evUp);
+  }
+
+  function triggerUndo() {
+    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: false });
+  }
+
+  function triggerRedo() {
+    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: true });
+  }
+
     savePrefs(prefs);
     enforceSizeConstraints();
     applyMinimizedState();
@@ -931,7 +1586,33 @@ async function loadManifestAndTools() {
     window.addEventListener("pointerup", up);
   }
 
-  function buildUI() {
+
+  function isEditableTarget(t) {
+    if (!t) return false;
+    const tag = (t.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    if (t.isContentEditable) return true;
+    return false;
+  }
+
+  function installDockHotkey() {
+    document.addEventListener("keydown", (e) => {
+      if (e.repeat) return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (isEditableTarget(e.target)) return;
+      if (e.code !== "Backquote") return;
+
+      e.preventDefault();
+
+      if (prefs.closed) {
+        expandFromCompact();
+      } else {
+        closeDock();
+      }
+    }, true);
+  }
+
+function buildUI() {
     if (state.uiReady) return;
     state.uiReady = true;
 
@@ -945,14 +1626,39 @@ async function loadManifestAndTools() {
           el("button", { class: "kwWDBtn", type: "button", text: "×", title: "Close", "data-tooltip": "Closes to small icon", onclick: closeDock })
         ])
       ]),
-      el("div", { id: "kwWDTabs" }),
+      el("div", { id: "kwWDTabs" }, [
+        el("div", { id: "kwWDTabsLeft" }),
+        el("div", { id: "kwWDTabsRight" }, [
+          el("button", { id: "kwWDUndoBtn", class: "kwWDActionBtn", type: "button", title: "Undo (Ctrl+Z)", text: "↶", onclick: triggerUndo }),
+          el("button", { id: "kwWDRedoBtn", class: "kwWDActionBtn", type: "button", title: "Redo (Ctrl+Shift+Z)", text: "↷", onclick: triggerRedo })
+        ])
+      ]),
       el("div", { id: "kwWDBody" }),
+      el("div", { id: "kwWDBoneNameBar" }, [
+        el("span", { id: "kwWDBoneNameText", text: "" }),
+        el("button", { id: "kwWDBoneCopyBtn", class: "kwWDIconBtn", type: "button", title: "Copy bone name", text: "⧉" })
+      ]),
+      el("div", { id: "kwWDFooter", text: "Dock Hotkey: `~ (Grave Key)  |  Undo: Ctrl+Z  |  Redo: Ctrl+Shift+Z" }),
       el("div", { id: "kwWDResizeHandleBottom", onpointerdown: startResizeBottom }),
       el("div", { id: "kwWDResizeHandleCorner", onpointerdown: startResizeCorner })
     ]);
 
     state.header = state.root.querySelector("#kwWDHeader");
-    state.tabsBar = state.root.querySelector("#kwWDTabs");
+    state.tabsBar = state.root.querySelector("#kwWDTabsLeft");
+    state.tabsBarRight = state.root.querySelector("#kwWDTabsRight");
+    state.footer = state.root.querySelector("#kwWDFooter");
+state.boneBar = state.root.querySelector("#kwWDBoneNameBar");
+  state.boneText = state.root.querySelector("#kwWDBoneNameText");
+  state.boneCopyBtn = state.root.querySelector("#kwWDBoneCopyBtn");
+  if (state.boneCopyBtn) {
+    state.boneCopyBtn.disabled = true;
+    state.boneCopyBtn.addEventListener("click", () => {
+      if (!state.lastBoneName) return;
+      copyToClipboard(state.lastBoneName);
+    });
+  }
+    state.undoBtn = state.root.querySelector("#kwWDUndoBtn");
+    state.redoBtn = state.root.querySelector("#kwWDRedoBtn");
     state.body = state.root.querySelector("#kwWDBody");
     state.resizeBottom = state.root.querySelector("#kwWDResizeHandleBottom");
     state.resizeCorner = state.root.querySelector("#kwWDResizeHandleCorner");
@@ -1007,7 +1713,10 @@ async function loadManifestAndTools() {
   UW.WitchDock.ensureDock = buildUI;
 
   buildUI();
-  loadManifestAndTools();
+    installBoneSelectionWatcher();
+    installDockHotkey();
+loadManifestAndTools();
 })();
+
 
 
