@@ -2,7 +2,7 @@
 // @name         Witch Dock - GPT DEV FILE
 // @namespace    KnightWitch
 // @version      0.1.0
-// @description  Witch Dock DEVELOPMENT FILE ONLY
+// @description  Witch Dock DEVELOPMENT FILE ONLY - PREPARED FOR BONE DETECTION (STRUCTURAL INTEGRATION AT UI & STATE WIRING LEVEL)
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
@@ -242,122 +242,56 @@ uiReady: false,
   }
 
   function copyToClipboard(text) {
-    if (!text) return;
     try {
       if (typeof GM_setClipboard === "function") {
-        GM_setClipboard(text);
-        return;
+        GM_setClipboard(String(text), "text");
+        toast("Copied bone name");
+        return true;
       }
-    } catch (e) {}
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text);
-        return;
-      }
-    } catch (e) {}
+    } catch {}
+
+    const s = String(text ?? "");
+    if (!s) return false;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(s).then(
+        () => toast("Copied bone name"),
+        () => {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = s;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.top = "-9999px";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            toast("Copied bone name");
+          } catch {}
+        }
+      );
+      return true;
+    }
+
     try {
       const ta = document.createElement("textarea");
-      ta.value = text;
+      ta.value = s;
       ta.style.position = "fixed";
       ta.style.left = "-9999px";
       ta.style.top = "-9999px";
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
-      document.execCommand("copy");
-      ta.remove();
-    } catch (e) {}
-  }
-
-  function isProbableBoneName(name) {
-    if (!name || typeof name !== "string") return false;
-    if (!name.includes("_bind_jnt")) return false;
-    const bad = ["Kitbash_Bone_Container", "Kitbash Helpers", "KitbashHelpers", "Kitbash"];
-    if (bad.some((b) => name.includes(b))) return false;
-    return true;
-  }
-
-  function setLastBoneName(name) {
-    if (!state.boneBar || !state.boneText || !state.boneCopyBtn) return;
-    if (!name || typeof name !== "string") return;
-
-    state.lastBoneName = name;
-    state.boneText.textContent = name;
-    state.boneText.title = name;
-    state.boneCopyBtn.disabled = false;
-
-    // show only when dock is expanded (not minimized/collapsed)
-    state.boneBar.style.display = prefs.minimized ? "none" : "flex";
-  }
-
-  function ensureBoneBarVisibility() {
-    if (!state.boneBar) return;
-    if (prefs.minimized) {
-      state.boneBar.style.display = "none";
-      return;
-    }
-    // Only show if we have something to show
-    state.boneBar.style.display = state.lastBoneName ? "flex" : "none";
-  }
-
-  function getHFSelectionName() {
-    try {
-      const HF = window.HF;
-      const rig = HF?.summonCircle?.parent?.parent?.parent?.children?.[5];
-      const name = rig?.object?.name;
-      return name;
-    } catch (e) {
-      return null;
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (ok) toast("Copied bone name");
+      return ok;
+    } catch {
+      return false;
     }
   }
-
-  function installBoneSelectionWatcher() {
-    let lastSeen = null;
-
-    const handler = (ev) => {
-      if (!state.root) return;
-      if (!prefs || prefs.minimized) return;
-
-      // Ignore clicks inside Witch Dock UI itself.
-      if (ev && ev.target && state.root.contains(ev.target)) return;
-
-      // Let HF update its selection state.
-      setTimeout(() => {
-        const name = getHFSelectionName();
-        if (!isProbableBoneName(name)) return;
-        if (name === lastSeen) return;
-        lastSeen = name;
-        setLastBoneName(name);
-      }, 0);
-    };
-
-    window.addEventListener("pointerup", handler, true);
-    window.addEventListener("click", handler, true);
-  }
-
-
-  const prefs = loadPrefs();
-
-  function addStyles() {
-    GM_addStyle(`
-#kwWitchDock{
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  width: 380px;
-  height: 520px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  background: rgba(20,20,22,0.92);
-  color: #eee;
-  font: 12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-  z-index: 999999;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px);
-  overflow: hidden;
-}
 #kwWitchDock *{ box-sizing: border-box; }
 #kwWDHeader{
   display: flex;
@@ -1657,6 +1591,7 @@ state.boneBar = state.root.querySelector("#kwWDBoneNameBar");
       copyToClipboard(state.lastBoneName);
     });
   }
+  setLastBoneName("");
     state.undoBtn = state.root.querySelector("#kwWDUndoBtn");
     state.redoBtn = state.root.querySelector("#kwWDRedoBtn");
     state.body = state.root.querySelector("#kwWDBody");
@@ -1707,6 +1642,7 @@ state.boneBar = state.root.querySelector("#kwWDBoneNameBar");
       enforceSizeConstraints();
     });
   }
+  setLastBoneName("");
 
   UW.WitchDock = UW.WitchDock || {};
   UW.WitchDock.registerTool = registerTool;
@@ -1717,6 +1653,7 @@ state.boneBar = state.root.querySelector("#kwWDBoneNameBar");
     installDockHotkey();
 loadManifestAndTools();
 })();
+
 
 
 
