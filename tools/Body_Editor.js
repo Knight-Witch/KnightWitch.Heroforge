@@ -96,16 +96,16 @@
       '.kwbe button{background:rgba(255,255,255,0.10);color:#e8e8e8;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:4px 8px;cursor:pointer;}' +
       '.kwbe button:hover{background:rgba(255,255,255,0.16);}' +
       '.kwbe button:disabled{opacity:0.45;cursor:not-allowed;}' +
-      '.kwbe .primary{padding:7px 10px;font-weight:700;border-radius:10px;}' +
+      '.kwbe .primary{padding:7px 10px;font-weight:700;border-radius:6px;}' +
       '.kwbe .ghost{background:rgba(255,255,255,0.06);}' +
       '.kwbe label{display:flex;align-items:center;gap:8px;user-select:none;}' +
       '.kwbe input[type="checkbox"]{transform:translateY(1px);}' +
       '.kwbe .split{display:flex;align-items:center;gap:8px;}' +
       '.kwbe .mono{font-variant-numeric:tabular-nums;opacity:0.78;font-size:11px;}' +
-      '.kwbe .iconBtn{width:34px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border-radius:10px;}' +
+      '.kwbe .iconBtn{width:34px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border-radius:6px;}' +
       '.kwbe .dirBtn{cursor:pointer;}' +
       '.kwbe .dirBtn:hover{background:rgba(255,255,255,0.20);border-color:rgba(255,255,255,0.22);}' +
-      '.kwbe .pillBtn{border-radius:10px;padding:6px 10px;opacity:0.95;}';
+      '.kwbe .pillBtn{border-radius:6px;padding:6px 10px;opacity:0.95;}';
   }
 
   function checkbox(labelText, checked, onChange) {
