@@ -203,14 +203,14 @@
 
     const dirText = document.createElement('div');
     dirText.className = 'kwBoothDirText';
-    dirText.textContent =
-      '1. Open photo booth\n' +
-      '2. Edit your scene, or if you have already done so, it will capture that automatically.\n' +
-      '3. Exit the booth\n\n' +
-      'Notes:\n' +
-      ' - Toggle the booth view on/off at any time\n' +
-      " - If the black background doesn't disappear when you toggle it off, just click the canvas and zoom or move the camera and it will turn white. Toggle black background back on for dark mode.\n" +
-      ' - Currently, you will need to reload the page to revert back to the original fantasy background in the main UI editor. I will work to patch this when I can.';
+    dirText.textContent = `1. Open photo booth
+2. Edit your scene, or if you have already done so, it will capture that automatically.
+3. Exit the booth
+
+Notes:
+ - Toggle the booth view on/off at any time
+ - If the black background doesn't disappear when you toggle it off, just click the canvas and zoom or move the camera and it will turn white. Toggle black background back on for dark mode.
+ - Currently, you will need to reload the page to revert back to the original fantasy background in the main UI editor. I will work to patch this when I can.`;
 
     dirBox.appendChild(dirHeader);
     dirBox.appendChild(dirText);
