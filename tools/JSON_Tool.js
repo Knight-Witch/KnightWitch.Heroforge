@@ -433,7 +433,7 @@
       id: TOOL_ID,
       title: "JSON",
       tab: "JSON",
-      render: (api, mount) => tool.buildUI(api, mount)
+      render: (container, api) => tool.buildUI(api, container)
     });
 
     return true;
