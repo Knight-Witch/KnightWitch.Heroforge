@@ -123,7 +123,7 @@
 #kwWDJsonToolTop .kwWDJsonBtn{
   height: 24px;
   padding: 0 10px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
@@ -137,7 +137,7 @@
 #kwWDJsonToolStatus{
   padding: 8px 10px;
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(0,0,0,0.20);
   color: rgba(255,255,255,0.86);
   font-size: 11px;
@@ -149,7 +149,7 @@
 #kwWDJsonToolBarWrap{
   padding: 8px 10px;
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(0,0,0,0.18);
 }
 #kwWDJsonToolTrack{
@@ -168,7 +168,7 @@
 #kwWDJsonToolLog{
   padding: 8px 10px;
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(0,0,0,0.18);
   max-height: 220px;
   overflow: auto;
