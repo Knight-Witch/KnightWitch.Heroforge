@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock v1
 // @namespace    KnightWitch
-// @version      1.0.0
+// @version      1.0.1
 // @description  Core dock + tab system for Knight Witch tools
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,6 +22,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
 const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
+const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
+const KOFI_URL = "https://ko-fi.com/knightwitch";
 const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
 
 function gmGetText(url) {
@@ -103,6 +105,7 @@ async function loadManifestAndTools() {
     uiReady: false,
     root: null,
     header: null,
+    tabsContainer: null,
     tabsBar: null,
     body: null,
     resizeCorner: null,
@@ -117,8 +120,111 @@ async function loadManifestAndTools() {
     activeTab: null,
     isResizing: false,
     resizeStart: null,
-    minWidth: 260
+    minWidth: 260,
+    draggingTool: null,
+    draggingSectionId: null,
+    draggingSectionTool: null,
+    aboutBtn: null,
+    aboutOverlay: null,
+    aboutModal: null,
+    disclaimerBtn: null,
+    disclaimerOverlay: null,
+    disclaimerModal: null
   };
+
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function getUndoQueue() {
+    const CK = UW.CK;
+    const u = CK && CK.UndoQueue ? CK.UndoQueue : null;
+    if (!u || !Array.isArray(u.queue) || typeof u.currentIndex !== "number") return null;
+    return u;
+  }
+
+  function tryLoadCharacter(json) {
+    const CK = UW.CK;
+    if (!CK || typeof CK.tryLoadCharacter !== "function") return false;
+    try {
+      CK.tryLoadCharacter(deepClone(json), "Witch Dock: invalid character data", function () {});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function updateDockUndoRedoButtons() {
+    if (!state.uiReady || !state.undoBtn || !state.redoBtn) return;
+    const u = getUndoQueue();
+    const canUndo = !!u && u.currentIndex > 0;
+    const canRedo = !!u && u.currentIndex < u.queue.length - 1;
+    state.undoBtn.disabled = !canUndo;
+    state.redoBtn.disabled = !canRedo;
+  }
+
+  function triggerUndo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.undo === "function") {
+      try {
+        u.undo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex <= 0) return;
+    u.currentIndex -= 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function triggerRedo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.redo === "function") {
+      try {
+        u.redo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex >= u.queue.length - 1) return;
+    u.currentIndex += 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function hookUndoQueueForDockButtons() {
+    const u = getUndoQueue();
+    if (!u) return;
+
+    function wrap(obj, key) {
+      const fn = obj && typeof obj[key] === "function" ? obj[key] : null;
+      if (!fn || fn.__kwDockWrapped) return;
+      obj[key] = function () {
+        const r = fn.apply(this, arguments);
+        try {
+          updateDockUndoRedoButtons();
+        } catch (e) {}
+        return r;
+      };
+      obj[key].__kwDockWrapped = true;
+    }
+
+    wrap(u, "push");
+    wrap(u, "enqueue");
+    wrap(u, "add");
+    wrap(u, "record");
+    wrap(u, "undo");
+    wrap(u, "redo");
+  }
 
   function loadPrefs() {
     try {
@@ -174,6 +280,38 @@ async function loadManifestAndTools() {
   font-weight: 800;
   letter-spacing: 0.25px;
 }
+
+#kwWDTitleWrap{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#kwWDAboutBtn{
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+#kwWDAboutBtn:hover{
+  background: rgba(255,255,255,0.14);
+}
+
+#kwWDControls #kwWDAboutBtn{
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 #kwWDControls{
   display: inline-flex;
   gap: 6px;
@@ -187,11 +325,11 @@ async function loadManifestAndTools() {
   justify-content: center;
   font-size: 18px;
   font-weight: 900;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
-  cursor: pointer;
+  cursor: default;
   position: relative;
 }
 .kwWDBtn:hover{
@@ -204,7 +342,7 @@ async function loadManifestAndTools() {
   top: 36px;
   white-space: nowrap;
   padding: 6px 8px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(20,20,22,0.96);
   color: #eee;
@@ -232,19 +370,56 @@ async function loadManifestAndTools() {
 
 #kwWDTabs{
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   padding: 6px 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
 }
+#kwWDTabsLeft{
+  flex: 1 1 auto;
+  display: flex;
+  gap: 6px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+#kwWDTabsLeft::-webkit-scrollbar{ height: 8px; }
+#kwWDTabsLeft::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,0.18);
+  border-radius: 6px;
+}
+#kwWDTabsRight{
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.kwWDActionBtn{
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  cursor: default;
+  position: relative;
+}
+.kwWDActionBtn:hover{ background: rgba(255,255,255,0.14); }
+
+.kwWDMinimized #kwWDFooter{ display: none; }
 .kwWDTab{
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 5px 10px;
-  cursor: pointer;
+  cursor: default;
   font-weight: 700;
 }
 .kwWDTab[aria-selected="true"]{
@@ -255,8 +430,26 @@ async function loadManifestAndTools() {
   overflow: auto;
   padding: 8px;
 }
+#kwWDFooter{
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.65);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
 .kwWDPanel{
   display: none;
+}
+.kwWDToolList{
+  display: flex;
+  flex-direction: column;
 }
 .kwWDPanel[aria-hidden="false"]{
   display: block;
@@ -296,7 +489,7 @@ async function loadManifestAndTools() {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.16);
   background: rgba(20,20,22,0.92);
   color: #eee;
@@ -319,17 +512,17 @@ async function loadManifestAndTools() {
   justify-content: center;
   font-size: 18px;
   font-weight: 900;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
-  cursor: pointer;
+  cursor: default;
 }
 #kwWDCompactExpand:hover{ background: rgba(255,255,255,0.14); }
 
 .kwWDSection{
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.04);
   overflow: hidden;
   margin-bottom: 8px;
@@ -339,11 +532,15 @@ async function loadManifestAndTools() {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
   background: rgba(255,255,255,0.03);
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+.kwWDSectionHeader:active{ cursor: grabbing; }
+.kwWDSection.dragging{ opacity: 0.65; }
+.kwWDSection.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDSection.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
 .kwWDSectionHeader:hover{ background: rgba(255,255,255,0.06); }
 .kwWDSectionHeaderBox{
   width: 16px;
@@ -354,10 +551,22 @@ async function loadManifestAndTools() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  line-height: 1;
   opacity: 0.95;
 }
+.kwWDSectionHeaderBox svg{
+  display: block;
+}
+
+.kwWDSectionHeaderBox svg{
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: currentColor;
+  color: rgba(255,255,255,0.90);
+}
+
+.kwWDDragHandle{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:18px;opacity:0.75;cursor:grab;user-select:none;margin-left:auto;}
+.kwWDSectionHeader.dragging .kwWDDragHandle{cursor:grabbing;opacity:0.95;}
 .kwWDSectionHeaderName{
   font-weight: 800;
   font-size: 13px;
@@ -370,7 +579,302 @@ async function loadManifestAndTools() {
   gap: 10px;
 }
 .kwWDSection[data-collapsed="1"] .kwWDSectionBody{ display: none; }
-    `);
+.kwWDTool{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.kwWDToolHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  user-select: none;
+  cursor: default;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.kwWDToolHeader:active{ cursor: grabbing; }
+.kwWDToolTitle{
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+.kwWDToolBody{
+  padding: 0;
+}
+.kwWDTool.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDTool.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
+.kwWDToolList.drag-over-empty{ box-shadow: inset 0 0 0 2px rgba(170,85,255,0.55); border-radius: 6px; }
+
+/* Bone HUD (footer) */
+#kwWDFooter .kwWDBoneRow{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.75);
+}
+#kwWDFooter .kwWDBoneLabel{
+  opacity: 0.85;
+}
+#kwWDFooter .kwWDBoneValue{
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255,255,255,0.9);
+}
+#kwWDFooter .kwWDBoneCopy{
+  height: 20px;
+  width: 24px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.22);
+  color: #eee;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDFooter .kwWDBoneCopy[disabled]{
+  opacity: 0.45;
+  cursor: default;
+}
+#kwWDFooter .kwWDBoneCopy:hover{ background: rgba(255,255,255,0.06); }
+#kwWDFooter .kwWDBoneCopy svg{ width: 13px; height: 13px; fill: currentColor; }
+#kwWDFooter .kwWDFooterLine{
+  font-size: 10px;
+  font-weight: 400;
+}
+#kwBoneHudToast{
+  position: fixed;
+  left: 12px;
+  bottom: 56px;
+  z-index: 2147483647;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(18,18,20,0.95);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  color: rgba(255,255,255,0.86);
+  font: 11px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+#kwBoneHudToast.show{ opacity: 1; }
+
+
+/* About modal */
+#kwWDAboutOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2147483646;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#kwWDAboutOverlay[aria-hidden="false"]{ display: flex; }
+#kwWDAbout{
+  width: min(560px, calc(100vw - 36px));
+  max-height: min(720px, calc(100vh - 36px));
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,20,22,0.96);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#kwWDAboutHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+#kwWDAboutTitle{
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#kwWDAboutClose{
+  width: 34px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDAboutClose:hover{ background: rgba(255,255,255,0.14); }
+#kwWDAboutBody{
+  padding: 12px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.35;
+}
+#kwWDAboutBody p{ margin: 0 0 10px 0; }
+#kwWDAboutBody ul{ margin: 0 0 10px 18px; padding: 0; }
+#kwWDAboutBody li{ margin: 4px 0; }
+#kwWDAboutBody code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.kwWDAboutBtns{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.kwWDAboutLinkBtn{
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.kwWDAboutLinkBtn:hover{ background: rgba(255,255,255,0.14); }
+#kwWDAboutFooter{
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Disclaimer modal */
+#kwWDDisclaimerBtn{
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.86);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+}
+#kwWDDisclaimerBtn:hover{ background: rgba(255,255,255,0.12); }
+
+#kwWDDisclaimerOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2147483646;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#kwWDDisclaimerOverlay[aria-hidden="false"]{ display: flex; }
+#kwWDDisclaimer{
+  width: min(640px, calc(100vw - 36px));
+  max-height: min(760px, calc(100vh - 36px));
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,20,22,0.96);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#kwWDDisclaimerHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+#kwWDDisclaimerTitle{
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#kwWDDisclaimerClose{
+  width: 34px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDDisclaimerClose:hover{ background: rgba(255,255,255,0.14); }
+#kwWDDisclaimerBody{
+  padding: 12px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.35;
+}
+#kwWDDisclaimerBody p{ margin: 0 0 10px 0; }
+#kwWDDisclaimerBody ul{ margin: 0 0 10px 18px; padding: 0; }
+#kwWDDisclaimerBody li{ margin: 4px 0; }
+#kwWDDisclaimerBody strong{ font-weight: 900; }
+#kwWDDisclaimerFooter{
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+`);
   }
 
   function el(tag, attrs, children) {
@@ -402,7 +906,7 @@ async function loadManifestAndTools() {
 
   function computeMinDockHeightCollapsed() {
     const headerH = state.header ? state.header.getBoundingClientRect().height : 52;
-    const tabsH = state.tabsBar ? state.tabsBar.getBoundingClientRect().height : 40;
+    const tabsH = state.tabsContainer ? state.tabsContainer.getBoundingClientRect().height : 40;
     return Math.ceil(headerH + tabsH);
   }
 
@@ -561,6 +1065,9 @@ async function loadManifestAndTools() {
 
     state.minWidth = computeMinDockWidthForActiveTab();
     enforceSizeConstraints();
+
+    hookUndoQueueForDockButtons();
+    updateDockUndoRedoButtons();
   }
 
   function ensureTab(name) {
@@ -568,13 +1075,15 @@ async function loadManifestAndTools() {
 
     const btn = el("button", { class: "kwWDTab", type: "button", text: name, "aria-selected": "false" });
     const panel = el("div", { class: "kwWDPanel", "aria-hidden": "true" });
+    const list = el("div", { class: "kwWDToolList" });
+    panel.appendChild(list);
 
     btn.addEventListener("click", () => setActiveTab(name));
 
     state.tabsBar.appendChild(btn);
     state.body.appendChild(panel);
 
-    const tab = { name, btn, panel };
+    const tab = { name, btn, panel, list };
     state.tabs.set(name, tab);
 
     if (!prefs.activeTab) prefs.activeTab = name;
@@ -585,7 +1094,65 @@ async function loadManifestAndTools() {
   }
 
 
-  function toolSectionKey(toolId, sectionId) {
+
+function makeIconBase() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("width", "12");
+  svg.setAttribute("height", "12");
+  return svg;
+}
+
+function makeIconMinus() {
+  const svg = makeIconBase();
+  const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  l.setAttribute("x1", "3");
+  l.setAttribute("y1", "8");
+  l.setAttribute("x2", "13");
+  l.setAttribute("y2", "8");
+  l.setAttribute("stroke", "currentColor");
+  l.setAttribute("stroke-width", "2");
+  l.setAttribute("stroke-linecap", "round");
+  l.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(l);
+  return svg;
+}
+
+function makeIconPlus() {
+  const svg = makeIconBase();
+  const h = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  h.setAttribute("x1", "3");
+  h.setAttribute("y1", "8");
+  h.setAttribute("x2", "13");
+  h.setAttribute("y2", "8");
+  h.setAttribute("stroke", "currentColor");
+  h.setAttribute("stroke-width", "2");
+  h.setAttribute("stroke-linecap", "round");
+  h.setAttribute("vector-effect", "non-scaling-stroke");
+  const v = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  v.setAttribute("x1", "8");
+  v.setAttribute("y1", "3");
+  v.setAttribute("x2", "8");
+  v.setAttribute("y2", "13");
+  v.setAttribute("stroke", "currentColor");
+  v.setAttribute("stroke-width", "2");
+  v.setAttribute("stroke-linecap", "round");
+  v.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(h);
+  svg.appendChild(v);
+  return svg;
+}
+function setCollapseIcon(boxEl, collapsed) {
+  while (boxEl.firstChild) boxEl.removeChild(boxEl.firstChild);
+  boxEl.appendChild(collapsed ? makeIconPlus() : makeIconMinus());
+}
+
+function slugify(str) {
+  return String(str || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function toolSectionKey(toolId, sectionId) {
     return `kw.witchDock.ui.${toolId}.${sectionId}.collapsed`;
   }
 
@@ -606,28 +1173,31 @@ async function loadManifestAndTools() {
   }
 
   function createSection(toolId, opts) {
-    const sectionId = opts && typeof opts.id === "string" ? opts.id : "";
+    let sectionId = opts && typeof opts.id === "string" ? opts.id : "";
     const title = opts && typeof opts.title === "string" ? opts.title : "";
+    if (!sectionId) sectionId = slugify(title) || "section";
     const defaultCollapsed = !!(opts && opts.defaultCollapsed);
 
-    const root = el("div", { class: "kwWDSection", "data-collapsed": "0" });
+    const root = el("div", { class: "kwWDSection", "data-collapsed": "0", "data-section-id": sectionId });
+    const headerBox = el("div", { class: "kwWDSectionHeaderBox" });
     const header = el("div", { class: "kwWDSectionHeader" }, [
-      el("div", { class: "kwWDSectionHeaderBox", text: "–" }),
+      headerBox,
       el("div", { class: "kwWDSectionHeaderName", text: title })
     ]);
     const body = el("div", { class: "kwWDSectionBody" });
 
-    const box = header.querySelector(".kwWDSectionHeaderBox");
+    const box = headerBox;
 
     function apply(collapsed) {
       root.setAttribute("data-collapsed", collapsed ? "1" : "0");
-      if (box) box.textContent = collapsed ? "+" : "–";
+      if (box) setCollapseIcon(box, collapsed);
     }
 
     const initial = getSectionCollapsed(toolId, sectionId, defaultCollapsed);
     apply(initial);
 
-    header.addEventListener("click", () => {
+    header.addEventListener("click", (e) => {
+      if (header.__kwDraggedRecently) return;
       const now = root.getAttribute("data-collapsed") !== "1";
       apply(now);
       if (sectionId) setSectionCollapsed(toolId, sectionId, now);
@@ -649,30 +1219,243 @@ async function loadManifestAndTools() {
       }
     };
   }
-  function mountTool(def) {
-    const tabName = def.tab || "Misc Tools";
-    const tab = ensureTab(tabName);
+const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";
 
-    if (state.toolsById.has(def.id)) {
-      const existing = state.toolsById.get(def.id);
-      if (existing && existing.container && existing.container.parentNode) existing.container.remove();
-      state.toolsById.delete(def.id);
-    }
+function sectionOrderKey(toolId) {
+  return SECTION_ORDER_PREFIX + toolId;
+}
 
-    const container = document.createElement("div");
-    tab.panel.appendChild(container);
-
-    state.toolsById.set(def.id, { def, container, tab: tabName });
-
-    try {
-      def.render(container, buildToolApi(def));
-    } catch {
-      container.textContent = "Tool failed to render.";
-    }
-
-    state.minWidth = computeMinDockWidthForActiveTab();
-    enforceSizeConstraints();
+function getSectionOrder(toolId) {
+  try {
+    const raw = GM_getValue(sectionOrderKey(toolId), null);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
   }
+}
+
+function setSectionOrder(toolId, order) {
+  try {
+    GM_setValue(sectionOrderKey(toolId), JSON.stringify(order));
+  } catch {}
+}
+
+function saveSectionOrderFromDom(toolId, container) {
+  if (!container) return;
+  const ids = Array.from(container.children)
+    .filter((n) => n && n.classList && n.classList.contains("kwWDSection"))
+    .map((n) => n.getAttribute("data-section-id"))
+    .filter(Boolean);
+  if (ids.length) setSectionOrder(toolId, ids);
+}
+
+function applySectionOrder(toolId, container) {
+  if (!container) return;
+  const sections = Array.from(container.children).filter((n) => n.classList && n.classList.contains("kwWDSection"));
+  if (!sections.length) return;
+
+  const saved = getSectionOrder(toolId);
+  if (!saved.length) return;
+
+  const map = new Map();
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (id) map.set(id, s);
+  }
+
+  const ordered = [];
+  for (const id of saved) {
+    const el = map.get(id);
+    if (el) ordered.push(el);
+  }
+
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (!id || !saved.includes(id)) ordered.push(s);
+  }
+
+  for (const el of ordered) container.appendChild(el);
+}
+
+function clearSectionDragIndicators(container) {
+  if (!container) return;
+  for (const s of Array.from(container.querySelectorAll(":scope > .kwWDSection"))) {
+    if (s.classList) {
+      s.classList.remove("drag-over-top");
+      s.classList.remove("drag-over-bottom");
+      s.classList.remove("dragging");
+    }
+  }
+}
+
+function getSectionAtY(container, y) {
+  const sections = Array.from(container.children).filter((n) => n && n.classList && n.classList.contains("kwWDSection"));
+  for (const s of sections) {
+    const r = s.getBoundingClientRect();
+    if (y >= r.top && y <= r.bottom) return s;
+  }
+  return null;
+}
+
+function startSectionPointerDrag(toolId, sectionRoot, header, container, e) {
+  if (!e.isPrimary) return;
+  const sectionId = sectionRoot.getAttribute("data-section-id");
+  if (!sectionId) return;
+
+  const pointerId = e.pointerId;
+  try { header.setPointerCapture(pointerId); } catch {}
+  const startX = e.clientX;
+  const startY = e.clientY;
+
+  let dragging = false;
+  let dragEl = null;
+
+  function onMove(ev) {
+    if (ev.pointerId !== pointerId) return;
+
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+
+    if (!dragging) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      dragging = true;
+
+      state.draggingSectionId = sectionId;
+      state.draggingSectionTool = toolId;
+
+      sectionRoot.classList.add("dragging");
+
+      header.__kwDraggedRecently = true;
+      setTimeout(() => { header.__kwDraggedRecently = false; }, 0);
+    }
+
+    ev.preventDefault();
+
+    clearSectionDragIndicators(container);
+
+    const target = getSectionAtY(container, ev.clientY);
+    if (!target || target === sectionRoot) return;
+
+    const r = target.getBoundingClientRect();
+    const before = ev.clientY < r.top + r.height / 2;
+
+    target.classList.add(before ? "drag-over-top" : "drag-over-bottom");
+  }
+
+  function onUp(ev) {
+    if (ev.pointerId !== pointerId) return;
+
+    window.removeEventListener("pointermove", onMove, true);
+    window.removeEventListener("pointerup", onUp, true);
+    window.removeEventListener("pointercancel", onUp, true);
+
+    if (!dragging) return;
+
+    const dropTarget = getSectionAtY(container, ev.clientY);
+    if (dropTarget && dropTarget !== sectionRoot) {
+      const r = dropTarget.getBoundingClientRect();
+      const before = ev.clientY < r.top + r.height / 2;
+      if (before) container.insertBefore(sectionRoot, dropTarget);
+      else container.insertBefore(sectionRoot, dropTarget.nextSibling);
+      saveSectionOrderFromDom(toolId, container);
+    }
+
+    clearSectionDragIndicators(container);
+
+    sectionRoot.classList.remove("dragging");
+    state.draggingSectionId = null;
+    state.draggingSectionTool = null;
+  }
+
+  window.addEventListener("pointermove", onMove, true);
+  window.addEventListener("pointerup", onUp, true);
+  window.addEventListener("pointercancel", onUp, true);
+}
+
+function bindSectionPointerDrag(toolId, sectionRoot, container) {
+  const header = sectionRoot.querySelector(".kwWDSectionHeader");
+  if (!header) return;
+  const handle = header.querySelector(".kwWDDragHandle") || header;
+  if (handle.__kwPointerDragBound) return;
+  handle.__kwPointerDragBound = true;
+
+  handle.style.touchAction = "none";
+
+  handle.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      startSectionPointerDrag(toolId, sectionRoot, handle, container, e);
+    },
+    true
+  );
+}
+
+function ensureSectionDragHandle(sectionRoot) {
+  const header = sectionRoot.querySelector(".kwWDSectionHeader");
+  if (!header) return;
+  if (header.querySelector(".kwWDDragHandle")) return;
+  const h = document.createElement("span");
+  h.className = "kwWDDragHandle";
+  h.textContent = "≡";
+  header.appendChild(h);
+}
+
+function finalizeToolSections(toolId, toolContainer) {
+  if (!toolContainer) return;
+
+  const sections = Array.from(toolContainer.querySelectorAll(".kwWDSection"));
+  if (!sections.length) return;
+
+  const parents = new Map();
+  for (const s of sections) {
+    const p = s.parentElement;
+    if (!p) continue;
+    if (!parents.has(p)) parents.set(p, []);
+    parents.get(p).push(s);
+  }
+
+  for (const [parent, secs] of parents.entries()) {
+    applySectionOrder(toolId, parent);
+    for (const sec of secs) {
+      ensureSectionDragHandle(sec);
+      bindSectionPointerDrag(toolId, sec, parent);
+    }
+  }
+}
+
+function mountTool(def) {
+  const tabName = def.tab || "Misc Tools";
+  const tab = ensureTab(tabName);
+
+  if (state.toolsById.has(def.id)) {
+    const existing = state.toolsById.get(def.id);
+    if (existing && existing.container && existing.container.parentNode) existing.container.remove();
+    state.toolsById.delete(def.id);
+  }
+
+  const container = document.createElement("div");
+  container.setAttribute("data-tool-id", def.id);
+
+  tab.list.appendChild(container);
+
+  state.toolsById.set(def.id, { def, container, tab: tabName });
+
+  try {
+    def.render(container, buildToolApi(def));
+  } catch {
+    container.textContent = "Tool failed to render.";
+  }
+
+  finalizeToolSections(def.id, container);
+
+  state.minWidth = computeMinDockWidthForActiveTab();
+  enforceSizeConstraints();
+}
 
   function registerTool(def) {
     if (!def || typeof def !== "object") return;
@@ -832,6 +1615,38 @@ async function loadManifestAndTools() {
       prefs.lastOpenHeight = prefs.height;
     }
 
+
+  function dispatchKeyCombo({ key, code, ctrl, shift }) {
+    const evDown = new KeyboardEvent("keydown", {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: !!ctrl,
+      shiftKey: !!shift
+    });
+    const evUp = new KeyboardEvent("keyup", {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: !!ctrl,
+      shiftKey: !!shift
+    });
+    document.dispatchEvent(evDown);
+    window.dispatchEvent(evDown);
+    document.dispatchEvent(evUp);
+    window.dispatchEvent(evUp);
+  }
+
+  function triggerUndo() {
+    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: false });
+  }
+
+  function triggerRedo() {
+    dispatchKeyCombo({ key: "z", code: "KeyZ", ctrl: true, shift: true });
+  }
+
     savePrefs(prefs);
     enforceSizeConstraints();
     applyMinimizedState();
@@ -931,7 +1746,488 @@ async function loadManifestAndTools() {
     window.addEventListener("pointerup", up);
   }
 
-  function buildUI() {
+
+  function isEditableTarget(t) {
+    if (!t) return false;
+    const tag = (t.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    if (t.isContentEditable) return true;
+    return false;
+  }
+
+  function installDockHotkey() {
+    document.addEventListener("keydown", (e) => {
+      if (e.repeat) return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (isEditableTarget(e.target)) return;
+      if (e.code !== "Backquote") return;
+
+      e.preventDefault();
+
+      if (prefs.closed) {
+        expandFromCompact();
+      } else {
+        closeDock();
+      }
+    }, true);
+  }
+
+  const BONE_FOOTER_HOTKEY_TEXT = "Dock Hotkey: `~ (Grave Key)  |  Undo: Ctrl+Z  |  Redo: Ctrl+Shift+Z";
+
+  function initBoneFooterAndDetection() {
+    if (state.boneInit) return;
+    if (!state.footer) return;
+    state.boneInit = true;
+
+    const makeEl = (tag, attrs = {}, text = "") => {
+      const el = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") el.className = v;
+        else if (k === "html") el.innerHTML = v;
+        else el.setAttribute(k, v);
+      }
+      if (text) el.textContent = text;
+      return el;
+    };
+
+    const row = makeEl("div", { class: "kwWDBoneRow" });
+    const label = makeEl("span", { class: "kwWDBoneLabel" }, "Bone:");
+    const value = makeEl("span", { class: "kwWDBoneValue" }, "(click a bone)" );
+
+    const copyBtn = makeEl(
+      "button",
+      { class: "kwWDBoneCopy", type: "button", title: "Copy bone name", disabled: "disabled" }
+    );
+    copyBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"></path>
+      </svg>
+    `;
+
+    row.appendChild(label);
+    row.appendChild(value);
+    row.appendChild(copyBtn);
+
+    const hotkeyLine = makeEl("div", { class: "kwWDFooterLine" }, BONE_FOOTER_HOTKEY_TEXT);
+
+    state.footer.textContent = "";
+    state.footer.appendChild(row);
+    row.style.display = "none";
+    state.footer.appendChild(hotkeyLine);
+
+    // -------- detection (grafted from REFERENCE_DEV_Bone_Detection_Tool.user.js) --------
+
+    const u = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
+    const STATE = {
+      baseline: null,
+      lastBoneName: "",
+      delayMs: 35,
+      candidates: null,
+    };
+
+    function shouldIgnoreClick(e) {
+      const t = e && e.target;
+      if (!t || !t.closest) return false;
+      if (t.closest("#kwWitchDock") || t.closest("#kwWDCompact")) return true;
+      if (t.closest("button, input, textarea, select, [role='button']")) return true;
+      return false;
+    }
+
+    function toast(msg) {
+      let t = document.getElementById("kwBoneHudToast");
+      if (!t) {
+        t = makeEl("div", { id: "kwBoneHudToast" });
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 900);
+    }
+
+    function copyToClipboard(text) {
+      if (!text) return false;
+
+      try {
+        if (typeof GM_setClipboard === "function") {
+          GM_setClipboard(text, { type: "text", mimetype: "text/plain" });
+          toast("Copied bone name");
+          return true;
+        }
+      } catch (_) {}
+
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => toast("Copied bone name"),
+          () => toast("Copy failed")
+        );
+        return true;
+      }
+
+      toast("Copy failed");
+      return false;
+    }
+
+    function getSummonCircle() {
+      return u?.HF?.summonCircle || null;
+    }
+
+    function safeGet(obj, path) {
+      try {
+        const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
+        let cur = obj;
+        for (const p of parts) {
+          if (cur == null) return undefined;
+          cur = cur[p];
+        }
+        return cur;
+      } catch (_) {
+        return undefined;
+      }
+    }
+
+    function anchorBases() {
+      return [
+        "parent.parent.parent.children[5].object",
+        "parent.parent.parent.children[4].object",
+        "parent.parent.parent.children[6].object",
+        "parent.parent.children[5].object",
+        "parent.parent.children[4].object",
+        "parent.children[5].object",
+        "parent.children[4].object",
+      ];
+    }
+
+    function buildCandidates(sc) {
+      const out = [];
+      const bases = anchorBases();
+
+      for (const base of bases) {
+        const node = safeGet(sc, base);
+        if (!node) continue;
+
+        out.push(`summonCircle.${base}.name`);
+        out.push(`summonCircle.${base}.parent.name`);
+
+        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.children[${i}].name`);
+        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.object.children[${i}].name`);
+      }
+
+      const seen = new Set();
+      return out.filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
+    }
+
+    function snapshot(sc, paths) {
+      const snap = [];
+      for (const path of paths) {
+        const v = safeGet({ summonCircle: sc }, path.replace(/^summonCircle\./, "summonCircle."));
+        if (typeof v === "string" && v.length) snap.push({ path, value: v });
+      }
+      return snap;
+    }
+
+    function diffSnapshots(baseline, now) {
+      const base = new Set((baseline || []).map((x) => `${x.path}::${x.value}`));
+      const added = [];
+      for (const x of now) {
+        const k = `${x.path}::${x.value}`;
+        if (!base.has(k)) added.push(x);
+      }
+      return added;
+    }
+
+    function scoreName(name) {
+      let s = 0;
+      if (!name) return -999;
+      if (name.includes("_bind_jnt")) s += 50;
+      if (name.includes("main_")) s += 12;
+      if (name.includes("_kitbash_")) s += 8;
+      if (/(clav|shoulder|deltoid|arm|hand|finger|spine|neck|head|leg|thigh|calf|foot)/i.test(name)) s += 6;
+      if (/(thickness|fat|scaleOffset|offset|helper)/i.test(name)) s -= 10;
+      return s;
+    }
+
+    function pickBest(delta) {
+      if (!delta?.length) return null;
+
+      const bind = delta.filter((d) => d.value.includes("_bind_jnt"));
+      const pool = bind.length ? bind : delta;
+
+      let best = null;
+      let bestS = -Infinity;
+      for (const d of pool) {
+        const s = scoreName(d.value);
+        if (s > bestS) {
+          bestS = s;
+          best = d;
+        }
+      }
+      return best;
+    }
+
+    function setBoneName(name) {
+      STATE.lastBoneName = name || "";
+      if (!STATE.lastBoneName) {
+        value.textContent = "(click a bone)";
+        value.title = "";
+        copyBtn.setAttribute("disabled", "disabled");
+        return;
+      }
+      value.textContent = STATE.lastBoneName;
+      value.title = STATE.lastBoneName;
+      copyBtn.removeAttribute("disabled");
+    }
+
+    copyBtn.addEventListener("click", () => {
+      if (!STATE.lastBoneName) return toast("Nothing to copy yet");
+      copyToClipboard(STATE.lastBoneName);
+    });
+
+    function ensureReady(sc) {
+      if (!sc) return false;
+      if (!STATE.candidates || !STATE.candidates.length) {
+        STATE.candidates = buildCandidates(sc);
+        STATE.baseline = snapshot(sc, STATE.candidates);
+      }
+      return true;
+    }
+
+    function handleEvent(e) {
+      if (shouldIgnoreClick(e)) return;
+
+      const sc = getSummonCircle();
+      if (!ensureReady(sc)) return;
+
+      const handlerSc = sc;
+      setTimeout(() => {
+        const now = snapshot(handlerSc, STATE.candidates);
+        const delta = diffSnapshots(STATE.baseline, now);
+        const best = pickBest(delta);
+
+        if (best && best.value && best.value.includes("_bind_jnt") && best.value !== STATE.lastBoneName) {
+          setBoneName(best.value);
+        }
+
+        STATE.baseline = now;
+      }, STATE.delayMs);
+    }
+
+    const startWhenReady = () => {
+      const sc = getSummonCircle();
+      if (!ensureReady(sc)) {
+        setTimeout(startWhenReady, 250);
+        return;
+      }
+
+      row.style.display = "flex";
+      document.addEventListener("pointerup", handleEvent, true);
+      document.addEventListener("click", handleEvent, true);
+    };
+
+    startWhenReady();
+  }
+
+
+  
+
+  function getScriptMeta() {
+    try {
+      const gi = typeof GM_info !== "undefined" ? GM_info : null;
+      const name = gi && gi.script && typeof gi.script.name === "string" ? gi.script.name : "Witch Dock";
+      const version = gi && gi.script && typeof gi.script.version === "string" ? gi.script.version : "";
+      return { name, version };
+    } catch {
+      return { name: "Witch Dock", version: "" };
+    }
+  }
+
+  function closeAboutModal() {
+    if (!state.aboutOverlay) return;
+    state.aboutOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function openAboutModal() {
+    if (!state.aboutOverlay || !state.aboutModal) return;
+    closeDisclaimerModal();
+    state.aboutOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function ensureAboutModal() {
+    if (state.aboutOverlay && state.aboutModal) return;
+
+    const meta = getScriptMeta();
+
+    const overlay = document.createElement("div");
+    overlay.id = "kwWDAboutOverlay";
+    overlay.setAttribute("aria-hidden", "true");
+
+    const modal = document.createElement("div");
+    modal.id = "kwWDAbout";
+
+    const header = document.createElement("div");
+    header.id = "kwWDAboutHeader";
+
+    const title = document.createElement("div");
+    title.id = "kwWDAboutTitle";
+    title.textContent = meta.name;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.id = "kwWDAboutClose";
+    closeBtn.type = "button";
+    closeBtn.title = "Close";
+    closeBtn.textContent = "×";
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+
+    const body = document.createElement("div");
+    body.id = "kwWDAboutBody";
+    body.innerHTML = `
+      <p>Witch Dock is a fan-created tool that is designed to help you create with some QoL updates meant to simplify tedious things like symmetrical proportions, tweaking paints for photo booth lighting, &amp; more!</p>
+      <p>With this tool, you can:</p>
+      <ul>
+        <li>Get even proportions / sync body parts with a click of a button</li>
+        <li>Save booth presets to make capturing media faster / smoother</li>
+        <li>Make kitbash editing easier</li>
+      </ul>
+      <p><strong>Helpful Tool Tips:</strong></p>
+      <ul>
+        <li>Press the <code>\`~</code> (grave/tilde) hotkey to expand/minimize Witch Dock</li>
+        <li>Drag/drop the tool tabs (Body Editor, Booth, etc) left/right to rearrange the order</li>
+        <li>Drag/drop toolset tabs' internal tool sections to reorder to your preferred setup</li>
+        <li>Resize the UI's window</li>
+        <li>Collapse / hide the UI as needed</li>
+        <li>Drag &amp; reorder your tools for your preferred flow</li>
+        <li>Soon to come: Quick Access Toolbar, popout windows, &amp; more!</li>
+      </ul>
+      <p>If you'd like to support my work, feel free to donate to my KoFi!</p>
+      <div class="kwWDAboutBtns">
+        <a class="kwWDAboutLinkBtn" href="${GITHUB_REPO_URL}" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        <a class="kwWDAboutLinkBtn" href="${KOFI_URL}" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
+      </div>
+    `;
+
+    const footer = document.createElement("div");
+    footer.id = "kwWDAboutFooter";
+    footer.textContent = meta.version ? `Version: ${meta.version}` : "";
+
+    modal.appendChild(header);
+    modal.appendChild(body);
+    modal.appendChild(footer);
+    overlay.appendChild(modal);
+
+    closeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeAboutModal();
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeAboutModal();
+    });
+
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.code === "Escape" && overlay.getAttribute("aria-hidden") === "false") {
+          e.preventDefault();
+          closeAboutModal();
+        }
+      },
+      true
+    );
+
+    document.body.appendChild(overlay);
+
+    state.aboutOverlay = overlay;
+    state.aboutModal = modal;
+  }
+
+  function closeDisclaimerModal() {
+    if (!state.disclaimerOverlay) return;
+    state.disclaimerOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function openDisclaimerModal() {
+    ensureDisclaimerModal();
+    closeAboutModal();
+    state.disclaimerOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function ensureDisclaimerModal() {
+    if (state.disclaimerOverlay && state.disclaimerModal) return;
+
+    const meta = getScriptMeta();
+
+    const overlay = document.createElement("div");
+    overlay.id = "kwWDDisclaimerOverlay";
+    overlay.setAttribute("aria-hidden", "true");
+
+    const modal = document.createElement("div");
+    modal.id = "kwWDDisclaimer";
+
+    const header = document.createElement("div");
+    header.id = "kwWDDisclaimerHeader";
+
+    const title = document.createElement("div");
+    title.id = "kwWDDisclaimerTitle";
+    title.textContent = "Disclaimer";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.id = "kwWDDisclaimerClose";
+    closeBtn.type = "button";
+    closeBtn.title = "Close";
+    closeBtn.textContent = "×";
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+
+    const body = document.createElement("div");
+    body.id = "kwWDDisclaimerBody";
+    body.innerHTML = `
+      <p>This is a fan-created tool by an artist who adores Heroforge &amp; dedicated a lot of time to solving some common UI obstacles. This tool is not created with the intent of undermining Heroforge's work, but rather just some basic QoL tools.</p>
+      <p><strong>This tool does NOT and CANNOT:</strong></p>
+      <ul>
+        <li>Give free users access to Pro content or features</li>
+        <li>Add in new content like meshes/textures, etc</li>
+        <li>Cut into Skycastle's bottom line</li>
+      </ul>
+      <p>I love this platform and <strong>HIGHLY ENCOURAGE users to subscribe to Heroforge Pro.</strong> It is well worth the very reasonable monthly price, &amp; by upgrading, you gain access to a myriad of features (including features that are effectively useless to free users on this tool). You also help keep our beloved shared hobby / engine &amp; the team at Heroforge going strong!</p>
+      <p>Pro content requires an API token to access, or the Heroforge server simply will NOT serve this content to you. There is no way around this, no script that can 'hack' it, nor would I build such a thing.</p>
+      <p>Skycastle LLC owns the rights to Heroforge &amp; I fully support their engine's creation. As a massive fan, I am happy to share tools I've created with the SC dev team any time. Us script-writers are your biggest fans, &amp; scripts are a fantastic way to test ideas, get user-feedback, solve many pain-points &amp; bugs—allowing your devs to spend more time growing the platform's features, &amp; less time doubling back on content.</p>
+      <p>Please don't come for me. I just love you guys / the work you've done, &amp; as an artist with some tech skills, I implemented some UI features that make my life a little easier so I can do what I do best: show the world how awesome Heroforge is, what it is capable of, &amp; inspire more users to create with it—and subscribe to Pro, because I have been since the very beginning, for a reason!</p>
+      <p>With love,<br/>A Witch</p>
+    `;
+
+    const footer = document.createElement("div");
+    footer.id = "kwWDDisclaimerFooter";
+    footer.textContent = meta.version ? `Version: ${meta.version}` : "";
+
+    modal.appendChild(header);
+    modal.appendChild(body);
+    modal.appendChild(footer);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    state.disclaimerOverlay = overlay;
+    state.disclaimerModal = modal;
+
+    closeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDisclaimerModal();
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeDisclaimerModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.getAttribute("aria-hidden") === "false") closeDisclaimerModal();
+    }, true);
+  }
+
+function buildUI() {
     if (state.uiReady) return;
     state.uiReady = true;
 
@@ -939,25 +2235,44 @@ async function loadManifestAndTools() {
 
     state.root = el("div", { id: "kwWitchDock" }, [
       el("div", { id: "kwWDHeader", onpointerdown: startDockDrag }, [
-        el("div", { id: "kwWDTitle", text: "WITCH DOCK" }),
+        el("div", { id: "kwWDTitleWrap" }, [
+          el("div", { id: "kwWDTitle", text: "WITCH DOCK" }),
+          el("button", { id: "kwWDDisclaimerBtn", type: "button", title: "Disclaimer", text: "Disclaimer", onclick: () => { openDisclaimerModal(); } })
+        ]),
         el("div", { id: "kwWDControls" }, [
+          el("button", { id: "kwWDAboutBtn", class: "kwWDBtn", type: "button", text: "?", title: "About", onclick: () => { ensureAboutModal(); openAboutModal(); } }),
           el("button", { class: "kwWDBtn", type: "button", text: "–", title: "Minimize / Expand", onclick: toggleMinimize }),
-          el("button", { class: "kwWDBtn", type: "button", text: "×", title: "Close", "data-tooltip": "Closes to small icon", onclick: closeDock })
+          el("button", { class: "kwWDBtn", type: "button", text: "×", title: "Collapse to icon", onclick: closeDock })
         ])
       ]),
-      el("div", { id: "kwWDTabs" }),
+      el("div", { id: "kwWDTabs" }, [
+        el("div", { id: "kwWDTabsLeft" }),
+        el("div", { id: "kwWDTabsRight" }, [
+          el("button", { id: "kwWDUndoBtn", class: "kwWDActionBtn", type: "button", title: "Undo (Ctrl+Z)", text: "↶", onclick: triggerUndo }),
+          el("button", { id: "kwWDRedoBtn", class: "kwWDActionBtn", type: "button", title: "Redo (Ctrl+Shift+Z)", text: "↷", onclick: triggerRedo })
+        ])
+      ]),
       el("div", { id: "kwWDBody" }),
+      el("div", { id: "kwWDFooter" }),
       el("div", { id: "kwWDResizeHandleBottom", onpointerdown: startResizeBottom }),
       el("div", { id: "kwWDResizeHandleCorner", onpointerdown: startResizeCorner })
     ]);
 
     state.header = state.root.querySelector("#kwWDHeader");
-    state.tabsBar = state.root.querySelector("#kwWDTabs");
+    state.aboutBtn = state.root.querySelector("#kwWDAboutBtn");
+    state.tabsContainer = state.root.querySelector("#kwWDTabs");
+    state.tabsBar = state.root.querySelector("#kwWDTabsLeft");
+    state.tabsBarRight = state.root.querySelector("#kwWDTabsRight");
+    state.footer = state.root.querySelector("#kwWDFooter");
+
+    initBoneFooterAndDetection();
+    state.undoBtn = state.root.querySelector("#kwWDUndoBtn");
+    state.redoBtn = state.root.querySelector("#kwWDRedoBtn");
     state.body = state.root.querySelector("#kwWDBody");
     state.resizeBottom = state.root.querySelector("#kwWDResizeHandleBottom");
     state.resizeCorner = state.root.querySelector("#kwWDResizeHandleCorner");
-    state.minimizeBtn = state.root.querySelector("#kwWDControls .kwWDBtn:nth-child(1)");
-    state.closeBtn = state.root.querySelector("#kwWDControls .kwWDBtn:nth-child(2)");
+    state.minimizeBtn = state.root.querySelector("#kwWDControls .kwWDBtn:nth-child(2)");
+    state.closeBtn = state.root.querySelector("#kwWDControls .kwWDBtn:nth-child(3)");
 
     document.body.appendChild(state.root);
 
@@ -1007,7 +2322,6 @@ async function loadManifestAndTools() {
   UW.WitchDock.ensureDock = buildUI;
 
   buildUI();
-  loadManifestAndTools();
+    installDockHotkey();
+loadManifestAndTools();
 })();
-
-
