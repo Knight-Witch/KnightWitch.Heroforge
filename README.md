@@ -6,33 +6,32 @@ A growing suite of advanced HeroForge userscripts focused on power-user workflow
 
 ## **REQUIRED**
 
-### **Witch Dock (Required Core)**
-Several Knight Witch tools dock into this shared floating UI. The Witch Dock UI tool does nothing on its own, but will populate with the below script tools when you install those. The intent is to enable you to pick and choose what you want. This UI is a floating tool you can drag & drop anywhere on your browser, minimize, hide and resize to help keep your workspace organized.
+### **Witch Dock**
+This is where all the Witch's scripts live! One easy script, no hassel. The floating, customizable dock UI is designed to make your life a little easier, and fit your needs. 
+The tool will see more toolkits and features added over time.
+
+* To set up, simply follow the install link
+* Updates are automatic
+* IF you download the file directly, simply drag & drop the file onto Tampermonkey to install (do not try to open the file on your computer—it will not work!)
+* Be sure to read the directions if you see anything written at the bottom of a tool section. Some tools require you to pose an item before the tool can properly work. This is due to how Heroforge operates.
 
 👉 Install:
 https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Witch_Dock.user.js
 
 ---
 
-## **Scripts Requiring Witch Dock**
-All tools requiring Witch Dock are listed here - without Witch Dock, these tools will not function on their own. You do NOT have to install all the below tools and are free to choose which ones you want, but you MUST have Witch Dock for these to work.
+## **ABOUT**
 
-### **Body Editor**
-Advanced body manipulation tools for syncing proportions, multiple arms, mirrored body parts, and precision editing.
+👉 [See here for my Development Pipeline](https://trello.com/invite/b/69641ce657fc71e4b58b8e8f/ATTId5e6e1e9cfc84460b530f6d7e94836c0A4C34481/witch-scripts)
 
-👉 Install:
-https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/Body_Editor.user.js
+If you find this tool useful, consider supporting its development:
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0UQV1J)
 
----
+This script and all its tools are developed by me, however I will be opening up collaboration to help stabilize some existing scripts with other creators and help grow a nice community tool for us all to use.
 
-## **Scripts That DO NOT Require Witch Dock**
-Some scripts are independant of Witch Dock and can be installed as standalone tools.
+Please know this is done in my spare time, and I am not paid for this. It's VERY time consuming, but your support enables me to spend more time helping improve your experience and implement tools you want!
 
-### **HF JSON Bulk Download**
-A tool to import your entire library as JSONs into a .Zip folder, and download to your computer. This is designed to help you backup your library and work!
 
-👉 Install:
-https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/main/HF_JSON_Bulk_Download.user.js
 
 ---
 
