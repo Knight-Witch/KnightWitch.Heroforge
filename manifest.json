@@ -9,6 +9,13 @@
       "enabledByDefault": true
     },
     {
+      "id": "booth-tool",
+      "title": "Booth",
+      "tab": "Booth",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
+      "enabledByDefault": true
+    },
+    {
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
