@@ -291,12 +291,36 @@
   }
 
   function syncOneSecondary(main, secondary, opts) {
+    if (!main || typeof main !== 'object' || !secondary || typeof secondary !== 'object') return;
+
+    const mainNumericKeys = new Set(Object.keys(main).filter(function (k) {
+        return /^\d+$/.test(k);
+    }));
+
     Object.keys(main).forEach(function (key) {
-      if (!shouldCopyNamedKey(key)) return;
-      if (!secondary[key] || typeof secondary[key] !== 'object') secondary[key] = {};
-      cloneSelectedTransforms(main[key], secondary[key], opts);
+        if (!/^\d+$/.test(key)) return;
+        if (!secondary[key] || typeof secondary[key] !== 'object') secondary[key] = {};
+        cloneSelectedTransforms(main[key], secondary[key], opts);
     });
-  }
+
+    Object.keys(secondary).forEach(function (key) {
+        if (/^\d+$/.test(key) && !mainNumericKeys.has(key)) delete secondary[key];
+    });
+
+    const mainNamedKeys = new Set(Object.keys(main).filter(function (k) {
+        return shouldCopyNamedKey(k);
+    }));
+
+    Object.keys(main).forEach(function (key) {
+        if (!shouldCopyNamedKey(key)) return;
+        if (!secondary[key] || typeof secondary[key] !== 'object') secondary[key] = {};
+        cloneSelectedTransforms(main[key], secondary[key], opts);
+    });
+
+    Object.keys(secondary).forEach(function (key) {
+        if (shouldCopyNamedKey(key) && !mainNamedKeys.has(key)) delete secondary[key];
+    });
+}
 
   function ensureHandPoseSlots(json, targets) {
     if (!state.arms.syncHands) return;
