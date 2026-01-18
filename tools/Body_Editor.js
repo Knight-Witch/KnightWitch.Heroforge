@@ -279,7 +279,6 @@
     if (opts.copyPos && src.pos && typeof src.pos === 'object') dst.pos = deepClone(src.pos);
     if (opts.copyQtn && src.qtn && typeof src.qtn === 'object') dst.qtn = deepClone(src.qtn);
     if (opts.copyScl && src.scl && typeof src.scl === 'object') dst.scl = deepClone(src.scl);
-    if (src.isKitbashed && typeof src.isKitbashed === 'object') dst.isKitbashed = deepClone(src.isKitbashed);
   }
 
   function shouldCopyNamedKey(key) {
@@ -329,21 +328,34 @@
     const needScl = !!state.arms.copyScl;
     if (!needQtn && !needScl) return;
 
+    const keys = Object.keys(main);
+    for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (typeof k !== 'string') continue;
+        if (k.indexOf('main_arm') !== 0) continue;
+        const o = main[k];
+        if (!o || typeof o !== 'object') continue;
+        if (
+            (o.qtn && typeof o.qtn === 'object') ||
+            (o.pos && typeof o.pos === 'object') ||
+            (o.scl && typeof o.scl === 'object')
+        ) {
+            return;
+        }
+    }
+
     const L = 'main_armL_01_0012_bind_jnt';
     const R = 'main_armR_01_0099_bind_jnt';
 
     if (!main[L] || typeof main[L] !== 'object') main[L] = {};
     if (!main[R] || typeof main[R] !== 'object') main[R] = {};
 
-    if (!main[L].isKitbashed) main[L].isKitbashed = { a: 1 };
-    if (!main[R].isKitbashed) main[R].isKitbashed = { a: 1 };
-
     if (needScl && (!main[L].scl || typeof main[L].scl !== 'object')) main[L].scl = { x: 1.0001, y: 1.0001, z: 1.0001 };
     if (needScl && (!main[R].scl || typeof main[R].scl !== 'object')) main[R].scl = { x: 1.001, y: 1.001, z: 1.001 };
 
     if (needQtn && (!main[L].qtn || typeof main[L].qtn !== 'object')) main[L].qtn = { x: 0.0001, y: 0.0001, z: 0.0001, w: 0.0001 };
     if (needQtn && (!main[R].qtn || typeof main[R].qtn !== 'object')) main[R].qtn = { x: 0.001, y: 0.001, z: 0.001, w: 1 };
-  }
+}
 
   function doArmsSync() {
     const before = snapshotCurrentCharacter();
@@ -508,8 +520,6 @@
         if (src.scl && typeof src.scl === 'object') dst.scl = deepClone(src.scl);
         else delete dst.scl;
       }
-
-      if (src.isKitbashed && typeof src.isKitbashed === 'object') dst.isKitbashed = deepClone(src.isKitbashed);
       else delete dst.isKitbashed;
     }
 
@@ -582,8 +592,6 @@
         if (!opts.copyPos && !dst.pos && b && b.pos && typeof b.pos === 'object') dst.pos = deepClone(b.pos);
         if (!opts.copyQtn && !dst.qtn && b && b.qtn && typeof b.qtn === 'object') dst.qtn = deepClone(b.qtn);
       }
-
-      if (src.isKitbashed && typeof src.isKitbashed === 'object') dst.isKitbashed = deepClone(src.isKitbashed);
       else delete dst.isKitbashed;
 
       if (dst && typeof dst === 'object' && Object.keys(dst).length === 0) delete rig[toKey];
