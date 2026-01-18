@@ -79,16 +79,28 @@
 
   function gmGet(key, fallback) {
     try {
-      const v = GM_getValue(key, null);
-      if (v === null || v === undefined) return fallback;
-      return v;
-    } catch {
-      return fallback;
-    }
+      if (typeof GM_getValue === 'function') {
+        const v = GM_getValue(key, null);
+        if (v !== null && v !== undefined) return v;
+      }
+    } catch {}
+    try {
+      const v = localStorage.getItem(key);
+      if (v !== null) return JSON.parse(v);
+    } catch {}
+    return fallback;
   }
 
   function gmSet(key, val) {
-    try { GM_setValue(key, val); } catch {}
+    try {
+      if (typeof GM_setValue === 'function') {
+        GM_setValue(key, val);
+        return;
+      }
+    } catch {}
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch {}
   }
 
   function ensureStyles() {
@@ -440,7 +452,7 @@
 
   function teardownBoothNow(TN) {
     try {
-      const t = (TN && TN.tokenizer) || (unsafeWindow.TN && unsafeWindow.TN.tokenizer) || null;
+      const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
       if (t && typeof t.disable === 'function') t.disable();
       else if (t && typeof state.originalTokenizerDisable === 'function') state.originalTokenizerDisable.call(t);
     } catch {}
@@ -478,7 +490,7 @@
       if (!state.userBoothOn && prevUser) state.boothPendingTeardown = true;
       if (state.userBoothOn && !prevUser) {
         try {
-          const t = (TN && TN.tokenizer) || (unsafeWindow.TN && unsafeWindow.TN.tokenizer) || null;
+          const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
           if (t && typeof t.enable === 'function') t.enable();
         } catch {}
       }
@@ -487,7 +499,7 @@
   }
 
   function waitForTN(cb) {
-    if (unsafeWindow.TN) return cb(unsafeWindow.TN);
+    if (UW.TN) return cb(UW.TN);
     setTimeout(() => waitForTN(cb), 50);
   }
 
@@ -540,7 +552,7 @@
     if (state.exitRearmTimer) return;
     state.exitRearmTimer = setTimeout(() => {
       state.exitRearmTimer = null;
-      const tn = unsafeWindow.TN || TN || null;
+      const tn = UW.TN || TN || null;
       if (!tn || !state.userBoothOn) return;
       if (isInBooth(tn)) return;
 
@@ -548,7 +560,7 @@
       try { teardownBoothNow(tn); } catch {}
 
       setTimeout(() => {
-        const tn2 = unsafeWindow.TN || tn;
+        const tn2 = UW.TN || tn;
         if (!tn2 || !state.userBoothOn) return;
         if (isInBooth(tn2)) return;
         state.boothOn = true;
@@ -714,7 +726,7 @@
 
   function getRoot() {
     try {
-      const TN = unsafeWindow.TN;
+      const TN = UW.TN;
       const g = TN && TN.helper && TN.helper._debugGroup;
       return g && g.parent && g.parent.children && g.parent.children[0] ? g.parent.children[0] : null;
     } catch {
@@ -952,7 +964,7 @@
     const wrapped = function () {
       if (state.boothOn) {
         try {
-          const tn = unsafeWindow.TN || null;
+          const tn = UW.TN || null;
           const tok = tn && tn.tokenizer ? tn.tokenizer : null;
           const isTokenizer = tok && obj === tok;
           if (isTokenizer && state.userBoothOn && !isInBooth(tn) && !state.oneShotBackdropRearmArmed) {
@@ -963,7 +975,7 @@
             setTimeout(() => {
               state.oneShotBackdropRearmArmed = false;
               try {
-                const tn2 = unsafeWindow.TN || null;
+                const tn2 = UW.TN || null;
                 if (!tn2) return;
                 if (!state.userBoothOn) return;
                 if (isInBooth(tn2)) return;
@@ -1206,5 +1218,6 @@
     if (!registerTool()) setTimeout(boot, 200);
   }
 
+  startLoop();
   boot();
 })();
