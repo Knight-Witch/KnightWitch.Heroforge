@@ -110,6 +110,13 @@
       .kwBoothConsent{display:flex;align-items:center;gap:8px;font-size:12px;}
       .kwBoothConsent input{transform:translateY(0.5px);}
       .kwBoothBox{border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:10px;background:rgba(0,0,0,0.18);}
+      .kwBoothBox .kwBoothRow + .kwBoothRow{margin-top:10px;}
+      .kwBoothDirTitle{font-weight:700;font-size:12px;opacity:0.95;}
+      .kwBoothNotesTitle{font-weight:700;margin-top:10px;margin-bottom:6px;}
+      .kwBoothOl{margin:0 0 0 18px;padding:0;}
+      .kwBoothOl li{margin:0 0 10px 0;}
+      .kwBoothUl{margin:0 0 0 18px;padding:0;list-style:disc;}
+      .kwBoothUl li{margin:0 0 10px 0;}
       .kwBoothDirHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
       .kwBoothBtn{border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:6px 10px;background:rgba(255,255,255,0.06);color:inherit;font-size:12px;cursor:pointer;}
       .kwBoothBtn:active{transform:translateY(1px);}
@@ -191,7 +198,7 @@
     dirHeader.className = 'kwBoothDirHeader';
 
     const dirTitle = document.createElement('div');
-    dirTitle.className = 'kwBoothLabel';
+    dirTitle.className = 'kwBoothDirTitle';
     dirTitle.textContent = 'Directions';
 
     const dirBtn = document.createElement('button');
@@ -203,14 +210,41 @@
 
     const dirText = document.createElement('div');
     dirText.className = 'kwBoothDirText';
-    dirText.textContent = `1. Open photo booth
-2. Edit your scene, or if you have already done so, it will capture that automatically.
-3. Exit the booth
 
-Notes:
- - Toggle the booth view on/off at any time
- - If the black background doesn't disappear when you toggle it off, just click the canvas and zoom or move the camera and it will turn white. Toggle black background back on for dark mode.
- - Currently, you will need to reload the page to revert back to the original fantasy background in the main UI editor. I will work to patch this when I can.`;
+    const ol = document.createElement('ol');
+    ol.className = 'kwBoothOl';
+    const li1 = document.createElement('li');
+    li1.textContent = 'Enable Booth Persistence';
+    const li2 = document.createElement('li');
+    li2.textContent = 'Open photo booth';
+    const li3 = document.createElement('li');
+    li3.textContent = 'Edit your scene, or if you have already done so, it will capture that automatically.';
+    const li4 = document.createElement('li');
+    li4.textContent = 'Exit the booth';
+    ol.appendChild(li1);
+    ol.appendChild(li2);
+    ol.appendChild(li3);
+    ol.appendChild(li4);
+
+    const notesTitle = document.createElement('div');
+    notesTitle.className = 'kwBoothNotesTitle';
+    notesTitle.textContent = 'Notes:';
+
+    const ul = document.createElement('ul');
+    ul.className = 'kwBoothUl';
+    const n1 = document.createElement('li');
+    n1.textContent = 'Toggle the booth view on/off at any time';
+    const n2 = document.createElement('li');
+    n2.textContent = "If the black background doesn't disappear when you toggle it off, just click the canvas and zoom or move the camera and it will turn white. Toggle black background back on for dark mode.";
+    const n3 = document.createElement('li');
+    n3.textContent = 'Currently, you will need to reload the page to revert back to the original fantasy background in the main UI editor. I will work to patch this when I can.';
+    ul.appendChild(n1);
+    ul.appendChild(n2);
+    ul.appendChild(n3);
+
+    dirText.appendChild(ol);
+    dirText.appendChild(notesTitle);
+    dirText.appendChild(ul);
 
     dirBox.appendChild(dirHeader);
     dirBox.appendChild(dirText);
@@ -255,15 +289,13 @@ Notes:
 
     if (ui.consent) ui.consent.checked = !!state.consent;
 
-    const togglesEnabled = !!state.consent;
-
     if (ui.boothToggle) {
-      ui.boothToggle.disabled = !togglesEnabled;
+      ui.boothToggle.disabled = !state.consent;
       ui.boothToggle.checked = !!state.userBoothOn;
     }
 
     if (ui.bgToggle) {
-      ui.bgToggle.disabled = !togglesEnabled;
+      ui.bgToggle.disabled = false;
       ui.bgToggle.checked = !!state.bgOn;
     }
 
@@ -1001,7 +1033,6 @@ Notes:
   }
   function tick(TN) {
     if (!state.loopActive) return;
-    if (!state.consent) return requestAnimationFrame(() => tick(TN));
     const now = performance.now();
     if (now - state.lastTickAt < 110) return requestAnimationFrame(() => tick(TN));
     state.lastTickAt = now;
@@ -1044,7 +1075,7 @@ Notes:
 
     maybeAutoApply(TN);
 
-    const hideFrame = !!state.userBoothOn && !inBooth;
+    const hideFrame = !!state.consent && !!state.userBoothOn && !inBooth;
     setBoothFrameHidden(hideFrame);
     setShaderFrameHidden(hideFrame, TN);
 
@@ -1083,8 +1114,8 @@ Notes:
       state.seenBooth = false;
       startLoop();
     } else {
-      stopLoop();
-      teardownAll();
+      teardownBoothOnly();
+      reconcileLoop();
     }
 
     updateUI();
@@ -1120,10 +1151,13 @@ Notes:
 
   function onUserBgToggle(v) {
     state.bgOn = !!v;
-    if (!state.consent) state.bgOn = false;
     if (!state.bgOn) {
       try { restoreOriginalBackdrop(); } catch {}
+    } else {
+      try { if (!state.capturedMaterial) tryCaptureBackdropFromScene(); } catch {}
+      try { captureOriginalBackdrop(); } catch {}
     }
+    reconcileLoop();
     updateUI();
   }
 
@@ -1138,17 +1172,21 @@ Notes:
     state.loopActive = false;
   }
 
-  function teardownAll() {
+  function reconcileLoop() {
+    const need = !!state.consent || !!state.bgOn;
+    if (need) startLoop();
+    else stopLoop();
+  }
+
+  function teardownBoothOnly() {
     state.boothOn = false;
     state.userBoothOn = false;
-    state.bgOn = false;
     state.autoApplied = false;
     state.boothPendingTeardown = false;
     state.oneShotBackdropRearmArmed = false;
     try { setShaderFrameHidden(false, UW.TN); } catch {}
     try { setBoothFrameHidden(false); } catch {}
     try { teardownBoothNow(UW.TN); } catch {}
-    try { restoreOriginalBackdrop(); } catch {}
     updateUI();
   }
 
