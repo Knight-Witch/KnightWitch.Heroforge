@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v14';
+  const BUILD_TAG = 'v15';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -1109,18 +1109,35 @@ function waitForTN(cb) {
 
       dbg('silentCycle.start', {});
 
-      try {
-        if (state.ui && state.ui.boothToggle) state.ui.boothToggle.disabled = true;
-      } catch {}
+      const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
 
-      try {
-        onUserBoothToggle(false);
-      } catch {}
+      try { if (uiToggle) uiToggle.disabled = true; } catch {}
+
+      function fireToggle(nextChecked) {
+        try {
+          if (!uiToggle) return false;
+          uiToggle.checked = !!nextChecked;
+          try { uiToggle.dispatchEvent(new Event('input', { bubbles: true })); } catch {}
+          try { uiToggle.dispatchEvent(new Event('change', { bubbles: true })); } catch {}
+          try { uiToggle.click(); } catch {}
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      // OFF using real DOM events if possible; fallback to handler
+      const didDomOff = fireToggle(false);
+      if (!didDomOff) {
+        try { onUserBoothToggle(false); } catch {}
+      }
 
       setTimeout(() => {
-        try {
-          onUserBoothToggle(true);
-        } catch {}
+        // ON
+        const didDomOn = fireToggle(true);
+        if (!didDomOn) {
+          try { onUserBoothToggle(true); } catch {}
+        }
 
         setTimeout(() => {
           try {
@@ -1134,17 +1151,17 @@ function waitForTN(cb) {
           state.silentCycleInProgress = false;
 
           try {
-            if (state.ui && state.ui.boothToggle) {
-              state.ui.boothToggle.checked = true;
-              state.ui.boothToggle.disabled = false;
+            if (uiToggle) {
+              uiToggle.checked = true;
+              uiToggle.disabled = false;
             }
           } catch {}
 
           dbg('silentCycle.done', {});
           updateUI();
-        }, 700);
-      }, 350);
-    }, 1100);
+        }, 900);
+      }, 450);
+    }, 1200);
   }
 
   function tick(TN) {
