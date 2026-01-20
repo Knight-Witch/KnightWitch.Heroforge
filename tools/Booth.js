@@ -62,6 +62,8 @@
 
     oneShotBackdropRearmArmed: false,
 
+
+    allowTokenizerDisableOnce: false,
     loopActive: false,
 
     ui: {
@@ -953,50 +955,47 @@
   }
 
   function wrapDisable(obj) {
-    if (!obj || typeof obj !== 'object') return;
-    const fn = obj.disable;
-    if (typeof fn !== 'function') return;
+    if (!obj || typeof obj.disable !== 'function') return;
+    if (state.wrapMap.has(obj)) return;
 
-    const existing = state.wrapMap.get(obj);
-    if (existing && existing.current === fn) return;
-
-    const original = fn;
+    const original = obj.disable;
     const wrapped = function () {
-      if (state.boothOn) {
-        try {
-          const tn = UW.TN || null;
-          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
-          const isTokenizer = tok && obj === tok;
-          if (isTokenizer && state.userBoothOn && !isInBooth(tn) && !state.oneShotBackdropRearmArmed) {
-            state.oneShotBackdropRearmArmed = true;
-            state.boothOn = false;
-            try { original.apply(this, arguments); } catch {}
-            state.boothOn = true;
-            setTimeout(() => {
-              state.oneShotBackdropRearmArmed = false;
-              try {
-                const tn2 = UW.TN || null;
-                if (!tn2) return;
-                if (!state.userBoothOn) return;
-                if (isInBooth(tn2)) return;
-                const t = tn2.tokenizer;
-                if (t && typeof t.enable === 'function') t.enable();
-              } catch {}
-            }, 200);
-            return true;
+      try {
+        const tn = UW.TN;
+        const tok = tn && tn.tokenizer;
+        const isTokenizer = tok && obj === tok;
+
+        if (state.boothOn) {
+          if (isTokenizer && state.allowTokenizerDisableOnce) {
+            return original.apply(this, arguments);
           }
-        } catch {}
-        return true;
-      }
+          return true;
+        }
+
+        if (isTokenizer && state.userBoothOn && !isInBooth(tn) && !state.oneShotBackdropRearmArmed) {
+          state.oneShotBackdropRearmArmed = true;
+          state.allowTokenizerDisableOnce = true;
+          try { original.apply(this, arguments); } catch {}
+          state.allowTokenizerDisableOnce = false;
+
+          setTimeout(() => {
+            state.oneShotBackdropRearmArmed = false;
+            try {
+              const t2 = UW.TN && UW.TN.tokenizer;
+              if (t2 && typeof t2.enable === 'function') t2.enable();
+            } catch {}
+          }, 200);
+
+          return true;
+        }
+      } catch {}
 
       return original.apply(this, arguments);
     };
 
-    try {
-      obj.disable = wrapped;
-      state.wrapMap.set(obj, { original, current: wrapped });
-      state.wrappedDisableObjs.add(obj);
-    } catch {}
+    obj.disable = wrapped;
+    state.wrapMap.set(obj, { original });
+    state.wrappedDisableObjs.add(obj);
   }
 
   function enforceLightingPersistence(TN) {
