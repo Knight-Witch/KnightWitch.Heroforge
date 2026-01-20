@@ -62,6 +62,11 @@
 
     oneShotBackdropRearmArmed: false,
 
+    _suppressUI: false,
+    prevInBooth: false,
+    silentCycleTimer: null,
+    silentCycleInProgress: false,
+
 
     allowTokenizerDisableOnce: false,
     loopActive: false,
@@ -301,20 +306,20 @@
     const ui = state.ui;
     if (!ui || !ui.root) return;
 
-    if (ui.consent) ui.consent.checked = !!state.consent;
+    if (!suppress && ui.consent) ui.consent.checked = !!state.consent;
 
-    if (ui.boothToggle) {
+    if (!suppress && ui.boothToggle) {
       ui.boothToggle.disabled = !state.consent;
       ui.boothToggle.checked = !!state.userBoothOn;
     }
 
-    if (ui.bgToggle) {
+    if (!suppress && ui.bgToggle) {
       ui.bgToggle.disabled = false;
       ui.bgToggle.checked = !!state.bgOn;
     }
 
-    if (ui.dirText) ui.dirText.style.display = state.directionsHidden ? 'none' : '';
-    if (ui.dirBtn) ui.dirBtn.textContent = state.directionsHidden ? 'Show' : 'Hide';
+    if (!suppress && ui.dirText) ui.dirText.style.display = state.directionsHidden ? 'none' : '';
+    if (!suppress && ui.dirBtn) ui.dirBtn.textContent = state.directionsHidden ? 'Show' : 'Hide';
 
     if (ui.status) {
       const tok = state.tokenizerHooked ? 'HOOKED' : '—';
@@ -1052,6 +1057,63 @@
 
     updateUI();
   }
+  
+  function scheduleSilentBackdropCycle(TN) {
+    if (!state.consent || !state.userBoothOn) return;
+    if (state.silentCycleInProgress) return;
+    if (state.silentCycleTimer) return;
+
+    state.silentCycleTimer = setTimeout(() => {
+      state.silentCycleTimer = null;
+      try {
+        const tn = (UW.TN || TN);
+        if (!tn) return;
+        if (isInBooth(tn)) return;
+        if (!state.consent || !state.userBoothOn) return;
+
+        state.silentCycleInProgress = true;
+
+        const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
+        if (uiToggle) uiToggle.disabled = true;
+
+        state._suppressUI = true;
+
+        const savedUser = true;
+        const savedBooth = true;
+
+        try {
+          state.userBoothOn = false;
+          state.boothOn = false;
+          teardownBoothNow(tn);
+        } catch {}
+
+        setTimeout(() => {
+          try {
+            state.userBoothOn = savedUser;
+            state.boothOn = savedBooth;
+            const t = (tn && tn.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
+            if (t && typeof t.enable === 'function') t.enable();
+          } catch {}
+
+          state._suppressUI = false;
+
+          try {
+            if (uiToggle) {
+              uiToggle.checked = true;
+              uiToggle.disabled = false;
+            }
+          } catch {}
+
+          updateUI();
+          state.silentCycleInProgress = false;
+        }, 250);
+      } catch {
+        try { state._suppressUI = false; } catch {}
+        state.silentCycleInProgress = false;
+      }
+    }, 900);
+  }
+
   function tick(TN) {
     if (!state.loopActive) return;
     const now = performance.now();
@@ -1077,6 +1139,10 @@
     })();
 
     if (inBooth) state.seenBooth = true;
+
+    if (state.prevInBooth && !inBooth) {
+      scheduleSilentBackdropCycle(TN);
+    }
 
     if (state.lastTokenizerMode == null) state.lastTokenizerMode = tokenizerMode;
 
@@ -1121,6 +1187,8 @@
       enforceAllUniformValues();
       enforceTextureUniforms();
     }
+
+    state.prevInBooth = inBooth;
 
     requestAnimationFrame(() => tick(TN));
   }
