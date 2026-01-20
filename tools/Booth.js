@@ -306,6 +306,9 @@
     const ui = state.ui;
     if (!ui || !ui.root) return;
 
+
+    const suppress = !!state._suppressUI;
+
     if (!suppress && ui.consent) ui.consent.checked = !!state.consent;
 
     if (!suppress && ui.boothToggle) {
@@ -1298,4 +1301,3 @@
   startLoop();
   boot();
 })();
-
