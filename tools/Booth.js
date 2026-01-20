@@ -4,6 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
+  const BUILD_TAG = 'v10';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -67,7 +68,6 @@
     silentCycleTimer: null,
     silentCycleInProgress: false,
 
-    debug: false,
     debugLog: [],
 
 
@@ -332,7 +332,7 @@
       const booth = state.userBoothOn ? 'ON' : 'OFF';
       const bg = state.bgOn ? 'ON' : 'OFF';
       ui.status.textContent = `Tokenizer: ${tok} | Booth: ${booth} | Black Canvas: ${bg}`;
-    try { if (state.debug) ui.status.textContent += ' | DBG'; } catch {}
+    try { ui.status.textContent += ` | Booth ${BUILD_TAG}`; } catch {}
     }
   }
 
@@ -514,23 +514,15 @@
   }
 
   
-  function readDebugSetting() {
-    try {
-      const v = gmGet('kw.witchDock.booth.debug', false);
-      return !!v;
-    } catch {
-      try { return localStorage.getItem('kw.witchDock.booth.debug') === 'true'; } catch {}
-      return false;
-    }
-  }
-
   function dbg(tag, data) {
-    if (!state.debug) return;
     try {
-      const rec = { t: Date.now(), tag, data };
+      const rec = { t: Date.now(), tag, data: data === undefined ? null : data };
       state.debugLog.push(rec);
       if (state.debugLog.length > 200) state.debugLog.shift();
-      try { console.log('[BoothDBG]', tag, data); } catch {}
+      try {
+        const c = localStorage.getItem('kw.witchDock.booth.debugConsole');
+        if (c === 'true') console.log('[BoothDBG]', tag, data);
+      } catch {}
     } catch {}
   }
 
@@ -995,15 +987,6 @@ function waitForTN(cb) {
 
     const original = obj.disable;
     const wrapped = function () {
-        try {
-          let name = '';
-          try {
-            if (UW.TN && UW.TN.tokenizer && obj === UW.TN.tokenizer) name = 'TN.tokenizer';
-            else if (UW.TN && UW.TN.lighting && obj === UW.TN.lighting) name = 'TN.lighting';
-            else if (UW.TN && UW.TN.scene && obj === UW.TN.scene) name = 'TN.scene';
-          } catch {}
-          dbg('disable.call', { name, boothOn: state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce, inBooth: (()=>{try{return UW.TN?isInBooth(UW.TN):null}catch{return null}})() });
-        } catch {}
       try {
         const tn = UW.TN;
         const tok = tn && tn.tokenizer;
@@ -1202,6 +1185,7 @@ function waitForTN(cb) {
     if (inBooth) state.seenBooth = true;
 
     if (state.prevInBooth && !inBooth) {
+      dbg('booth.exit', { mode: tokenizerMode });
       scheduleSilentBackdropCycle(TN);
     }
 
@@ -1312,7 +1296,6 @@ function waitForTN(cb) {
   }
 
   function startLoop() {
-    state.debug = readDebugSetting();
     if (!state.loopActive) {
       state.loopActive = true;
       waitForTN((TN) => requestAnimationFrame(() => tick(TN)));
@@ -1357,7 +1340,15 @@ function waitForTN(cb) {
     if (!registerTool()) setTimeout(boot, 200);
   }
 
+  try {
+    UW.KW_WD_BOOTH_DEBUG_DUMP = function () {
+      try { return JSON.stringify(state.debugLog, null, 2); } catch { return '[]'; }
+    };
+    UW.KW_WD_BOOTH_BUILD = BUILD_TAG;
+    try { console.log('[Booth] build', BUILD_TAG); } catch {}
+  } catch {}
+
+
   startLoop();
   boot();
 })();
-
