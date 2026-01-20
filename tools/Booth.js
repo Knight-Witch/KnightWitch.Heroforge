@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v12';
+  const BUILD_TAG = 'v13';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -977,7 +977,12 @@ function waitForTN(cb) {
     state.originalTokenizerDisable = t.disable;
 
     t.disable = function () {
-      if (state.boothOn) return;
+      if (state.boothOn) {
+        try {
+          if (state.allowTokenizerDisableOnce) return state.originalTokenizerDisable.apply(this, arguments);
+        } catch {}
+        return;
+      }
       return state.originalTokenizerDisable.apply(this, arguments);
     };
 
@@ -1233,8 +1238,10 @@ function waitForTN(cb) {
 
     if (state.prevInBooth && !inBooth) {
       dbg('booth.exit', { mode: tokenizerMode });
+      try { state.allowTokenizerDisableOnce = true; dbg('exit.armAllow', {}); } catch {}
       try { dbg('silentCycle.schedule', {}); } catch {}
       scheduleSilentBackdropCycle(TN);
+      setTimeout(() => { try { state.allowTokenizerDisableOnce = false; dbg('exit.clearAllow', {}); } catch {} }, 1500);
     }
 
     if (state.lastTokenizerMode == null) state.lastTokenizerMode = tokenizerMode;
