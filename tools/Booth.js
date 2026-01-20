@@ -986,6 +986,16 @@
             } catch {}
           }, 200);
 
+          setTimeout(() => {
+            try {
+              const tn2 = UW.TN;
+              if (!tn2 || !state.userBoothOn) return;
+              if (isInBooth(tn2)) return;
+              const t3 = tn2.tokenizer;
+              if (t3 && typeof t3.enable === 'function') t3.enable();
+            } catch {}
+          }, 1100);
+
           return true;
         }
       } catch {}
