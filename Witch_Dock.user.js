@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v1
+// @name         Witch Dock v1.0.4
 // @namespace    KnightWitch
-// @version      1.0.3
+// @version      1.0.4
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
