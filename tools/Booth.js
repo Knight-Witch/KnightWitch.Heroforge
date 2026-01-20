@@ -526,6 +526,9 @@
     } catch {}
   }
 
+  try { dbg('init', { build: BUILD_TAG }); } catch {}
+
+
 function waitForTN(cb) {
     if (UW.TN) return cb(UW.TN);
     setTimeout(() => waitForTN(cb), 50);
@@ -987,6 +990,14 @@ function waitForTN(cb) {
 
     const original = obj.disable;
     const wrapped = function () {
+        try {
+          let name = '';
+          try {
+            if (UW.TN && UW.TN.tokenizer && obj === UW.TN.tokenizer) name = 'TN.tokenizer';
+            else if (UW.TN && UW.TN.lighting && obj === UW.TN.lighting) name = 'TN.lighting';
+          } catch {}
+          dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
+        } catch {}
       try {
         const tn = UW.TN;
         const tok = tn && tn.tokenizer;
@@ -1186,6 +1197,7 @@ function waitForTN(cb) {
 
     if (state.prevInBooth && !inBooth) {
       dbg('booth.exit', { mode: tokenizerMode });
+      try { dbg('silentCycle.schedule', {}); } catch {}
       scheduleSilentBackdropCycle(TN);
     }
 
@@ -1241,6 +1253,7 @@ function waitForTN(cb) {
   
 
   function onConsentToggle(v) {
+    try { dbg('ui.consent', { v: !!v }); } catch {}
     state.consent = !!v;
     gmSet(STORE_CONSENT, !!state.consent);
 
@@ -1256,6 +1269,7 @@ function waitForTN(cb) {
   }
 
   function onUserBoothToggle(v) {
+    try { dbg('ui.boothToggle', { v: !!v, consent: !!state.consent }); } catch {}
     const TN = UW.TN;
     state.userBoothOn = !!v;
     if (!state.consent) {
