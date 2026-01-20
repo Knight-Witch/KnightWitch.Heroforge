@@ -1068,53 +1068,73 @@
 
     state.silentCycleTimer = setTimeout(() => {
       state.silentCycleTimer = null;
+      const tn = UW.TN || TN || null;
+      if (!tn) return;
+      if (isInBooth(tn)) return;
+      if (!state.consent || !state.userBoothOn) return;
+
+      state.silentCycleInProgress = true;
+      state._suppressUI = true;
+
+      const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
+      try { if (uiToggle) uiToggle.disabled = true; } catch {}
+
+      const savedUser = true;
+      const savedBooth = true;
+
       try {
-        const tn = (UW.TN || TN);
-        if (!tn) return;
-        if (isInBooth(tn)) return;
-        if (!state.consent || !state.userBoothOn) return;
+        state.userBoothOn = false;
+        state.boothOn = false;
+        teardownBoothNow(tn);
+      } catch {}
 
-        state.silentCycleInProgress = true;
-
-        const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
-        if (uiToggle) uiToggle.disabled = true;
-
-        state._suppressUI = true;
-
-        const savedUser = true;
-        const savedBooth = true;
+      setTimeout(() => {
+        const tn2 = UW.TN || tn;
+        if (!tn2) {
+          state._suppressUI = false;
+          state.silentCycleInProgress = false;
+          try { if (uiToggle) uiToggle.disabled = false; } catch {}
+          updateUI();
+          return;
+        }
+        if (isInBooth(tn2)) {
+          state._suppressUI = false;
+          state.silentCycleInProgress = false;
+          try { if (uiToggle) uiToggle.disabled = false; } catch {}
+          updateUI();
+          return;
+        }
 
         try {
-          state.userBoothOn = false;
-          state.boothOn = false;
-          teardownBoothNow(tn);
+          state.userBoothOn = savedUser;
+          state.boothOn = savedBooth;
+
+          const t = (tn2 && tn2.tokenizer) || null;
+          if (t && typeof t.enable === 'function') t.enable();
         } catch {}
 
         setTimeout(() => {
           try {
-            state.userBoothOn = savedUser;
-            state.boothOn = savedBooth;
-            const t = (tn && tn.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
-            if (t && typeof t.enable === 'function') t.enable();
+            if (!state.capturedMaterial) tryCaptureBackdropFromScene();
           } catch {}
+          try {
+            if (state.capturedMaterial) applyCapturedMaterial();
+          } catch {}
+          try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
+          try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
 
           state._suppressUI = false;
-
+          state.silentCycleInProgress = false;
           try {
             if (uiToggle) {
               uiToggle.checked = true;
               uiToggle.disabled = false;
             }
           } catch {}
-
           updateUI();
-          state.silentCycleInProgress = false;
-        }, 250);
-      } catch {
-        try { state._suppressUI = false; } catch {}
-        state.silentCycleInProgress = false;
-      }
-    }, 900);
+        }, 600);
+      }, 350);
+    }, 1100);
   }
 
   function tick(TN) {
