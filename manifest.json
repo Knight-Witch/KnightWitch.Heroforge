@@ -5,21 +5,21 @@
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/tools/Body_Editor.js",
       "enabledByDefault": true
     },
     {
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/tools/Booth.js",
       "enabledByDefault": true
     },
     {
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/tools/JSON_Tool.js",
       "enabledByDefault": true
     }
   ]
