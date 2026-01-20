@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         Witch Dock v1
+// @name         Witch Dock v1 - DEV TEST
 // @namespace    KnightWitch
-// @version      1.0.3
+// @version      1.0.0
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/Witch_Dock.user.js
+// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/Witch_Dock.user.js
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_setClipboard
@@ -22,7 +22,7 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
-const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
+const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/manifest.json";
 const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
 const KOFI_URL = "https://ko-fi.com/knightwitch";
 const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
