@@ -67,6 +67,9 @@
     silentCycleTimer: null,
     silentCycleInProgress: false,
 
+    debug: false,
+    debugLog: [],
+
 
     allowTokenizerDisableOnce: false,
     loopActive: false,
@@ -329,6 +332,7 @@
       const booth = state.userBoothOn ? 'ON' : 'OFF';
       const bg = state.bgOn ? 'ON' : 'OFF';
       ui.status.textContent = `Tokenizer: ${tok} | Booth: ${booth} | Black Canvas: ${bg}`;
+    try { if (state.debug) ui.status.textContent += ' | DBG'; } catch {}
     }
   }
 
@@ -501,6 +505,7 @@
       if (state.userBoothOn && !prevUser) {
         try {
           const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
+          dbg('silentCycle.on', {});
           if (t && typeof t.enable === 'function') t.enable();
         } catch {}
       }
@@ -508,7 +513,28 @@
     }
   }
 
-  function waitForTN(cb) {
+  
+  function readDebugSetting() {
+    try {
+      const v = gmGet('kw.witchDock.booth.debug', false);
+      return !!v;
+    } catch {
+      try { return localStorage.getItem('kw.witchDock.booth.debug') === 'true'; } catch {}
+      return false;
+    }
+  }
+
+  function dbg(tag, data) {
+    if (!state.debug) return;
+    try {
+      const rec = { t: Date.now(), tag, data };
+      state.debugLog.push(rec);
+      if (state.debugLog.length > 200) state.debugLog.shift();
+      try { console.log('[BoothDBG]', tag, data); } catch {}
+    } catch {}
+  }
+
+function waitForTN(cb) {
     if (UW.TN) return cb(UW.TN);
     setTimeout(() => waitForTN(cb), 50);
   }
@@ -567,7 +593,8 @@
       if (isInBooth(tn)) return;
 
       state.boothOn = false;
-      try { teardownBoothNow(tn); } catch {}
+      try { dbg('silentCycle.off', {});
+        teardownBoothNow(tn); } catch {}
 
       setTimeout(() => {
         const tn2 = UW.TN || tn;
@@ -968,6 +995,15 @@
 
     const original = obj.disable;
     const wrapped = function () {
+        try {
+          let name = '';
+          try {
+            if (UW.TN && UW.TN.tokenizer && obj === UW.TN.tokenizer) name = 'TN.tokenizer';
+            else if (UW.TN && UW.TN.lighting && obj === UW.TN.lighting) name = 'TN.lighting';
+            else if (UW.TN && UW.TN.scene && obj === UW.TN.scene) name = 'TN.scene';
+          } catch {}
+          dbg('disable.call', { name, boothOn: state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce, inBooth: (()=>{try{return UW.TN?isInBooth(UW.TN):null}catch{return null}})() });
+        } catch {}
       try {
         const tn = UW.TN;
         const tok = tn && tn.tokenizer;
@@ -1074,6 +1110,7 @@
       if (!state.consent || !state.userBoothOn) return;
 
       state.silentCycleInProgress = true;
+      dbg('silentCycle.start', {});
       state._suppressUI = true;
 
       const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
@@ -1118,7 +1155,8 @@
             if (!state.capturedMaterial) tryCaptureBackdropFromScene();
           } catch {}
           try {
-            if (state.capturedMaterial) applyCapturedMaterial();
+            dbg('silentCycle.reapply', { hasMat: !!state.capturedMaterial, hasU: !!state.capturedUniformValues, hasTU: !!state.capturedTextureUniforms });
+          if (state.capturedMaterial) applyCapturedMaterial();
           } catch {}
           try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
           try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
@@ -1274,6 +1312,7 @@
   }
 
   function startLoop() {
+    state.debug = readDebugSetting();
     if (!state.loopActive) {
       state.loopActive = true;
       waitForTN((TN) => requestAnimationFrame(() => tick(TN)));
