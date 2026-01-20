@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v10';
+  const BUILD_TAG = 'v12';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -998,12 +998,48 @@ function waitForTN(cb) {
           } catch {}
           dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
         } catch {}
+        try {
+          const tn = UW.TN || null;
+          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
+          const isTokenizer = !!tok && obj === tok;
+
+          if (state.boothOn && isTokenizer && state.userBoothOn && !state.oneShotExitArmed && tn && !isInBooth(tn)) {
+            state.oneShotExitArmed = true;
+            state.allowTokenizerDisableOnce = true;
+
+            dbg('exit.oneShot.allow', {});
+
+            try { return original.apply(this, arguments); } catch {}
+
+            state.allowTokenizerDisableOnce = false;
+
+            setTimeout(() => {
+              try {
+                const t2 = UW.TN && UW.TN.tokenizer;
+                if (t2 && typeof t2.enable === 'function') t2.enable();
+              } catch {}
+              try {
+                if (state.capturedMaterial) applyCapturedMaterial();
+              } catch {}
+              try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
+              try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
+              state.oneShotExitArmed = false;
+            }, 900);
+
+            return true;
+          }
+        } catch {}
       try {
         const tn = UW.TN;
         const tok = tn && tn.tokenizer;
         const isTokenizer = tok && obj === tok;
 
         if (state.boothOn) {
+        try {
+          const tn = UW.TN || null;
+          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
+          if (state.allowTokenizerDisableOnce && tok && obj === tok) return original.apply(this, arguments);
+        } catch {}
           if (isTokenizer && state.allowTokenizerDisableOnce) {
             return original.apply(this, arguments);
           }
