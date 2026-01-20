@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v15';
+  const BUILD_TAG = 'v16';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -1004,6 +1004,15 @@ function waitForTN(cb) {
         const isTokenizer = tok && obj === tok;
 
         if (state.boothOn) {
+        try {
+          const tn = UW.TN || null;
+          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
+          if (tok && obj === tok && state.consent && state.userBoothOn && tn && !isInBooth(tn)) {
+            dbg('exit.detect.disable', {});
+            scheduleSilentBackdropCycle(tn);
+          }
+        } catch {}
+
           if (isTokenizer && state.allowTokenizerDisableOnce) {
             return original.apply(this, arguments);
           }
