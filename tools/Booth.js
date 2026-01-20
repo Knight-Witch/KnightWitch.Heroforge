@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v13';
+  const BUILD_TAG = 'v14';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -977,12 +977,7 @@ function waitForTN(cb) {
     state.originalTokenizerDisable = t.disable;
 
     t.disable = function () {
-      if (state.boothOn) {
-        try {
-          if (state.allowTokenizerDisableOnce) return state.originalTokenizerDisable.apply(this, arguments);
-        } catch {}
-        return;
-      }
+      if (state.boothOn) return;
       return state.originalTokenizerDisable.apply(this, arguments);
     };
 
@@ -1003,48 +998,12 @@ function waitForTN(cb) {
           } catch {}
           dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
         } catch {}
-        try {
-          const tn = UW.TN || null;
-          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
-          const isTokenizer = !!tok && obj === tok;
-
-          if (state.boothOn && isTokenizer && state.userBoothOn && !state.oneShotExitArmed && tn && !isInBooth(tn)) {
-            state.oneShotExitArmed = true;
-            state.allowTokenizerDisableOnce = true;
-
-            dbg('exit.oneShot.allow', {});
-
-            try { return original.apply(this, arguments); } catch {}
-
-            state.allowTokenizerDisableOnce = false;
-
-            setTimeout(() => {
-              try {
-                const t2 = UW.TN && UW.TN.tokenizer;
-                if (t2 && typeof t2.enable === 'function') t2.enable();
-              } catch {}
-              try {
-                if (state.capturedMaterial) applyCapturedMaterial();
-              } catch {}
-              try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
-              try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
-              state.oneShotExitArmed = false;
-            }, 900);
-
-            return true;
-          }
-        } catch {}
       try {
         const tn = UW.TN;
         const tok = tn && tn.tokenizer;
         const isTokenizer = tok && obj === tok;
 
         if (state.boothOn) {
-        try {
-          const tn = UW.TN || null;
-          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
-          if (state.allowTokenizerDisableOnce && tok && obj === tok) return original.apply(this, arguments);
-        } catch {}
           if (isTokenizer && state.allowTokenizerDisableOnce) {
             return original.apply(this, arguments);
           }
@@ -1139,73 +1098,51 @@ function waitForTN(cb) {
 
     state.silentCycleTimer = setTimeout(() => {
       state.silentCycleTimer = null;
+
       const tn = UW.TN || TN || null;
       if (!tn) return;
       if (isInBooth(tn)) return;
       if (!state.consent || !state.userBoothOn) return;
 
       state.silentCycleInProgress = true;
-      dbg('silentCycle.start', {});
       state._suppressUI = true;
 
-      const uiToggle = state.ui && state.ui.boothToggle ? state.ui.boothToggle : null;
-      try { if (uiToggle) uiToggle.disabled = true; } catch {}
-
-      const savedUser = true;
-      const savedBooth = true;
+      dbg('silentCycle.start', {});
 
       try {
-        state.userBoothOn = false;
-        state.boothOn = false;
-        teardownBoothNow(tn);
+        if (state.ui && state.ui.boothToggle) state.ui.boothToggle.disabled = true;
+      } catch {}
+
+      try {
+        onUserBoothToggle(false);
       } catch {}
 
       setTimeout(() => {
-        const tn2 = UW.TN || tn;
-        if (!tn2) {
-          state._suppressUI = false;
-          state.silentCycleInProgress = false;
-          try { if (uiToggle) uiToggle.disabled = false; } catch {}
-          updateUI();
-          return;
-        }
-        if (isInBooth(tn2)) {
-          state._suppressUI = false;
-          state.silentCycleInProgress = false;
-          try { if (uiToggle) uiToggle.disabled = false; } catch {}
-          updateUI();
-          return;
-        }
-
         try {
-          state.userBoothOn = savedUser;
-          state.boothOn = savedBooth;
-
-          const t = (tn2 && tn2.tokenizer) || null;
-          if (t && typeof t.enable === 'function') t.enable();
+          onUserBoothToggle(true);
         } catch {}
 
         setTimeout(() => {
           try {
             if (!state.capturedMaterial) tryCaptureBackdropFromScene();
           } catch {}
-          try {
-            dbg('silentCycle.reapply', { hasMat: !!state.capturedMaterial, hasU: !!state.capturedUniformValues, hasTU: !!state.capturedTextureUniforms });
-          if (state.capturedMaterial) applyCapturedMaterial();
-          } catch {}
+          try { if (state.capturedMaterial) applyCapturedMaterial(); } catch {}
           try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
           try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
 
           state._suppressUI = false;
           state.silentCycleInProgress = false;
+
           try {
-            if (uiToggle) {
-              uiToggle.checked = true;
-              uiToggle.disabled = false;
+            if (state.ui && state.ui.boothToggle) {
+              state.ui.boothToggle.checked = true;
+              state.ui.boothToggle.disabled = false;
             }
           } catch {}
+
+          dbg('silentCycle.done', {});
           updateUI();
-        }, 600);
+        }, 700);
       }, 350);
     }, 1100);
   }
@@ -1238,10 +1175,8 @@ function waitForTN(cb) {
 
     if (state.prevInBooth && !inBooth) {
       dbg('booth.exit', { mode: tokenizerMode });
-      try { state.allowTokenizerDisableOnce = true; dbg('exit.armAllow', {}); } catch {}
       try { dbg('silentCycle.schedule', {}); } catch {}
       scheduleSilentBackdropCycle(TN);
-      setTimeout(() => { try { state.allowTokenizerDisableOnce = false; dbg('exit.clearAllow', {}); } catch {} }, 1500);
     }
 
     if (state.lastTokenizerMode == null) state.lastTokenizerMode = tokenizerMode;
