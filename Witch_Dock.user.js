@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Witch Dock v1.0.4 - DEV TEST ONLY
+// @name         Witch Dock v1.0.5 - DEV TEST
 // @namespace    KnightWitch
-// @version      1.0.4
-// @description  WITCH SCRIPTS - DEV TESTER SCRIPT ONLY
+// @version      1.0.5
+// @description  DEV TEST SCRIPT
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
@@ -22,7 +22,7 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
-const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/manifest.json";
+const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
 const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
 const KOFI_URL = "https://ko-fi.com/knightwitch";
 const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
@@ -1776,224 +1776,296 @@ function mountTool(def) {
   const BONE_FOOTER_HOTKEY_TEXT = "Dock Hotkey: `~ (Grave Key)  |  Undo: Ctrl+Z  |  Redo: Ctrl+Shift+Z";
 
   function initBoneFooterAndDetection() {
-    if (state.boneInit) return;
-    if (!state.footer) return;
-    state.boneInit = true;
+  if (state.boneInit) return;
+  if (!state.footer) return;
+  state.boneInit = true;
 
-    const makeEl = (tag, attrs = {}, text = "") => {
-      const el = document.createElement(tag);
-      for (const [k, v] of Object.entries(attrs)) {
-        if (k === "class") el.className = v;
-        else if (k === "html") el.innerHTML = v;
-        else el.setAttribute(k, v);
-      }
-      if (text) el.textContent = text;
-      return el;
-    };
-
-    const row = makeEl("div", { class: "kwWDBoneRow" });
-    const label = makeEl("span", { class: "kwWDBoneLabel" }, "Bone:");
-    const value = makeEl("span", { class: "kwWDBoneValue" }, "(click a bone)" );
-
-    const copyBtn = makeEl(
-      "button",
-      { class: "kwWDBoneCopy", type: "button", title: "Copy bone name", disabled: "disabled" }
-    );
-    copyBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"></path>
-      </svg>
-    `;
-
-    row.appendChild(label);
-    row.appendChild(value);
-    row.appendChild(copyBtn);
-
-    const hotkeyLine = makeEl("div", { class: "kwWDFooterLine" }, BONE_FOOTER_HOTKEY_TEXT);
-
-    state.footer.textContent = "";
-    state.footer.appendChild(row);
-    row.style.display = "none";
-    state.footer.appendChild(hotkeyLine);
-
-    // -------- detection (grafted from REFERENCE_DEV_Bone_Detection_Tool.user.js) --------
-
-    const u = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-
-    const STATE = {
-      baseline: null,
-      lastBoneName: "",
-      delayMs: 35,
-      candidates: null,
-    };
-
-    function shouldIgnoreClick(e) {
-      const t = e && e.target;
-      if (!t || !t.closest) return false;
-      if (t.closest("#kwWitchDock") || t.closest("#kwWDCompact")) return true;
-      if (t.closest("button, input, textarea, select, [role='button']")) return true;
-      return false;
+  const makeEl = (tag, attrs = {}, text = "") => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, v);
     }
+    if (text) el.textContent = text;
+    return el;
+  };
 
-    function toast(msg) {
-      let t = document.getElementById("kwBoneHudToast");
-      if (!t) {
-        t = makeEl("div", { id: "kwBoneHudToast" });
-        document.body.appendChild(t);
-      }
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 900);
+  const meta = (typeof getScriptMeta === "function" ? getScriptMeta() : { name: "Witch Dock", version: "" });
+  const DETECT_NS = "kw.witchDock.boneDetect";
+  const DETECT_VER = meta && meta.version ? String(meta.version) : "";
+
+  const row = makeEl("div", { class: "kwWDBoneRow" });
+  const label = makeEl("span", { class: "kwWDBoneLabel" }, "Bone:");
+  const value = makeEl("span", { class: "kwWDBoneValue" }, "(click a bone)");
+  const infoBtn = makeEl("button", { type: "button", tabindex: "-1", title: `${DETECT_NS}${DETECT_VER ? " v" + DETECT_VER : ""}` }, "?");
+  infoBtn.style.height = "18px";
+  infoBtn.style.width = "18px";
+  infoBtn.style.padding = "0";
+  infoBtn.style.marginLeft = "2px";
+  infoBtn.style.borderRadius = "50%";
+  infoBtn.style.border = "1px solid rgba(255,255,255,0.16)";
+  infoBtn.style.background = "rgba(0,0,0,0.18)";
+  infoBtn.style.color = "rgba(255,255,255,0.70)";
+  infoBtn.style.fontSize = "10px";
+  infoBtn.style.fontWeight = "800";
+  infoBtn.style.lineHeight = "1";
+  infoBtn.style.cursor = "default";
+
+  const copyBtn = makeEl("button", { class: "kwWDBoneCopy", type: "button", title: "Copy bone name", disabled: "disabled" });
+  copyBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"></path>
+    </svg>
+  `;
+
+  row.appendChild(label);
+  row.appendChild(value);
+  row.appendChild(infoBtn);
+  row.appendChild(copyBtn);
+
+  const hotkeyLine = makeEl("div", { class: "kwWDFooterLine" }, BONE_FOOTER_HOTKEY_TEXT);
+
+  state.footer.textContent = "";
+  state.footer.appendChild(row);
+  row.style.display = "none";
+  state.footer.appendChild(hotkeyLine);
+
+  const u = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
+  const STATE = {
+    ns: DETECT_NS,
+    version: DETECT_VER,
+    baseline: null,
+    lastBoneName: "",
+    delayMs: 35,
+    candidates: null,
+    attached: false,
+    failed: false,
+    tries: 0,
+    maxTries: 60,
+    retryTimer: null
+  };
+
+  function setBoneName(name) {
+    STATE.lastBoneName = name || "";
+    if (!STATE.lastBoneName) {
+      value.textContent = "(click a bone)";
+      value.title = "";
+      copyBtn.setAttribute("disabled", "disabled");
+      return;
     }
+    value.textContent = STATE.lastBoneName;
+    value.title = STATE.lastBoneName;
+    copyBtn.removeAttribute("disabled");
+  }
 
-    function copyToClipboard(text) {
-      if (!text) return false;
+  function toast(msg) {
+    let t = document.getElementById("kwBoneHudToast");
+    if (!t) {
+      t = makeEl("div", { id: "kwBoneHudToast" });
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 900);
+  }
 
-      try {
-        if (typeof GM_setClipboard === "function") {
-          GM_setClipboard(text, { type: "text", mimetype: "text/plain" });
-          toast("Copied bone name");
-          return true;
-        }
-      } catch (_) {}
+  function copyToClipboard(text) {
+    if (!text) return false;
 
-      if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(text).then(
-          () => toast("Copied bone name"),
-          () => toast("Copy failed")
-        );
+    try {
+      if (typeof GM_setClipboard === "function") {
+        GM_setClipboard(text, { type: "text", mimetype: "text/plain" });
+        toast("Copied bone name");
         return true;
       }
+    } catch (_) {}
 
-      toast("Copy failed");
-      return false;
-    }
-
-    function getSummonCircle() {
-      return u?.HF?.summonCircle || null;
-    }
-
-    function safeGet(obj, path) {
-      try {
-        const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
-        let cur = obj;
-        for (const p of parts) {
-          if (cur == null) return undefined;
-          cur = cur[p];
-        }
-        return cur;
-      } catch (_) {
-        return undefined;
-      }
-    }
-
-    function anchorBases() {
-      return [
-        "parent.parent.parent.children[5].object",
-        "parent.parent.parent.children[4].object",
-        "parent.parent.parent.children[6].object",
-        "parent.parent.children[5].object",
-        "parent.parent.children[4].object",
-        "parent.children[5].object",
-        "parent.children[4].object",
-      ];
-    }
-
-    function buildCandidates(sc) {
-      const out = [];
-      const bases = anchorBases();
-
-      for (const base of bases) {
-        const node = safeGet(sc, base);
-        if (!node) continue;
-
-        out.push(`summonCircle.${base}.name`);
-        out.push(`summonCircle.${base}.parent.name`);
-
-        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.children[${i}].name`);
-        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.object.children[${i}].name`);
-      }
-
-      const seen = new Set();
-      return out.filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
-    }
-
-    function snapshot(sc, paths) {
-      const snap = [];
-      for (const path of paths) {
-        const v = safeGet({ summonCircle: sc }, path.replace(/^summonCircle\./, "summonCircle."));
-        if (typeof v === "string" && v.length) snap.push({ path, value: v });
-      }
-      return snap;
-    }
-
-    function diffSnapshots(baseline, now) {
-      const base = new Set((baseline || []).map((x) => `${x.path}::${x.value}`));
-      const added = [];
-      for (const x of now) {
-        const k = `${x.path}::${x.value}`;
-        if (!base.has(k)) added.push(x);
-      }
-      return added;
-    }
-
-    function scoreName(name) {
-      let s = 0;
-      if (!name) return -999;
-      if (name.includes("_bind_jnt")) s += 50;
-      if (name.includes("main_")) s += 12;
-      if (name.includes("_kitbash_")) s += 8;
-      if (/(clav|shoulder|deltoid|arm|hand|finger|spine|neck|head|leg|thigh|calf|foot)/i.test(name)) s += 6;
-      if (/(thickness|fat|scaleOffset|offset|helper)/i.test(name)) s -= 10;
-      return s;
-    }
-
-    function pickBest(delta) {
-      if (!delta?.length) return null;
-
-      const bind = delta.filter((d) => d.value.includes("_bind_jnt"));
-      const pool = bind.length ? bind : delta;
-
-      let best = null;
-      let bestS = -Infinity;
-      for (const d of pool) {
-        const s = scoreName(d.value);
-        if (s > bestS) {
-          bestS = s;
-          best = d;
-        }
-      }
-      return best;
-    }
-
-    function setBoneName(name) {
-      STATE.lastBoneName = name || "";
-      if (!STATE.lastBoneName) {
-        value.textContent = "(click a bone)";
-        value.title = "";
-        copyBtn.setAttribute("disabled", "disabled");
-        return;
-      }
-      value.textContent = STATE.lastBoneName;
-      value.title = STATE.lastBoneName;
-      copyBtn.removeAttribute("disabled");
-    }
-
-    copyBtn.addEventListener("click", () => {
-      if (!STATE.lastBoneName) return toast("Nothing to copy yet");
-      copyToClipboard(STATE.lastBoneName);
-    });
-
-    function ensureReady(sc) {
-      if (!sc) return false;
-      if (!STATE.candidates || !STATE.candidates.length) {
-        STATE.candidates = buildCandidates(sc);
-        STATE.baseline = snapshot(sc, STATE.candidates);
-      }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => toast("Copied bone name"),
+        () => toast("Copy failed")
+      );
       return true;
     }
 
-    function handleEvent(e) {
+    toast("Copy failed");
+    return false;
+  }
+
+  copyBtn.addEventListener("click", () => {
+    if (!STATE.lastBoneName) return toast("Nothing to copy yet");
+    copyToClipboard(STATE.lastBoneName);
+  });
+
+  function safeGet(obj, path) {
+    try {
+      const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
+      let cur = obj;
+      for (const p of parts) {
+        if (cur == null) return undefined;
+        cur = cur[p];
+      }
+      return cur;
+    } catch (_) {
+      return undefined;
+    }
+  }
+
+  function getSummonCircle() {
+    const tries = [
+      () => u?.HF?.summonCircle,
+      () => u?.HF?.app?.summonCircle,
+      () => u?.HF?.scene?.summonCircle,
+      () => u?.HF?.render?.summonCircle,
+      () => u?.summonCircle
+    ];
+    for (const fn of tries) {
+      let sc = null;
+      try { sc = fn(); } catch (_) { sc = null; }
+      if (sc) return sc;
+    }
+    return null;
+  }
+
+  function anchorBases() {
+    return [
+      "parent.parent.parent.children[5].object",
+      "parent.parent.parent.children[4].object",
+      "parent.parent.parent.children[6].object",
+      "parent.parent.children[5].object",
+      "parent.parent.children[4].object",
+      "parent.children[5].object",
+      "parent.children[4].object"
+    ];
+  }
+
+  function buildCandidates(sc) {
+    const out = [];
+    const bases = anchorBases();
+
+    for (const base of bases) {
+      const node = safeGet(sc, base);
+      if (!node) continue;
+
+      out.push(`summonCircle.${base}.name`);
+      out.push(`summonCircle.${base}.parent.name`);
+
+      for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.children[${i}].name`);
+      for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.object.children[${i}].name`);
+    }
+
+    const seen = new Set();
+    return out.filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
+  }
+
+  function snapshot(sc, paths) {
+    const snap = [];
+    for (const path of paths) {
+      const v = safeGet({ summonCircle: sc }, path.replace(/^summonCircle\./, "summonCircle."));
+      if (typeof v === "string" && v.length) snap.push({ path, value: v });
+    }
+    return snap;
+  }
+
+  function diffSnapshots(baseline, now) {
+    const base = new Set((baseline || []).map((x) => `${x.path}::${x.value}`));
+    const added = [];
+    for (const x of now) {
+      const k = `${x.path}::${x.value}`;
+      if (!base.has(k)) added.push(x);
+    }
+    return added;
+  }
+
+  function scoreName(name) {
+    let s = 0;
+    if (!name) return -999;
+    if (name.includes("_bind_jnt")) s += 50;
+    if (name.includes("main_")) s += 12;
+    if (name.includes("_kitbash_")) s += 8;
+    if (/(clav|shoulder|deltoid|arm|hand|finger|spine|neck|head|leg|thigh|calf|foot)/i.test(name)) s += 6;
+    if (/(thickness|fat|scaleOffset|offset|helper)/i.test(name)) s -= 10;
+    return s;
+  }
+
+  function pickBest(delta) {
+    if (!delta?.length) return null;
+
+    const bind = delta.filter((d) => d.value.includes("_bind_jnt"));
+    const pool = bind.length ? bind : delta;
+
+    let best = null;
+    let bestS = -Infinity;
+    for (const d of pool) {
+      const s = scoreName(d.value);
+      if (s > bestS) {
+        bestS = s;
+        best = d;
+      }
+    }
+    return best;
+  }
+
+  function shouldIgnoreClick(e) {
+    const t = e && e.target;
+    if (!t || !t.closest) return false;
+    if (t.closest("#kwWitchDock") || t.closest("#kwWDCompact")) return true;
+    if (t.closest("button, input, textarea, select, [role='button']")) return true;
+    return false;
+  }
+
+  function detach() {
+    if (!STATE.attached) return;
+    document.removeEventListener("pointerup", handleEvent, true);
+    document.removeEventListener("click", handleEvent, true);
+    STATE.attached = false;
+  }
+
+  function resetState() {
+    STATE.baseline = null;
+    STATE.candidates = null;
+    STATE.lastBoneName = "";
+    STATE.failed = false;
+    STATE.tries = 0;
+    setBoneName("");
+    copyBtn.setAttribute("disabled", "disabled");
+  }
+
+  function showUnavailable(msg) {
+    row.style.display = "flex";
+    value.textContent = msg;
+    value.title = "";
+    copyBtn.setAttribute("disabled", "disabled");
+  }
+
+  function ensureReady(sc) {
+    if (!sc) return false;
+    if (!STATE.candidates || !STATE.candidates.length) {
+      const c = buildCandidates(sc);
+      if (!c || !c.length) return false;
+      STATE.candidates = c;
+      STATE.baseline = snapshot(sc, STATE.candidates);
+      return true;
+    }
+    if (!STATE.baseline) {
+      STATE.baseline = snapshot(sc, STATE.candidates);
+    }
+    return true;
+  }
+
+  function forceRebuild(sc) {
+    if (!sc) return false;
+    const c = buildCandidates(sc);
+    if (!c || !c.length) return false;
+    STATE.candidates = c;
+    STATE.baseline = snapshot(sc, STATE.candidates);
+    return true;
+  }
+
+  function handleEvent(e) {
+    try {
       if (shouldIgnoreClick(e)) return;
 
       const sc = getSummonCircle();
@@ -2001,35 +2073,98 @@ function mountTool(def) {
 
       const handlerSc = sc;
       setTimeout(() => {
-        const now = snapshot(handlerSc, STATE.candidates);
-        const delta = diffSnapshots(STATE.baseline, now);
-        const best = pickBest(delta);
+        try {
+          const now = snapshot(handlerSc, STATE.candidates);
+          const delta = diffSnapshots(STATE.baseline, now);
+          const best = pickBest(delta);
 
-        if (best && best.value && best.value.includes("_bind_jnt") && best.value !== STATE.lastBoneName) {
-          setBoneName(best.value);
+          if (best && best.value && best.value.includes("_bind_jnt") && best.value !== STATE.lastBoneName) {
+            setBoneName(best.value);
+          }
+
+          STATE.baseline = now;
+        } catch (err) {
+          detach();
+          STATE.failed = true;
+          showUnavailable("Bone detection unavailable (click to retry)");
+          try { console.error("[Witch Dock] Bone detection error:", err); } catch (_) {}
         }
-
-        STATE.baseline = now;
       }, STATE.delayMs);
+    } catch (err) {
+      detach();
+      STATE.failed = true;
+      showUnavailable("Bone detection unavailable (click to retry)");
+      try { console.error("[Witch Dock] Bone detection error:", err); } catch (_) {}
+    }
+  }
+
+  function scheduleStart() {
+    if (STATE.retryTimer) return;
+    STATE.retryTimer = setTimeout(() => {
+      STATE.retryTimer = null;
+      startWhenReady();
+    }, 250);
+  }
+
+  function startWhenReady() {
+    if (STATE.failed && STATE.tries >= STATE.maxTries) {
+      showUnavailable("Bone detection unavailable (click to retry)");
+      return;
     }
 
-    const startWhenReady = () => {
-      const sc = getSummonCircle();
-      if (!ensureReady(sc)) {
-        setTimeout(startWhenReady, 250);
+    const sc = getSummonCircle();
+    if (!ensureReady(sc)) {
+      STATE.tries += 1;
+      if (STATE.tries >= STATE.maxTries) {
+        STATE.failed = true;
+        showUnavailable("Bone detection unavailable (click to retry)");
         return;
       }
+      scheduleStart();
+      return;
+    }
 
-      row.style.display = "flex";
+    row.style.display = "flex";
+
+    if (!STATE.attached) {
       document.addEventListener("pointerup", handleEvent, true);
       document.addEventListener("click", handleEvent, true);
-    };
+      STATE.attached = true;
+    }
 
+    setTimeout(() => {
+      const sc2 = getSummonCircle();
+      if (!sc2) return;
+      if (!STATE.candidates || !STATE.candidates.length || !STATE.baseline || !STATE.baseline.length) {
+        forceRebuild(sc2);
+      }
+    }, 750);
+  }
+
+  function retry() {
+    detach();
+    resetState();
+    row.style.display = "flex";
+    showUnavailable("Initializing bone detection…");
     startWhenReady();
   }
 
+  row.addEventListener("click", (e) => {
+    if (!STATE.failed) return;
+    e.preventDefault();
+    e.stopPropagation();
+    retry();
+  }, true);
 
-  
+  startWhenReady();
+
+  state.__kwBoneDetect = {
+    ns: STATE.ns,
+    version: STATE.version,
+    retry
+  };
+}
+
 
   function getScriptMeta() {
     try {
