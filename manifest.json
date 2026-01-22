@@ -9,6 +9,13 @@
       "enabledByDefault": true
     },
     {
+      "id": "pose-tool",
+      "title": "Pose",
+      "tab": "Pose",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/DEV_TEST/tools/pose_v1.js",
+      "enabledByDefault": true
+    },
+    {
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
