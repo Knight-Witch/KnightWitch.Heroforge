@@ -175,7 +175,7 @@
   }
 
   function renderTool(container, api) {
-    const section = api.ui.createSection({ id: "pose-tool", title: "Pose" });
+    const section = api.ui.createSection({ id: "swap-main-extra", title: "Swap Main / Extra" });
 
     const row = document.createElement("div");
     row.style.display = "flex";
@@ -209,7 +209,7 @@
     }
 
     WD.registerTool({
-      id: "swap-main-extra",
+      id: "pose-tool",
       tab: "Pose",
       render: renderTool,
     });
