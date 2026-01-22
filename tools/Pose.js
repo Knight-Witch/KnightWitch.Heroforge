@@ -3,6 +3,29 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
+
+  function injectStyle() {
+    const id = "kw-pose-style";
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement("style");
+      el.id = id;
+      document.head.appendChild(el);
+    }
+
+    el.textContent =
+      ".kwpose{color:#e8e8e8;font:12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}" +
+      ".kwpose .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}" +
+      ".kwpose .rowAction{display:flex;align-items:center;justify-content:space-between;gap:10px;}" +
+      ".kwpose .rowAction .left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}" +
+      ".kwpose .rowAction .right{display:flex;align-items:center;gap:8px;flex:0 0 auto;}" +
+      ".kwpose button{background:rgba(255,255,255,0.10);color:#e8e8e8;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:4px 8px;cursor:pointer;}" +
+      ".kwpose button:hover{background:rgba(255,255,255,0.16);}" +
+      ".kwpose button:disabled{opacity:0.45;cursor:not-allowed;}" +
+      ".kwpose .primary{padding:7px 10px;font-weight:700;border-radius:6px;}" +
+      ".kwpose .mono{font-variant-numeric:tabular-nums;opacity:0.78;font-size:11px;}";
+  }
+
   function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
@@ -175,17 +198,24 @@
   }
 
   function renderTool(container, api) {
-    const section = api.ui.createSection({ id: "swap-main-extra", title: "Figure Swap" });
+    injectStyle();
 
-    const row = document.createElement("div");
-    row.style.display = "flex";
-    row.style.gap = "8px";
-    row.style.alignItems = "center";
+    const section = api.ui.createSection({ id: "swap-main-extra", title: "Figure Swap: Main / Extra" });
+
+    const root = document.createElement("div");
+    root.className = "kwpose";
+    section.body.appendChild(root);
+
+    const row1 = document.createElement("div");
+    row1.className = "rowAction";
+
+    const left = document.createElement("div");
+    left.className = "left";
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = "Figure Swap";
-
+    btn.className = "primary";
+    btn.textContent = "Swap Main / Extra";
     btn.addEventListener("click", () => {
       const current = getCurrentCharacterJson();
       if (!current) return;
@@ -196,8 +226,15 @@
       tryLoadCharacter(next);
     });
 
-    row.appendChild(btn);
-    section.body.appendChild(row);
+    left.appendChild(btn);
+    row1.appendChild(left);
+    root.appendChild(row1);
+
+    const hint = document.createElement("div");
+    hint.className = "mono";
+    hint.textContent = "Change designation of your figures: Main → Extra / Extra → Main";
+    root.appendChild(hint);
+
     container.appendChild(section.root);
   }
 
