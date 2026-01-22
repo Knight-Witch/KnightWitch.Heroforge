@@ -175,7 +175,7 @@
   }
 
   function renderTool(container, api) {
-    const section = api.ui.createSection({ id: "swap-main-extra", title: "Swap Main / Extra" });
+    const section = api.ui.createSection({ id: "swap-main-extra", title: "Figure Swap" });
 
     const row = document.createElement("div");
     row.style.display = "flex";
@@ -184,7 +184,7 @@
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = "Swap Main / Extra";
+    btn.textContent = "Figure Swap";
 
     btn.addEventListener("click", () => {
       const current = getCurrentCharacterJson();
