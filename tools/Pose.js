@@ -232,6 +232,7 @@
 
     const hint = document.createElement("div");
     hint.className = "mono";
+    hint.style.marginTop = "6px";
     hint.textContent = "Change designation of your figures: Main → Extra / Extra → Main";
     root.appendChild(hint);
 
