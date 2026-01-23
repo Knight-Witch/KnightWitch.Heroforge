@@ -223,7 +223,7 @@
       const next = swapMainExtra(current);
       if (!next) return;
 
-      tryLoadCharacter(next);
+      commitCharacter(next);
     });
 
     left.appendChild(btn);
@@ -254,4 +254,17 @@
   }
 
   register();
-})();
+}
+
+function commitCharacter(json) {
+  const u = getUndoQueue();
+  if (!u || !Array.isArray(u.queue) || typeof u.currentIndex !== "number") return false;
+
+  const base = u.queue.slice(0, u.currentIndex + 1);
+  if (!tryLoadCharacter(json)) return false;
+
+  u.queue = base.concat([deepClone(json)]);
+  u.currentIndex = u.queue.length - 1;
+  return true;
+}
+)();
