@@ -1,13 +1,14 @@
 // ==UserScript==
-// @name         Witch Dock v1.0.4
+// @name         Witch Dock v1.0.5
 // @namespace    KnightWitch
-// @version      1.0.4
+// @version      1.0.5
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
 // @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
 // @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+// @grant        unsafeWindow
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_setClipboard
@@ -99,7 +100,8 @@ async function loadManifestAndTools() {
     lastOpenAnchored: true,
     activeTab: null,
     compactX: 16,
-    compactY: null
+    compactY: null,
+    firstRun: false
   };
 
   const state = {
@@ -230,12 +232,12 @@ async function loadManifestAndTools() {
   function loadPrefs() {
     try {
       const raw = GM_getValue(STORE_KEY, null);
-      if (!raw) return { ...DEFAULTS };
+      if (!raw) return { ...DEFAULTS, firstRun: true };
       const obj = JSON.parse(raw);
-      if (!obj || typeof obj !== "object") return { ...DEFAULTS };
-      return { ...DEFAULTS, ...obj };
+      if (!obj || typeof obj !== "object") return { ...DEFAULTS, firstRun: true };
+      return { ...DEFAULTS, ...obj, firstRun: false };
     } catch {
-      return { ...DEFAULTS };
+      return { ...DEFAULTS, firstRun: true };
     }
   }
 
@@ -370,30 +372,92 @@ async function loadManifestAndTools() {
 }
 
 #kwWDTabs{
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   padding: 6px 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
 }
 #kwWDTabsLeft{
   flex: 1 1 auto;
+  min-width: 0;
   display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
   gap: 6px;
-  overflow: auto;
-  scrollbar-width: thin;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-#kwWDTabsLeft::-webkit-scrollbar{ height: 8px; }
-#kwWDTabsLeft::-webkit-scrollbar-thumb{
-  background: rgba(255,255,255,0.18);
-  border-radius: 6px;
+#kwWDTabsLeft::-webkit-scrollbar{ height: 0; width: 0; }
+#kwWDTabsShade{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  z-index: 3;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.62));
 }
+#kwWDTabsShade.kwShow{ opacity: 0.7; }
+
 #kwWDTabsRight{
   flex: 0 0 auto;
   display: inline-flex;
   gap: 6px;
   align-items: center;
+  position: relative;
+  z-index: 6;
+  padding-left: 10px;
+  background: transparent;
+}
+#kwWDTabsRight::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+  background: rgba(255,255,255,0.14);
+}
+#kwWDTabsRight::after{
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+#kwWDTabsCue{
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.70);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+#kwWDTabsCue svg{ width: 16px; height: 16px; }
+#kwWDTabsCue.kwShow{ opacity: 0.80; }
+#kwWDTabsCue.kwPulse{ animation: kwWDTabsCuePulse 1.1s ease-in-out 0s 2; }
+@keyframes kwWDTabsCuePulse{
+  0%{ transform: translateY(-50%) translateX(0); opacity: 0.25; }
+  40%{ transform: translateY(-50%) translateX(4px); opacity: 0.95; }
+  100%{ transform: translateY(-50%) translateX(0); opacity: 0.55; }
 }
 .kwWDActionBtn{
   width: 34px;
@@ -422,7 +486,9 @@ async function loadManifestAndTools() {
   padding: 5px 10px;
   cursor: default;
   font-weight: 700;
+  white-space: nowrap;
 }
+
 .kwWDTab[aria-selected="true"]{
   background: rgba(255,255,255,0.14);
 }
@@ -648,6 +714,24 @@ async function loadManifestAndTools() {
 #kwWDFooter .kwWDBoneCopy[disabled]{
   opacity: 0.45;
   cursor: default;
+}
+#kwWDFooter .kwWDBoneRetryChip{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+#kwWDFooter .kwWDBoneRetryChip:hover{
+  background: rgba(255,255,255,0.10);
 }
 #kwWDFooter .kwWDBoneCopy:hover{ background: rgba(255,255,255,0.06); }
 #kwWDFooter .kwWDBoneCopy svg{ width: 13px; height: 13px; fill: currentColor; }
@@ -1065,6 +1149,13 @@ async function loadManifestAndTools() {
     }
 
     state.minWidth = computeMinDockWidthForActiveTab();
+    if (prefs.firstRun) {
+      prefs.width = Math.max(260, state.minWidth || 260);
+      prefs.lastOpenWidth = prefs.width;
+      prefs.firstRun = false;
+      savePrefs(prefs);
+      applyPositionAndSize();
+    }
     enforceSizeConstraints();
 
     hookUndoQueueForDockButtons();
@@ -1082,6 +1173,7 @@ async function loadManifestAndTools() {
     btn.addEventListener("click", () => setActiveTab(name));
 
     state.tabsBar.appendChild(btn);
+    if (state.updateTabsCue) state.updateTabsCue();
     state.body.appendChild(panel);
 
     const tab = { name, btn, panel, list };
@@ -1776,224 +1868,330 @@ function mountTool(def) {
   const BONE_FOOTER_HOTKEY_TEXT = "Dock Hotkey: `~ (Grave Key)  |  Undo: Ctrl+Z  |  Redo: Ctrl+Shift+Z";
 
   function initBoneFooterAndDetection() {
-    if (state.boneInit) return;
-    if (!state.footer) return;
-    state.boneInit = true;
+  if (state.boneInit) return;
+  if (!state.footer) return;
+  state.boneInit = true;
 
-    const makeEl = (tag, attrs = {}, text = "") => {
-      const el = document.createElement(tag);
-      for (const [k, v] of Object.entries(attrs)) {
-        if (k === "class") el.className = v;
-        else if (k === "html") el.innerHTML = v;
-        else el.setAttribute(k, v);
-      }
-      if (text) el.textContent = text;
-      return el;
-    };
-
-    const row = makeEl("div", { class: "kwWDBoneRow" });
-    const label = makeEl("span", { class: "kwWDBoneLabel" }, "Bone:");
-    const value = makeEl("span", { class: "kwWDBoneValue" }, "(click a bone)" );
-
-    const copyBtn = makeEl(
-      "button",
-      { class: "kwWDBoneCopy", type: "button", title: "Copy bone name", disabled: "disabled" }
-    );
-    copyBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"></path>
-      </svg>
-    `;
-
-    row.appendChild(label);
-    row.appendChild(value);
-    row.appendChild(copyBtn);
-
-    const hotkeyLine = makeEl("div", { class: "kwWDFooterLine" }, BONE_FOOTER_HOTKEY_TEXT);
-
-    state.footer.textContent = "";
-    state.footer.appendChild(row);
-    row.style.display = "none";
-    state.footer.appendChild(hotkeyLine);
-
-    // -------- detection (grafted from REFERENCE_DEV_Bone_Detection_Tool.user.js) --------
-
-    const u = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-
-    const STATE = {
-      baseline: null,
-      lastBoneName: "",
-      delayMs: 35,
-      candidates: null,
-    };
-
-    function shouldIgnoreClick(e) {
-      const t = e && e.target;
-      if (!t || !t.closest) return false;
-      if (t.closest("#kwWitchDock") || t.closest("#kwWDCompact")) return true;
-      if (t.closest("button, input, textarea, select, [role='button']")) return true;
-      return false;
+  const makeEl = (tag, attrs = {}, text = "") => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, v);
     }
+    if (text) el.textContent = text;
+    return el;
+  };
 
-    function toast(msg) {
-      let t = document.getElementById("kwBoneHudToast");
-      if (!t) {
-        t = makeEl("div", { id: "kwBoneHudToast" });
-        document.body.appendChild(t);
-      }
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 900);
+  const meta = (typeof getScriptMeta === "function" ? getScriptMeta() : { name: "Witch Dock", version: "" });
+  const DETECT_NS = "kw.witchDock.boneDetect";
+  const DETECT_VER = meta && meta.version ? String(meta.version) : "";
+
+  const row = makeEl("div", { class: "kwWDBoneRow" });
+  const label = makeEl("span", { class: "kwWDBoneLabel" }, "Bone:");
+  const value = makeEl("span", { class: "kwWDBoneValue" }, "(click a bone)");
+  const infoBtn = makeEl("button", { type: "button", tabindex: "-1", title: `${DETECT_NS}${DETECT_VER ? " v" + DETECT_VER : ""}` }, "?");
+  infoBtn.style.height = "18px";
+  infoBtn.style.width = "18px";
+  infoBtn.style.padding = "0";
+  infoBtn.style.marginLeft = "2px";
+  infoBtn.style.borderRadius = "50%";
+  infoBtn.style.border = "1px solid rgba(255,255,255,0.16)";
+  infoBtn.style.background = "rgba(0,0,0,0.18)";
+  infoBtn.style.color = "rgba(255,255,255,0.70)";
+  infoBtn.style.fontSize = "10px";
+  infoBtn.style.fontWeight = "800";
+  infoBtn.style.lineHeight = "1";
+  infoBtn.style.cursor = "default";
+
+  const copyBtn = makeEl("button", { class: "kwWDBoneCopy", type: "button", title: "Copy bone name", disabled: "disabled" });
+  copyBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"></path>
+    </svg>
+  `;
+
+  row.appendChild(label);
+  row.appendChild(value);
+  row.appendChild(infoBtn);
+  row.appendChild(copyBtn);
+
+  const hotkeyLine = makeEl("div", { class: "kwWDFooterLine" }, BONE_FOOTER_HOTKEY_TEXT);
+
+  state.footer.textContent = "";
+  state.footer.appendChild(row);
+  row.style.display = "none";
+  state.footer.appendChild(hotkeyLine);
+
+  const u = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
+  const STATE = {
+    ns: DETECT_NS,
+    version: DETECT_VER,
+    baseline: null,
+    lastBoneName: "",
+    delayMs: 35,
+    candidates: null,
+    attached: false,
+    failed: false,
+    stopped: false,
+    tries: 0,
+    maxTries: 60,
+    retryTimer: null
+  };
+
+  function setBoneName(name) {
+    STATE.lastBoneName = name || "";
+    if (!STATE.lastBoneName) {
+      value.textContent = "(click a bone)";
+      value.title = "";
+      copyBtn.setAttribute("disabled", "disabled");
+      return;
     }
+    value.textContent = STATE.lastBoneName;
+    value.title = STATE.lastBoneName;
+    copyBtn.removeAttribute("disabled");
+  }
 
-    function copyToClipboard(text) {
-      if (!text) return false;
+  function toast(msg) {
+    let t = document.getElementById("kwBoneHudToast");
+    if (!t) {
+      t = makeEl("div", { id: "kwBoneHudToast" });
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 900);
+  }
 
-      try {
-        if (typeof GM_setClipboard === "function") {
-          GM_setClipboard(text, { type: "text", mimetype: "text/plain" });
-          toast("Copied bone name");
-          return true;
-        }
-      } catch (_) {}
+  function copyToClipboard(text) {
+    if (!text) return false;
 
-      if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(text).then(
-          () => toast("Copied bone name"),
-          () => toast("Copy failed")
-        );
+    try {
+      if (typeof GM_setClipboard === "function") {
+        GM_setClipboard(text, { type: "text", mimetype: "text/plain" });
+        toast("Copied bone name");
         return true;
       }
+    } catch (_) {}
 
-      toast("Copy failed");
-      return false;
-    }
-
-    function getSummonCircle() {
-      return u?.HF?.summonCircle || null;
-    }
-
-    function safeGet(obj, path) {
-      try {
-        const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
-        let cur = obj;
-        for (const p of parts) {
-          if (cur == null) return undefined;
-          cur = cur[p];
-        }
-        return cur;
-      } catch (_) {
-        return undefined;
-      }
-    }
-
-    function anchorBases() {
-      return [
-        "parent.parent.parent.children[5].object",
-        "parent.parent.parent.children[4].object",
-        "parent.parent.parent.children[6].object",
-        "parent.parent.children[5].object",
-        "parent.parent.children[4].object",
-        "parent.children[5].object",
-        "parent.children[4].object",
-      ];
-    }
-
-    function buildCandidates(sc) {
-      const out = [];
-      const bases = anchorBases();
-
-      for (const base of bases) {
-        const node = safeGet(sc, base);
-        if (!node) continue;
-
-        out.push(`summonCircle.${base}.name`);
-        out.push(`summonCircle.${base}.parent.name`);
-
-        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.children[${i}].name`);
-        for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.object.children[${i}].name`);
-      }
-
-      const seen = new Set();
-      return out.filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
-    }
-
-    function snapshot(sc, paths) {
-      const snap = [];
-      for (const path of paths) {
-        const v = safeGet({ summonCircle: sc }, path.replace(/^summonCircle\./, "summonCircle."));
-        if (typeof v === "string" && v.length) snap.push({ path, value: v });
-      }
-      return snap;
-    }
-
-    function diffSnapshots(baseline, now) {
-      const base = new Set((baseline || []).map((x) => `${x.path}::${x.value}`));
-      const added = [];
-      for (const x of now) {
-        const k = `${x.path}::${x.value}`;
-        if (!base.has(k)) added.push(x);
-      }
-      return added;
-    }
-
-    function scoreName(name) {
-      let s = 0;
-      if (!name) return -999;
-      if (name.includes("_bind_jnt")) s += 50;
-      if (name.includes("main_")) s += 12;
-      if (name.includes("_kitbash_")) s += 8;
-      if (/(clav|shoulder|deltoid|arm|hand|finger|spine|neck|head|leg|thigh|calf|foot)/i.test(name)) s += 6;
-      if (/(thickness|fat|scaleOffset|offset|helper)/i.test(name)) s -= 10;
-      return s;
-    }
-
-    function pickBest(delta) {
-      if (!delta?.length) return null;
-
-      const bind = delta.filter((d) => d.value.includes("_bind_jnt"));
-      const pool = bind.length ? bind : delta;
-
-      let best = null;
-      let bestS = -Infinity;
-      for (const d of pool) {
-        const s = scoreName(d.value);
-        if (s > bestS) {
-          bestS = s;
-          best = d;
-        }
-      }
-      return best;
-    }
-
-    function setBoneName(name) {
-      STATE.lastBoneName = name || "";
-      if (!STATE.lastBoneName) {
-        value.textContent = "(click a bone)";
-        value.title = "";
-        copyBtn.setAttribute("disabled", "disabled");
-        return;
-      }
-      value.textContent = STATE.lastBoneName;
-      value.title = STATE.lastBoneName;
-      copyBtn.removeAttribute("disabled");
-    }
-
-    copyBtn.addEventListener("click", () => {
-      if (!STATE.lastBoneName) return toast("Nothing to copy yet");
-      copyToClipboard(STATE.lastBoneName);
-    });
-
-    function ensureReady(sc) {
-      if (!sc) return false;
-      if (!STATE.candidates || !STATE.candidates.length) {
-        STATE.candidates = buildCandidates(sc);
-        STATE.baseline = snapshot(sc, STATE.candidates);
-      }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => toast("Copied bone name"),
+        () => toast("Copy failed")
+      );
       return true;
     }
 
-    function handleEvent(e) {
+    toast("Copy failed");
+    return false;
+  }
+
+  copyBtn.addEventListener("click", () => {
+    if (!STATE.lastBoneName) return toast("Nothing to copy yet");
+    copyToClipboard(STATE.lastBoneName);
+  });
+
+  function safeGet(obj, path) {
+    try {
+      const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
+      let cur = obj;
+      for (const p of parts) {
+        if (cur == null) return undefined;
+        cur = cur[p];
+      }
+      return cur;
+    } catch (_) {
+      return undefined;
+    }
+  }
+
+  function getSummonCircle() {
+    const tries = [
+      () => u?.HF?.summonCircle,
+      () => u?.HF?.app?.summonCircle,
+      () => u?.HF?.scene?.summonCircle,
+      () => u?.HF?.render?.summonCircle,
+      () => u?.summonCircle
+    ];
+    for (const fn of tries) {
+      let sc = null;
+      try { sc = fn(); } catch (_) { sc = null; }
+      if (sc) return sc;
+    }
+    return null;
+  }
+
+  function anchorBases() {
+    return [
+      "parent.parent.parent.children[5].object",
+      "parent.parent.parent.children[4].object",
+      "parent.parent.parent.children[6].object",
+      "parent.parent.children[5].object",
+      "parent.parent.children[4].object",
+      "parent.children[5].object",
+      "parent.children[4].object"
+    ];
+  }
+
+  function buildCandidates(sc) {
+    const out = [];
+    const bases = anchorBases();
+
+    for (const base of bases) {
+      const node = safeGet(sc, base);
+      if (!node) continue;
+
+      out.push(`summonCircle.${base}.name`);
+      out.push(`summonCircle.${base}.parent.name`);
+
+      for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.children[${i}].name`);
+      for (let i = 0; i < 16; i++) out.push(`summonCircle.${base}.object.children[${i}].name`);
+    }
+
+    const seen = new Set();
+    return out.filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
+  }
+
+  function snapshot(sc, paths) {
+    const snap = [];
+    for (const path of paths) {
+      const v = safeGet({ summonCircle: sc }, path.replace(/^summonCircle\./, "summonCircle."));
+      if (typeof v === "string" && v.length) snap.push({ path, value: v });
+    }
+    return snap;
+  }
+
+  function diffSnapshots(baseline, now) {
+    const base = new Set((baseline || []).map((x) => `${x.path}::${x.value}`));
+    const added = [];
+    for (const x of now) {
+      const k = `${x.path}::${x.value}`;
+      if (!base.has(k)) added.push(x);
+    }
+    return added;
+  }
+
+  function scoreName(name) {
+    let s = 0;
+    if (!name) return -999;
+    if (name.includes("_bind_jnt")) s += 50;
+    if (name.includes("main_")) s += 12;
+    if (name.includes("_kitbash_")) s += 8;
+    if (/(clav|shoulder|deltoid|arm|hand|finger|spine|neck|head|leg|thigh|calf|foot)/i.test(name)) s += 6;
+    if (/(thickness|fat|scaleOffset|offset|helper)/i.test(name)) s -= 10;
+    return s;
+  }
+
+  function pickBest(delta) {
+    if (!delta?.length) return null;
+
+    const bind = delta.filter((d) => d.value.includes("_bind_jnt"));
+    const pool = bind.length ? bind : delta;
+
+    let best = null;
+    let bestS = -Infinity;
+    for (const d of pool) {
+      const s = scoreName(d.value);
+      if (s > bestS) {
+        bestS = s;
+        best = d;
+      }
+    }
+    return best;
+  }
+
+  function shouldIgnoreClick(e) {
+    const t = e && e.target;
+    if (!t || !t.closest) return false;
+    if (t.closest("#kwWitchDock") || t.closest("#kwWDCompact")) return true;
+    if (t.closest("button, input, textarea, select, [role='button']")) return true;
+    return false;
+  }
+
+  function detach() {
+    if (!STATE.attached) return;
+    document.removeEventListener("pointerup", handleEvent, true);
+    document.removeEventListener("click", handleEvent, true);
+    STATE.attached = false;
+  }
+
+  function resetState() {
+    STATE.baseline = null;
+    STATE.candidates = null;
+    STATE.lastBoneName = "";
+    STATE.failed = false;
+    STATE.stopped = false;
+    STATE.tries = 0;
+    setBoneName("");
+    copyBtn.setAttribute("disabled", "disabled");
+    setIdle();
+  }
+
+  const BONE_IDLE_TEXT = "No bone detected (click a body bone)";
+  const BONE_DETECTING_TEXT = "Detecting…";
+  const BONE_FAILED_TEXT = "Bone detection failed. Restart detection:";
+
+  function setIdle() {
+    row.style.display = "flex";
+    if (STATE.lastBoneName) return;
+    value.textContent = BONE_IDLE_TEXT;
+    value.title = "";
+    copyBtn.setAttribute("disabled", "disabled");
+  }
+
+  function setDetecting() {
+    if (STATE.failed) return;
+    row.style.display = "flex";
+    if (STATE.lastBoneName) return;
+    value.textContent = BONE_DETECTING_TEXT;
+    value.title = "";
+    copyBtn.setAttribute("disabled", "disabled");
+  }
+
+  function setFailed(msg) {
+    row.style.display = "flex";
+    const t = (msg || BONE_FAILED_TEXT);
+    value.innerHTML = `${t} <span class="kwWDBoneRetryChip">Click Here</span>`;
+    value.title = "";
+    copyBtn.setAttribute("disabled", "disabled");
+    const chip = value.querySelector(".kwWDBoneRetryChip");
+    if (chip) {
+      chip.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        retry();
+      }, { once: true });
+    }
+  }
+
+
+  function ensureReady(sc) {
+    if (!sc) return false;
+    if (!STATE.candidates || !STATE.candidates.length) {
+      const c = buildCandidates(sc);
+      if (!c || !c.length) return false;
+      STATE.candidates = c;
+      STATE.baseline = snapshot(sc, STATE.candidates);
+      return true;
+    }
+    if (!STATE.baseline) {
+      STATE.baseline = snapshot(sc, STATE.candidates);
+    }
+    return true;
+  }
+
+  function forceRebuild(sc) {
+    if (!sc) return false;
+    const c = buildCandidates(sc);
+    if (!c || !c.length) return false;
+    STATE.candidates = c;
+    STATE.baseline = snapshot(sc, STATE.candidates);
+    return true;
+  }
+
+  function handleEvent(e) {
+    try {
       if (shouldIgnoreClick(e)) return;
 
       const sc = getSummonCircle();
@@ -2001,35 +2199,100 @@ function mountTool(def) {
 
       const handlerSc = sc;
       setTimeout(() => {
-        const now = snapshot(handlerSc, STATE.candidates);
-        const delta = diffSnapshots(STATE.baseline, now);
-        const best = pickBest(delta);
+        try {
+          const now = snapshot(handlerSc, STATE.candidates);
+          const delta = diffSnapshots(STATE.baseline, now);
+          const best = pickBest(delta);
 
-        if (best && best.value && best.value.includes("_bind_jnt") && best.value !== STATE.lastBoneName) {
-          setBoneName(best.value);
+          if (best && best.value && best.value.includes("_bind_jnt") && best.value !== STATE.lastBoneName) {
+            setBoneName(best.value);
+          }
+
+          STATE.baseline = now;
+        } catch (err) {
+          detach();
+          STATE.failed = true;
+          setFailed();
+          try { console.error("[Witch Dock] Bone detection error:", err); } catch (_) {}
         }
-
-        STATE.baseline = now;
       }, STATE.delayMs);
+    } catch (err) {
+      detach();
+      STATE.failed = true;
+      setFailed();
+      try { console.error("[Witch Dock] Bone detection error:", err); } catch (_) {}
     }
+  }
 
-    const startWhenReady = () => {
-      const sc = getSummonCircle();
-      if (!ensureReady(sc)) {
-        setTimeout(startWhenReady, 250);
+  function scheduleStart(delayMs) {
+    if (STATE.retryTimer) return;
+    const d = (typeof delayMs === "number" ? delayMs : 250);
+    STATE.retryTimer = setTimeout(() => {
+      STATE.retryTimer = null;
+      startWhenReady();
+    }, d);
+  }
+
+  function startWhenReady() {
+    const sc = getSummonCircle();
+    if (!ensureReady(sc)) {
+      STATE.tries += 1;
+      if (STATE.tries >= STATE.maxTries) {
+        STATE.stopped = true;
+        STATE.tries = 0;
+        setIdle();
+        scheduleStart(1000);
         return;
       }
+      scheduleStart(250);
+      return;
+    }
 
-      row.style.display = "flex";
+    STATE.stopped = false;
+    STATE.tries = 0;
+    row.style.display = "flex";
+
+    if (!STATE.attached) {
       document.addEventListener("pointerup", handleEvent, true);
       document.addEventListener("click", handleEvent, true);
-    };
+      STATE.attached = true;
+    }
 
+    setTimeout(() => {
+      const sc2 = getSummonCircle();
+      if (!sc2) return;
+      if (!STATE.candidates || !STATE.candidates.length || !STATE.baseline || !STATE.baseline.length) {
+        forceRebuild(sc2);
+      }
+    }, 750);
+  }
+
+  function retry() {
+    detach();
+    resetState();
+    row.style.display = "flex";
+    row.style.display = "flex";
+    value.textContent = "Initializing bone detection…";
+    value.title = "";
     startWhenReady();
   }
 
+  row.addEventListener("click", (e) => {
+    if (!(STATE.failed || STATE.stopped)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    retry();
+  }, true);
 
-  
+  startWhenReady();
+
+  state.__kwBoneDetect = {
+    ns: STATE.ns,
+    version: STATE.version,
+    retry
+  };
+}
+
 
   function getScriptMeta() {
     try {
@@ -2248,7 +2511,9 @@ function buildUI() {
       ]),
       el("div", { id: "kwWDTabs" }, [
         el("div", { id: "kwWDTabsLeft" }),
+        el("div", { id: "kwWDTabsShade" }),
         el("div", { id: "kwWDTabsRight" }, [
+          el("div", { id: "kwWDTabsCue", title: "Scroll tabs", html: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` }),
           el("button", { id: "kwWDUndoBtn", class: "kwWDActionBtn", type: "button", title: "Undo (Ctrl+Z)", text: "↶", onclick: triggerUndo }),
           el("button", { id: "kwWDRedoBtn", class: "kwWDActionBtn", type: "button", title: "Redo (Ctrl+Shift+Z)", text: "↷", onclick: triggerRedo })
         ])
@@ -2276,6 +2541,64 @@ function buildUI() {
     state.closeBtn = state.root.querySelector("#kwWDControls .kwWDBtn:nth-child(3)");
 
     document.body.appendChild(state.root);
+
+    state.tabsLeft = state.root.querySelector("#kwWDTabsLeft");
+    state.tabsShade = state.root.querySelector("#kwWDTabsShade");
+    state.tabsCue = state.root.querySelector("#kwWDTabsCue");
+    state.tabsRight = state.root.querySelector("#kwWDTabsRight");
+
+    const updateTabsCue = () => {
+      if (!state.tabsLeft || !state.tabsCue || !state.tabsShade) return;
+
+      const overflow = state.tabsLeft.scrollWidth > state.tabsLeft.clientWidth + 2;
+
+      if (state.tabsRight) {
+        state.tabsShade.style.right = (state.tabsRight.offsetWidth + 7) + "px";
+      } else {
+        state.tabsShade.style.right = "0px";
+      }
+
+      state.tabsShade.classList.toggle("kwShow", overflow);
+
+      const prev = !!state.tabsOverflowPrev;
+      state.tabsOverflowPrev = overflow;
+
+      if (overflow && !prev) {
+        state.tabsCue.classList.add("kwShow");
+        state.tabsCue.classList.remove("kwPulse");
+        void state.tabsCue.offsetWidth;
+        state.tabsCue.classList.add("kwPulse");
+        clearTimeout(state.tabsCueHideTimer);
+        state.tabsCueHideTimer = setTimeout(() => {
+          state.tabsCue.classList.remove("kwShow");
+          state.tabsCue.classList.remove("kwPulse");
+        }, 1600);
+      }
+
+      if (!overflow) {
+        state.tabsCue.classList.remove("kwShow");
+        state.tabsCue.classList.remove("kwPulse");
+        clearTimeout(state.tabsCueHideTimer);
+        state.tabsCueHideTimer = null;
+      }
+    };
+    state.updateTabsCue = updateTabsCue;
+    state.tabsLeft.addEventListener("wheel", (e) => {
+      if (!state.tabsLeft) return;
+      if (state.tabsLeft.scrollWidth <= state.tabsLeft.clientWidth + 2) return;
+
+      const dx = e.deltaX || 0;
+      const dy = e.deltaY || 0;
+      const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+
+      state.tabsLeft.scrollLeft += delta;
+      e.preventDefault();
+    }, { passive: false });
+
+    state.tabsLeft.addEventListener("scroll", updateTabsCue, { passive: true });
+    window.addEventListener("resize", updateTabsCue);
+    setTimeout(updateTabsCue, 0);
+    setTimeout(updateTabsCue, 350);
 
     state.compact = el("div", { id: "kwWDCompact", onpointerdown: startCompactDrag }, [
       el("div", { id: "kwWDCompactTitle", text: "WITCH DOCK" }),
@@ -2326,3 +2649,4 @@ function buildUI() {
     installDockHotkey();
 loadManifestAndTools();
 })();
+
