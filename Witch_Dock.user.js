@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v1.0.6 - DEV TEST
+// @name         Witch Dock v1.0.7 - DEV TEST
 // @namespace    KnightWitch
-// @version      1.0.6
+// @version      1.0.7
 // @description  DEV TEST SCRIPT
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -17,7 +17,1367 @@
 // @connect      raw.githubusercontent.com
 // ==/UserScript==
 
+(function () {
+  "use strict";
 
+  const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
+const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
+const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
+const KOFI_URL = "https://ko-fi.com/knightwitch";
+const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
+
+function gmGetText(url) {
+  return new Promise((resolve, reject) => {
+    try {
+      GM_xmlhttpRequest({
+        method: "GET",
+        url,
+        headers: { "Cache-Control": "no-cache" },
+        onload: (res) => {
+          if (res.status >= 200 && res.status < 300) resolve(res.responseText || "");
+          else reject(new Error(`HTTP ${res.status} for ${url}`));
+        },
+        onerror: () => reject(new Error(`Request failed for ${url}`))
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+function getToolEnabled(toolId, enabledByDefault) {
+  try {
+    const v = GM_getValue(TOOL_ENABLE_PREFIX + toolId, null);
+    if (v === null || v === undefined) return !!enabledByDefault;
+    return !!v;
+  } catch {
+    return !!enabledByDefault;
+  }
+}
+
+async function loadManifestAndTools() {
+  let manifest;
+  try {
+    const raw = await gmGetText(MANIFEST_URL);
+    manifest = JSON.parse(raw);
+  } catch (e) {
+    return;
+  }
+
+  if (!manifest || typeof manifest !== "object") return;
+  const tools = Array.isArray(manifest.tools) ? manifest.tools : [];
+  for (const t of tools) {
+    if (!t || typeof t !== "object") continue;
+    const id = typeof t.id === "string" ? t.id : "";
+    const url = typeof t.url === "string" ? t.url : "";
+    const enabledByDefault = !!t.enabledByDefault;
+    if (!id || !url) continue;
+    if (!getToolEnabled(id, enabledByDefault)) continue;
+
+    try {
+      const code = await gmGetText(url);
+      if (!code) continue;
+      new Function(code)();
+    } catch (e) {}
+  }
+}
+
+
+  const STORE_KEY = "kw.witchDock.v1";
+  const DEFAULTS = {
+    x: null,
+    y: null,
+    width: 380,
+    height: 520,
+    minimized: false,
+    closed: false,
+    lastOpenWidth: 380,
+    lastOpenHeight: 520,
+    lastOpenX: null,
+    lastOpenY: null,
+    lastOpenAnchored: true,
+    activeTab: null,
+    compactX: 16,
+    compactY: null,
+    firstRun: false
+  };
+
+  const state = {
+    uiReady: false,
+    root: null,
+    header: null,
+    tabsContainer: null,
+    tabsBar: null,
+    body: null,
+    resizeCorner: null,
+    resizeBottom: null,
+    compact: null,
+    compactExpandBtn: null,
+    minimizeBtn: null,
+    closeBtn: null,
+    tabs: new Map(),
+    toolsById: new Map(),
+    pending: [],
+    activeTab: null,
+    isResizing: false,
+    resizeStart: null,
+    minWidth: 260,
+    draggingTool: null,
+    draggingSectionId: null,
+    draggingSectionTool: null,
+    aboutBtn: null,
+    aboutOverlay: null,
+    aboutModal: null,
+    disclaimerBtn: null,
+    disclaimerOverlay: null,
+    disclaimerModal: null
+  };
+
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function getUndoQueue() {
+    const CK = UW.CK;
+    const u = CK && CK.UndoQueue ? CK.UndoQueue : null;
+    if (!u || !Array.isArray(u.queue) || typeof u.currentIndex !== "number") return null;
+    return u;
+  }
+
+  function tryLoadCharacter(json) {
+    const CK = UW.CK;
+    if (!CK || typeof CK.tryLoadCharacter !== "function") return false;
+    try {
+      CK.tryLoadCharacter(deepClone(json), "Witch Dock: invalid character data", function () {});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function updateDockUndoRedoButtons() {
+    if (!state.uiReady || !state.undoBtn || !state.redoBtn) return;
+    const u = getUndoQueue();
+    const canUndo = !!u && u.currentIndex > 0;
+    const canRedo = !!u && u.currentIndex < u.queue.length - 1;
+    state.undoBtn.disabled = !canUndo;
+    state.redoBtn.disabled = !canRedo;
+  }
+
+  function triggerUndo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.undo === "function") {
+      try {
+        u.undo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex <= 0) return;
+    u.currentIndex -= 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function triggerRedo() {
+    const u = getUndoQueue();
+    if (!u || !UW.CK) return;
+
+    if (typeof u.redo === "function") {
+      try {
+        u.redo();
+      } catch (e) {}
+      updateDockUndoRedoButtons();
+      return;
+    }
+
+    if (u.currentIndex >= u.queue.length - 1) return;
+    u.currentIndex += 1;
+    const json = u.queue[u.currentIndex];
+    if (json) tryLoadCharacter(json);
+    updateDockUndoRedoButtons();
+  }
+
+  function hookUndoQueueForDockButtons() {
+    const u = getUndoQueue();
+    if (!u) return;
+
+    function wrap(obj, key) {
+      const fn = obj && typeof obj[key] === "function" ? obj[key] : null;
+      if (!fn || fn.__kwDockWrapped) return;
+      obj[key] = function () {
+        const r = fn.apply(this, arguments);
+        try {
+          updateDockUndoRedoButtons();
+        } catch (e) {}
+        return r;
+      };
+      obj[key].__kwDockWrapped = true;
+    }
+
+    wrap(u, "push");
+    wrap(u, "enqueue");
+    wrap(u, "add");
+    wrap(u, "record");
+    wrap(u, "undo");
+    wrap(u, "redo");
+  }
+
+  function loadPrefs() {
+    try {
+      const raw = GM_getValue(STORE_KEY, null);
+      if (!raw) return { ...DEFAULTS, firstRun: true };
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object") return { ...DEFAULTS, firstRun: true };
+      return { ...DEFAULTS, ...obj, firstRun: false };
+    } catch {
+      return { ...DEFAULTS, firstRun: true };
+    }
+  }
+
+  function savePrefs(p) {
+    try {
+      GM_setValue(STORE_KEY, JSON.stringify(p));
+    } catch {}
+  }
+
+  const prefs = loadPrefs();
+
+  function addStyles() {
+    GM_addStyle(`
+#kwWitchDock{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 380px;
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(20,20,22,0.92);
+  color: #eee;
+  font: 12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  z-index: 999999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+#kwWitchDock *{ box-sizing: border-box; }
+#kwWDHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  user-select: none;
+  cursor: move;
+}
+#kwWDTitle{
+  font-weight: 800;
+  letter-spacing: 0.25px;
+}
+
+#kwWDTitleWrap{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#kwWDAboutBtn{
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+#kwWDAboutBtn:hover{
+  background: rgba(255,255,255,0.14);
+}
+
+#kwWDControls #kwWDAboutBtn{
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+#kwWDControls{
+  display: inline-flex;
+  gap: 6px;
+}
+.kwWDBtn{
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  cursor: default;
+  position: relative;
+}
+.kwWDBtn:hover{
+  background: rgba(255,255,255,0.14);
+}
+.kwWDBtn[data-tooltip]:hover::after{
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 0;
+  top: 36px;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,20,22,0.96);
+  color: #eee;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  pointer-events: none;
+  z-index: 1000000;
+}
+.kwWDBtn[data-tooltip]:hover::before{
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 31px;
+  width: 10px;
+  height: 10px;
+  background: rgba(20,20,22,0.96);
+  border-left: 1px solid rgba(255,255,255,0.14);
+  border-top: 1px solid rgba(255,255,255,0.14);
+  transform: rotate(45deg);
+  z-index: 1000001;
+  pointer-events: none;
+}
+
+#kwWDTabs{
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  user-select: none;
+}
+#kwWDTabsLeft{
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#kwWDTabsLeft::-webkit-scrollbar{ height: 0; width: 0; }
+#kwWDTabsShade{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  z-index: 3;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.62));
+}
+#kwWDTabsShade.kwShow{ opacity: 0.7; }
+
+#kwWDTabsRight{
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  position: relative;
+  z-index: 6;
+  padding-left: 10px;
+  background: transparent;
+}
+#kwWDTabsRight::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+  background: rgba(255,255,255,0.14);
+}
+#kwWDTabsRight::after{
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+#kwWDTabsCue{
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.70);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+#kwWDTabsCue svg{ width: 16px; height: 16px; }
+#kwWDTabsCue.kwShow{ opacity: 0.80; }
+#kwWDTabsCue.kwPulse{ animation: kwWDTabsCuePulse 1.1s ease-in-out 0s 2; }
+@keyframes kwWDTabsCuePulse{
+  0%{ transform: translateY(-50%) translateX(0); opacity: 0.25; }
+  40%{ transform: translateY(-50%) translateX(4px); opacity: 0.95; }
+  100%{ transform: translateY(-50%) translateX(0); opacity: 0.55; }
+}
+.kwWDActionBtn{
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  cursor: default;
+  position: relative;
+}
+.kwWDActionBtn:hover{ background: rgba(255,255,255,0.14); }
+
+.kwWDMinimized #kwWDFooter{ display: none; }
+.kwWDTab{
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: default;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kwWDTab[aria-selected="true"]{
+  background: rgba(255,255,255,0.14);
+}
+#kwWDBody{
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px;
+}
+#kwWDFooter{
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.65);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+.kwWDPanel{
+  display: none;
+}
+.kwWDToolList{
+  display: flex;
+  flex-direction: column;
+}
+.kwWDPanel[aria-hidden="false"]{
+  display: block;
+}
+
+#kwWDResizeHandleCorner{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0) 50%, rgba(255,255,255,0.18) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0) 70%, rgba(255,255,255,0.12) 70%);
+  opacity: 0.8;
+}
+#kwWDResizeHandleCorner:hover{ opacity: 1; }
+
+#kwWDResizeHandleBottom{
+  position: absolute;
+  left: 0;
+  right: 18px;
+  bottom: 0;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.kwWDMinimized #kwWDBody{ display: none; }
+.kwWDMinimized #kwWDResizeHandleCorner{ display: none; }
+.kwWDMinimized #kwWDResizeHandleBottom{ display: none; }
+
+#kwWDCompact{
+  position: fixed;
+  z-index: 999999;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(20,20,22,0.92);
+  color: #eee;
+  font: 12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  user-select: none;
+  cursor: move;
+}
+#kwWDCompactTitle{
+  font-weight: 800;
+  letter-spacing: 0.25px;
+}
+#kwWDCompactExpand{
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  cursor: default;
+}
+#kwWDCompactExpand:hover{ background: rgba(255,255,255,0.14); }
+
+.kwWDSection{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.kwWDSectionHeader{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: default;
+  user-select: none;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.kwWDSectionHeader:active{ cursor: grabbing; }
+.kwWDSection.dragging{ opacity: 0.65; }
+.kwWDSection.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDSection.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
+.kwWDSectionHeader:hover{ background: rgba(255,255,255,0.06); }
+.kwWDSectionHeaderBox{
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.95;
+}
+.kwWDSectionHeaderBox svg{
+  display: block;
+}
+
+.kwWDSectionHeaderBox svg{
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: currentColor;
+  color: rgba(255,255,255,0.90);
+}
+
+.kwWDDragHandle{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:18px;opacity:0.75;cursor:grab;user-select:none;margin-left:auto;}
+.kwWDSectionHeader.dragging .kwWDDragHandle{cursor:grabbing;opacity:0.95;}
+.kwWDSectionHeaderName{
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+.kwWDSectionBody{
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.kwWDSection[data-collapsed="1"] .kwWDSectionBody{ display: none; }
+.kwWDTool{
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.kwWDToolHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  user-select: none;
+  cursor: default;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.kwWDToolHeader:active{ cursor: grabbing; }
+.kwWDToolTitle{
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+.kwWDToolBody{
+  padding: 0;
+}
+.kwWDTool.drag-over-top{ box-shadow: inset 0 3px 0 rgba(170,85,255,0.85); }
+.kwWDTool.drag-over-bottom{ box-shadow: inset 0 -3px 0 rgba(170,85,255,0.85); }
+.kwWDToolList.drag-over-empty{ box-shadow: inset 0 0 0 2px rgba(170,85,255,0.55); border-radius: 6px; }
+
+/* Bone HUD (footer) */
+#kwWDFooter .kwWDBoneRow{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.75);
+}
+#kwWDFooter .kwWDBoneLabel{
+  opacity: 0.85;
+}
+#kwWDFooter .kwWDBoneValue{
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255,255,255,0.9);
+}
+#kwWDFooter .kwWDBoneCopy{
+  height: 20px;
+  width: 24px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.22);
+  color: #eee;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDFooter .kwWDBoneCopy[disabled]{
+  opacity: 0.45;
+  cursor: default;
+}
+#kwWDFooter .kwWDBoneRetryChip{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+#kwWDFooter .kwWDBoneRetryChip:hover{
+  background: rgba(255,255,255,0.10);
+}
+#kwWDFooter .kwWDBoneCopy:hover{ background: rgba(255,255,255,0.06); }
+#kwWDFooter .kwWDBoneCopy svg{ width: 13px; height: 13px; fill: currentColor; }
+#kwWDFooter .kwWDFooterLine{
+  font-size: 10px;
+  font-weight: 400;
+}
+#kwBoneHudToast{
+  position: fixed;
+  left: 12px;
+  bottom: 56px;
+  z-index: 2147483647;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(18,18,20,0.95);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  color: rgba(255,255,255,0.86);
+  font: 11px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+#kwBoneHudToast.show{ opacity: 1; }
+
+
+/* About modal */
+#kwWDAboutOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2147483646;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#kwWDAboutOverlay[aria-hidden="false"]{ display: flex; }
+#kwWDAbout{
+  width: min(560px, calc(100vw - 36px));
+  max-height: min(720px, calc(100vh - 36px));
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,20,22,0.96);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#kwWDAboutHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+#kwWDAboutTitle{
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#kwWDAboutClose{
+  width: 34px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDAboutClose:hover{ background: rgba(255,255,255,0.14); }
+#kwWDAboutBody{
+  padding: 12px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.35;
+}
+#kwWDAboutBody p{ margin: 0 0 10px 0; }
+#kwWDAboutBody ul{ margin: 0 0 10px 18px; padding: 0; }
+#kwWDAboutBody li{ margin: 4px 0; }
+#kwWDAboutBody code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.kwWDAboutBtns{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.kwWDAboutLinkBtn{
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.kwWDAboutLinkBtn:hover{ background: rgba(255,255,255,0.14); }
+#kwWDAboutFooter{
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Disclaimer modal */
+#kwWDDisclaimerBtn{
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.86);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+}
+#kwWDDisclaimerBtn:hover{ background: rgba(255,255,255,0.12); }
+
+#kwWDDisclaimerOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2147483646;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#kwWDDisclaimerOverlay[aria-hidden="false"]{ display: flex; }
+#kwWDDisclaimer{
+  width: min(640px, calc(100vw - 36px));
+  max-height: min(760px, calc(100vh - 36px));
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,20,22,0.96);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#kwWDDisclaimerHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+#kwWDDisclaimerTitle{
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#kwWDDisclaimerClose{
+  width: 34px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #eee;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#kwWDDisclaimerClose:hover{ background: rgba(255,255,255,0.14); }
+#kwWDDisclaimerBody{
+  padding: 12px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.35;
+}
+#kwWDDisclaimerBody p{ margin: 0 0 10px 0; }
+#kwWDDisclaimerBody ul{ margin: 0 0 10px 18px; padding: 0; }
+#kwWDDisclaimerBody li{ margin: 4px 0; }
+#kwWDDisclaimerBody strong{ font-weight: 900; }
+#kwWDDisclaimerFooter{
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.55);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+`);
+  }
+
+  function el(tag, attrs, children) {
+    const n = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        const v = attrs[k];
+        if (k === "class") n.className = v;
+        else if (k === "text") n.textContent = v;
+        else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+        else n.setAttribute(k, String(v));
+      }
+    }
+    if (children) {
+      for (const c of children) {
+        if (c == null) continue;
+        if (typeof c === "string") n.appendChild(document.createTextNode(c));
+        else n.appendChild(c);
+      }
+    }
+    return n;
+  }
+
+  function clamp(n, min, max) {
+    if (n < min) return min;
+    if (n > max) return max;
+    return n;
+  }
+
+  function computeMinDockHeightCollapsed() {
+    const headerH = state.header ? state.header.getBoundingClientRect().height : 52;
+    const tabsH = state.tabsContainer ? state.tabsContainer.getBoundingClientRect().height : 40;
+    return Math.ceil(headerH + tabsH);
+  }
+
+  function getViewport() {
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    return { vw, vh };
+  }
+
+  function isAnchored() {
+    return prefs.x == null || prefs.y == null;
+  }
+
+  function snapshotCurrentDockPositionToPrefs() {
+    if (!state.root) return;
+    const r = state.root.getBoundingClientRect();
+    prefs.lastOpenAnchored = isAnchored();
+    if (prefs.lastOpenAnchored) {
+      prefs.lastOpenX = null;
+      prefs.lastOpenY = null;
+    } else {
+      prefs.lastOpenX = Math.round(r.left);
+      prefs.lastOpenY = Math.round(r.top);
+    }
+    prefs.lastOpenWidth = Math.round(r.width);
+    prefs.lastOpenHeight = Math.round(r.height);
+    savePrefs(prefs);
+  }
+
+  function applyPositionAndSize() {
+    if (!state.root) return;
+
+    const { vw, vh } = getViewport();
+    const w = prefs.width || DEFAULTS.width;
+    const h = prefs.height || DEFAULTS.height;
+
+    if (prefs.x == null || prefs.y == null) {
+      state.root.style.left = "";
+      state.root.style.top = "";
+      state.root.style.right = "16px";
+      state.root.style.bottom = "16px";
+    } else {
+      const left = clamp(prefs.x, 0, Math.max(0, vw - w));
+      const top = clamp(prefs.y, 0, Math.max(0, vh - h));
+      state.root.style.right = "";
+      state.root.style.bottom = "";
+      state.root.style.left = `${left}px`;
+      state.root.style.top = `${top}px`;
+      prefs.x = left;
+      prefs.y = top;
+      savePrefs(prefs);
+    }
+
+    state.root.style.width = `${w}px`;
+    state.root.style.height = `${h}px`;
+  }
+
+  function applyMinimizedState() {
+    if (!state.root) return;
+
+    if (prefs.minimized) state.root.classList.add("kwWDMinimized");
+    else state.root.classList.remove("kwWDMinimized");
+
+    if (state.minimizeBtn) state.minimizeBtn.textContent = prefs.minimized ? "▣" : "–";
+
+    if (prefs.minimized) {
+      const minH = computeMinDockHeightCollapsed();
+      state.root.style.height = `${minH}px`;
+    } else {
+      state.root.style.height = `${prefs.height}px`;
+    }
+  }
+
+  function showClosedCompact() {
+    if (!state.root || !state.compact) return;
+
+    if (prefs.closed) {
+      state.root.style.display = "none";
+      state.compact.style.display = "flex";
+
+      const { vw, vh } = getViewport();
+      const cr = state.compact.getBoundingClientRect();
+
+      let x = prefs.compactX != null ? prefs.compactX : 16;
+      let y = prefs.compactY != null ? prefs.compactY : (vh - cr.height - 16);
+
+      x = clamp(x, 0, Math.max(0, vw - cr.width));
+      y = clamp(y, 0, Math.max(0, vh - cr.height));
+
+      state.compact.style.right = "";
+      state.compact.style.bottom = "";
+      state.compact.style.left = `${x}px`;
+      state.compact.style.top = `${y}px`;
+    } else {
+      state.compact.style.display = "none";
+      state.root.style.display = "";
+    }
+  }
+
+  function computeMinDockWidthForActiveTab() {
+    const baseMin = 260;
+    const tab = state.tabs.get(state.activeTab);
+    if (!tab || !tab.panel) return baseMin;
+
+    const panel = tab.panel;
+    const child = panel.firstElementChild;
+    if (!child) return baseMin;
+
+    const prevDisplay = panel.style.display;
+    const prevHidden = panel.getAttribute("aria-hidden");
+    panel.style.display = "block";
+    panel.setAttribute("aria-hidden", "false");
+
+    const needed = Math.ceil(child.scrollWidth + 16);
+
+    panel.style.display = prevDisplay;
+    if (prevHidden != null) panel.setAttribute("aria-hidden", prevHidden);
+
+    return Math.max(baseMin, needed);
+  }
+
+  function enforceSizeConstraints() {
+    if (!state.root) return;
+
+    const { vw, vh } = getViewport();
+    const minH = computeMinDockHeightCollapsed();
+    const minW = Math.max(260, state.minWidth || 260);
+    const maxW = Math.max(minW, vw - 8);
+    const maxH = Math.max(minH, vh - 8);
+
+    if (prefs.minimized) {
+      prefs.width = clamp(prefs.width, minW, maxW);
+      prefs.height = minH;
+      savePrefs(prefs);
+      applyPositionAndSize();
+      applyMinimizedState();
+      return;
+    }
+
+    prefs.width = clamp(prefs.width, minW, maxW);
+    prefs.height = clamp(prefs.height, minH, maxH);
+    savePrefs(prefs);
+    applyPositionAndSize();
+  }
+
+  function setActiveTab(name) {
+    state.activeTab = name;
+    prefs.activeTab = name;
+    savePrefs(prefs);
+
+    for (const [tabName, tab] of state.tabs) {
+      const active = tabName === name;
+      tab.btn.setAttribute("aria-selected", active ? "true" : "false");
+      tab.panel.setAttribute("aria-hidden", active ? "false" : "true");
+    }
+
+    state.minWidth = computeMinDockWidthForActiveTab();
+    if (prefs.firstRun) {
+      prefs.width = Math.max(260, state.minWidth || 260);
+      prefs.lastOpenWidth = prefs.width;
+      prefs.firstRun = false;
+      savePrefs(prefs);
+      applyPositionAndSize();
+    }
+    enforceSizeConstraints();
+
+    hookUndoQueueForDockButtons();
+    updateDockUndoRedoButtons();
+  }
+
+  function ensureTab(name) {
+    if (state.tabs.has(name)) return state.tabs.get(name);
+
+    const btn = el("button", { class: "kwWDTab", type: "button", text: name, "aria-selected": "false" });
+    const panel = el("div", { class: "kwWDPanel", "aria-hidden": "true" });
+    const list = el("div", { class: "kwWDToolList" });
+    panel.appendChild(list);
+
+    btn.addEventListener("click", () => setActiveTab(name));
+
+    state.tabsBar.appendChild(btn);
+    if (state.updateTabsCue) state.updateTabsCue();
+    state.body.appendChild(panel);
+
+    const tab = { name, btn, panel, list };
+    state.tabs.set(name, tab);
+
+    if (!prefs.activeTab) prefs.activeTab = name;
+    if (!state.activeTab) state.activeTab = prefs.activeTab || name;
+
+    setActiveTab(state.activeTab);
+    return tab;
+  }
+
+
+
+function makeIconBase() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("width", "12");
+  svg.setAttribute("height", "12");
+  return svg;
+}
+
+function makeIconMinus() {
+  const svg = makeIconBase();
+  const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  l.setAttribute("x1", "3");
+  l.setAttribute("y1", "8");
+  l.setAttribute("x2", "13");
+  l.setAttribute("y2", "8");
+  l.setAttribute("stroke", "currentColor");
+  l.setAttribute("stroke-width", "2");
+  l.setAttribute("stroke-linecap", "round");
+  l.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(l);
+  return svg;
+}
+
+function makeIconPlus() {
+  const svg = makeIconBase();
+  const h = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  h.setAttribute("x1", "3");
+  h.setAttribute("y1", "8");
+  h.setAttribute("x2", "13");
+  h.setAttribute("y2", "8");
+  h.setAttribute("stroke", "currentColor");
+  h.setAttribute("stroke-width", "2");
+  h.setAttribute("stroke-linecap", "round");
+  h.setAttribute("vector-effect", "non-scaling-stroke");
+  const v = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  v.setAttribute("x1", "8");
+  v.setAttribute("y1", "3");
+  v.setAttribute("x2", "8");
+  v.setAttribute("y2", "13");
+  v.setAttribute("stroke", "currentColor");
+  v.setAttribute("stroke-width", "2");
+  v.setAttribute("stroke-linecap", "round");
+  v.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(h);
+  svg.appendChild(v);
+  return svg;
+}
+function setCollapseIcon(boxEl, collapsed) {
+  while (boxEl.firstChild) boxEl.removeChild(boxEl.firstChild);
+  boxEl.appendChild(collapsed ? makeIconPlus() : makeIconMinus());
+}
+
+function slugify(str) {
+  return String(str || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function toolSectionKey(toolId, sectionId) {
+    return `kw.witchDock.ui.${toolId}.${sectionId}.collapsed`;
+  }
+
+  function getSectionCollapsed(toolId, sectionId, defaultCollapsed) {
+    try {
+      const v = GM_getValue(toolSectionKey(toolId, sectionId), null);
+      if (v === null || v === undefined) return !!defaultCollapsed;
+      return !!v;
+    } catch {
+      return !!defaultCollapsed;
+    }
+  }
+
+  function setSectionCollapsed(toolId, sectionId, collapsed) {
+    try {
+      GM_setValue(toolSectionKey(toolId, sectionId), !!collapsed);
+    } catch {}
+  }
+
+  function createSection(toolId, opts) {
+    let sectionId = opts && typeof opts.id === "string" ? opts.id : "";
+    const title = opts && typeof opts.title === "string" ? opts.title : "";
+    if (!sectionId) sectionId = slugify(title) || "section";
+    const defaultCollapsed = !!(opts && opts.defaultCollapsed);
+
+    const root = el("div", { class: "kwWDSection", "data-collapsed": "0", "data-section-id": sectionId });
+    const headerBox = el("div", { class: "kwWDSectionHeaderBox" });
+    const header = el("div", { class: "kwWDSectionHeader" }, [
+      headerBox,
+      el("div", { class: "kwWDSectionHeaderName", text: title })
+    ]);
+    const body = el("div", { class: "kwWDSectionBody" });
+
+    const box = headerBox;
+
+    function apply(collapsed) {
+      root.setAttribute("data-collapsed", collapsed ? "1" : "0");
+      if (box) setCollapseIcon(box, collapsed);
+    }
+
+    const initial = getSectionCollapsed(toolId, sectionId, defaultCollapsed);
+    apply(initial);
+
+    header.addEventListener("click", (e) => {
+      if (header.__kwDraggedRecently) return;
+      const now = root.getAttribute("data-collapsed") !== "1";
+      apply(now);
+      if (sectionId) setSectionCollapsed(toolId, sectionId, now);
+    });
+
+    root.appendChild(header);
+    root.appendChild(body);
+
+    return { root, body, setCollapsed: (v) => apply(!!v), getCollapsed: () => root.getAttribute("data-collapsed") === "1" };
+  }
+
+  function buildToolApi(def) {
+    const toolId = def && typeof def.id === "string" ? def.id : "unknown";
+    return {
+      toolId,
+      ui: {
+        el,
+        createSection: (opts) => createSection(toolId, opts)
+      }
+    };
+  }
+const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";
+
+function sectionOrderKey(toolId) {
+  return SECTION_ORDER_PREFIX + toolId;
+}
+
+function getSectionOrder(toolId) {
+  try {
+    const raw = GM_getValue(sectionOrderKey(toolId), null);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function setSectionOrder(toolId, order) {
+  try {
+    GM_setValue(sectionOrderKey(toolId), JSON.stringify(order));
+  } catch {}
+}
+
+function saveSectionOrderFromDom(toolId, container) {
+  if (!container) return;
+  const ids = Array.from(container.children)
+    .filter((n) => n && n.classList && n.classList.contains("kwWDSection"))
+    .map((n) => n.getAttribute("data-section-id"))
+    .filter(Boolean);
+  if (ids.length) setSectionOrder(toolId, ids);
+}
+
+function applySectionOrder(toolId, container) {
+  if (!container) return;
+  const sections = Array.from(container.children).filter((n) => n.classList && n.classList.contains("kwWDSection"));
+  if (!sections.length) return;
+
+  const saved = getSectionOrder(toolId);
+  if (!saved.length) return;
+
+  const map = new Map();
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (id) map.set(id, s);
+  }
+
+  const ordered = [];
+  for (const id of saved) {
+    const el = map.get(id);
+    if (el) ordered.push(el);
+  }
+
+  for (const s of sections) {
+    const id = s.getAttribute("data-section-id");
+    if (!id || !saved.includes(id)) ordered.push(s);
+  }
+
+  for (const el of ordered) container.appendChild(el);
+}
+
+function clearSectionDragIndicators(container) {
+  if (!container) return;
+  for (const s of Array.from(container.querySelectorAll(":scope > .kwWDSection"))) {
+    if (s.classList) {
+      s.classList.remove("drag-over-top");
+      s.classList.remove("drag-over-bottom");
+      s.classList.remove("dragging");
     }
   }
 }
