@@ -192,6 +192,7 @@
     const ROOT = location.origin;
     const PAGE_SIZE = 750;
     const CONCURRENCY = 5;
+    const RETRY_ATTEMPTS = 2;
     const JSZIP_URL = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
 
     const state = {
@@ -199,6 +200,7 @@
       paused: false,
       zip: null,
       failures: [],
+      recovered: 0,
       markNameById: new Map(),
       configsTotal: 0,
       configsDone: 0,
@@ -272,6 +274,41 @@
       return safeName(name || `mark_${mark}`);
     }
 
+
+
+    function parseStatusCodeFromError(err) {
+      const msg = String(err?.message || err || "");
+      const m = msg.match(/\b(\d{3})\b/);
+      return m ? Number(m[1]) : null;
+    }
+
+    function isRetryableConfigError(err) {
+      const msg = String(err?.message || err || "").toLowerCase();
+      const status = parseStatusCodeFromError(err);
+      if (status === 408 || status === 409 || status === 425 || status === 429 || status === 500 || status === 502 || status === 503 || status === 504 || status === 520 || status === 521 || status === 522 || status === 523 || status === 524) return true;
+      if (msg.includes("timeout") || msg.includes("networkerror") || msg.includes("failed to fetch") || msg.includes("load failed") || msg.includes("fetch failed")) return true;
+      return false;
+    }
+
+    async function fetchConfigJsonWithRetry(url, init) {
+      let lastErr = null;
+      let recovered = false;
+
+      for (let attempt = 0; attempt <= RETRY_ATTEMPTS; attempt++) {
+        try {
+          const data = await fetchJson(url, init);
+          return { data, recovered };
+        } catch (err) {
+          lastErr = err;
+          if (!isRetryableConfigError(err) || attempt >= RETRY_ATTEMPTS) break;
+          recovered = true;
+          await sleep(300 + (attempt * 350) + Math.floor(Math.random() * 250));
+        }
+      }
+
+      throw Object.assign(lastErr instanceof Error ? lastErr : new Error(String(lastErr)), { recovered });
+    }
+
     async function pMap(items, worker, concurrency) {
       const out = new Array(items.length);
       let i = 0;
@@ -294,6 +331,7 @@
       if (state.running) return;
       state.running = true;
       state.failures = [];
+      state.recovered = 0;
       setProgress(0, 0);
 
       state.ui.downloadBtn.disabled = true;
@@ -332,13 +370,19 @@
             const url = `${ROOT}/config-service/user_config/${encodeURIComponent(String(id))}`;
 
             try {
-              const data = await fetchJson(url, { credentials: "include" });
-              const payload = data?.config ?? data;
+              const result = await fetchConfigJsonWithRetry(url, { credentials: "include" });
+              const payload = result?.data?.config ?? result?.data;
               state.zip.file(`configs/${file}`, JSON.stringify(payload, null, 2));
+              if (result?.recovered) {
+                state.recovered++;
+                logLine(`Recovered after retry: ${id}`);
+              }
             } catch (e) {
               const err = String(e.message || e);
-              state.failures.push({ url, error: err, config_id: id });
-              state.zip.file(`configs_failed/${file}`, JSON.stringify({ error: err, url }, null, 2));
+              const status = parseStatusCodeFromError(e);
+              const retryable = isRetryableConfigError(e);
+              state.failures.push({ url, error: err, config_id: id, status_code: status, retryable });
+              state.zip.file(`configs_failed/${file}`, JSON.stringify({ error: err, url, config_id: id, status_code: status, retryable }, null, 2));
             }
 
             done++;
@@ -355,12 +399,14 @@
         const filename = `heroforge-json-backup_${stamp}${state.failures.length ? "_WITH_FAILURES" : ""}.zip`;
         downloadBlob(blob, filename);
 
+        if (state.recovered) logLine(`Recovered after retry: ${state.recovered}`);
+
         if (state.failures.length) {
           logLine(`Failures: ${state.failures.length}`);
           logLine(JSON.stringify(state.failures.slice(0, 50), null, 2));
-          setStatus(`Done. ZIP downloaded. Failures: ${state.failures.length}.`);
+          setStatus(`Done. ZIP downloaded. Failures: ${state.failures.length}. Recovered: ${state.recovered}.`);
         } else {
-          setStatus("Done. ZIP downloaded.");
+          setStatus(`Done. ZIP downloaded. Recovered: ${state.recovered}.`);
         }
       } finally {
         state.running = false;
