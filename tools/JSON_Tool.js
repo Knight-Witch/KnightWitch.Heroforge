@@ -192,7 +192,9 @@
     const ROOT = location.origin;
     const PAGE_SIZE = 750;
     const CONCURRENCY = 5;
-    const RETRY_ATTEMPTS = 2;
+    const RETRY_CONCURRENCY = 3;
+    const RETRY_PHASES = 2;
+    const RETRY_COOLDOWN_MS = 2500;
     const JSZIP_URL = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
 
     const state = {
@@ -274,8 +276,6 @@
       return safeName(name || `mark_${mark}`);
     }
 
-
-
     function parseStatusCodeFromError(err) {
       const msg = String(err?.message || err || "");
       const m = msg.match(/\b(\d{3})\b/);
@@ -290,25 +290,49 @@
       return false;
     }
 
-    async function fetchConfigJsonWithRetry(url, init) {
-      let lastErr = null;
-      let recovered = false;
-
-      for (let attempt = 0; attempt <= RETRY_ATTEMPTS; attempt++) {
-        try {
-          const data = await fetchJson(url, init);
-          return { data, recovered };
-        } catch (err) {
-          lastErr = err;
-          if (!isRetryableConfigError(err) || attempt >= RETRY_ATTEMPTS) break;
-          recovered = true;
-          await sleep(300 + (attempt * 350) + Math.floor(Math.random() * 250));
-        }
-      }
-
-      throw Object.assign(lastErr instanceof Error ? lastErr : new Error(String(lastErr)), { recovered });
+    async function fetchConfigJson(url, init) {
+      return fetchJson(url, init);
     }
 
+    function recordFailure(entry) {
+      const { url, id, file, err } = entry;
+      const error = String(err?.message || err || "");
+      const status = parseStatusCodeFromError(err);
+      const retryable = isRetryableConfigError(err);
+      state.failures.push({ url, error, config_id: id, status_code: status, retryable });
+      state.zip.file(`configs_failed/${file}`, JSON.stringify({ error, url, config_id: id, status_code: status, retryable }, null, 2));
+    }
+
+    async function runRetryPhase(queue, phaseNumber, totalPhases, concurrency) {
+      if (!queue.length) return [];
+      setStatus(`Retry pass ${phaseNumber}/${totalPhases}… ${queue.length} pending`);
+      logLine(`Retry pass ${phaseNumber}/${totalPhases}: ${queue.length} pending`);
+      const nextQueue = [];
+
+      await pMap(
+        queue,
+        async (entry) => {
+          await waitIfPaused();
+
+          try {
+            const data = await fetchConfigJson(entry.url, { credentials: "include" });
+            const payload = data?.config ?? data;
+            state.zip.file(`configs/${entry.file}`, JSON.stringify(payload, null, 2));
+            state.recovered++;
+            logLine(`Recovered in retry pass ${phaseNumber}: ${entry.id}`);
+          } catch (err) {
+            if (isRetryableConfigError(err) && phaseNumber < totalPhases) {
+              nextQueue.push({ ...entry, err });
+            } else {
+              recordFailure({ ...entry, err });
+            }
+          }
+        },
+        concurrency
+      );
+
+      return nextQueue;
+    }
     async function pMap(items, worker, concurrency) {
       const out = new Array(items.length);
       let i = 0;
@@ -358,6 +382,8 @@
         setStatus("Downloading configs…");
 
         let done = 0;
+        const retryQueue = [];
+
         await pMap(
           configs,
           async (cfg) => {
@@ -370,19 +396,15 @@
             const url = `${ROOT}/config-service/user_config/${encodeURIComponent(String(id))}`;
 
             try {
-              const result = await fetchConfigJsonWithRetry(url, { credentials: "include" });
-              const payload = result?.data?.config ?? result?.data;
+              const data = await fetchConfigJson(url, { credentials: "include" });
+              const payload = data?.config ?? data;
               state.zip.file(`configs/${file}`, JSON.stringify(payload, null, 2));
-              if (result?.recovered) {
-                state.recovered++;
-                logLine(`Recovered after retry: ${id}`);
+            } catch (err) {
+              if (isRetryableConfigError(err)) {
+                retryQueue.push({ cfg, id, url, file, err });
+              } else {
+                recordFailure({ cfg, id, url, file, err });
               }
-            } catch (e) {
-              const err = String(e.message || e);
-              const status = parseStatusCodeFromError(e);
-              const retryable = isRetryableConfigError(e);
-              state.failures.push({ url, error: err, config_id: id, status_code: status, retryable });
-              state.zip.file(`configs_failed/${file}`, JSON.stringify({ error: err, url, config_id: id, status_code: status, retryable }, null, 2));
             }
 
             done++;
@@ -392,6 +414,19 @@
           CONCURRENCY
         );
 
+        let pendingRetryQueue = retryQueue;
+        for (let phase = 1; phase <= RETRY_PHASES && pendingRetryQueue.length; phase++) {
+          setStatus(`Cooling down before retry pass ${phase}/${RETRY_PHASES}… ${pendingRetryQueue.length} pending`);
+          await sleep(RETRY_COOLDOWN_MS + ((phase - 1) * 1500));
+          pendingRetryQueue = await runRetryPhase(pendingRetryQueue, phase, RETRY_PHASES, RETRY_CONCURRENCY);
+        }
+
+        if (pendingRetryQueue.length) {
+          for (const entry of pendingRetryQueue) {
+            recordFailure(entry);
+          }
+        }
+
         setStatus("Building ZIP…");
         const blob = await state.zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
 
@@ -399,7 +434,7 @@
         const filename = `heroforge-json-backup_${stamp}${state.failures.length ? "_WITH_FAILURES" : ""}.zip`;
         downloadBlob(blob, filename);
 
-        if (state.recovered) logLine(`Recovered after retry: ${state.recovered}`);
+        if (state.recovered) logLine(`Recovered after retry phases: ${state.recovered}`);
 
         if (state.failures.length) {
           logLine(`Failures: ${state.failures.length}`);
