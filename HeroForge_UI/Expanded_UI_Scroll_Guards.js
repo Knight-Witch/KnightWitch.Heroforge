@@ -49,10 +49,21 @@
     return String(el && el.textContent ? el.textContent : "").replace(/\s+/g, " ").trim();
   }
 
+  function attributeText(el) {
+    return Array.from(el.querySelectorAll("[aria-label], [title], [alt]"))
+      .map((node) => node.getAttribute("aria-label") || node.getAttribute("title") || node.getAttribute("alt") || "")
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  function sourceText(el) {
+    return (compactText(el) + " " + attributeText(el)).replace(/\s+/g, " ").trim().toLowerCase();
+  }
+
   function hasDecalSourceItems(el) {
-    const text = compactText(el).toLowerCase();
+    const text = sourceText(el);
     if (!text) return false;
-    return text.includes("projection") || text.includes("projector") || text.includes("splatter") || text.includes("blood");
+    return text.includes("projection") || text.includes("projector") || text.includes("splatter") || text.includes("blood") || text.includes("decals");
   }
 
   function clearTargets() {
