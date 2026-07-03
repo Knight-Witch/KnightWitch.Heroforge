@@ -49,19 +49,6 @@
     return String(el && el.textContent ? el.textContent : "").replace(/\s+/g, " ").trim();
   }
 
-  function hasDecalSlotLabels(el) {
-    const labels = Array.from(el.querySelectorAll("li, span, div, button"))
-      .map((n) => String(n.textContent || "").trim())
-      .filter(Boolean);
-
-    const set = new Set(labels);
-    const required = ["A", "B", "C", "D", "E", "F", "G"];
-    if (!required.every((label) => set.has(label))) return false;
-
-    const text = compactText(el);
-    return /A\s+B\s+C\s+D\s+E\s+F\s+G/.test(text) || required.every((label) => text.includes(label));
-  }
-
   function hasDecalSourceItems(el) {
     const text = compactText(el).toLowerCase();
     if (!text) return false;
@@ -73,45 +60,39 @@
     for (const el of document.querySelectorAll("#menuD." + SLOT_CLASS)) el.classList.remove(SLOT_CLASS);
   }
 
-  function findPairedSource(slotMenu) {
-    const parent = slotMenu && slotMenu.parentElement;
-    if (!parent) return null;
-
-    const candidates = Array.from(parent.querySelectorAll("#menuC")).filter(visible);
-    if (!candidates.length) return null;
-
-    const slotRect = slotMenu.getBoundingClientRect();
+  function findPairedSlot(sourceMenu) {
+    const sourceRect = sourceMenu.getBoundingClientRect();
+    const candidates = Array.from(document.querySelectorAll("#menuD")).filter(visible);
     let best = null;
     let bestDistance = Infinity;
 
     for (const candidate of candidates) {
       const rect = candidate.getBoundingClientRect();
-      if (rect.bottom > slotRect.top + 8) continue;
-      if (!hasDecalSourceItems(candidate)) continue;
-      const distance = Math.abs(slotRect.top - rect.bottom);
+      if (rect.top < sourceRect.bottom - 8) continue;
+      const horizontalOverlap = Math.min(sourceRect.right, rect.right) - Math.max(sourceRect.left, rect.left);
+      if (horizontalOverlap < Math.min(sourceRect.width, rect.width) * 0.4) continue;
+      const distance = Math.abs(rect.top - sourceRect.bottom);
       if (distance < bestDistance) {
         best = candidate;
         bestDistance = distance;
       }
     }
 
-    if (best) return best;
-
-    return candidates.find(hasDecalSourceItems) || null;
+    return best;
   }
 
   function retarget() {
     installStyle();
     clearTargets();
 
-    const slotMenus = Array.from(document.querySelectorAll("#menuD")).filter(visible).filter(hasDecalSlotLabels);
-    if (!slotMenus.length) return;
+    const sourceMenus = Array.from(document.querySelectorAll("#menuC")).filter(visible).filter(hasDecalSourceItems);
+    if (!sourceMenus.length) return;
 
-    for (const slotMenu of slotMenus) {
-      const sourceMenu = findPairedSource(slotMenu);
-      if (!sourceMenu) continue;
-      slotMenu.classList.add(SLOT_CLASS);
+    for (const sourceMenu of sourceMenus) {
+      const slotMenu = findPairedSlot(sourceMenu);
+      if (!slotMenu) continue;
       sourceMenu.classList.add(SOURCE_CLASS);
+      slotMenu.classList.add(SLOT_CLASS);
     }
   }
 
