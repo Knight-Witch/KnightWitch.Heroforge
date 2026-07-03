@@ -1,55 +1,78 @@
-# WITCH DOCK - Script Tools For Heroforge
+# WITCH DOCK - Script Tools For HeroForge
 
-A growing suite of advanced HeroForge userscripts focused on power-user workflows, body editing, kitbashing, decals, booth control, and more.
+A growing suite of advanced HeroForge userscripts focused on power-user workflows, body editing, kitbashing, decals, booth control, JSON tools, and HeroForge UI utilities.
 
 ---
 
-## **GET IT HERE**
+## Get It Here
 
-### **What Is It?**
-This is where all the Witch's scripts live! One easy script, no hassel. The Witch Dock is a handy floating, customizable dock UI that is designed to make your life a little easier, and fit your work style. 
+### What Is It?
 
-The tool will see more toolkits and features added over time.
+This is where all the Witch's scripts live. One easy script, no hassle. Witch Dock is a floating, customizable dock UI designed to make HeroForge power-user workflows easier to access and manage.
 
-🔗 Install:
+The tool will continue to receive more toolkits, utilities, and workflow features over time.
+
+Install:
 https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
 
-* To set up, simply follow the install link
-
-* Updates are automatic
-* Remove from your scripts any time at no risk
-* Built to be compatable with r/HeroforgeJSON's scripts (I use them too)
-* IF you download the file directly, simply drag & drop the file onto Tampermonkey to install (do not try to open the file on your computer—it will not work!)
-* Be sure to read the directions if you see anything written at the bottom of a tool section. Some tools require you to pose an item before the tool can properly work. This is due to how Heroforge operates.
+- To set up, follow the install link.
+- Updates are automatic.
+- Remove the script from Tampermonkey any time at no risk.
+- Built to be compatible with r/HeroforgeJSON's scripts.
+- If you download the file directly, drag and drop the file onto Tampermonkey to install it. Do not try to open the file on your computer.
+- Read any directions shown at the bottom of a tool section. Some tools require you to pose an item before the tool can work correctly because of how HeroForge updates its internal state.
 
 ---
+
+## Current Features
+
+### Witch Dock
+
+- Floating dock UI for HeroForge tools.
+- Manifest-driven tool loading from the live GitHub repo.
+- Automatic delivery of enabled tools and hidden utilities after refreshing HeroForge.
+- Current visible tool tabs include Body Editor, Pose, Booth, and JSON.
+
+### HeroForge UI Utilities
+
+These utilities load quietly through Witch Dock and do not appear as normal floating dock tabs.
+
+- Decals Scroll Guards: makes the Decals source/object selector and decal slot grid scrollable and vertically resizable. The utility is scoped to the active Decals UI so it does not create empty resize zones on other HeroForge tabs.
+- Expanded Decal Slots Bridge: detects compatible HF Core Tweaks decal-slot data and expands the available decal slots further. If HF Core Tweaks is not installed or the expected signature is not present, this utility does nothing.
+- Runtime decal expansion status can be checked in the browser console with `window.KW_HeroForgeUI?.expandedDecalSlots`.
+
+---
+
+## Support Development
 
 **If you find this tool useful, consider supporting its development:**
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0UQV1J)
 
-This script and all its tools are developed by me, however I will be opening up collaboration to help stabilize some existing scripts with other creators and help grow a nice community tool for us all to use.
+This script and all its tools are developed by me. I will be opening up collaboration to help stabilize existing scripts with other creators and grow a useful community tool for HeroForge users.
 
 ---
 
-## ℹ️ **ABOUT**
+## About
 
-🔗 [See here for my Development Pipeline](https://trello.com/invite/b/69641ce657fc71e4b58b8e8f/ATTId5e6e1e9cfc84460b530f6d7e94836c0A4C34481/witch-scripts)
+[See here for my Development Pipeline](https://trello.com/invite/b/69641ce657fc71e4b58b8e8f/ATTId5e6e1e9cfc84460b530f6d7e94836c0A4C34481/witch-scripts)
 
-Please know this is done in my spare time, and I am not paid for this. It's VERY time consuming, but your support enables me to spend more time helping improve your experience and implement tools you want!
+This is done in my spare time and I am not paid for it. It is time consuming, but support enables me to spend more time improving the tool and implementing requested features.
 
 ---
 
-## ⚠️ **DEPRECIATED SCRIPTS (Please Uninstall)**⚠️
-The following scripts are no longer updated and will conflict with Witch Dock. If you have any of my scripts prior to Witch Dock (any standalone script or BETA script, you MUST remove those before you try to use Witch Dock.
+## Deprecated Scripts - Please Uninstall
+
+The following scripts are no longer updated and will conflict with Witch Dock. If you have any of my scripts prior to Witch Dock, including standalone scripts or beta scripts, remove those before using Witch Dock.
 
 ### Sync Extra Arms
 
-### Body Editor / Body Editor (BETA)
+### Body Editor / Body Editor BETA
 
-### JSON Bulk Backup Tool (or one of the variations)
+### JSON Bulk Backup Tool, or one of its variations
 
+---
 
+## Changelog Index
 
-## ⚙️ Changelog Index
-See **[CHANGELOG.md](./CHANGELOG.md)** for a list of the latest feature updates & bug fixes to my scripts
+See **[CHANGELOG.md](./CHANGELOG.md)** for the latest feature updates and bug fixes.
