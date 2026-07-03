@@ -46,6 +46,13 @@
       "tab": "JSON",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
       "enabledByDefault": true
+    },
+    {
+      "id": "utilities",
+      "title": "Utilities",
+      "tab": "Utilities",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "enabledByDefault": true
     }
   ]
 }
