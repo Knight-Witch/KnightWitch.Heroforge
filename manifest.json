@@ -2,6 +2,15 @@
   "version": 1,
   "tools": [
     {
+      "id": "expanded-ui-scroll-guards",
+      "title": "Expanded UI Scroll Guards",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
