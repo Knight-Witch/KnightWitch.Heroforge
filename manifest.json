@@ -11,6 +11,15 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "hf-ui-scroll-split-safe",
+      "title": "HF UI Scroll Split Safe",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "hf-ui-slot-bridge",
       "title": "HF UI Slot Bridge",
       "tab": "HeroForge UI",
