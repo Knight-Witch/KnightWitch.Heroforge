@@ -11,10 +11,10 @@
       "type": "heroForgeUI"
     },
     {
-      "id": "core-tweaks-slot-bridge",
-      "title": "Core Tweaks Slot Bridge",
+      "id": "hf-ui-slot-bridge",
+      "title": "HF UI Slot Bridge",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
