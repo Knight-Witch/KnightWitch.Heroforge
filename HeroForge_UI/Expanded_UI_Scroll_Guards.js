@@ -1,9 +1,18 @@
 (function () {
   "use strict";
 
+  const UW = Function("return typeof " + "unsafeWindow" + " !== 'undefined' ? " + "unsafeWindow" + " : window")();
   const STYLE_ID = "kwHeroForgeUiScrollGuards";
   const SOURCE_CLASS = "kwHFDecalSourceMenu";
   const SLOT_CLASS = "kwHFDecalSlotMenu";
+
+  UW.KW_HeroForgeUI = UW.KW_HeroForgeUI || {};
+  if (UW.KW_HeroForgeUI.scrollGuards && UW.KW_HeroForgeUI.scrollGuards.loaded) {
+    UW.KW_HeroForgeUI.scrollGuards.enable();
+    return;
+  }
+
+  let enabled = true;
 
   function installStyle() {
     if (!document.head || document.getElementById(STYLE_ID)) return;
@@ -37,6 +46,11 @@
 }
 `;
     document.head.appendChild(style);
+  }
+
+  function removeStyle() {
+    const style = document.getElementById(STYLE_ID);
+    if (style && style.parentNode) style.parentNode.removeChild(style);
   }
 
   function visible(el) {
@@ -93,6 +107,12 @@
   }
 
   function retarget() {
+    if (!enabled) {
+      clearTargets();
+      removeStyle();
+      return;
+    }
+
     installStyle();
     clearTargets();
 
@@ -112,6 +132,27 @@
     window.setTimeout(retarget, 150);
     window.setTimeout(retarget, 500);
   }
+
+  function enable() {
+    enabled = true;
+    scheduleRetarget();
+  }
+
+  function disable() {
+    enabled = false;
+    clearTargets();
+    removeStyle();
+  }
+
+  UW.KW_HeroForgeUI.scrollGuards = {
+    loaded: true,
+    enable,
+    disable,
+    retarget,
+    isEnabled: function () {
+      return enabled;
+    }
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", scheduleRetarget, { once: true });
