@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const UW = Function("return typeof " + "unsafeWindow" + " !== 'undefined' ? " + "unsafeWindow" + " : window")();
+  const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const STORE_PREFIX = "kw.witchDock.toolEnabled.";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
@@ -10,14 +10,12 @@
     {
       id: "expanded-ui-scroll-guards",
       label: "Decals Scroll Guards",
-      description: "Adds scoped scroll and resize behavior to the Decals source panel and slot grid.",
-      live: true
+      description: "Adds scoped scroll and resize behavior to the Decals source panel and slot grid."
     },
     {
       id: "hf-ui-slot-bridge",
       label: "Expanded Decal Slots",
-      description: "Expands decal slots when compatible HF Core Tweaks data is detected.",
-      live: false
+      description: "Expands decal slots when compatible HF Core Tweaks data is detected."
     }
   ];
 
@@ -204,7 +202,8 @@
   }
 
   function registerIntoWitchDock() {
-    const wd = UW.WitchDock || null;
+    const dock = UW.WitchDock || (UW.unsafeWindow ? UW.unsafeWindow.WitchDock : null);
+    const wd = dock || UW.WitchDock;
     if (!wd || typeof wd.registerTool !== "function") return false;
 
     wd.registerTool({
