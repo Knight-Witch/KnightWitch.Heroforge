@@ -8,14 +8,8 @@
     new Function(code)();
   }
 
-  if (typeof GM_xmlhttpRequest === "function") {
-    GM_xmlhttpRequest({
-      method: "GET",
-      url,
-      headers: { "Cache-Control": "no-cache" },
-      onload: (res) => {
-        if (res.status >= 200 && res.status < 300) run(res.responseText || "");
-      }
-    });
-  }
+  fetch(url, { cache: "no-store" })
+    .then((res) => res.ok ? res.text() : "")
+    .then(run)
+    .catch(() => {});
 })();
