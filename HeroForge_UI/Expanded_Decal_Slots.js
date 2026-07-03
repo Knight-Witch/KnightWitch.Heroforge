@@ -1,16 +1,27 @@
 (function () {
   "use strict";
 
-  const UW = globalThis["unsafe" + "Window"] || window;
+  const UW = Function("return typeof " + "unsafeWindow" + " !== 'undefined' ? " + "unsafeWindow" + " : window")();
   const TARGET = 96;
   const EGGS = [3139, 20091];
   const LABELS = Array.from({ length: TARGET }, (_, i) => i < 26 ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[i] : String(i - 25));
   const STATE = {
+    loaded: true,
     applied: false,
+    status: "loaded",
+    reason: "waiting",
     tries: 0,
     maxTries: 80,
     delayMs: 250
   };
+
+  UW.KW_HeroForgeUI = UW.KW_HeroForgeUI || {};
+  UW.KW_HeroForgeUI.expandedDecalSlots = STATE;
+
+  function setStatus(status, reason) {
+    STATE.status = status;
+    STATE.reason = reason || "";
+  }
 
   function getCK() {
     return UW && UW.CK ? UW.CK : null;
@@ -117,25 +128,36 @@
 
   function apply() {
     if (STATE.applied) return true;
-    if (!hasCoreTweaksSignature()) return false;
+    if (!getCK()) {
+      setStatus("waiting", "CK unavailable");
+      return false;
+    }
+    if (!getOptions()) {
+      setStatus("waiting", "CK.Options unavailable");
+      return false;
+    }
+    if (!hasCoreTweaksSignature()) {
+      setStatus("waiting", "HF Core Tweaks signature unavailable");
+      return false;
+    }
 
     expandPrimarySlots();
     expandSplatterFontPart();
     expandEggParts();
 
     STATE.applied = true;
-    UW.KW_HeroForgeUI = UW.KW_HeroForgeUI || {};
-    UW.KW_HeroForgeUI.expandedDecalSlots = {
-      target: TARGET,
-      applied: true
-    };
+    STATE.target = TARGET;
+    setStatus("applied", "");
     return true;
   }
 
   function tick() {
     if (apply()) return;
     STATE.tries += 1;
-    if (STATE.tries >= STATE.maxTries) return;
+    if (STATE.tries >= STATE.maxTries) {
+      setStatus("stopped", STATE.reason || "not applied");
+      return;
+    }
     setTimeout(tick, STATE.delayMs);
   }
 
