@@ -31,11 +31,22 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scrip
 - Floating dock UI for HeroForge tools.
 - Manifest-driven tool loading from the live GitHub repo.
 - Automatic delivery of enabled tools and hidden utilities after refreshing HeroForge.
-- Current visible tool tabs include Body Editor, Pose, Booth, and JSON.
+- Current visible tool tabs include Body Editor, Pose, Booth, JSON, and Utilities.
+
+### Utilities Tab
+
+The Utilities tab controls optional background helpers and HeroForge UI patches.
+
+Current toggles:
+
+- Decals Scroll Guards: enables or disables scoped scroll/resize behavior for the Decals source/object selector and decal slot grid.
+- Expanded Decal Slots: enables or disables conditional expanded decal slots when compatible HF Core Tweaks data is detected.
+
+Some utilities can be removed live. Utilities that modify HeroForge data may require a page refresh to fully unload.
 
 ### HeroForge UI Utilities
 
-These utilities load quietly through Witch Dock and do not appear as normal floating dock tabs.
+These utilities load quietly through Witch Dock and can be controlled from the Utilities tab.
 
 - Decals Scroll Guards: makes the Decals source/object selector and decal slot grid scrollable and vertically resizable. The utility is scoped to the active Decals UI so it does not create empty resize zones on other HeroForge tabs.
 - Expanded Decal Slots Bridge: detects compatible HF Core Tweaks decal-slot data and expands the available decal slots further. If HF Core Tweaks is not installed or the expected signature is not present, this utility does nothing.
