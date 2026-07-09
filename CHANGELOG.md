@@ -1,5 +1,54 @@
 # Changelog
 
+## DOCS-2026-07-09-001 — Documentation Architecture Scaffold
+
+Date: 2026-07-09
+Time: 16:03 PDT
+
+### Added
+
+- Added root project tracking files: `MASTER.md`, `PRE_FLIGHT_Check.md`, and `STYLE_KEYS.md`.
+- Added `HISTORY/` documentation structure for session logs, durable decisions, and HeroForge engine notes.
+- Added `HISTORY/Bullshit_Bible.md` as the high-level index for fragile HeroForge behavior discoveries.
+- Added segmented `HISTORY/BULLSHIT/` topic files for timing/state, DOM/layout, decals/textures, booth/renders/exports, kitbashing/bones, JSON/library, and manifest/loading.
+- Added `DIFFS/README.md`, `ASSETS/README.md`, and `BACKUP_VAULT/README.md` to establish optional patch, asset, and major-refactor backup locations.
+
+### Changed
+
+- Updated `README.md` with a Project Tracking section linking to the new documentation structure.
+
+### Touched Files
+
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `STYLE_KEYS.md`
+- `HISTORY/README.md`
+- `HISTORY/SESSION_LOG.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/JSON_AND_LIBRARY.md`
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
+- `DIFFS/README.md`
+- `ASSETS/README.md`
+- `BACKUP_VAULT/README.md`
+- `README.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only scaffold. No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## 2026-07-03
 
 ### Added
