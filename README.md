@@ -72,6 +72,23 @@ This is done in my spare time and I am not paid for it. It is time consuming, bu
 
 ---
 
+## Project Tracking
+
+Internal repo tracking lives in these files:
+
+- [MASTER.md](./MASTER.md): current architecture, tool inventory, active tasks, migration queue, blockers, and removals.
+- [PRE_FLIGHT_Check.md](./PRE_FLIGHT_Check.md): rolling pre-flight log before repo edits.
+- [CHANGELOG.md](./CHANGELOG.md): committed update history.
+- [STYLE_KEYS.md](./STYLE_KEYS.md): shared Witch Dock visual/style references.
+- [HISTORY/](./HISTORY/): session history, decisions, and HeroForge engine notes.
+- [HISTORY/Bullshit_Bible.md](./HISTORY/Bullshit_Bible.md): index of fragile HeroForge behavior discoveries.
+- [HISTORY/BULLSHIT/](./HISTORY/BULLSHIT/): segmented HeroForge engine behavior notes.
+- [DIFFS/](./DIFFS/): optional standalone patches for complex/risky changes.
+- [ASSETS/](./ASSETS/): repo assets.
+- [BACKUP_VAULT/](./BACKUP_VAULT/): major-refactor backups only.
+
+---
+
 ## Deprecated Scripts - Please Uninstall
 
 The following scripts are no longer updated and will conflict with Witch Dock. If you have any of my scripts prior to Witch Dock, including standalone scripts or beta scripts, remove those before using Witch Dock.
