@@ -1,5 +1,39 @@
 # Changelog
 
+## DOCS-2026-07-09-002 — Baseline Architecture Backfill
+
+Date: 2026-07-09
+Time: 16:57 PDT
+
+### Changed
+
+- Expanded `MASTER.md` with current branch/release notes, loading model, directory roles, manifest IDs, status terms, and current watch items.
+- Expanded `STYLE_KEYS.md` with baseline Witch Dock UI/style references and runtime UX constraints.
+- Expanded `HISTORY/DECISIONS.md` with durable architecture decisions for live branch handling, manifest-driven loading, and standalone Tampermonkey canonical references.
+- Expanded `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md` with the current load chain, manifest entries, storage/enablement notes, and branch/loading findings.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this baseline documentation pass.
+
+### Touched Files
+
+- `MASTER.md`
+- `STYLE_KEYS.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only baseline backfill.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-001 — Documentation Architecture Scaffold
 
 Date: 2026-07-09
