@@ -58,6 +58,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
+| Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | Goal is high-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. |
 
 ## Live Tool Notes
 
@@ -136,6 +137,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Classifies layout as vertical, split, or bottom before applying styles.
 - Retargets after click, pointerup, staged timeouts, and interval.
 - Fragile area: content/position/layout detection is required because HeroForge reuses menu IDs.
+- Historical note: must support all three observed Decals UI setups: right-side grouped, right/left split, and bottom compact.
 
 ### Scroll Split Safe — `HeroForge_UI/HF_UI_Scroll_Split_Safe.js`
 
@@ -161,6 +163,16 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Expands body upper, body lower, face, splatter font part, and egg parts.
 - Fragile area: this must remain conditional. Without the expected HF Core Tweaks signature, it must remain a no-op.
 
+### Photo Mode PNG Series Capture — Planned / Unresolved
+
+- Not currently live in manifest.
+- Goal: capture a high-resolution PNG sequence from Photo Mode/photo booth, ideally mimicking HeroForge's official spinny image-sequence exporter.
+- Must preserve HeroForge Photo Booth effects/overlays/background behavior when those are the intended output.
+- Prior official exporter observation: ZIP with roughly 72 frames at 512x512.
+- Prior probe observation: WebGL `readPixels` captured real booth pixels but produced upside-down frames with grey margins and visible UI/fantasy background leakage.
+- Prior probe v0.7: armed with `Alt+Shift+G`, captured after user clicked HF Capture, supported crop modes via `Alt+Shift+C`, and output `frames_2k_png.zip`.
+- Current status: unfinished investigation. See `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` and `HISTORY/BULLSHIT/TIMING_AND_STATE.md` before attempting implementation.
+
 ## Status Terms
 
 | Status | Meaning |
@@ -170,6 +182,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | Live / conditional | Loaded only through another module or only applies when required runtime conditions are met. |
 | Standalone canonical | Working Tampermonkey reference that must be preserved until migration is tested. |
 | Migrating | In progress from standalone/probe form into Witch Dock architecture. |
+| Investigating / unresolved | Known desired feature with useful probes/history but no confirmed working implementation. |
 | Blocked | Known issue prevents reliable migration or release. |
 | Deprecated | Should not be used with current Witch Dock. |
 
@@ -178,7 +191,8 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Backfill project history from previous chats.
 - Identify standalone Tampermonkey references that remain canonical but unmigrated.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
-- Add deeper old-chat recovery notes for Decals/Utilities, Booth, bones/kitbashing, JSON/library, and remaining standalone references.
+- Add deeper old-chat recovery notes for Booth persistence/effects regressions, bones/kitbashing, JSON/library, and remaining standalone references.
+- Investigate Photo Mode PNG Series Capture using existing probe history before writing new implementation.
 
 ## Migration Queue
 
@@ -186,6 +200,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
+| Photo Mode PNG Series Capture | Prior standalone probes / old-chat history | TBD, likely `/tools/` or Booth-adjacent module | Investigating / unresolved | Must preserve Photo Booth effects. Do not restart from scratch; read Booth render/export notes first. |
 | TBD | TBD | TBD | TBD | TBD |
 
 ## Blockers / Watch Items
@@ -195,6 +210,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 - Working standalone scripts remain canonical until the integrated Witch Dock version is tested and confirmed.
 - Presentation is frozen unless UI/UX changes are explicitly requested.
 - Booth, Decals, bone detection, and JSON/library workflows have the highest fragility and need old-chat recovery before major changes.
+- PNG series capture is not solved; avoid assumptions about 512x512 limits, DOM/CSS booth frame control, or hidden HDR/16-bit buffer access.
 
 ## Removals / Rejected Ideas
 
@@ -203,3 +219,5 @@ Document removed, deprecated, or rejected work here with the reason.
 | Item | Decision | Reason | Date |
 |---|---|---|---|
 | Mandatory standalone diff files for every update | Rejected | GitHub history plus `CHANGELOG.md`, `MASTER.md`, and `PRE_FLIGHT_Check.md` now serve as the primary rollback/reference system. `/DIFFS/` remains optional for complex/risky patches. | 2026-07-09 |
+| Global raw `#menuC` / `#menuD` Decals scroll styling | Rejected | HeroForge reuses these containers; global styling caused empty resize zones and does not handle all Decals layouts safely. | 2026-07-09 |
+| Treating Photo Booth frame as only DOM/CSS | Rejected | Prior probing found the 1:1 booth frame can be baked into the WebGL scene; export pixels must be verified directly. | 2026-07-09 |
