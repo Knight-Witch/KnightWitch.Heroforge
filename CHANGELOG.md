@@ -1,5 +1,45 @@
 # Changelog
 
+## DOCS-2026-07-09-007 — Standalone Reference Inventory Backfill
+
+Date: 2026-07-09
+Time: 18:44 PDT
+
+### Added
+
+- Added `HISTORY/STANDALONE_REFERENCES.md` as the inventory for standalone scripts, external references, probes, deprecated scripts, migrated/absorbed behavior, and references that still need recovery.
+
+### Changed
+
+- Updated `HISTORY/README.md` to include the standalone reference inventory.
+- Updated `MASTER.md` with a Reference Inventories section, expanded status terms, and a fuller migration queue covering HF Core Tweaks/Lob decal reference, Photo Mode PNG probes, Booth v12/v13 history, tokenBg/readPixels probes, deprecated scripts, and bone/kitbashing recovery.
+- Updated `HISTORY/Bullshit_Bible.md` with a rule to check standalone references before editing systems with external/probe history.
+- Updated `HISTORY/DECISIONS.md` with a decision to keep standalone references in a separate inventory.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this standalone-reference backfill pass.
+
+### Touched Files
+
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/README.md`
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only reference inventory.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Reference statuses can be refined later as exact external script filenames/sources are recovered.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-006 — Photo Mode PNG Capture Feature Spec Backfill
 
 Date: 2026-07-09
