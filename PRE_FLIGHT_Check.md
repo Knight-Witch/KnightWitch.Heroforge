@@ -2,6 +2,35 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-09-005 — Persistent Booth Status Clarification
+
+Date: 2026-07-09
+Time: 18:18 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- user correction that Persistent Booth is already fully working, with only minor fixes expected later
+
+Conflict risks:
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Documentation correction only; separates live Persistent Booth from unresolved PNG-series capture work.
+
+Recommended action:
+- Proceed with docs-only correction.
+- Treat Persistent Booth as live/working unless a specific regression or minor fix is later identified.
+
 ## PFC-2026-07-09-004 — Decals and Photo Capture History Backfill
 
 Date: 2026-07-09
