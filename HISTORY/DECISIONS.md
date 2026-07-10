@@ -80,6 +80,38 @@ Applies to:
 - Tool migration queue
 - Reference-vs-integrated debugging
 
+### 2026-07-09 — Decals Scroll Must Support All Observed Layouts
+
+Decision:
+- Decals scroll/resize behavior must support right-side grouped, right/left split, and bottom compact layouts.
+- Do not use global raw `#menuC` / `#menuD` styling as the implementation.
+
+Reason:
+- HeroForge reuses menu containers across tabs and layouts.
+- Global styling previously caused empty resize zones and did not safely represent all three observed Decals UI setups.
+
+Applies to:
+- `HeroForge_UI/Expanded_UI_Scroll_Guards.js`
+- `HeroForge_UI/HF_UI_Scroll_Split_Safe.js`
+- `tools/Utilities.js`
+
+### 2026-07-09 — Photo Mode PNG Series Must Preserve HF Booth Render Path
+
+Decision:
+- Future PNG series capture work should prioritize HeroForge's own Photo Booth/capture/export path where possible.
+- Capture work must preserve booth effects, overlays, and backgrounds when those are the intended output.
+- Do not treat DOM/CSS resizing or raw canvas capture as automatically equivalent to HeroForge Photo Booth export.
+
+Reason:
+- Prior probing found the 1:1 booth frame can be baked into the WebGL scene.
+- The user specifically needs Photo Booth effects/overlays.
+- Browser/Tampermonkey capture can access final pixels, but not hidden HDR/16-bit buffers.
+
+Applies to:
+- Future Photo Mode / PNG Series capture tool
+- `tools/Booth.js`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+
 ## Entry Template
 
 ### YYYY-MM-DD — Decision Title
