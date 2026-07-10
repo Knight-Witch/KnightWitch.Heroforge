@@ -2,6 +2,43 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-09-007 — Standalone Reference Inventory Backfill
+
+Date: 2026-07-09
+Time: 18:44 PDT
+
+Target files:
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/README.md`
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `README.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- Known external/standalone reference context for HF Core Tweaks/Lob decal slots, Booth v12/v13, Photo Mode PNG v0.7, WebGL readPixels, tokenBg backdrop probe, and deprecated pre-Witch Dock scripts
+
+Conflict risks:
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Reference statuses are documentation-only and can be refined as more source files are recovered.
+
+Recommended action:
+- Proceed with docs-only standalone reference inventory.
+- Check `HISTORY/STANDALONE_REFERENCES.md` before migrating, replacing, or comparing standalone/probe behavior.
+
 ## PFC-2026-07-09-006 — Photo Mode PNG Capture Feature Spec Backfill
 
 Date: 2026-07-09
