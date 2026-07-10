@@ -11,6 +11,7 @@ Use this file for high-level rules and links. Put detailed notes in `HISTORY/BUL
 - Preserve delayed snapshots, retry loops, mutation handling, tolerant DOM detection, and scene-graph probing.
 - Do not hard-code one path when working code probes multiple possible DOM or object paths.
 - Treat working standalone Tampermonkey probes as canonical until migrated and confirmed.
+- Check `HISTORY/STANDALONE_REFERENCES.md` before editing systems with external/probe history.
 - Do not treat HeroForge UI layout as stable. The same UI can present as right-side grouped, split side-by-side, or bottom compact layout.
 - Do not assume Photo Booth output is normal DOM/CSS. The booth frame/effects can be baked into the WebGL render path.
 - Persistent Booth is live/working. Do not put it back on the open PNG-capture todo list.
@@ -41,6 +42,16 @@ Current status:
 - Intended first target is conservative: 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, and validated frame dimensions.
 - Prior probes captured useful signals but not a finished reliable pipeline.
 
+### Standalone / External References
+
+Detailed notes live in:
+- `../STANDALONE_REFERENCES.md`
+
+Current rule:
+- Working external/probe scripts must be inventoried and compared before migration or replacement.
+- Deprecated pre-Witch Dock scripts should not be run beside Witch Dock unless explicitly revived for regression comparison.
+- HF Core Tweaks / Lob decal-slot behavior remains an external canonical reference for slot expansion behavior.
+
 ## Topic Files
 
 - `BULLSHIT/TIMING_AND_STATE.md`
@@ -54,7 +65,6 @@ Current status:
 
 ## Backfill Queue
 
-- Recover prior-chat notes for standalone Tampermonkey probes.
 - Backfill any remaining PNG-series capture probes if new details surface.
 - Document current bone detection timing/path behavior in deeper detail.
-- Document remaining standalone migration candidates and their canonical status.
+- Recover and inventory remaining standalone migration candidates in `HISTORY/STANDALONE_REFERENCES.md`.
