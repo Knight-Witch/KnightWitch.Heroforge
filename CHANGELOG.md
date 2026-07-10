@@ -1,5 +1,35 @@
 # Changelog
 
+## DOCS-2026-07-09-005 — Persistent Booth Status Clarification
+
+Date: 2026-07-09
+Time: 18:18 PDT
+
+### Changed
+
+- Updated `MASTER.md` to explicitly state that Persistent Booth is live/working and separate from the unresolved Photo Mode PNG Series Capture feature.
+- Updated `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` to mark Persistent Booth as completed, retain v12/v13 notes as historical diagnostics, and prevent future PNG-capture scoping from treating Persistent Booth as an open rebuild.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this clarification pass.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only correction.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-004 — Decals and Photo Capture History Backfill
 
 Date: 2026-07-09
