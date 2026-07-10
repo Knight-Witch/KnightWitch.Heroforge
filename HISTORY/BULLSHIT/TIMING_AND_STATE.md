@@ -8,6 +8,7 @@ HeroForge timing/state discoveries that must be preserved across tools.
 - Delayed snapshots and retry loops may be required to capture correct runtime state.
 - Do not simplify timing behavior without testing against a working reference.
 - If a tool uses staged timeouts, requestAnimationFrame loops, polling, or retry registration, assume that timing exists for a reason until proven otherwise.
+- Image/PNG capture work must be gated by actual rendered frame state, not just by a click event or expected frame count.
 
 ## Findings
 
@@ -35,9 +36,13 @@ Context:
 
 Observed behavior:
 - Retargeting runs immediately, after 150 ms, after 500 ms, after click, after pointerup, and on a 1500 ms interval.
+- This was needed because HeroForge menu DOM/layout state can mutate after visible interaction.
+- A single first-pass target can be wrong or incomplete if the Decals tab/menu has not finished reshaping.
 
 Working approach:
 - Preserve the staged retarget timing unless a tested replacement covers HeroForge tab/menu mutation timing.
+- Preserve `click` and `pointerup` retarget triggers.
+- Preserve interval retargeting as a safety net against late HeroForge DOM/layout changes.
 
 Affected tools:
 - `HeroForge_UI/Expanded_UI_Scroll_Guards.js`
@@ -57,6 +62,49 @@ Working approach:
 
 Affected tools:
 - `tools/Booth.js`
+
+### PNG Series Capture Needs Render-State Gating
+
+Context:
+- Prior PNG-series capture probing attempted to capture a sequence from HeroForge Photo Booth/photo mode.
+- The goal was to mimic HeroForge's official spinny image-sequence exporter at higher resolution.
+
+Observed behavior:
+- A 512x512 capture can mean the script captured too early, not that 512x512 is the only possible output.
+- Repeated frames can happen if capture accepts multiple samples from the same render frame.
+- HeroForge's own internal frame target should not be treated as the user's desired output frame count.
+- `_targetFrames` should be user-defined for the script rather than blindly trusting an internal HeroForge constant.
+
+Working approach:
+- Use temporal and structural gating around `getImageData` / canvas capture acceptance.
+- Accept at most one frame per `requestAnimationFrame` tick.
+- Use a soft timeout so the sequence can fail cleanly instead of hanging forever.
+- Validate actual rendered dimensions/content before accepting a frame.
+- Treat 512x512 as an early-capture symptom until proven otherwise.
+
+Affected tools:
+- Future Photo Mode / PNG Series capture tool
+- Booth capture probes
+
+### WebGL `readPixels` Probe Captured Real Booth Pixels But Needed Post-Processing
+
+Context:
+- A HeroForge probe previously captured real booth pixels through WebGL `readPixels`.
+
+Observed behavior:
+- The output contained real booth pixels.
+- Frames were upside down.
+- Grey margins were present.
+- The visible HeroForge fantasy/UI background leaked behind the booth area.
+
+Working approach:
+- If using `readPixels`, flip the image vertically before saving.
+- Add crop/mask/background handling instead of assuming the raw framebuffer is already the final desired PNG.
+- Do not discard the approach entirely: it proved real booth pixels were reachable, but not yet in final export form.
+
+Affected tools:
+- Future Photo Mode / PNG Series capture tool
+- Booth capture probes
 
 ## Entry Template
 
