@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-09 — Decals and Photo Capture History Backfill
+
+- Target: old-chat/probe recovery for Decals scroll behavior and unfinished Photo Mode PNG series capture.
+- Action: expanded `HISTORY/Bullshit_Bible.md`, `MASTER.md`, `HISTORY/DECISIONS.md`, `TIMING_AND_STATE.md`, `DOM_AND_LAYOUT.md`, `DECALS_AND_TEXTURES.md`, and `BOOTH_RENDERS_EXPORTS.md`.
+- Result: Decals docs now explicitly preserve the three observed UI setups: right-side grouped, right/left split, and bottom compact. Photo capture docs now preserve the current unresolved PNG-series investigation, including official exporter observation, 512x512 early-capture warning, v0.7 probe notes, WebGL readPixels partial success, and booth effects/overlay constraints.
+- Test notes: documentation-only update; no JavaScript or manifest behavior changed.
+- Follow-up: if implementing PNG-series capture later, read `BOOTH_RENDERS_EXPORTS.md` and `TIMING_AND_STATE.md` before writing code. If editing Decals scroll later, read `DOM_AND_LAYOUT.md` and `DECALS_AND_TEXTURES.md` first.
+
 ## 2026-07-09 — Live Tool Documentation Backfill
 
 - Target: current live Witch Dock modules and their integration points.
