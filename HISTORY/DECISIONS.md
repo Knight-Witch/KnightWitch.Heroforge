@@ -79,6 +79,22 @@ Applies to:
 - Standalone probes
 - Tool migration queue
 - Reference-vs-integrated debugging
+- `HISTORY/STANDALONE_REFERENCES.md`
+
+### 2026-07-09 — Standalone References Get a Separate Inventory
+
+Decision:
+- Track external scripts, standalone probes, deprecated scripts, and diagnostic references in `HISTORY/STANDALONE_REFERENCES.md`.
+- Do not rely on memory or scattered changelog entries to determine whether a standalone script is canonical, deprecated, migrated, or unresolved.
+
+Reason:
+- Witch Dock uses working standalone probes as behavioral references, but not every standalone should be migrated or run beside the live dock.
+- A separate inventory prevents confusing deprecated pre-Witch Dock scripts with canonical external references or unresolved probes.
+
+Applies to:
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `MASTER.md` migration queue
+- Future migration decisions
 
 ### 2026-07-09 — Decals Scroll Must Support All Observed Layouts
 
