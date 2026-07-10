@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-09 — Standalone Reference Inventory Backfill
+
+- Target: standalone scripts, external references, probes, deprecated scripts, and migration status.
+- Action: added `HISTORY/STANDALONE_REFERENCES.md`, linked it from `HISTORY/README.md`, expanded `MASTER.md` migration/status notes, added a standalone-inventory decision, and updated Bullshit Bible critical rules/backfill queue.
+- Result: repo memory now distinguishes HF Core Tweaks/Lob decal-slot reference, Photo Mode PNG v0.7 probe, WebGL readPixels probe, tokenBg backdrop probe, Booth v12/v13 history, deprecated pre-Witch Dock scripts, migrated Decals scroll probes, and bone/kitbashing references that still need recovery.
+- Test notes: documentation-only update; no JavaScript or manifest behavior changed.
+- Follow-up: when external script bundles or old probes are recovered/re-uploaded, add exact filenames/source notes to `HISTORY/STANDALONE_REFERENCES.md` before migration or replacement work.
+
 ## 2026-07-09 — Photo Mode PNG Capture Feature Spec Backfill
 
 - Target: intended product/feature spec for the unresolved Photo Mode PNG Series Capture tool.
