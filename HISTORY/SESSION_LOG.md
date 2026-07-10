@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-09 — Persistent Booth Status Clarification
+
+- Target: documentation wording around Persistent Booth and PNG-series capture.
+- Action: updated `MASTER.md` and `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` to explicitly state that Persistent Booth is live/working and not part of the unresolved PNG-series capture todo.
+- Result: future work should treat PNG-series capture as a separate planned/unresolved feature and treat Booth itself as live, with only minor fixes expected unless a regression is confirmed.
+- Test notes: documentation-only correction; no JavaScript or manifest behavior changed.
+- Follow-up: if a minor Booth fix is requested later, handle surgically against the live tool. If PNG-series capture is requested, preserve Booth output/effects but do not rebuild Persistent Booth.
+
 ## 2026-07-09 — Decals and Photo Capture History Backfill
 
 - Target: old-chat/probe recovery for Decals scroll behavior and unfinished Photo Mode PNG series capture.
