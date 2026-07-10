@@ -2,6 +2,50 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-09-003 — Live Tool Documentation Backfill
+
+Date: 2026-07-09
+Time: 17:22 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/JSON_AND_LIBRARY.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- relevant `HISTORY/BULLSHIT/` topic files
+- `Witch_Dock.user.js`
+- `tools/Body_Editor.js`
+- `tools/Pose.js`
+- `tools/Booth.js`
+- `tools/JSON_Tool.js`
+- `tools/Utilities.js`
+- `HeroForge_UI/Expanded_UI_Scroll_Guards.js`
+- `HeroForge_UI/HF_UI_Scroll_Split_Safe.js`
+- `HeroForge_UI/HF_UI_Slot_Bridge.js`
+- `HeroForge_UI/Expanded_Decal_Slots.js`
+
+Conflict risks:
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Notes are based on current source, not old-chat recovery.
+
+Recommended action:
+- Proceed with docs-only live tool status backfill.
+- Use this pass as the current-source baseline before old-chat recovery for Decals/Utilities, Booth, bones/kitbashing, and JSON/library.
+
 ## PFC-2026-07-09-002 — Baseline Architecture Backfill
 
 Date: 2026-07-09
