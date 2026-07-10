@@ -10,6 +10,7 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 - Persistent Booth is live/working. Treat remaining Booth work as minor fixes unless a new regression is confirmed.
 - Photo Booth effects/overlays are part of the PNG-series capture target output. Capture work must preserve HeroForge's booth render path when that is the point of the export.
 - Browser/Tampermonkey capture is limited to final canvas-style output; do not assume access to hidden HDR/16-bit render buffers.
+- Full feature requirements for the planned PNG capture tool live in `PHOTO_MODE_PNG_CAPTURE.md`.
 
 ## Findings
 
@@ -130,6 +131,7 @@ Context:
 - A future tool is intended to capture a PNG series from HeroForge Photo Mode/photo booth.
 - This has not been solved yet.
 - This is separate from Persistent Booth, which is live/working.
+- Full feature spec: `PHOTO_MODE_PNG_CAPTURE.md`.
 
 Observed behavior:
 - HeroForge added an official high-quality spinny mini image-sequence exporter.
@@ -144,6 +146,7 @@ Working approach:
 - Keep frame count user-controlled rather than assuming HeroForge's internal frame count is the desired count.
 - Preserve notes about failed/partial approaches before writing new capture code.
 - Do not put Persistent Booth back on the todo list while scoping PNG-series capture.
+- Use `PHOTO_MODE_PNG_CAPTURE.md` for product requirements such as resolution options, ZIP packaging, metadata, UI flow, crop/aspect modes, and first implementation target.
 
 Affected tools:
 - Future Photo Mode / PNG Series capture tool
@@ -249,6 +252,7 @@ Affected tools:
 Goal:
 - Capture a high-resolution PNG sequence from HeroForge Photo Mode/photo booth, preferably mimicking the official image-sequence exporter, while preserving Photo Booth effects/overlays.
 - This is not a Persistent Booth rebuild. Persistent Booth is already live/working.
+- Product/feature details live in `PHOTO_MODE_PNG_CAPTURE.md`.
 
 Known partial paths:
 - Official HF exporter exists but produced 512x512 observed output.
@@ -261,6 +265,7 @@ Current likely next investigation:
 - Identify where frame count, output size, and capture timing are set.
 - Use rAF-gated, one-frame-per-render acceptance.
 - Preserve Photo Booth effects by triggering/capturing through HeroForge's own booth/capture path where possible.
+- First implementation target should stay conservative: 1024x1024, around 72 frames, ZIP output, metadata, explicit arming, and validated dimensions.
 
 Do not repeat:
 - Do not assume 512x512 is the hard limit without checking capture timing/export settings.
