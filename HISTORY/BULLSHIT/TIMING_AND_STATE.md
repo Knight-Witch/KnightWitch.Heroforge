@@ -9,6 +9,7 @@ HeroForge timing/state discoveries that must be preserved across tools.
 - Do not simplify timing behavior without testing against a working reference.
 - If a tool uses staged timeouts, requestAnimationFrame loops, polling, or retry registration, assume that timing exists for a reason until proven otherwise.
 - Image/PNG capture work must be gated by actual rendered frame state, not just by a click event or expected frame count.
+- PNG-series capture should accept at most one frame per confirmed render update unless a better internal completion signal is discovered.
 
 ## Findings
 
@@ -68,19 +69,23 @@ Affected tools:
 Context:
 - Prior PNG-series capture probing attempted to capture a sequence from HeroForge Photo Booth/photo mode.
 - The goal was to mimic HeroForge's official spinny image-sequence exporter at higher resolution.
+- Dedicated feature spec: `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`.
 
 Observed behavior:
 - A 512x512 capture can mean the script captured too early, not that 512x512 is the only possible output.
 - Repeated frames can happen if capture accepts multiple samples from the same render frame.
 - HeroForge's own internal frame target should not be treated as the user's desired output frame count.
 - `_targetFrames` should be user-defined for the script rather than blindly trusting an internal HeroForge constant.
+- High-resolution PNG sequence generation can stress browser memory, ZIP generation, and download behavior.
 
 Working approach:
 - Use temporal and structural gating around `getImageData` / canvas capture acceptance.
-- Accept at most one frame per `requestAnimationFrame` tick.
+- Accept at most one frame per `requestAnimationFrame` tick unless a better confirmed render-complete signal is discovered.
 - Use a soft timeout so the sequence can fail cleanly instead of hanging forever.
 - Validate actual rendered dimensions/content before accepting a frame.
-- Treat 512x512 as an early-capture symptom until proven otherwise.
+- Treat 512x512 as an early-capture/export-setting symptom until proven otherwise.
+- Start with 1024x1024 and around 72 frames before scaling to 2048, 4K, or smoother frame counts.
+- Save metadata/failure records so timing failures are visible after ZIP generation.
 
 Affected tools:
 - Future Photo Mode / PNG Series capture tool
