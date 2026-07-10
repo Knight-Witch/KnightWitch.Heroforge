@@ -1,5 +1,46 @@
 # Changelog
 
+## DOCS-2026-07-09-003 — Live Tool Documentation Backfill
+
+Date: 2026-07-09
+Time: 17:22 PDT
+
+### Changed
+
+- Expanded `MASTER.md` with current live tool notes for Witch Dock core, Body Editor, Pose, Booth, JSON Tool, Utilities, and hidden HeroForge UI utilities.
+- Expanded `HISTORY/BULLSHIT/TIMING_AND_STATE.md` with current-source timing notes for bone detection, Decals scroll retargeting, and Booth runtime loop behavior.
+- Expanded `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md` with current-source layout notes for reused HeroForge menu containers, Decals menu targeting, and Witch Dock overlay constraints.
+- Expanded `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md` with current-source notes for Decals scroll guards, HF Core Tweaks signature dependency, current slot target, and target part IDs.
+- Expanded `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md` with current-source notes for summon-circle probing, baseline/delta bone detection, and Body Editor joint key mappings.
+- Expanded `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` with current-source notes for Booth build tag, debug helpers, runtime loop state, tokenizer/UI mode detection, and persistence behavior.
+- Expanded `HISTORY/BULLSHIT/JSON_AND_LIBRARY.md` with current-source notes for config-service endpoints, readiness waiting, JSZip usage, folder/mark mapping, and failure records.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this live tool documentation pass.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/JSON_AND_LIBRARY.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only live tool backfill.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Notes are based on current source, not full old-chat recovery.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-002 — Baseline Architecture Backfill
 
 Date: 2026-07-09
