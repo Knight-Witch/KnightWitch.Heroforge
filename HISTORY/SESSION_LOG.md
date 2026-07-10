@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-09 — Photo Mode PNG Capture Feature Spec Backfill
+
+- Target: intended product/feature spec for the unresolved Photo Mode PNG Series Capture tool.
+- Action: added `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` and updated `MASTER.md`, `HISTORY/Bullshit_Bible.md`, `HISTORY/DECISIONS.md`, `TIMING_AND_STATE.md`, and `BOOTH_RENDERS_EXPORTS.md` with cross-links and requirements.
+- Result: capture docs now distinguish product requirements from probe history. Intended first target is 1024x1024, around 72 PNG frames, ZIP output, metadata/failure records, explicit arming, validated dimensions, and preserved Photo Booth output/effects. Later-stage ideas include 2048, 4K, 16:9 cinematic output, overlay/layer controls, GM/download fallback, and possible companion helper.
+- Test notes: documentation-only update; no JavaScript or manifest behavior changed.
+- Follow-up: before implementing, use `PHOTO_MODE_PNG_CAPTURE.md` for requirements and `BOOTH_RENDERS_EXPORTS.md` / `TIMING_AND_STATE.md` for probe constraints. Persistent Booth remains live/working and separate.
+
 ## 2026-07-09 — Persistent Booth Status Clarification
 
 - Target: documentation wording around Persistent Booth and PNG-series capture.
