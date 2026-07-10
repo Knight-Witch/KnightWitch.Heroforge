@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-09 — Live Tool Documentation Backfill
+
+- Target: current live Witch Dock modules and their integration points.
+- Action: documented current-source status for Witch Dock core, Body Editor, Pose, Booth, JSON Tool, Utilities, and hidden HeroForge UI utilities.
+- Result: `MASTER.md` now has live tool notes; Bullshit topic files now contain current-source findings for timing/state, DOM/layout, decals/textures, kitbashing/bones, booth behavior, and JSON/library behavior.
+- Test notes: documentation-only update; no JavaScript or manifest behavior changed.
+- Follow-up: perform old-chat recovery beginning with Decals/Utilities, then Booth, bones/kitbashing, JSON/library, and remaining standalone references.
+
 ## 2026-07-09 — Baseline Architecture Backfill
 
 - Target: repo-wide documentation baseline.
