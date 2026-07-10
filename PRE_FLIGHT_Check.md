@@ -2,6 +2,45 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-09-004 — Decals and Photo Capture History Backfill
+
+Date: 2026-07-09
+Time: 18:03 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- current source for Decals scroll guards, split safe, slot bridge, expanded decal slots, Booth, and Witch Dock core
+- recovered prior-chat context for Decals three-layout scroll behavior and unfinished Photo Mode PNG series capture probing
+
+Conflict risks:
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Notes mix current source with recovered old-chat/probe history; unresolved PNG capture details are explicitly marked unresolved rather than completed.
+
+Recommended action:
+- Proceed with docs-only history backfill.
+- Treat Decals scroll and PNG-series capture notes as mandatory pre-read material before editing those systems.
+
 ## PFC-2026-07-09-003 — Live Tool Documentation Backfill
 
 Date: 2026-07-09
