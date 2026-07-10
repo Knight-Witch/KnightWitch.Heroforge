@@ -2,6 +2,42 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-09-006 — Photo Mode PNG Capture Feature Spec Backfill
+
+Date: 2026-07-09
+Time: 18:31 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- prior capture discussion details: desired 1024/2048/4K options, ZIP output, frame count/smoothness options, explicit arming workflow, crop/aspect ideas, 16:9 future idea, GM/download fallback, companion helper idea, overlay/layer management ideas, and Persistent Booth separation
+
+Conflict risks:
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- Adds a dedicated spec file; no live module path changed.
+- Persistent Booth remains marked live/working and separate.
+
+Recommended action:
+- Proceed with docs-only feature-spec backfill.
+- Before implementation, use `PHOTO_MODE_PNG_CAPTURE.md` as the product/requirements source and `BOOTH_RENDERS_EXPORTS.md` / `TIMING_AND_STATE.md` as the probe/constraint sources.
+
 ## PFC-2026-07-09-005 — Persistent Booth Status Clarification
 
 Date: 2026-07-09
