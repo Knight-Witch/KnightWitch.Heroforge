@@ -7,7 +7,8 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 - Preserve tested timing and UI state assumptions for booth workflows.
 - Document any HeroForge export/render behaviors that require retries, delays, or specific UI state.
 - Booth runtime behavior is high-risk; avoid simplifying tokenizer, teardown, frame, shader, or backdrop handling without a working reference.
-- Photo Booth effects/overlays are part of the target output. Capture work must preserve HeroForge's booth render path when that is the point of the export.
+- Persistent Booth is live/working. Treat remaining Booth work as minor fixes unless a new regression is confirmed.
+- Photo Booth effects/overlays are part of the PNG-series capture target output. Capture work must preserve HeroForge's booth render path when that is the point of the export.
 - Browser/Tampermonkey capture is limited to final canvas-style output; do not assume access to hidden HDR/16-bit render buffers.
 
 ## Findings
@@ -27,6 +28,25 @@ Working approach:
 
 Affected tools:
 - `tools/Booth.js`
+
+### Persistent Booth Is Live / Working
+
+Context:
+- Persistent Booth was completed earlier and is not an open feature-build item.
+
+Observed behavior:
+- Current visible Booth section is `Persistent Booth`.
+- Core persistence behavior works: booth persistence consent, booth view toggle, black canvas toggle, tokenizer/mode detection, frame hiding, shader/backdrop handling, and runtime tick loop.
+- A couple of minor fixes may still be needed later, but that is separate from the unresolved PNG-series capture project.
+
+Working approach:
+- Do not classify Persistent Booth as a PNG-series capture todo.
+- Do not rewrite Booth persistence while building PNG-series capture unless a concrete integration requirement or regression is identified.
+- If later minor Booth fixes are needed, treat them as surgical fixes to the live Booth tool.
+
+Affected tools:
+- `tools/Booth.js`
+- Future Photo Mode / PNG Series capture tool only where it needs to preserve Booth effects/output
 
 ### Booth Persistence Uses Consent and Runtime State Loop
 
@@ -65,22 +85,23 @@ Affected tools:
 
 Context:
 - Prior standalone Booth work found behavior that should not be rediscovered from scratch.
+- These notes are historical diagnostics, not evidence that Persistent Booth is currently unfinished.
 
 Observed behavior:
-- Standalone booth v12 was the last version where overlays/effects/view/lighting persisted together.
-- v13 and the official integrated Booth.js behavior were similar: backdrop persisted, but effects failed, and overlays only stuck after a manual Booth off -> on cycle.
+- Standalone booth v12 was the last version in that old testing sequence where overlays/effects/view/lighting persisted together.
+- v13 and the official integrated Booth.js behavior were similar during that older debugging period: backdrop persisted, but effects failed, and overlays only stuck after a manual Booth off -> on cycle.
 - The suspected fix direction was not to hard-block all teardown. Backdrop still needed v13's one-shot allowance of `tokenizer.disable()` so it could commit.
 - Effects should be restored after the tokenizer transition rather than by blocking teardown entirely.
 
 Working approach:
-- Treat v12 as important historical reference for overlays/effects/view/lighting persistence.
-- Treat v13 as important reference for backdrop commit behavior.
+- Treat v12/v13 as historical reference if Booth effects regress later.
+- Do not treat these notes as an open task to rebuild Persistent Booth.
 - Do not "fix" effects by removing the one-shot tokenizer-disable allowance unless a tested replacement still preserves backdrop commit.
 - Preserve manual off -> on behavior as a useful clue when debugging overlay persistence.
 
 Affected tools:
 - `tools/Booth.js`
-- Future Booth persistence revisions
+- Future minor Booth fixes if persistence/effects regress
 
 ### Photo Booth Backdrop Is Not Plain CSS
 
@@ -95,7 +116,7 @@ Observed behavior:
 - The lock worked inside Photo Booth but not outside it.
 
 Working approach:
-- For backdrop persistence, inspect image/src/tokenBg loading behavior, not just DOM styles.
+- For backdrop persistence or capture output, inspect image/src/tokenBg loading behavior, not just DOM styles.
 - Treat tokenBg URLs as a useful capture/lock signal.
 - Do not assume backdrop behavior works outside Booth just because it works inside Booth.
 
@@ -108,6 +129,7 @@ Affected tools:
 Context:
 - A future tool is intended to capture a PNG series from HeroForge Photo Mode/photo booth.
 - This has not been solved yet.
+- This is separate from Persistent Booth, which is live/working.
 
 Observed behavior:
 - HeroForge added an official high-quality spinny mini image-sequence exporter.
@@ -121,10 +143,11 @@ Working approach:
 - Prefer using or mimicking HeroForge's official capture/export flow rather than building an unrelated screenshot path that loses booth effects.
 - Keep frame count user-controlled rather than assuming HeroForge's internal frame count is the desired count.
 - Preserve notes about failed/partial approaches before writing new capture code.
+- Do not put Persistent Booth back on the todo list while scoping PNG-series capture.
 
 Affected tools:
 - Future Photo Mode / PNG Series capture tool
-- `tools/Booth.js` if integrated there later
+- `tools/Booth.js` only if integration is required later
 
 ### Canvas / Capture Surface Findings
 
@@ -225,6 +248,7 @@ Affected tools:
 
 Goal:
 - Capture a high-resolution PNG sequence from HeroForge Photo Mode/photo booth, preferably mimicking the official image-sequence exporter, while preserving Photo Booth effects/overlays.
+- This is not a Persistent Booth rebuild. Persistent Booth is already live/working.
 
 Known partial paths:
 - Official HF exporter exists but produced 512x512 observed output.
@@ -242,6 +266,7 @@ Do not repeat:
 - Do not assume 512x512 is the hard limit without checking capture timing/export settings.
 - Do not chase DOM/CSS resizing as the only fix; the booth frame can be WebGL-baked.
 - Do not discard readPixels solely because raw output was flipped/margined; those are post-processing problems.
+- Do not list Persistent Booth as unfinished capture-tool work.
 
 ## Entry Template
 
