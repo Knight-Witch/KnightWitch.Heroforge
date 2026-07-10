@@ -58,7 +58,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
-| Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | Goal is high-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
+| Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | High-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
 
 ## Live Tool Notes
 
@@ -167,13 +167,17 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 ### Photo Mode PNG Series Capture — Planned / Unresolved
 
 - Not currently live in manifest.
+- Dedicated feature spec: `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`.
 - Goal: capture a high-resolution PNG sequence from Photo Mode/photo booth, ideally mimicking HeroForge's official spinny image-sequence exporter.
 - Must preserve HeroForge Photo Booth effects/overlays/background behavior when those are the intended output.
 - Separate from Persistent Booth. Persistent Booth itself is already live/working.
+- Required output package: one ZIP containing ordered PNG frames and metadata/failure records where practical.
+- Intended resolution options: 1024x1024 first, then 2048x2048, then 4K square if stable.
+- Intended frame options: 36 / 72 / 120 or similar, with 72 matching the observed official exporter baseline.
 - Prior official exporter observation: ZIP with roughly 72 frames at 512x512.
 - Prior probe observation: WebGL `readPixels` captured real booth pixels but produced upside-down frames with grey margins and visible UI/fantasy background leakage.
 - Prior probe v0.7: armed with `Alt+Shift+G`, captured after user clicked HF Capture, supported crop modes via `Alt+Shift+C`, and output `frames_2k_png.zip`.
-- Current status: unfinished investigation. See `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` and `HISTORY/BULLSHIT/TIMING_AND_STATE.md` before attempting implementation.
+- Current status: unfinished investigation. Read `PHOTO_MODE_PNG_CAPTURE.md`, `BOOTH_RENDERS_EXPORTS.md`, and `TIMING_AND_STATE.md` before attempting implementation.
 
 ## Status Terms
 
@@ -194,7 +198,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Identify standalone Tampermonkey references that remain canonical but unmigrated.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
 - Add deeper old-chat recovery notes for Booth minor fixes/effects edge cases, bones/kitbashing, JSON/library, and remaining standalone references.
-- Investigate Photo Mode PNG Series Capture using existing probe history before writing new implementation.
+- Investigate Photo Mode PNG Series Capture using existing probe history and the dedicated feature spec before writing new implementation.
 
 ## Migration Queue
 
@@ -202,7 +206,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
-| Photo Mode PNG Series Capture | Prior standalone probes / old-chat history | TBD, likely `/tools/` or Booth-adjacent module | Investigating / unresolved | Must preserve Photo Booth effects. Persistent Booth is separate and already working. Do not restart from scratch; read Booth render/export notes first. |
+| Photo Mode PNG Series Capture | Prior standalone probes / old-chat history + `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` | TBD, likely `/tools/` or clearly separated Booth subsection | Investigating / unresolved | First target should be 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, validated dimensions, and preserved Photo Booth effects. Persistent Booth is separate and already working. |
 | TBD | TBD | TBD | TBD | TBD |
 
 ## Blockers / Watch Items
@@ -213,7 +217,8 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 - Presentation is frozen unless UI/UX changes are explicitly requested.
 - Booth, Decals, bone detection, and JSON/library workflows have the highest fragility and need old-chat recovery before major changes.
 - Persistent Booth is live/working. Do not classify it as an open PNG-series capture task.
-- PNG series capture is not solved; avoid assumptions about 512x512 limits, DOM/CSS booth frame control, or hidden HDR/16-bit buffer access.
+- PNG series capture is not solved; avoid assumptions about 512x512 limits, DOM/CSS booth frame control, hidden HDR/16-bit buffer access, or large ZIP reliability.
+- High-resolution PNG sequences may stress browser memory/download behavior; start at 1024 before scaling to 2048/4K.
 
 ## Removals / Rejected Ideas
 
@@ -224,3 +229,4 @@ Document removed, deprecated, or rejected work here with the reason.
 | Mandatory standalone diff files for every update | Rejected | GitHub history plus `CHANGELOG.md`, `MASTER.md`, and `PRE_FLIGHT_Check.md` now serve as the primary rollback/reference system. `/DIFFS/` remains optional for complex/risky patches. | 2026-07-09 |
 | Global raw `#menuC` / `#menuD` Decals scroll styling | Rejected | HeroForge reuses these containers; global styling caused empty resize zones and does not handle all Decals layouts safely. | 2026-07-09 |
 | Treating Photo Booth frame as only DOM/CSS | Rejected | Prior probing found the 1:1 booth frame can be baked into the WebGL scene; export pixels must be verified directly. | 2026-07-09 |
+| Treating Persistent Booth as unfinished PNG-capture work | Rejected | Persistent Booth is live/working; PNG Series Capture is a separate planned/export feature. | 2026-07-09 |
