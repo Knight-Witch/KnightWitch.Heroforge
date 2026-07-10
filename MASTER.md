@@ -50,14 +50,116 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | Core | n/a | `Witch_Dock.user.js` | Live | Floating dock shell, manifest loader, shared UI, undo/redo, footer utilities, storage preferences. |
 | Manifest | n/a | `manifest.json` | Live | Loads visible tools and hidden HeroForge UI utilities. |
 | Body | `body-editor` | `tools/Body_Editor.js` | Live | Body symmetry and related editing tools. |
-| Pose | `pose-tool` | `tools/Pose.js` | Live | Pose-related tools. |
-| Booth | `booth-tool` | `tools/Booth.js` | Live | Photo booth workflow tools. |
-| JSON | `json-tool` | `tools/JSON_Tool.js` | Live | JSON workflow tools. |
+| Pose | `pose-tool` | `tools/Pose.js` | Live | Figure swap tool for Main/Extra designation. |
+| Booth | `booth-tool` | `tools/Booth.js` | Live | Persistent booth view and black canvas workflow tool. |
+| JSON | `json-tool` | `tools/JSON_Tool.js` | Live | Bulk JSON library backup tool. |
 | Utilities | `utilities` | `tools/Utilities.js` | Live | User-facing toggles for optional HeroForge UI utilities. |
 | HF UI | `expanded-ui-scroll-guards` | `HeroForge_UI/Expanded_UI_Scroll_Guards.js` | Live / hidden | Scoped Decals scroll/resize targeting. |
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
+
+## Live Tool Notes
+
+### Witch Dock Core — `Witch_Dock.user.js`
+
+- Userscript metadata version: `1.0.5`.
+- Loads `manifest.json` from the `Witch_Scripts` raw GitHub URL.
+- Uses `GM_xmlhttpRequest` to fetch manifest/modules.
+- Uses `kw.witchDock.toolEnabled.*` for tool enablement.
+- Uses `kw.witchDock.v1` for dock position/size/minimized/closed tab state.
+- Provides shared dock UI, tabs, sections, drag/resize behavior, compact mode, hotkey handling, undo/redo controls, About/Disclaimer modals, and footer bone detection.
+- Fragile area: footer bone detection uses delayed snapshot/diff behavior and tolerant scene graph probing. See `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md` and `HISTORY/BULLSHIT/TIMING_AND_STATE.md`.
+
+### Body Editor — `tools/Body_Editor.js`
+
+- Manifest ID: `body-editor`.
+- Registers into tab `Body Editor`.
+- Current registered title: `Body Editor WITCH DOCK TEST v4`.
+- Storage keys: `hfBodyEditorDock.v1`, `hfBodyEditorDock.buttBaselines.v1`.
+- Uses CK undo queue snapshots and `CK.tryLoadCharacter` for character JSON edits.
+- Current visible sections include arms, breast, and butt editing workflows.
+- Fragile area: direct character JSON manipulation and undo queue integration must remain consistent.
+
+### Pose — `tools/Pose.js`
+
+- Manifest ID: `pose-tool`.
+- Registers into tab `Pose`.
+- Current function: `Figure Swap: Main / Extra`.
+- Uses current character JSON from CK undo queue or CK getter candidates.
+- Swaps `children.baseItem` and main figure data while preserving pinned environment/fx/base/baseRim/label/base decal/base slider data.
+- Fragile area: do not remove pinned-data preservation when modifying figure swap behavior.
+
+### Booth — `tools/Booth.js`
+
+- Manifest ID: `booth-tool`.
+- Tool ID: `booth-tool`.
+- Build tag: `v16`.
+- Registers into tab `Booth`.
+- Storage keys: `kw.witchDock.booth.consent.v1`, `kw.witchDock.booth.directionsHidden.v1`.
+- Exposes debug helpers: `window.KW_WD_BOOTH_DEBUG_DUMP`, `window.KW_WD_BOOTH_BUILD`.
+- Current visible section: `Persistent Booth`.
+- Core behaviors include booth persistence consent, booth view toggle, black canvas toggle, tokenizer/mode detection, frame hiding, shader/backdrop handling, and a runtime tick loop.
+- Fragile area: heavy runtime behavior; do not simplify loops, tokenizer hooks, teardown/rearm logic, backdrop capture, or frame hiding without a tested reference.
+
+### JSON Tool — `tools/JSON_Tool.js`
+
+- Manifest ID: `json-tool`.
+- Tool ID: `json-tool`.
+- Registers into tab `JSON`.
+- Current visible section: `Backup My Library (Bulk JSON)`.
+- Loads JSZip from CDN when needed.
+- Uses HeroForge config-service endpoints with credentials to read config metadata, marks/folders, and individual config JSON.
+- Builds a ZIP with config JSON, metadata, marks, and failure records.
+- Supports pause/resume and copying failure data.
+- Fragile area: service endpoint assumptions, pagination, concurrency, folder/mark mapping, credentialed requests, and DOM/HF readiness timing.
+
+### Utilities — `tools/Utilities.js`
+
+- Manifest ID: `utilities`.
+- Registers into tab `Utilities`.
+- Current section: `HeroForge UI Patches`.
+- User-facing toggles:
+  - `expanded-ui-scroll-guards` / Decals Scroll Guards.
+  - `hf-ui-slot-bridge` / Expanded Decal Slots.
+- Reads/writes enablement through `kw.witchDock.toolEnabled.*`, localStorage, and GM storage where available.
+- Loads utility scripts from raw GitHub at runtime when toggled/enabled.
+- Fragile area: disabling utilities that already mutated HeroForge data may require refresh; preserve status messages and no-op behavior.
+
+### Decals Scroll Guards — `HeroForge_UI/Expanded_UI_Scroll_Guards.js`
+
+- Manifest ID: `expanded-ui-scroll-guards`.
+- Internal version: `2026-07-03-layouts`.
+- Exposes `window.KW_HeroForgeUI.scrollGuards` with `enable`, `disable`, `retarget`, and `isEnabled`.
+- Detects Decals source menus from visible `#menuC` text/attributes.
+- Detects slot grids from visible `#menuD` token scoring.
+- Classifies layout as vertical, split, or bottom before applying styles.
+- Retargets after click, pointerup, staged timeouts, and interval.
+- Fragile area: content/position/layout detection is required because HeroForge reuses menu IDs.
+
+### Scroll Split Safe — `HeroForge_UI/HF_UI_Scroll_Split_Safe.js`
+
+- Manifest ID: `hf-ui-scroll-split-safe`.
+- Reapplies split-layout CSS override on load, short timeouts, and interval.
+- Purpose is narrow: keep split slot menu from inheriting unsafe resize/max-height behavior.
+
+### Slot Bridge — `HeroForge_UI/HF_UI_Slot_Bridge.js`
+
+- Manifest ID: `hf-ui-slot-bridge`.
+- Checks `kw.witchDock.toolEnabled.hf-ui-slot-bridge` from localStorage.
+- Exposes `window.KW_HeroForgeUI.slotBridge`.
+- Conditionally loads `HeroForge_UI/Expanded_Decal_Slots.js` from raw GitHub.
+- If disabled, writes a disabled `expandedDecalSlots` state object and does not load the expansion module.
+
+### Expanded Decal Slots — `HeroForge_UI/Expanded_Decal_Slots.js`
+
+- Loaded by `HF_UI_Slot_Bridge.js` rather than directly by manifest.
+- Target slot count: `96`.
+- Egg part IDs: `3139`, `20091`.
+- Exposes `window.KW_HeroForgeUI.expandedDecalSlots` state.
+- Applies only when CK and CK.Options are available and the HF Core Tweaks signature is detected on part `21022`.
+- Expands body upper, body lower, face, splatter font part, and egg parts.
+- Fragile area: this must remain conditional. Without the expected HF Core Tweaks signature, it must remain a no-op.
 
 ## Status Terms
 
@@ -76,7 +178,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Backfill project history from previous chats.
 - Identify standalone Tampermonkey references that remain canonical but unmigrated.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
-- Add deeper tool-specific notes for Body, Pose, Booth, JSON, Utilities, and HeroForge UI helpers.
+- Add deeper old-chat recovery notes for Decals/Utilities, Booth, bones/kitbashing, JSON/library, and remaining standalone references.
 
 ## Migration Queue
 
@@ -92,6 +194,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 - Tools that rely on HeroForge internal state must preserve known-good timing, retry, snapshot, mutation, and probing behavior.
 - Working standalone scripts remain canonical until the integrated Witch Dock version is tested and confirmed.
 - Presentation is frozen unless UI/UX changes are explicitly requested.
+- Booth, Decals, bone detection, and JSON/library workflows have the highest fragility and need old-chat recovery before major changes.
 
 ## Removals / Rejected Ideas
 
