@@ -51,14 +51,14 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | Manifest | n/a | `manifest.json` | Live | Loads visible tools and hidden HeroForge UI utilities. |
 | Body | `body-editor` | `tools/Body_Editor.js` | Live | Body symmetry and related editing tools. |
 | Pose | `pose-tool` | `tools/Pose.js` | Live | Figure swap tool for Main/Extra designation. |
-| Booth | `booth-tool` | `tools/Booth.js` | Live | Persistent booth view and black canvas workflow tool. |
+| Booth | `booth-tool` | `tools/Booth.js` | Live | Persistent booth view and black canvas workflow tool. Persistent Booth is considered working; only minor fixes remain. |
 | JSON | `json-tool` | `tools/JSON_Tool.js` | Live | Bulk JSON library backup tool. |
 | Utilities | `utilities` | `tools/Utilities.js` | Live | User-facing toggles for optional HeroForge UI utilities. |
 | HF UI | `expanded-ui-scroll-guards` | `HeroForge_UI/Expanded_UI_Scroll_Guards.js` | Live / hidden | Scoped Decals scroll/resize targeting. |
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
-| Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | Goal is high-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. |
+| Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | Goal is high-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
 
 ## Live Tool Notes
 
@@ -100,6 +100,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Storage keys: `kw.witchDock.booth.consent.v1`, `kw.witchDock.booth.directionsHidden.v1`.
 - Exposes debug helpers: `window.KW_WD_BOOTH_DEBUG_DUMP`, `window.KW_WD_BOOTH_BUILD`.
 - Current visible section: `Persistent Booth`.
+- Status: Persistent Booth is live/working. It is not part of the open PNG-series capture todo. Remaining Booth work should be treated as minor fixes unless a new regression is confirmed.
 - Core behaviors include booth persistence consent, booth view toggle, black canvas toggle, tokenizer/mode detection, frame hiding, shader/backdrop handling, and a runtime tick loop.
 - Fragile area: heavy runtime behavior; do not simplify loops, tokenizer hooks, teardown/rearm logic, backdrop capture, or frame hiding without a tested reference.
 
@@ -168,6 +169,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Not currently live in manifest.
 - Goal: capture a high-resolution PNG sequence from Photo Mode/photo booth, ideally mimicking HeroForge's official spinny image-sequence exporter.
 - Must preserve HeroForge Photo Booth effects/overlays/background behavior when those are the intended output.
+- Separate from Persistent Booth. Persistent Booth itself is already live/working.
 - Prior official exporter observation: ZIP with roughly 72 frames at 512x512.
 - Prior probe observation: WebGL `readPixels` captured real booth pixels but produced upside-down frames with grey margins and visible UI/fantasy background leakage.
 - Prior probe v0.7: armed with `Alt+Shift+G`, captured after user clicked HF Capture, supported crop modes via `Alt+Shift+C`, and output `frames_2k_png.zip`.
@@ -191,7 +193,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Backfill project history from previous chats.
 - Identify standalone Tampermonkey references that remain canonical but unmigrated.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
-- Add deeper old-chat recovery notes for Booth persistence/effects regressions, bones/kitbashing, JSON/library, and remaining standalone references.
+- Add deeper old-chat recovery notes for Booth minor fixes/effects edge cases, bones/kitbashing, JSON/library, and remaining standalone references.
 - Investigate Photo Mode PNG Series Capture using existing probe history before writing new implementation.
 
 ## Migration Queue
@@ -200,7 +202,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
-| Photo Mode PNG Series Capture | Prior standalone probes / old-chat history | TBD, likely `/tools/` or Booth-adjacent module | Investigating / unresolved | Must preserve Photo Booth effects. Do not restart from scratch; read Booth render/export notes first. |
+| Photo Mode PNG Series Capture | Prior standalone probes / old-chat history | TBD, likely `/tools/` or Booth-adjacent module | Investigating / unresolved | Must preserve Photo Booth effects. Persistent Booth is separate and already working. Do not restart from scratch; read Booth render/export notes first. |
 | TBD | TBD | TBD | TBD | TBD |
 
 ## Blockers / Watch Items
@@ -210,6 +212,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock.
 - Working standalone scripts remain canonical until the integrated Witch Dock version is tested and confirmed.
 - Presentation is frozen unless UI/UX changes are explicitly requested.
 - Booth, Decals, bone detection, and JSON/library workflows have the highest fragility and need old-chat recovery before major changes.
+- Persistent Booth is live/working. Do not classify it as an open PNG-series capture task.
 - PNG series capture is not solved; avoid assumptions about 512x512 limits, DOM/CSS booth frame control, or hidden HDR/16-bit buffer access.
 
 ## Removals / Rejected Ideas
