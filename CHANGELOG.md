@@ -1,5 +1,47 @@
 # Changelog
 
+## DOCS-2026-07-09-006 — Photo Mode PNG Capture Feature Spec Backfill
+
+Date: 2026-07-09
+Time: 18:31 PDT
+
+### Added
+
+- Added `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` as the dedicated feature-spec file for the unresolved Photo Mode PNG Series Capture tool.
+
+### Changed
+
+- Updated `HISTORY/Bullshit_Bible.md` to include the new Photo Mode PNG capture spec file and first-target summary.
+- Updated `MASTER.md` with Photo Mode PNG capture requirements, migration queue details, watch items, and rejected assumptions.
+- Updated `HISTORY/DECISIONS.md` with a conservative first-target decision for PNG capture: 1024x1024, around 72 PNG frames, ZIP output, metadata/failure records, explicit arming, and validated dimensions.
+- Updated `HISTORY/BULLSHIT/TIMING_AND_STATE.md` with capture timing requirements around one-frame-per-render acceptance, dimension validation, timeouts, and memory/download risk.
+- Updated `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` to cross-link the dedicated feature spec while keeping probe history separate.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this feature-spec backfill pass.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only feature-spec backfill.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- New spec file can be removed if this capture feature is abandoned.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-005 — Persistent Booth Status Clarification
 
 Date: 2026-07-09
