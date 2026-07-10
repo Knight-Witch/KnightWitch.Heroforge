@@ -1,5 +1,46 @@
 # Changelog
 
+## DOCS-2026-07-09-004 — Decals and Photo Capture History Backfill
+
+Date: 2026-07-09
+Time: 18:03 PDT
+
+### Changed
+
+- Expanded `HISTORY/Bullshit_Bible.md` with high-risk summaries for Decals three-layout scroll behavior and unfinished Photo Mode PNG series capture.
+- Expanded `MASTER.md` with planned/unresolved Photo Mode PNG Series Capture status, migration queue notes, watch items, and rejected assumptions.
+- Expanded `HISTORY/DECISIONS.md` with durable decisions for Decals three-layout support and Photo Mode capture preserving HeroForge's booth render path.
+- Expanded `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md` with detailed Decals UI layout history for right-side grouped, right/left split, and bottom compact setups.
+- Expanded `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md` with detailed Decals scroll/slot behavior notes, split-safe behavior, bottom horizontal overflow, attribute-text targeting, and utility separation.
+- Expanded `HISTORY/BULLSHIT/TIMING_AND_STATE.md` with PNG-series render-state gating notes, early 512x512 capture warning, one-frame-per-rAF guidance, and WebGL readPixels timing/post-processing notes.
+- Expanded `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` with Booth persistence history, v12/v13 notes, tokenBg backdrop findings, official exporter observation, v0.7 probe behavior, browser capture limits, readPixels partial success, and current unresolved PNG-series capture problem.
+- Updated `PRE_FLIGHT_Check.md` and `HISTORY/SESSION_LOG.md` for this history backfill pass.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `PRE_FLIGHT_Check.md`
+- `HISTORY/SESSION_LOG.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Docs-only history backfill.
+- No JavaScript files changed.
+- No `manifest.json` changes.
+- No runtime behavior affected.
+- PNG-series capture remains explicitly unresolved; this pass documents findings and constraints only.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+
 ## DOCS-2026-07-09-003 — Live Tool Documentation Backfill
 
 Date: 2026-07-09
