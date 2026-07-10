@@ -111,6 +111,22 @@ Applies to:
 - Future Photo Mode / PNG Series capture tool
 - `tools/Booth.js`
 - `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
+
+### 2026-07-09 — Photo Mode PNG Capture Starts Conservative
+
+Decision:
+- First implementation target should be conservative: 1024x1024, around 72 PNG frames, ZIP output, metadata/failure records, explicit arming, and validated frame dimensions.
+- 2048, 4K, 16:9 cinematic output, overlay compositing, and companion app ideas are later-stage features unless they fall out safely from the first working path.
+
+Reason:
+- High-resolution PNG sequences can stress browser memory, ZIP generation, and download behavior.
+- The capture path is not solved yet, so reliability and correct Photo Booth output matter before max resolution or expanded feature surface.
+
+Applies to:
+- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
+- Future Photo Mode / PNG Series capture tool
+- `MASTER.md` migration queue
 
 ## Entry Template
 
