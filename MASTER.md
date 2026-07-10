@@ -59,6 +59,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
 | Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | High-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
+| Planned | TBD | Decal Slot Swapper | Investigating / unresolved | Move/swap decals between slots without reapplying the decal, manually copying coordinates/transforms, or recoloring. Candidate target: Witch Dock panel, native Decals UI injection, or both. |
 
 ## Reference Inventories
 
@@ -170,6 +171,15 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Expands body upper, body lower, face, splatter font part, and egg parts.
 - Fragile area: this must remain conditional. Without the expected HF Core Tweaks signature, it must remain a no-op.
 
+### Decal Slot Swapper — Planned / Unresolved
+
+- Not currently live in manifest.
+- Goal: move or swap decals between existing slots without reapplying the decal, manually copying placement coordinates/transforms, or recoloring.
+- Candidate UX paths: Witch Dock panel for organized/batch control; optional native HeroForge Decals UI injection for users who prefer in-panel actions.
+- Must preserve decal identity, slot assignment, placement/transform data, projection/source target, color/material data, and undo/redo state.
+- Investigate whether HeroForge's Photo Booth overlay swap behavior exposes a reusable interaction or data pattern.
+- Fragile area: map the real decal data structure and update timing before mutation. Do not assume visible slot labels map directly to JSON array indexes without probes.
+
 ### Photo Mode PNG Series Capture — Planned / Unresolved
 
 - Not currently live in manifest.
@@ -208,6 +218,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
 - Add deeper old-chat recovery notes for Booth minor fixes/effects edge cases, bones/kitbashing, JSON/library, and remaining standalone references.
 - Investigate Photo Mode PNG Series Capture using existing probe history and the dedicated feature spec before writing new implementation.
+- Investigate Decal Slot Swapper implementation paths for Witch Dock control, native Decals UI injection, or both.
 
 ## Migration Queue
 
@@ -216,6 +227,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock. Deta
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
 | HF Core Tweaks / Lob decal slot reference | External user-provided / Lob-style Tampermonkey script | TBD; maybe direct HF Core Tweaks edit or `HeroForge_UI/` bridge strategy | External canonical reference | Compare before any slot-expansion edit. Current Witch Dock expansion depends on HF Core Tweaks signature and does not replace it. |
+| Decal Slot Swapper | New feature investigation / future probes | TBD, likely `/tools/` plus optional `/HeroForge_UI/` native Decals UI injection | Investigating / unresolved | Move/swap decal data between slots while preserving placement/transforms, color/material data, source/projection target, and undo/redo integration. |
 | Photo Mode PNG Series Capture | Prior standalone probes / old-chat history + `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` | TBD, likely `/tools/` or clearly separated Booth subsection | Investigating / unresolved | First target should be 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, validated dimensions, and preserved Photo Booth effects. Persistent Booth is separate and already working. |
 | Booth v12/v13 standalone history | Prior standalone Booth scripts | None unless diagnosing a Booth regression | Historical diagnostic reference | Use only for future Booth persistence/effects regression diagnosis. Persistent Booth is currently live/working. |
 | Photo Booth tokenBg hard-lock probe | Prior standalone probe / old-chat history | None unless diagnosing backdrop/capture behavior | Historical diagnostic reference | Use to remember tokenBg image source behavior; not a finished feature. |
