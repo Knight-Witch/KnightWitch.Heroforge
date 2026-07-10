@@ -37,7 +37,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 |---|---|
 | `/tools/` | Visible Witch Dock panels registered into dock tabs. |
 | `/HeroForge_UI/` | Hidden utilities and HeroForge UI/runtime patches loaded through manifest. |
-| `/HISTORY/` | Durable project history, decisions, and HeroForge engine notes. |
+| `/HISTORY/` | Durable project history, decisions, standalone references, and HeroForge engine notes. |
 | `/HISTORY/BULLSHIT/` | Segmented HeroForge behavior discoveries. |
 | `/ASSETS/` | Repo assets only. |
 | `/DIFFS/` | Optional standalone patches for complex/risky changes. |
@@ -59,6 +59,12 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
 | Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | High-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
+
+## Reference Inventories
+
+- Standalone/external/probe inventory: `HISTORY/STANDALONE_REFERENCES.md`.
+- Photo Mode PNG capture feature spec: `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`.
+- HeroForge fragile behavior index: `HISTORY/Bullshit_Bible.md`.
 
 ## Live Tool Notes
 
@@ -187,6 +193,9 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | Live / hidden | Loaded by manifest but not exposed as a visible dock tab. |
 | Live / conditional | Loaded only through another module or only applies when required runtime conditions are met. |
 | Standalone canonical | Working Tampermonkey reference that must be preserved until migration is tested. |
+| External canonical reference | Working external or user-provided script that must be compared before replacement or integration. |
+| Historical diagnostic reference | Old standalone version/probe that explains a bug/regression but is not current live code. |
+| Unresolved probe | Useful investigation code or behavior notes, but no confirmed finished implementation. |
 | Migrating | In progress from standalone/probe form into Witch Dock architecture. |
 | Investigating / unresolved | Known desired feature with useful probes/history but no confirmed working implementation. |
 | Blocked | Known issue prevents reliable migration or release. |
@@ -195,19 +204,25 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 ## Active Tasks
 
 - Backfill project history from previous chats.
-- Identify standalone Tampermonkey references that remain canonical but unmigrated.
+- Keep `HISTORY/STANDALONE_REFERENCES.md` current as standalone/probe sources are recovered.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
 - Add deeper old-chat recovery notes for Booth minor fixes/effects edge cases, bones/kitbashing, JSON/library, and remaining standalone references.
 - Investigate Photo Mode PNG Series Capture using existing probe history and the dedicated feature spec before writing new implementation.
 
 ## Migration Queue
 
-Add standalone scripts here when they are ready to migrate into Witch Dock.
+Add standalone scripts here when they are ready to migrate into Witch Dock. Detailed reference statuses live in `HISTORY/STANDALONE_REFERENCES.md`.
 
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
+| HF Core Tweaks / Lob decal slot reference | External user-provided / Lob-style Tampermonkey script | TBD; maybe direct HF Core Tweaks edit or `HeroForge_UI/` bridge strategy | External canonical reference | Compare before any slot-expansion edit. Current Witch Dock expansion depends on HF Core Tweaks signature and does not replace it. |
 | Photo Mode PNG Series Capture | Prior standalone probes / old-chat history + `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` | TBD, likely `/tools/` or clearly separated Booth subsection | Investigating / unresolved | First target should be 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, validated dimensions, and preserved Photo Booth effects. Persistent Booth is separate and already working. |
-| TBD | TBD | TBD | TBD | TBD |
+| Booth v12/v13 standalone history | Prior standalone Booth scripts | None unless diagnosing a Booth regression | Historical diagnostic reference | Use only for future Booth persistence/effects regression diagnosis. Persistent Booth is currently live/working. |
+| Photo Booth tokenBg hard-lock probe | Prior standalone probe / old-chat history | None unless diagnosing backdrop/capture behavior | Historical diagnostic reference | Use to remember tokenBg image source behavior; not a finished feature. |
+| Sync Extra Arms | Deprecated pre-Witch Dock standalone | None | Deprecated | Listed in README as deprecated/conflicting. Do not use with Witch Dock. |
+| Body Editor / Body Editor BETA | Deprecated pre-Witch Dock standalone | Current `tools/Body_Editor.js` if comparing regression | Deprecated | Do not use as current source unless explicitly comparing a regression. |
+| JSON Bulk Backup variants | Deprecated pre-Witch Dock standalone | Current `tools/JSON_Tool.js` if comparing regression | Deprecated | Do not use as current source unless explicitly comparing a regression. |
+| Bone/kitbashing probes | Prior probing history | TBD | Needs recovery | Recover before major bone/kitbashing changes. |
 
 ## Blockers / Watch Items
 
