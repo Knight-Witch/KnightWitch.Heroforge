@@ -2,6 +2,14 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-12 — Advanced Lighting Investigation Checkpoint
+
+- Target: persist the current HeroForge custom-light investigation and close the documentation gap that left validated probe findings only in chat.
+- Action: added `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`; inventoried Lighting Probe v0.1.0 and Injection Probe v0.1.0-v0.3.0; updated `MASTER.md`, `HISTORY/Bullshit_Bible.md`, `HISTORY/STANDALONE_REFERENCES.md`, and `HISTORY/DECISIONS.md`; added a milestone-based documentation-checkpoint rule.
+- Result: repo memory now records the working second DirectionalLight, position/intensity behavior, Photo Booth pre-attach shadow allocation, editor/Photo Booth targeting difference, stale shadow-matrix regression, non-working but counted third SphereLight, canvas-preset confounder, Persistent Booth separation, and queued Fresnel/rim-light investigation.
+- Test notes: documentation-only update; no JavaScript, userscript metadata, `manifest.json`, storage keys, UI, or runtime behavior changed.
+- Follow-up: stabilize custom DirectionalLight shadow refresh/lifecycle behavior with standalone probes. After that, begin a read-only shader-hook probe for camera-relative Fresnel rim lighting.
+
 ## 2026-07-09 — Standalone Reference Inventory Backfill
 
 - Target: standalone scripts, external references, probes, deprecated scripts, and migration status.
