@@ -1,5 +1,61 @@
 # Changelog
 
+## DOCS-2026-07-12-008 — Advanced Lighting Investigation Checkpoint
+
+Date: 2026-07-12
+Time: 14:08 PDT
+
+### Added
+
+- Added `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md` as the dedicated source for HeroForge custom-light injection, shadow-path behavior, SphereLight failure findings, canvas/preset confounders, lifecycle risks, and queued Fresnel/rim-light work.
+- Added a durable milestone-based documentation-checkpoint policy: validated findings, corrections, status changes, decisions, blockers, and material probe milestones must be persisted in GitHub documentation rather than left only in chat.
+
+### Changed
+
+- Updated `MASTER.md` with Advanced Lighting Controls and Camera-Relative Rim Lighting status, active tasks, migration queue entries, watch items, rejected assumptions, and documentation-as-project-memory rules.
+- Updated `HISTORY/README.md` with documentation-checkpoint rules and a link to the lighting/shadow topic file.
+- Updated `HISTORY/Bullshit_Bible.md` with lighting/shadow critical rules, the new topic-file index entry, and documentation checkpoint/correction rules.
+- Updated `HISTORY/STANDALONE_REFERENCES.md` with exact inventory/status notes for Lighting Probe v0.1.0, Lighting Injection Probe v0.1.0-v0.3.0, and the queued rim-light shader probe.
+- Updated `HISTORY/DECISIONS.md` with durable decisions for milestone-based documentation checkpoints and separation of physical lighting, shader-based rim lighting, and Persistent Booth.
+- Updated `HISTORY/SESSION_LOG.md` with the current lighting investigation state and next diagnostic priority.
+- Updated `PRE_FLIGHT_Check.md` with target files, history reviewed, connected systems, conflict risks, and recommended action.
+
+### Confirmed / Corrected Documentation
+
+- Confirmed a second custom DirectionalLight visibly renders and supports position and intensity changes.
+- Confirmed pre-attachment `castShadow: true` can allocate an independent custom shadow map and calculated matrix in Photo Booth.
+- Documented the unresolved stale-shadow-matrix behavior after later movement/state changes.
+- Corrected the earlier assumption that `numDirLightShadows` must become `1`; visible custom shadows and an allocated map were observed while the inspected value remained `0`.
+- Corrected native SphereLight count interpretation: count reductions in the isolation test were caused by manual user toggles, not HeroForge lifecycle removal.
+- Documented that a third SphereLight being counted does not prove visible contribution; it remained visually inactive even as the sole registered SphereLight.
+- Preserved Persistent Booth as live/working and separate; Witch Dock is not proven to have caused the later shadow regression.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only checkpoint.
+- No JavaScript files changed.
+- No userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- Removing this update would discard the durable lighting investigation record and documentation-checkpoint policy, but would not alter live Witch Dock behavior.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+- Documentation was cross-checked against the current standalone probe reports and user-observed test results.
+
 ## DOCS-2026-07-09-007 — Standalone Reference Inventory Backfill
 
 Date: 2026-07-09

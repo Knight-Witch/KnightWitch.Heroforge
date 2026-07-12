@@ -4,6 +4,49 @@ Durable decisions that should guide future repo work.
 
 ## Active Decisions
 
+### 2026-07-12 — Documentation Checkpoints Are Required During Investigation
+
+Decision:
+- Treat repository documentation as the durable project memory, not chat history.
+- Update the relevant tracking/history files after meaningful validated findings, corrections, status changes, architecture decisions, blockers, canonical-reference changes, or material probe milestones.
+- Batch closely related low-level observations rather than committing every repeated test action.
+- Do not begin the next material probe/code stage while the current docs are knowingly stale.
+- Correct or remove outdated active claims instead of leaving contradictory statements in place.
+
+Reason:
+- Chat/model memory is not reliable enough to preserve fragile HeroForge findings across OpenAI updates, context resets, or future development sessions.
+- Milestone-based checkpoints preserve critical state without creating noise from every minor test click.
+
+Applies to:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/SESSION_LOG.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- relevant `HISTORY/BULLSHIT/` topic files
+- all standalone probe and migration work
+
+### 2026-07-12 — Physical Lighting, Rim Lighting, and Persistent Booth Stay Separate
+
+Decision:
+- Keep custom physical DirectionalLight/SphereLight work separate from future Fresnel/shader-based rim lighting.
+- Keep advanced lighting investigation separate from Persistent Booth implementation.
+- Do not modify `tools/Booth.js` for lighting unless an isolated compatibility regression proves a concrete integration requirement.
+- Treat `HeroForge_Lighting_Injection_Probe_v0.3.0.txt` as the current partial working reference for pre-attach DirectionalLight shadows until a later probe is validated.
+
+Reason:
+- Physical lights, shadow maps, and view-dependent rim shading use different renderer paths and failure modes.
+- Persistent Booth is already live/working, while the lighting probes are standalone and unresolved.
+- The current compatibility regression was confounded by canvas-preset changes and does not prove Witch Dock or Persistent Booth caused shadow failure.
+
+Applies to:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- future lighting tools/modules
+- future shader/rim-light probe
+- `tools/Booth.js`
+
 ### 2026-07-09 — Witch Dock Documentation Structure
 
 Decision:
