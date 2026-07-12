@@ -9,6 +9,7 @@ Time: 14:08 PDT
 
 Target files:
 - `MASTER.md`
+- `HISTORY/README.md`
 - `HISTORY/Bullshit_Bible.md`
 - `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
@@ -21,6 +22,7 @@ Relevant history checked:
 - `MASTER.md`
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
+- `HISTORY/README.md`
 - `HISTORY/Bullshit_Bible.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
 - `HISTORY/DECISIONS.md`
