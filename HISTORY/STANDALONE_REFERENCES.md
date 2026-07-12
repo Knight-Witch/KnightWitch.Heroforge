@@ -9,8 +9,10 @@ Use this file to prevent rehashing old investigations and to separate canonical 
 | Status | Meaning |
 |---|---|
 | External canonical reference | Working external/user-provided script that Witch Dock may depend on or compare against. Do not reinterpret without direct comparison. |
+| Standalone canonical | Working standalone probe/reference that must be preserved until migration is tested and confirmed. |
 | Historical diagnostic reference | Old standalone version/probe that explains a bug/regression but is not current live code. |
 | Unresolved probe | Useful investigation code or behavior notes, but no confirmed finished implementation. |
+| Queued / unproven | Defined follow-up investigation that has not yet produced an active proof-of-concept. |
 | Deprecated | Old script should not be used with current Witch Dock unless explicitly resurrected for comparison. |
 | Migrated / absorbed | Behavior has been moved into Witch Dock or current docs; keep reference only for regression history. |
 | Needs recovery | Known or likely reference exists, but details still need old-chat/source recovery. |
@@ -42,6 +44,129 @@ Related files:
 - `HeroForge_UI/Expanded_Decal_Slots.js`
 - `tools/Utilities.js`
 - `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+
+### HeroForge Lighting Probe v0.1.0
+
+Status:
+- Read-only unresolved probe / canonical diagnostic reference.
+
+Files:
+- `HeroForge_Lighting_Probe_v0.1.0.txt`
+- `HeroForge_Lighting_Probe_v0.1.0_diff.txt`
+
+Current source state:
+- Developed and tested as standalone Tampermonkey probe files outside the live repository modules.
+- Probe source is not currently stored as a live Witch Dock module.
+
+Known behavior / relevance:
+- Scans HeroForge globals, object graphs, light constructors, active lighting roots, material light counts, and bundle support.
+- Identified `CK.environment.lighting`, native `sunlight`, native `_partLightGroup`, SphereLight instances, and dynamic renderer support for several light families.
+- Exports diagnostic JSON without intentionally mutating the scene.
+
+Rules:
+- Preserve this probe as read-only.
+- Do not turn it into the injection test harness.
+- Use tolerant scene/object discovery rather than hard-coded child indexes or UUIDs.
+
+Related files:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+
+### HeroForge Lighting Injection Probe v0.1.0
+
+Status:
+- Historical diagnostic reference / partial success.
+
+Files:
+- `HeroForge_Lighting_Injection_Probe_v0.1.0.txt`
+- `HeroForge_Lighting_Injection_Probe_v0.1.0_diff.txt`
+
+Known behavior / relevance:
+- Established tolerant active-rig discovery, custom owned-group attachment, cleanup, report export, and lifecycle monitoring.
+- Confirmed a second non-shadow DirectionalLight can visibly illuminate the figure.
+- Confirmed a third SphereLight can be counted by material light configuration while still producing no visible illumination.
+
+Rules:
+- Preserve the working DirectionalLight injection path when extending later probes.
+- Do not interpret material light counts as proof of visible light contribution.
+- Do not dispose cloned/shared resources during cleanup.
+
+Related files:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+
+### HeroForge Lighting Injection Probe v0.2.0
+
+Status:
+- Historical diagnostic reference / transform and post-attach-shadow control probe.
+
+Files:
+- `HeroForge_Lighting_Injection_Probe_v0.2.0.txt`
+- `HeroForge_Lighting_Injection_Probe_v0.2.0_diff.txt`
+
+Known behavior / relevance:
+- Added DirectionalLight position, target, intensity, post-attachment shadow toggle, and expanded matrix/shadow diagnostics.
+- Position and intensity controls worked in editor and Photo Booth.
+- Target changes visibly affected Photo Booth but not the editor during that test.
+- Enabling shadows after attachment was not the reliable working path.
+
+Rules:
+- Retain as the control/reference for post-attachment shadow failure.
+- Do not replace the later pre-attach-shadow path with this toggle-only path.
+
+Related files:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+
+### HeroForge Lighting Injection Probe v0.3.0
+
+Status:
+- Standalone canonical / partial working reference.
+- Current active lighting injection probe.
+
+Files:
+- `HeroForge_Lighting_Injection_Probe_v0.3.0.txt`
+- `HeroForge_Lighting_Injection_Probe_v0.3.0_diff.txt`
+
+Known behavior / relevance:
+- Preserves working DirectionalLight illumination, position, intensity, target, report, lifecycle, and cleanup behavior.
+- Adds a pre-attachment shadow path with `castShadow: true` before first scene attachment.
+- Photo Booth allocated an independent custom shadow map and calculated matrix in a successful test.
+- The same custom light, target, and group persisted through the successful lifecycle test.
+- A later test retained the map and `castShadow` state, but the shadow matrix remained stale after the light moved.
+- Controlled detach/re-attach did not force a matrix refresh.
+
+Rules:
+- Treat pre-attachment shadow enablement as the current canonical shadow setup.
+- Treat Photo Booth as the confirmed custom-shadow execution environment; editor custom shadows remain unproven.
+- Do not use `numDirLightShadows` as the sole shadow-success criterion.
+- Do not claim Witch Dock or Persistent Booth caused the stale-shadow regression without isolated A/B evidence.
+- Do not migrate this probe into Witch Dock until shadow refresh/lifecycle behavior is stable.
+
+Related files:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `MASTER.md`
+
+### Camera-Relative Rim Lighting Probe
+
+Status:
+- Queued / unproven.
+
+Current source state:
+- No active script yet.
+- Planned only after physical DirectionalLight stabilization.
+
+Goal / relevance:
+- Identify a stable HeroForge shader/material hook for a camera-relative Fresnel rim effect.
+- Produce silhouette/grazing-angle illumination without broadly lighting the model's back side.
+- Support later spin-capture use where the rim remains camera-relative.
+
+Rules:
+- Begin with a read-only shader-hook probe.
+- Keep rim lighting separate from physical DirectionalLight and SphereLight injection.
+- Do not patch shader source or bundle internals until the active material compile path is identified.
+
+Related files:
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
 
 ### Photo Mode PNG Series Probe v0.7
 
@@ -217,6 +342,11 @@ Rules:
 | Reference | Status | Target | Action |
 |---|---|---|---|
 | HF Core Tweaks / Lob decal reference | External canonical reference | Maybe `HeroForge_UI/` or direct HF Core Tweaks edit, depending on final strategy | Compare before slot-expansion edits. |
+| HeroForge Lighting Probe v0.1.0 | Read-only unresolved probe | Diagnostics only | Preserve read-only; use for runtime/bundle discovery. |
+| Lighting Injection Probe v0.1.0 | Historical diagnostic reference | None directly | Preserve proof of second DirectionalLight and non-working counted SphereLight. |
+| Lighting Injection Probe v0.2.0 | Historical diagnostic reference | None directly | Preserve transform controls and post-attach-shadow control result. |
+| Lighting Injection Probe v0.3.0 | Standalone canonical / partial working reference | Future lighting subsystem after stabilization | Resolve shadow refresh/lifecycle before migration. |
+| Camera-Relative Rim Lighting Probe | Queued / unproven | Future shader/material subsystem | Start with read-only shader-hook discovery after DirectionalLight stabilization. |
 | Photo Mode PNG Series Probe v0.7 | Unresolved probe | Future visible tool or separated Booth subsection | Use as design/probe reference, not final code. |
 | Photo Booth `readPixels` probe | Unresolved probe | Future capture implementation detail | Keep as partial proof of booth pixel access. |
 | Photo Booth tokenBg hard-lock probe | Historical diagnostic reference | Booth/capture diagnostics | Use for backdrop source behavior. |
