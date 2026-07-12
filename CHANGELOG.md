@@ -13,6 +13,7 @@ Time: 14:08 PDT
 ### Changed
 
 - Updated `MASTER.md` with Advanced Lighting Controls and Camera-Relative Rim Lighting status, active tasks, migration queue entries, watch items, rejected assumptions, and documentation-as-project-memory rules.
+- Updated `HISTORY/README.md` with documentation-checkpoint rules and a link to the lighting/shadow topic file.
 - Updated `HISTORY/Bullshit_Bible.md` with lighting/shadow critical rules, the new topic-file index entry, and documentation checkpoint/correction rules.
 - Updated `HISTORY/STANDALONE_REFERENCES.md` with exact inventory/status notes for Lighting Probe v0.1.0, Lighting Injection Probe v0.1.0-v0.3.0, and the queued rim-light shader probe.
 - Updated `HISTORY/DECISIONS.md` with durable decisions for milestone-based documentation checkpoints and separation of physical lighting, shader-based rim lighting, and Persistent Booth.
@@ -32,6 +33,7 @@ Time: 14:08 PDT
 ### Touched Files
 
 - `MASTER.md`
+- `HISTORY/README.md`
 - `HISTORY/Bullshit_Bible.md`
 - `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
