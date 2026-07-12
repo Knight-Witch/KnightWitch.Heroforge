@@ -2,6 +2,59 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-12-008 — Advanced Lighting Documentation Checkpoint
+
+Date: 2026-07-12
+Time: 14:08 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- current standalone probe sources: `HeroForge_Lighting_Probe_v0.1.0.txt`, `HeroForge_Lighting_Injection_Probe_v0.1.0.txt`, `HeroForge_Lighting_Injection_Probe_v0.2.0.txt`, and `HeroForge_Lighting_Injection_Probe_v0.3.0.txt`
+- current diagnostic reports for Injection Probe v0.1.0, v0.2.0, and v0.3.0
+- current user corrections: native SphereLight count changes were manual isolation toggles; Persistent Booth is not to be modified; Witch Dock is not proven to have caused the later shadow regression
+
+Connected modules reviewed:
+- `tools/Booth.js` documentation and known runtime responsibilities through `MASTER.md` and `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `manifest.json` loading rules through `MASTER.md`; no manifest change required
+- standalone probe lifecycle, custom object ownership, attachment path, target handling, shadow setup, cleanup, and report behavior
+
+Conflict risks:
+- No JavaScript files changed.
+- No userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, or runtime behavior changed.
+- Lighting probes remain standalone and unresolved; documentation must not classify them as live Witch Dock modules.
+- A second DirectionalLight is confirmed working, but shadow refresh remains unresolved.
+- A third SphereLight is counted but not visibly working; material counts must not be presented as proof of visible illumination.
+- The later shadow failure involved both Witch Dock compatibility testing and a canvas preset; do not attribute causation to Witch Dock or Persistent Booth without isolated evidence.
+- Persistent Booth remains live/working and separate from advanced lighting development.
+- Fresnel/rim lighting is queued only; no shader hook has been proven.
+
+Recommended action:
+- Proceed with a documentation-only checkpoint.
+- Add a dedicated lighting/shadow history file and inventory the standalone probes.
+- Add a durable rule requiring documentation checkpoints after meaningful validated findings, corrections, status changes, decisions, blockers, or probe milestones.
+- Batch trivial repeated observations, but update docs before starting the next material probe/code stage when current documentation is knowingly stale.
+- Continue DirectionalLight shadow-refresh diagnosis in standalone probes before any Witch Dock migration.
+
 ## PFC-2026-07-09-007 — Standalone Reference Inventory Backfill
 
 Date: 2026-07-09
