@@ -57,11 +57,11 @@ Detailed notes live in:
 Current status:
 - A second custom DirectionalLight is confirmed working for visible illumination, position, and intensity.
 - Independent visible custom DirectionalLight shadows are not confirmed; later controlled runs did not reproduce the initial v0.3 visual result.
-- HeroForge uses separate `additionalSunShadowMap` textures on at least two `HF.summonCircle` materials rather than directly using `sun.shadow.map` as those uniforms.
+- Probe v0.6.0 confirmed the two previously traced `additionalSunShadowMap` textures are ordinary static image textures for `summonCircle_shadow_512.webp` and `foliage_shadow_512.webp`, not dynamic native sun shadow render targets.
+- The native `sun.shadow.map`, native shadow matrix, material shadow bindings, traced resource identities, and those static texture diagnostics remained unchanged while the native sun was overridden and then restored.
 - Native visible sun shadows disappeared when the native sun was overwritten with probe state and returned when the original native sun state was restored.
-- The same native sun shadow-map object and the same two `additionalSunShadowMap` texture objects persisted through working -> broken -> restored states.
+- Strong current inference: direct light mutation changes illumination without regenerating the native shadow projection/map; restoring the original sun transform realigns the unchanged native shadow data.
 - A third custom SphereLight is counted by materials but does not visibly illuminate.
-- `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` is the current active diagnostic probe and has not yet been validated by a returned report at this checkpoint.
 - Camera-relative Fresnel/rim lighting is queued after the physical-light foundation stabilizes.
 - This is standalone sub-project work, not a live Witch Dock module.
 
@@ -69,6 +69,7 @@ Current rules:
 - Do not call the custom DirectionalLight a second sun.
 - Do not infer visible light contribution from material counts alone.
 - Do not treat an allocated shadow map as proof that character materials visibly consume it.
+- Do not treat `additionalSunShadowMap` as the native dynamic sun-shadow path merely because of its name; inspect the actual resource type and asset source.
 - Do not claim reliable visible custom DirectionalLight shadows from the initial v0.3 observation.
 - Do not blame or modify Persistent Booth without an isolated compatibility regression.
 - Keep physical DirectionalLight/SphereLight injection separate from future shader-based rim lighting.

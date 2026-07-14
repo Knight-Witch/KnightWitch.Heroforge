@@ -187,7 +187,7 @@ Known behavior / relevance:
 
 Rules:
 - Retain as the reference for stable shadow-resource object identity across working/broken/restored states.
-- Do not interpret stable object identity as proof that texture contents or hidden renderer state are unchanged.
+- v0.6 later identified the traced `additionalSunShadowMap` resources as static environment-shadow image textures, so do not treat v0.5's stable identities as evidence about the dynamic native sun shadow path.
 
 Related files:
 - `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
@@ -195,21 +195,30 @@ Related files:
 ### HeroForge Lighting Injection Probe v0.6.0
 
 Status:
-- Current active unresolved probe.
-- Created but not yet validated by a returned runtime report at the 2026-07-13 documentation checkpoint.
+- Historical diagnostic reference / completed static-shadow-resource correction milestone.
 
 Files:
 - `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`
 - `HeroForge_Lighting_Injection_Probe_v0.6.0_diff.txt`
+- Runtime report: `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json`
 
-Purpose / relevance:
-- Target `additionalSunShadowMap` texture state and backing-resource behavior.
-- Inspect texture/source/image identity, versions, dimensions, render-target relationships, and targeted owner references.
-- Compare the same working baseline -> broken override -> restored sequence.
+Known behavior / relevance:
+- Targeted the two persistent `additionalSunShadowMap` textures and their texture/source/image/backing-resource state.
+- Confirmed the first texture was a normal 512x512 image texture loaded from `/static/herobundles/background/summonCircle/summonCircle_shadow_512.webp?2=pv`.
+- Confirmed the second texture was a normal 512x512 image texture loaded from `/static/herobundles/background/foliage/foliage_shadow_512.webp?2=pv`.
+- Both remained ordinary `HTMLImageElement`-backed textures with stable UUIDs, version `1`, dimensions, asset paths, and material bindings through baseline -> native-sun override -> restore.
+- The native `sun.shadow.map`, native shadow matrix, material shadow states, detailed bindings, shadow-resource trace, and texture-diagnostic structures also remained unchanged while the native sun position/intensity/color changed and then returned to baseline.
+- The custom probe DirectionalLight still had no allocated shadow map in this run.
+
+Correction / interpretation:
+- The traced `additionalSunShadowMap` resources are static environment-shadow image assets, not the dynamic native sun shadow map or renderer-owned shadow render targets.
+- Strong current inference: directly mutating the native sun changes visible illumination without regenerating the native shadow projection/map. Restoring the original sun transform makes the unchanged shadow data spatially valid again, explaining why visible shadows return without a captured resource change.
 
 Rules:
-- Do not treat v0.6.0 as a validated result until its report is reviewed.
-- After the v0.6 result is documented, split the cumulative harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe.
+- Preserve v0.6 as the reference that closes the `additionalSunShadowMap` branch for dynamic sun-shadow diagnosis.
+- Do not continue treating `additionalSunShadowMap` as the target for custom DirectionalLight shadow generation.
+- Split the cumulative harness before further work.
+- The next focused Shadow Pipeline Probe should target the actual native `sun.shadow` update/render lifecycle and legitimate HeroForge lighting-state transitions.
 
 Related files:
 - `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
@@ -414,9 +423,9 @@ Rules:
 | Lighting Injection Probe v0.1.0 | Historical diagnostic reference | None directly | Preserve proof of second DirectionalLight and non-working counted SphereLight. |
 | Lighting Injection Probe v0.2.0 | Historical diagnostic reference | None directly | Preserve transform controls and post-attach-shadow control result. |
 | Lighting Injection Probe v0.3.0 | Standalone canonical / partial working reference | Future Advanced Lighting subsystem after stabilization | Preserve known-good second DirectionalLight injection; do not claim solved custom shadows. |
-| Lighting Injection Probe v0.4.0 | Historical diagnostic reference | Shadow-pipeline diagnostics | Preserve native-sun takeover/restore and `additionalSunShadowMap` discovery. |
-| Lighting Injection Probe v0.5.0 | Historical diagnostic reference | Shadow-pipeline diagnostics | Preserve stable shadow-resource identity findings. |
-| Lighting Injection Probe v0.6.0 | Current active unresolved probe | Shadow-pipeline diagnostics | Validate report, document result, then split cumulative harness. |
+| Lighting Injection Probe v0.4.0 | Historical diagnostic reference | Shadow-pipeline diagnostics | Preserve native-sun takeover/restore discovery. |
+| Lighting Injection Probe v0.5.0 | Historical diagnostic reference | Shadow-pipeline diagnostics | Preserve stable resource-identity findings, but interpret them through the v0.6 static-texture correction. |
+| Lighting Injection Probe v0.6.0 | Historical diagnostic reference / completed correction milestone | Shadow-pipeline diagnostics | Closes the traced `additionalSunShadowMap` branch; split the cumulative harness and target actual native `sun.shadow` refresh/update behavior next. |
 | Camera-Relative Rim Lighting Probe | Queued / unproven | Future shader/material subsystem | Start with read-only shader-hook discovery after DirectionalLight stabilization. |
 | Photo Mode PNG Series Probe v0.7 | Unresolved probe | Future visible tool or separated Booth subsection | Use as design/probe reference, not final code. |
 | Photo Booth `readPixels` probe | Unresolved probe | Future capture implementation detail | Keep as partial proof of booth pixel access. |

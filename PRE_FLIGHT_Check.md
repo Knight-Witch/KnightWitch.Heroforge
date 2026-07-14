@@ -2,6 +2,58 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-14-010 — Advanced Lighting Probe v0.6 Result Checkpoint
+
+Date: 2026-07-14
+Time: 16:40 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- prior Lighting Injection Probe v0.4.0 and v0.5.0 findings
+- `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`
+- `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json`
+- user-observed prior behavior that visible native sun shadows disappeared after native-sun override and returned after restore
+- project rules requiring documentation checkpoints before the next material probe/code stage
+
+Connected modules reviewed:
+- current standalone second-DirectionalLight reference status through `MASTER.md` and `HISTORY/STANDALONE_REFERENCES.md`
+- Persistent Booth separation through `MASTER.md` and existing lighting documentation
+- `manifest.json` loading rules through `MASTER.md`; no manifest change required
+- current shadow-probe scope and planned split into Lighting Injection Reference plus focused Shadow Pipeline Probe
+
+Conflict risks:
+- Documentation-only update.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- The `additionalSunShadowMap` name is misleading for this investigation: v0.6 identified the traced resources as static summon-circle/foliage shadow image assets, so older active wording must not continue implying that those textures are the dynamic native sun-shadow pipeline.
+- The explanation that unchanged shadow data becomes spatially invalid when the sun moves and valid again when restored is a strong inference, not yet a directly proven renderer call path.
+- Persistent Booth remains live/working and separate; no edit to `tools/Booth.js` is justified.
+- `Knight-Witch/HeroForge.Compatibility` remains out of scope.
+
+Recommended action:
+- Proceed with a documentation-only checkpoint.
+- Mark Injection Probe v0.6.0 as a completed diagnostic milestone rather than an unvalidated active probe.
+- Correct the `additionalSunShadowMap` interpretation in the canonical Advanced Lighting spec, project tracking, and standalone-reference docs.
+- Record that the next focused shadow investigation must target the actual native `sun.shadow` refresh/update lifecycle and legitimate HeroForge lighting-state transitions.
+- Split the cumulative lighting harness before the next material code/probe branch.
+
 ## PFC-2026-07-13-009 — Advanced Lighting v0.4-v0.6 Documentation Correction and Sub-Project Checkpoint
 
 Date: 2026-07-13
