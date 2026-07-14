@@ -8,7 +8,7 @@ This folder stores durable project memory that should survive chat boundaries, c
 - `DECISIONS.md`: durable project decisions and why they were made.
 - `STANDALONE_REFERENCES.md`: inventory of standalone scripts, external references, probes, deprecated scripts, and migration status.
 - `Bullshit_Bible.md`: index of HeroForge engine weirdness and fragile rules.
-- `BULLSHIT/`: topic-specific notes for recurring HeroForge behavior problems, including `LIGHTING_AND_SHADOWS.md` for the advanced-lighting investigation.
+- `BULLSHIT/`: topic-specific notes for recurring HeroForge behavior problems, including `LIGHTING_AND_EXTRA_LIGHTS.md` for the Advanced Lighting / Extra Lights sub-project.
 
 ## Documentation Checkpoints
 
