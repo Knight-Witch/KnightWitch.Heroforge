@@ -9,6 +9,7 @@ Time: 16:40 PDT
 
 - Updated `MASTER.md` with the validated v0.6 result, corrected shadow-path status, revised active tasks, migration notes, watch items, and rejected assumptions.
 - Updated `HISTORY/Bullshit_Bible.md` with the v0.6 correction that the traced `additionalSunShadowMap` textures are static environment-shadow image assets rather than the dynamic native sun-shadow path.
+- Updated `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md` with the complete v0.6 controlled-test result, corrected `additionalSunShadowMap` interpretation, revised shadow-pipeline diagnosis, probe-split scope, and next investigation order.
 - Updated `HISTORY/STANDALONE_REFERENCES.md` to mark Injection Probe v0.6.0 as a completed diagnostic correction milestone and record the exact static texture assets it identified.
 - Updated `HISTORY/SESSION_LOG.md` with the controlled v0.6 test sequence, results, correction, and next investigation target.
 - Updated `PRE_FLIGHT_Check.md` with the v0.6 result checkpoint, connected systems reviewed, conflict risks, and recommended next action.
@@ -26,6 +27,7 @@ Time: 16:40 PDT
 
 - `MASTER.md`
 - `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
 - `HISTORY/SESSION_LOG.md`
 - `PRE_FLIGHT_Check.md`
@@ -130,7 +132,7 @@ Time: 14:08 PDT
 ### Confirmed / Corrected Documentation
 
 - Confirmed a second custom DirectionalLight visibly renders and supports position and intensity changes.
-- Confirmed pre-attachment `castShadow: true` can allocate an independent custom shadow map and calculated matrix in Photo Booth.
+- Confirmed pre-attachment `castShadow: true` can allocate an independent custom shadow map and calculated shadow matrix in Photo Booth.
 - Documented the unresolved stale-shadow-matrix behavior after later movement/state changes.
 - Corrected the earlier assumption that `numDirLightShadows` must become `1`; visible custom shadows and an allocated map were observed while the inspected value remained `0`.
 - Corrected native SphereLight count interpretation: count reductions in the isolation test were caused by manual user toggles, not HeroForge lifecycle removal.
