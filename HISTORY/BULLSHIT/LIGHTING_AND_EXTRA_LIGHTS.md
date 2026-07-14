@@ -39,7 +39,7 @@ Current desired capability set:
 - target/aim controls;
 - intensity controls;
 - color controls;
-- reliable shadow behavior if HeroForge's shadow pipeline can be safely extended;
+- reliable shadow behavior if HeroForge's actual shadow pipeline can be safely extended;
 - later investigation of additional light families where practical;
 - later camera-relative rim lighting as a separate shader/material path.
 
@@ -71,8 +71,10 @@ Includes:
 - native sun shadow behavior;
 - generic DirectionalLight shadow objects;
 - Photo Booth shadow allocation;
-- `additionalSunShadowMap` resources;
-- renderer-owned shadow refresh/update paths.
+- actual native `sun.shadow` update/render lifecycle;
+- legitimate HeroForge lighting-state transitions that refresh shadow data.
+
+The `additionalSunShadowMap` branch is no longer the active dynamic-shadow target. Probe v0.6 identified the traced resources as static environment-shadow image assets.
 
 ### Camera-Relative Rim Lighting
 
@@ -102,14 +104,18 @@ Rules:
 - HeroForge material configuration can count the custom DirectionalLight as an additional directional light.
 - A third injected SphereLight can be counted by material light configuration.
 - That third SphereLight still does not visibly illuminate, even when native orb lights are manually disabled and it is the only registered SphereLight.
-- HeroForge uses a special `additionalSunShadowMap` path on at least two `HF.summonCircle` materials.
-- Those `additionalSunShadowMap` textures are separate objects from the native `sun.shadow.map`.
-- Copying the probe DirectionalLight state onto the native HeroForge sun caused the visible native sun shadows to disappear in testing.
-- Restoring the original native sun state caused the visible sun shadows to return.
-- The same native `sun.shadow.map` object persisted through baseline -> broken override -> restored state.
-- The same two `additionalSunShadowMap` texture objects also persisted through baseline -> broken override -> restored state.
+- Copying probe DirectionalLight state onto the native HeroForge sun caused the visible native sun shadows to disappear in controlled testing.
+- Restoring the original native sun state caused the visible native sun shadows to return.
+- The native `sun.shadow.map` object and native shadow matrix remained unchanged while the sun was overridden and then restored in the v0.6 run.
+- The two previously traced `additionalSunShadowMap` textures are normal 512x512 image textures loaded from:
+  - `/static/herobundles/background/summonCircle/summonCircle_shadow_512.webp?2=pv`
+  - `/static/herobundles/background/foliage/foliage_shadow_512.webp?2=pv`
+- Those two textures remained ordinary `HTMLImageElement`-backed textures with stable UUIDs, version `1`, dimensions, asset paths, and material bindings through baseline -> override -> restore.
+- Material shadow states, detailed bindings, traced resource identities, and captured texture-diagnostic structures were unchanged through the same v0.6 comparison sequence.
 
 ### Corrected / No Longer Claimed
+
+#### Independent custom DirectionalLight shadows
 
 The earlier v0.3 result was initially treated as proof that an independent custom DirectionalLight produced visible custom shadows.
 
@@ -128,11 +134,51 @@ Current rule:
 - visible independent custom DirectionalLight shadowing remains unproven and currently appears non-working;
 - do not describe the v0.3 run as a solved shadow implementation.
 
+#### `additionalSunShadowMap` as the dynamic native sun-shadow path
+
+The v0.4-v0.5 branch treated the two `additionalSunShadowMap` resources as possible dynamic native sun-shadow textures because:
+
+- they were bound to materials with `additionalSunShadow: true`;
+- they were separate from `sun.shadow.map`;
+- their identities persisted while visible native shadow state changed.
+
+Probe v0.6 corrected that interpretation.
+
+The traced resources are ordinary static environment-shadow image textures for the summon circle and foliage. They are not renderer-owned dynamic sun-shadow render targets.
+
+Current rule:
+
+- do not continue the dynamic sun-shadow investigation through those two `additionalSunShadowMap` textures;
+- do not infer resource purpose from the uniform name alone;
+- inspect the actual asset path, resource type, source, and backing object before classifying a shadow-related uniform.
+
+### Strong Current Inference
+
+The v0.6 comparison produced a simpler explanation for the native shadow loss/recovery:
+
+1. Native sun begins at its normal transform with visible shadows.
+2. The probe directly changes native sun position, target, intensity, and color.
+3. Visible illumination changes.
+4. The captured native `sun.shadow.map` and shadow matrix do not change.
+5. Visible shadows disappear.
+6. The probe restores the original native sun transform/state.
+7. The same unchanged native shadow data is spatially valid again and visible shadows return.
+
+Strong inference:
+
+- direct native-sun mutation changes lighting without triggering the shadow refresh/update path;
+- the shadow data remains calculated for the original sun state;
+- moving the sun makes that shadow projection/map stale or spatially mismatched;
+- restoring the original sun state realigns the light with the unchanged shadow data.
+
+This is not yet direct proof of the exact renderer method or HeroForge controller that performs a legitimate shadow refresh.
+
 ### Unresolved
 
-- The actual HeroForge update routine that regenerates or validates visible sun shadows.
-- Whether `additionalSunShadowMap` texture contents are rerendered in place while object identity remains stable.
-- Whether a stable second independent shadow-producing DirectionalLight can be integrated without replacing the native sun path.
+- The actual HeroForge method/state transition that recalculates the native `sun.shadow` matrix and regenerates its map.
+- Which legitimate HeroForge UI or controller action triggers that refresh.
+- Whether a custom second DirectionalLight can be enrolled in that refresh/render pipeline.
+- Whether a stable second independent shadow-producing DirectionalLight is practical without shader/render-pipeline modification.
 - Why the third SphereLight is counted but visually inactive.
 - Editor-specific target refresh behavior.
 - Additional light-family viability beyond the currently tested DirectionalLight and SphereLight paths.
@@ -157,7 +203,7 @@ Purpose:
 - locate active lighting roots;
 - inspect material light counts;
 - inspect bundle support;
-- export JSON without intentionally mutating the scene.
+- export diagnostic JSON without intentionally mutating the scene.
 
 Rule:
 
@@ -243,15 +289,15 @@ Key findings:
 - restoring the original native sun state restored visible shadows;
 - the logged native `sun.shadow.matrix` remained unchanged through the mutation/restore sequence.
 
-Interpretation:
+Historical interpretation:
 
-- directly mutating the DirectionalLight object is not sufficient to reproduce HeroForge's visible shadow-update pipeline.
+- direct DirectionalLight object mutation was not sufficient to reproduce a working moving native-shadow result.
 
 ### HeroForge Lighting Injection Probe v0.5.0
 
 Status:
 
-- Current completed shadow-resource tracing milestone.
+- Historical diagnostic reference / resource-identity tracing milestone.
 
 Added:
 
@@ -266,33 +312,55 @@ Confirmed findings:
 - direct material owners were found at:
   - `HF.summonCircle.children[0].material.uniforms.additionalSunShadowMap.value`
   - `HF.summonCircle.children[1].material.uniforms.additionalSunShadowMap.value`
-- the broad graph scan reached its `20000` node ceiling;
-- object identity and binding changes do not explain the visible shadow loss/recovery.
+- the broad graph scan reached its `20000` node ceiling.
 
-Current inference:
+Correction from v0.6:
 
-- HeroForge may rerender or rewrite the contents of persistent texture objects;
-- alternatively, a hidden renderer/controller state determines whether those persistent textures are valid/used.
+- the two traced `additionalSunShadowMap` objects were static environment-shadow image textures, so their stable identities do not describe the unresolved dynamic native sun-shadow path.
 
 ### HeroForge Lighting Injection Probe v0.6.0
 
 Status:
 
-- Current active diagnostic probe.
-- Created, not yet validated by a returned runtime report at this checkpoint.
+- Historical diagnostic reference / completed static-shadow-resource correction milestone.
 
-Purpose:
+Files:
 
-- inspect `additionalSunShadowMap` texture state;
-- inspect texture version and update state;
-- inspect source/image identity and dimensions;
-- inspect render-target/backing-resource relationships;
-- trace the texture, source, source data, and image/backing object separately;
-- compare the same working baseline -> broken override -> restored sequence.
+- `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`
+- `HeroForge_Lighting_Injection_Probe_v0.6.0_diff.txt`
+- runtime report: `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json`
 
-Rule:
+Test sequence:
 
-- do not treat v0.6.0 as a validated result until its report is reviewed.
+1. Enter Photo Booth with native sun shadows visible.
+2. Inject the custom DirectionalLight with pre-attach shadows.
+3. Make no other manual light/target/intensity/preset changes.
+4. Run the native-sun shadow comparison round.
+5. Capture baseline -> override -> restore snapshots.
+6. Download the report.
+
+Report status:
+
+- no recorded errors.
+
+Confirmed results:
+
+- custom DirectionalLight remained attached and visibly counted as a second directional light;
+- custom DirectionalLight shadow map remained null in this run;
+- native `sun.shadow.map` object remained the same;
+- native shadow matrix remained byte-for-byte unchanged;
+- material shadow-state structures remained unchanged;
+- detailed material binding structures remained unchanged;
+- traced shadow-resource identities remained unchanged;
+- two `additionalSunShadowMap` textures were identified as static 512x512 HTML image textures:
+  - summon circle shadow image;
+  - foliage shadow image;
+- their UUIDs, version `1`, dimensions, asset paths, and bindings remained unchanged through the full comparison.
+
+Conclusion:
+
+- the `additionalSunShadowMap` branch is closed for dynamic native sun-shadow diagnosis;
+- the next shadow probe must focus on the actual native `sun.shadow` update/render lifecycle.
 
 ## Runtime Lighting Structure
 
@@ -372,7 +440,7 @@ A cloned custom DirectionalLight can:
 
 Do not call it a second sun.
 
-HeroForge's native sun has additional sun-specific systems and a special visible-shadow path that are not automatically duplicated by cloning the DirectionalLight.
+HeroForge's native sun has additional shadow/update systems that are not automatically duplicated by cloning the DirectionalLight.
 
 ### Position
 
@@ -422,26 +490,42 @@ The native sun has:
 - a `sun.shadow.map` render target;
 - a calculated shadow matrix.
 
-However, visible character shadowing is not explained by that object alone.
+In the v0.6 controlled comparison:
 
-### `additionalSunShadowMap`
+- the native sun transform/intensity/color changed;
+- the native shadow-map object did not change;
+- the native shadow matrix did not change;
+- visible shadows disappeared during the override and returned after restore.
+
+This strongly indicates that direct property mutation does not trigger the native shadow refresh/update path.
+
+### `additionalSunShadowMap` — Static Environment Asset Correction
 
 At least two `HF.summonCircle` materials use:
 
 - `additionalSunShadow: true`;
 - a singular `additionalSunShadowMap` texture uniform.
 
-Important findings:
+Probe v0.6 identified the actual resources:
 
-- the two `additionalSunShadowMap` textures are distinct from `sun.shadow.map`;
-- their JavaScript object identities remained stable across working/broken/restored states;
-- their direct material uniform owner paths remained stable;
-- visible shadow state can change without replacing these texture objects.
+1. `summonCircle_shadow_512.webp`
+2. `foliage_shadow_512.webp`
 
-Current inference:
+Properties observed:
 
-- the persistent textures may be regenerated in place;
-- or another hidden state controls whether their current contents are valid/used.
+- ordinary texture objects;
+- `isTexture: true`;
+- not identified as render-target textures;
+- HTML image backing;
+- 512x512 dimensions;
+- version `1`;
+- stable asset paths and bindings.
+
+Conclusion:
+
+- these are static environment-shadow images for summon-circle/foliage rendering;
+- they are not the dynamic native sun shadow map we need to refresh;
+- the earlier `additionalSunShadowMap` investigation was a useful elimination branch but is no longer the active target.
 
 ### Native Sun Override / Restore Result
 
@@ -453,15 +537,24 @@ Observed sequence:
 4. Probe restores the original native sun state.
 5. Visible sun shadows return.
 
-Confirmed from diagnostics:
+Confirmed from v0.6 diagnostics:
 
 - the native sun object itself was not replaced;
 - `sun.shadow.map` object identity remained stable;
-- the two `additionalSunShadowMap` texture identities remained stable.
+- the native shadow matrix remained unchanged;
+- captured material shadow states and bindings remained unchanged;
+- the two traced `additionalSunShadowMap` resources were static environment images and remained unchanged.
 
-This proves that object replacement is not required for visible shadow loss/recovery.
+Strong current inference:
 
-It does not yet identify the hidden update mechanism.
+- the shadow data is stale relative to the moved sun;
+- restoring the sun returns the light to the transform for which the unchanged shadow data is valid.
+
+Next diagnostic requirement:
+
+- identify a legitimate HeroForge action that changes sun direction/position and also visibly updates shadows;
+- capture the native `sun.shadow` object before/during/after that legitimate update;
+- identify the method, controller state, renderer invalidation, or render-loop condition that changes when a real refresh occurs.
 
 ## Custom Directional Shadows
 
@@ -553,6 +646,8 @@ Current rule:
 - canvas presets are a confounding variable in lighting tests;
 - do not attribute a regression to Witch Dock when a preset changed in the same test sequence.
 
+A future focused shadow probe should treat a legitimate preset/UI lighting change as a possible source of the real native shadow-refresh call path, but only in a controlled probe where the exact changed state is captured.
+
 ### Witch Dock / Persistent Booth
 
 Current status:
@@ -573,7 +668,7 @@ Rule:
 
 The cumulative injection probe has grown too large and exposes obsolete historical actions in the Tampermonkey menu.
 
-After the v0.6 diagnostic result is reviewed, split the work into two standalone scripts.
+The v0.6 diagnostic result is now documented. The split should happen before the next material probe branch.
 
 ### 1. Lighting Injection Reference
 
@@ -603,13 +698,21 @@ Purpose:
 
 Keep only what is needed for:
 
-- native sun baseline/override/restore comparison;
-- `additionalSunShadowMap` tracing;
-- texture/source/image/backing-resource diagnostics;
-- renderer/controller lifecycle probing;
-- targeted report export.
+- native sun baseline capture;
+- controlled direct-mutation comparison when useful;
+- native `sun.shadow` map/matrix/camera state;
+- targeted renderer/controller lifecycle probing;
+- observation of legitimate HeroForge lighting changes that actually refresh visible shadows;
+- focused report export.
 
-This split should occur only after the current v0.6 result is documented so no diagnostic history is lost.
+Do not carry forward:
+
+- SphereLight injection;
+- unrelated position/intensity menus;
+- obsolete reattach experiments;
+- `additionalSunShadowMap` texture tracing as the primary dynamic-shadow target.
+
+The two static `additionalSunShadowMap` assets may remain documented as eliminated paths, but they do not need active probe controls.
 
 ## Witch Dock Migration Plan
 
@@ -618,13 +721,14 @@ Do not migrate while the physical-light foundation is still changing.
 Recommended sequence:
 
 1. Preserve a compact standalone Lighting Injection Reference.
-2. Resolve or explicitly scope the shadow limitation.
-3. Re-test the reference against current Witch Dock without modifying Persistent Booth.
-4. Define the minimum user-facing control set.
-5. Add a separate visible lighting module under `/tools/`, intended to register into the Booth tab.
-6. Add a manifest entry only when the module is ready for Witch Dock Dev testing.
-7. Test standalone reference vs Witch Dock-integrated behavior for parity.
-8. Keep shadow-pipeline code isolated from ordinary light controls where practical.
+2. Isolate the focused Shadow Pipeline Probe.
+3. Determine whether the native shadow refresh mechanism can safely support a second DirectionalLight, or explicitly scope custom shadows out.
+4. Re-test the compact injection reference against current Witch Dock without modifying Persistent Booth.
+5. Define the minimum user-facing control set.
+6. Add a separate visible lighting module under `/tools/`, intended to register into the Booth tab.
+7. Add a manifest entry only when the module is ready for Witch Dock Dev testing.
+8. Test standalone reference vs Witch Dock-integrated behavior for parity.
+9. Keep shadow-pipeline code isolated from ordinary light controls where practical.
 
 Candidate eventual module:
 
@@ -671,13 +775,14 @@ Rule:
 
 ## Current Investigation Order
 
-1. Run and analyze `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`.
-2. Determine whether the persistent `additionalSunShadowMap` textures change version/source/image/backing state across working -> broken -> restored states.
-3. Identify the renderer/controller path that refreshes or validates the visible native sun shadows.
-4. Decide whether an independent second shadow-producing DirectionalLight is realistically extendable or whether the native sun path is effectively singular.
-5. Split the cumulative probe into the compact Lighting Injection Reference and focused Shadow Pipeline Probe.
-6. Retest the compact injection reference beside Witch Dock without editing Persistent Booth.
-7. Only after physical-light behavior is stable, begin a read-only rim-light shader probe.
+1. Split the cumulative injection harness into the compact Lighting Injection Reference and focused Shadow Pipeline Probe.
+2. Preserve v0.3-era known-good second DirectionalLight injection behavior in the reference without carrying obsolete diagnostic menus forward.
+3. In the focused shadow probe, capture the actual native `sun.shadow` map/matrix/camera before and after a legitimate HeroForge lighting change that visibly updates shadows.
+4. Identify the renderer/controller method, invalidation state, or render-loop condition that changes when native shadows genuinely refresh.
+5. Test whether that same refresh path can be invoked safely after moving the custom DirectionalLight or a separately cloned shadow-casting DirectionalLight.
+6. Decide whether independent second-light shadows are realistically extendable or should be explicitly scoped out.
+7. Retest the compact injection reference beside Witch Dock without editing Persistent Booth.
+8. Only after physical-light behavior is stable, begin a read-only rim-light shader probe.
 
 ## Do Not Repeat
 
@@ -686,6 +791,8 @@ Rule:
 - Do not claim reliable visible custom DirectionalLight shadows based on the initial v0.3 visual observation.
 - Do not call the custom DirectionalLight a second sun.
 - Do not hard-code runtime UUIDs or one numeric scene path.
+- Do not infer a dynamic renderer role from a shadow-related uniform name without inspecting the actual resource type and asset source.
+- Do not continue targeting the two static `additionalSunShadowMap` image assets as the dynamic native sun-shadow path.
 - Do not blame Witch Dock or Persistent Booth without an isolated test.
 - Do not modify Persistent Booth merely because Advanced Lighting will eventually appear under the Booth tab.
 - Do not mix Fresnel rim-lighting experiments into the physical light-injection reference.
