@@ -2,6 +2,68 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-13-009 — Advanced Lighting v0.4-v0.6 Documentation Correction and Sub-Project Checkpoint
+
+Date: 2026-07-13
+Time: 19:12 PDT
+
+Target files:
+- `MASTER.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md` -> renamed/replaced by `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/BULLSHIT/DECAL_SLOT_SWAPPER.md` as the existing dedicated sub-project/spec pattern
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- standalone lighting probe sources through `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`
+- Injection Probe v0.4.0 and v0.5.0 runtime reports
+- current user correction that visible native sun shadows returned after the native sun state was restored
+- current user direction that `Knight-Witch/HeroForge.Compatibility` is a separate Lob-script stabilization/refactor project and must not be used for this lighting work
+- uploaded coding rules and project rules requiring milestone-based GitHub documentation
+
+Connected modules reviewed:
+- `tools/Booth.js` responsibilities and Persistent Booth separation through `MASTER.md`, `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`, and existing decisions
+- `manifest.json` loading rules through `MASTER.md`; no manifest change required
+- current standalone lighting probe lifecycle and reference status through source/report history
+- existing Decal Slot Swapper documentation structure to avoid creating a redundant second project-plan document
+
+Conflict risks:
+- Documentation-only update.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md` is being replaced by the broader `LIGHTING_AND_EXTRA_LIGHTS.md`; every active documentation reference must be updated in the same logical checkpoint.
+- Earlier documentation overstated the v0.3 custom-shadow result. The active claim must be corrected: independent visible custom DirectionalLight shadows are not confirmed.
+- v0.6.0 is created but not yet validated by a returned runtime report; it must remain explicitly unvalidated.
+- Persistent Booth remains live/working and separate; no edit to `tools/Booth.js` is justified.
+- Advanced Lighting may eventually register controls under the Booth tab, but experimental lighting runtime logic should remain a separate module/subsystem.
+- `Knight-Witch/HeroForge.Compatibility` is out of scope and must not be touched.
+
+Recommended action:
+- Proceed with a documentation-only checkpoint.
+- Replace `LIGHTING_AND_SHADOWS.md` with `LIGHTING_AND_EXTRA_LIGHTS.md` as the canonical Advanced Lighting / Extra Lights sub-project spec and technical history.
+- Do not create a second overlapping sub-project plan file; mirror the Decal Slot Swapper pattern by keeping status, goal, architecture, probe strategy, risks, and migration order in the dedicated topic/spec file.
+- Update the master tracker, standalone reference inventory, decisions, session log, history index, Bullshit Bible, pre-flight log, and changelog.
+- Record v0.4-v0.5 findings and v0.6 current unvalidated status.
+- After v0.6 is tested and documented, split the cumulative harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe before the next major diagnostic branch.
+
 ## PFC-2026-07-12-008 — Advanced Lighting Documentation Checkpoint
 
 Date: 2026-07-12
