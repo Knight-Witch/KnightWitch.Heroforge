@@ -2,6 +2,17 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-14 — Advanced Lighting Probe v0.6 Result
+
+- Target: determine whether the two persistent `additionalSunShadowMap` textures changed internally across working baseline -> broken native-sun override -> restored native state.
+- Action: analyzed `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json` after a controlled Photo Booth run using pre-attach DirectionalLight injection followed only by the native-sun shadow comparison round.
+- Result: the two traced `additionalSunShadowMap` textures were identified as ordinary static 512x512 HTML image textures loaded from `summonCircle_shadow_512.webp` and `foliage_shadow_512.webp`. Their UUIDs, versions, image dimensions, asset paths, material bindings, and other captured backing state remained unchanged through baseline, override, and restore.
+- Result: the native `sun.shadow.map`, native shadow matrix, material shadow states, detailed bindings, shadow-resource trace, and texture-diagnostic structures also remained unchanged while the native sun position/intensity/color changed and then returned to baseline.
+- Correction: the `additionalSunShadowMap` path is not the dynamic native sun-shadow target for this investigation; the name led the earlier probe branch toward static environment shadow textures.
+- Current inference: direct mutation of the native sun changes visible illumination without regenerating the native shadow projection/map. When the sun is restored to its original transform, the unchanged shadow data is spatially valid again, explaining why visible shadows return without any logged shadow-resource change.
+- Test notes: probe runtime only; no Witch Dock, Persistent Booth, manifest, or repo JavaScript changed.
+- Follow-up: preserve the known-good second DirectionalLight injection reference, then focus the shadow probe on the actual native `sun.shadow` update/render path and the mechanism HeroForge uses to recalculate it after legitimate native lighting changes.
+
 ## 2026-07-13 — Advanced Lighting v0.4-v0.6 Documentation Checkpoint
 
 - Target: correct the stale Advanced Lighting documentation after probe work continued beyond the July 12 v0.3 checkpoint.
