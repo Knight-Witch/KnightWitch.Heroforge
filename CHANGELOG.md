@@ -1,5 +1,52 @@
 # Changelog
 
+## DOCS-2026-07-14-010 — Advanced Lighting Probe v0.6 Static Shadow Texture Correction
+
+Date: 2026-07-14
+Time: 16:40 PDT
+
+### Changed
+
+- Updated `MASTER.md` with the validated v0.6 result, corrected shadow-path status, revised active tasks, migration notes, watch items, and rejected assumptions.
+- Updated `HISTORY/Bullshit_Bible.md` with the v0.6 correction that the traced `additionalSunShadowMap` textures are static environment-shadow image assets rather than the dynamic native sun-shadow path.
+- Updated `HISTORY/STANDALONE_REFERENCES.md` to mark Injection Probe v0.6.0 as a completed diagnostic correction milestone and record the exact static texture assets it identified.
+- Updated `HISTORY/SESSION_LOG.md` with the controlled v0.6 test sequence, results, correction, and next investigation target.
+- Updated `PRE_FLIGHT_Check.md` with the v0.6 result checkpoint, connected systems reviewed, conflict risks, and recommended next action.
+
+### Confirmed / Corrected Documentation
+
+- Confirmed the two traced `additionalSunShadowMap` textures are ordinary 512x512 `HTMLImageElement`-backed textures loaded from `summonCircle_shadow_512.webp` and `foliage_shadow_512.webp`.
+- Confirmed those texture UUIDs, versions, dimensions, asset paths, and material bindings remained unchanged through baseline -> native-sun override -> restore.
+- Confirmed the native `sun.shadow.map`, native shadow matrix, material shadow states, detailed bindings, resource trace, and captured texture-diagnostic structures also remained unchanged while the native sun position/intensity/color changed and then returned to baseline.
+- Corrected the earlier working hypothesis that the traced `additionalSunShadowMap` resources might be the dynamic visible native sun-shadow textures.
+- Recorded the strong current inference that direct native-sun mutation changes visible illumination without regenerating the native shadow projection/map; restoring the original sun transform realigns the unchanged shadow data, explaining why visible shadows return without a captured shadow-resource change.
+- Recorded that the next focused Shadow Pipeline Probe should target the actual native `sun.shadow` update/render lifecycle and legitimate HeroForge lighting-state transitions.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only checkpoint and correction.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- Rolling back would restore the superseded interpretation that the traced `additionalSunShadowMap` textures might be part of the unresolved dynamic native sun-shadow pipeline.
+
+### Test Notes
+
+- Runtime evidence came from `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json`.
+- Controlled sequence: enter Photo Booth with native shadows visible, inject the custom DirectionalLight with pre-attach shadows, run only the native-sun shadow comparison round, and download the report.
+- Probe report contained no recorded errors.
+- No Witch Dock or Persistent Booth runtime test was part of this checkpoint.
+
 ## DOCS-2026-07-13-009 — Advanced Lighting v0.4-v0.6 Documentation Correction
 
 Date: 2026-07-13
