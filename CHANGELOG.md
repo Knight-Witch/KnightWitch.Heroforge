@@ -1,5 +1,65 @@
 # Changelog
 
+## DOCS-2026-07-13-009 — Advanced Lighting v0.4-v0.6 Documentation Correction
+
+Date: 2026-07-13
+Time: 19:12 PDT
+
+### Added
+
+- Added `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md` as the canonical combined sub-project specification and technical history for Advanced Lighting / Extra Lights.
+- Added a durable probe-cleanup plan: after the v0.6 diagnostic result is reviewed, split the cumulative harness into a compact Lighting Injection Reference and a focused Shadow Pipeline Probe.
+- Added the future integration direction: a separate `/tools/` lighting module intended to register into the Booth tab while keeping experimental lighting runtime logic separate from `tools/Booth.js` and Persistent Booth.
+
+### Changed
+
+- Replaced the narrower `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md` documentation model with `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md` so one dedicated file tracks project goals, architecture, probe history, current findings, risks, migration order, and future rim-light work.
+- Updated `MASTER.md` with current Advanced Lighting status through Injection Probe v0.5.0, v0.6.0's current unvalidated diagnostic status, the future Booth-tab module direction, current tasks, migration queue, blockers, and rejected assumptions.
+- Updated `HISTORY/README.md` and `HISTORY/Bullshit_Bible.md` to point to the renamed sub-project/spec file and corrected active shadow conclusions.
+- Updated `HISTORY/STANDALONE_REFERENCES.md` with Injection Probe v0.4.0, v0.5.0, and v0.6.0 inventory/status entries and corrected v0.3's role.
+- Updated `HISTORY/DECISIONS.md` with the one-spec-file sub-project structure, future separate Booth-tab module direction, and planned split of the cumulative probe harness.
+- Updated `HISTORY/SESSION_LOG.md` with the stale-documentation correction and v0.4-v0.6 checkpoint.
+- Updated `PRE_FLIGHT_Check.md` with target files, history reviewed, connected systems, conflict risks, out-of-scope repository boundary, and recommended action.
+
+### Confirmed / Corrected Documentation
+
+- Corrected the earlier active claim that v0.3 had proven reliable visible independent custom DirectionalLight shadows. Later controlled v0.4-v0.5 runs did not reproduce that visual result; independent visible custom shadows remain unconfirmed and currently appear non-working.
+- Confirmed v0.4 found at least two `HF.summonCircle` materials using `additionalSunShadow: true` with `additionalSunShadowMap` textures distinct from the native `sun.shadow.map`.
+- Confirmed that copying probe state onto the native sun caused visible native shadows to disappear and restoring the original native sun state caused visible shadows to return.
+- Confirmed v0.5 retained the same native `sun.shadow.map` object and the same two `additionalSunShadowMap` texture objects across working baseline -> broken override -> restored state.
+- Confirmed the direct material owners of the observed `additionalSunShadowMap` textures at `HF.summonCircle.children[0/1].material.uniforms.additionalSunShadowMap.value`.
+- Recorded `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` as the current active diagnostic probe for texture/source/image/backing-resource state, but explicitly not yet validated by a returned runtime report at this checkpoint.
+- Preserved the confirmed second DirectionalLight behavior and the confirmed visually non-working but material-counted third SphereLight result.
+- Preserved Persistent Booth as live/working and separate; no change to `tools/Booth.js` is justified by this investigation.
+- Explicitly kept `Knight-Witch/HeroForge.Compatibility` out of scope for this work; it belongs to the separate Lob third-party script stabilization/refactor project.
+
+### Touched Files
+
+- `MASTER.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md` (removed/replaced)
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md` (added)
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only checkpoint and correction.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- Rolling back would restore the stale v0.3-only lighting documentation, the older filename, and the superseded custom-shadow claim.
+
+### Test Notes
+
+- Not applicable. Documentation-only update.
+- Documentation was cross-checked against the current standalone probe history, the v0.4.0 and v0.5.0 diagnostic reports, the current v0.6.0 source status, and the user's visual observation that native sun shadows returned after restore.
+
 ## DOCS-2026-07-12-008 — Advanced Lighting Investigation Checkpoint
 
 Date: 2026-07-12
@@ -90,7 +150,7 @@ Time: 18:44 PDT
 - No JavaScript files changed.
 - No `manifest.json` changes.
 - No runtime behavior affected.
-- Reference statuses can be refined later as exact external script filenames/sources are recovered.
+- Reference statuses can be refined later as more source files are recovered.
 
 ### Test Notes
 
