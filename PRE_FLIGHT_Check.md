@@ -10,6 +10,7 @@ Time: 16:40 PDT
 Target files:
 - `MASTER.md`
 - `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
 - `HISTORY/SESSION_LOG.md`
 - `PRE_FLIGHT_Check.md`
@@ -49,7 +50,7 @@ Conflict risks:
 Recommended action:
 - Proceed with a documentation-only checkpoint.
 - Mark Injection Probe v0.6.0 as a completed diagnostic milestone rather than an unvalidated active probe.
-- Correct the `additionalSunShadowMap` interpretation in project tracking and standalone-reference docs.
+- Correct the `additionalSunShadowMap` interpretation in the canonical Advanced Lighting spec, project tracking, and standalone-reference docs.
 - Record that the next focused shadow investigation must target the actual native `sun.shadow` refresh/update lifecycle and legitimate HeroForge lighting-state transitions.
 - Split the cumulative lighting harness before the next material code/probe branch.
 
