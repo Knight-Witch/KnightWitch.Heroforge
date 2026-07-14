@@ -68,7 +68,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
-| Planned | TBD | Advanced Lighting / Extra Lights | Investigating / unresolved | Second custom DirectionalLight works. Independent visible custom shadows are not confirmed. Native shadow-pipeline tracing is active through Injection Probe v0.6.0; third SphereLight remains visually non-working. |
+| Planned | TBD | Advanced Lighting / Extra Lights | Investigating / unresolved | Second custom DirectionalLight works. Probe v0.6 ruled out the traced `additionalSunShadowMap` textures as the dynamic native sun-shadow path; actual native shadow refresh/update remains unresolved. Third SphereLight remains visually non-working. |
 | Planned | TBD | Camera-Relative Rim Lighting | Queued / unproven | Fresnel/shader-based rim effect queued after the physical-light foundation stabilizes. Separate from physical light injection. |
 | Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | High-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
 | Planned | TBD | Decal Slot Swapper | Investigating / unresolved | Move/swap decals between slots without reapplying the decal, manually copying coordinates/transforms, or recoloring. Candidate target: Witch Dock panel, native Decals UI injection, or both. |
@@ -189,15 +189,16 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Not currently live in `manifest.json` or Witch Dock.
 - Dedicated sub-project spec and technical history: `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`.
 - Compact partial working reference for second DirectionalLight injection: `HeroForge_Lighting_Injection_Probe_v0.3.0.txt`.
-- Current active diagnostic probe: `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`; created but not yet validated by a returned report at this checkpoint.
+- Latest completed diagnostic milestone: `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` with report `HF_Lighting_Injection_Probe_v0.6.0_2026-07-14T23-37-19-231Z.json`.
 - Confirmed: a second custom DirectionalLight visibly renders, moves, changes intensity, and survives normal editor <-> Photo Booth transitions in standalone testing.
 - Corrected: reliable visible independent custom DirectionalLight shadows are not confirmed. Later controlled tests did not reproduce the initial v0.3 visual result.
-- Confirmed: HeroForge uses separate `additionalSunShadowMap` textures on at least two `HF.summonCircle` materials.
-- Confirmed: visible native sun shadows disappeared when the native sun was overwritten with probe state and returned when the original native state was restored.
-- Confirmed: the same native `sun.shadow.map` object and the same two `additionalSunShadowMap` texture objects persisted through working -> broken -> restored states.
-- Unresolved: the hidden renderer/controller path that refreshes or validates visible sun shadows.
+- Corrected by v0.6: the two traced `additionalSunShadowMap` textures are static environment-shadow image assets (`summonCircle_shadow_512.webp` and `foliage_shadow_512.webp`), not the dynamic native sun shadow map or renderer-owned shadow targets.
+- Confirmed by v0.6: the static texture versions/backing images, native `sun.shadow.map`, native shadow matrix, material shadow states, detailed bindings, and traced resource identities remained unchanged across baseline -> native-sun override -> restore.
+- Observed: visible native sun shadows disappeared when the native sun was overwritten with probe state and returned when the original native state was restored.
+- Strong current inference: direct mutation changes the sun's visible illumination without regenerating the native shadow projection/map; restoring the original sun transform realigns the unchanged shadow data and makes the shadows visible again.
+- Unresolved: the actual update/render mechanism that regenerates the native sun shadow map/matrix after a legitimate HeroForge lighting change.
 - Unresolved: a third custom SphereLight is counted by materials but does not visibly illuminate, even when it is the only registered SphereLight.
-- Current priority: run/analyze v0.6 backing-resource diagnostics, checkpoint the result, then split the cumulative harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe.
+- Current priority: split the cumulative harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe, then make the shadow probe target the actual native `sun.shadow` refresh/update path rather than the static `additionalSunShadowMap` assets.
 - Eventual integration direction: a separate `/tools/` lighting module registering into the Booth tab, not experimental lighting logic merged into `tools/Booth.js`.
 - Persistent Booth remains separate and unchanged unless an isolated compatibility regression proves a concrete integration requirement.
 
@@ -256,8 +257,8 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Backfill project history from previous chats.
 - Keep `HISTORY/STANDALONE_REFERENCES.md` current as standalone/probe sources are recovered or created.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
-- Run and analyze `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`, then checkpoint the result before the next material lighting probe/code stage.
-- Split the cumulative lighting harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe after the v0.6 result is documented.
+- Split the cumulative lighting harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe now that the v0.6 result is documented.
+- Focus the next shadow probe on the actual native `sun.shadow` refresh/update mechanism and legitimate HeroForge lighting-state transitions, not the static `additionalSunShadowMap` environment assets.
 - After the physical-light foundation stabilizes, run a read-only shader-hook probe for camera-relative Fresnel/rim lighting.
 - Add deeper old-chat recovery notes for Booth minor fixes/effects edge cases, bones/kitbashing, JSON/library, and remaining standalone references.
 - Investigate Photo Mode PNG Series Capture using existing probe history and the dedicated feature spec before writing new implementation.
@@ -270,7 +271,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock. Deta
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
 | HF Core Tweaks / Lob decal slot reference | External user-provided / Lob-style Tampermonkey script | TBD; maybe direct HF Core Tweaks edit or `HeroForge_UI/` bridge strategy | External canonical reference | Compare before any slot-expansion edit. Current Witch Dock expansion depends on HF Core Tweaks signature and does not replace it. |
-| Advanced Lighting / Extra Lights | Lighting Probe v0.1.0; compact injection behavior in Injection Probe v0.3.0; diagnostics through v0.6.0 | Future separate `/tools/` lighting module, intended to register into the Booth tab | Investigating / unresolved | Second DirectionalLight works. Independent visible custom shadows are not confirmed. Run/analyze v0.6, then split the cumulative harness before migration. Do not merge experimental lighting logic into `tools/Booth.js`. |
+| Advanced Lighting / Extra Lights | Lighting Probe v0.1.0; compact injection behavior in Injection Probe v0.3.0; diagnostics through v0.6.0 | Future separate `/tools/` lighting module, intended to register into the Booth tab | Investigating / unresolved | Second DirectionalLight works. v0.6 ruled out the traced `additionalSunShadowMap` assets as the dynamic native shadow path. Split the cumulative harness, then target actual native `sun.shadow` refresh/update behavior. Do not merge experimental lighting logic into `tools/Booth.js`. |
 | Camera-Relative Rim Lighting | Future read-only shader-hook probe | TBD; separate shader/material subsystem | Queued / unproven | Fresnel rim queued after physical-light stabilization. Do not fold into physical-light injection. |
 | Decal Slot Swapper | New feature investigation / future probes | TBD, likely `/tools/` plus optional `/HeroForge_UI/` native Decals UI injection | Investigating / unresolved | Move/swap decal data between slots while preserving placement/transforms, color/material data, source/projection target, and undo/redo integration. |
 | Photo Mode PNG Series Capture | Prior standalone probes / old-chat history + `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md` | TBD, likely `/tools/` or clearly separated Booth subsection | Investigating / unresolved | First target should be 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, validated dimensions, and preserved Photo Booth effects. Persistent Booth is separate and already working. |
@@ -290,7 +291,8 @@ Add standalone scripts here when they are ready to migrate into Witch Dock. Deta
 - Booth, Decals, bone detection, JSON/library, and custom lighting workflows are high-fragility areas.
 - Persistent Booth is live/working. Do not classify it as an open PNG-series capture task or modify it for lighting without isolated evidence.
 - A second custom DirectionalLight visibly works, but reliable visible independent custom shadows are not confirmed.
-- HeroForge's visible sun-shadow path uses separate persistent `additionalSunShadowMap` texture objects whose hidden update/content lifecycle remains unresolved.
+- The two traced `additionalSunShadowMap` textures are static environment-shadow image assets, not the unresolved dynamic native sun-shadow path.
+- Direct native-sun mutation does not refresh the captured native shadow map/matrix state; visible shadow loss/recovery currently tracks whether the light transform matches the unchanged shadow data.
 - A third SphereLight being counted by materials does not mean it contributes visible illumination.
 - PNG series capture is not solved; avoid assumptions about 512x512 limits, DOM/CSS booth frame control, hidden HDR/16-bit buffer access, or large ZIP reliability.
 - High-resolution PNG sequences may stress browser memory/download behavior; start at 1024 before scaling to 2048/4K.
@@ -308,3 +310,4 @@ Document removed, deprecated, or rejected work here with the reason.
 | Treating material light counts as proof of visible illumination | Rejected | The third SphereLight increments `numSphereLights` but does not visibly illuminate even when it is the only registered SphereLight. | 2026-07-12 |
 | Treating `numDirLightShadows` as the sole Photo Booth shadow-success signal | Rejected | The counter does not fully describe HeroForge's sun-specific/custom shadow paths, but an allocated map also does not prove visible custom shadowing. Use multiple diagnostics plus direct visual reproduction. | 2026-07-13 |
 | Treating an allocated custom shadow map as proof of visible independent custom DirectionalLight shadows | Rejected | Later controlled v0.4-v0.5 runs did not reproduce the initial v0.3 visual result; character materials may not consume the generic custom shadow resource. | 2026-07-13 |
+| Treating `additionalSunShadowMap` as the dynamic native sun-shadow path | Rejected | Probe v0.6 identified the traced resources as ordinary static 512x512 environment-shadow image textures for the summon circle and foliage. | 2026-07-14 |
