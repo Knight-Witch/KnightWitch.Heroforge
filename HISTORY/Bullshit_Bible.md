@@ -46,28 +46,33 @@ Current status:
 - Intended first target is conservative: 1024x1024, around 72 PNG frames, ZIP output, metadata, explicit arming, and validated frame dimensions.
 - Prior probes captured useful signals but not a finished reliable pipeline.
 
-### Advanced Lighting / Shadows
+### Advanced Lighting / Extra Lights
 
 Detailed notes live in:
-- `BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `BULLSHIT/TIMING_AND_STATE.md`
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
 - `../STANDALONE_REFERENCES.md`
 
 Current status:
 - A second custom DirectionalLight is confirmed working for visible illumination, position, and intensity.
-- Independent custom DirectionalLight shadow allocation is confirmed in Photo Booth when shadows are enabled before first attachment.
-- Shadow refresh after later movement or broader Photo Booth/canvas changes is unresolved; the shadow matrix can remain stale.
+- Independent visible custom DirectionalLight shadows are not confirmed; later controlled runs did not reproduce the initial v0.3 visual result.
+- HeroForge uses separate `additionalSunShadowMap` textures on at least two `HF.summonCircle` materials rather than directly using `sun.shadow.map` as those uniforms.
+- Native visible sun shadows disappeared when the native sun was overwritten with probe state and returned when the original native sun state was restored.
+- The same native sun shadow-map object and the same two `additionalSunShadowMap` texture objects persisted through working -> broken -> restored states.
 - A third custom SphereLight is counted by materials but does not visibly illuminate.
-- Camera-relative Fresnel/rim lighting is queued after DirectionalLight stabilization.
-- This is standalone probe work, not a live Witch Dock module.
+- `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` is the current active diagnostic probe and has not yet been validated by a returned report at this checkpoint.
+- Camera-relative Fresnel/rim lighting is queued after the physical-light foundation stabilizes.
+- This is standalone sub-project work, not a live Witch Dock module.
 
 Current rules:
 - Do not call the custom DirectionalLight a second sun.
 - Do not infer visible light contribution from material counts alone.
-- Do not use `numDirLightShadows` as the sole shadow-success signal.
+- Do not treat an allocated shadow map as proof that character materials visibly consume it.
+- Do not claim reliable visible custom DirectionalLight shadows from the initial v0.3 observation.
 - Do not blame or modify Persistent Booth without an isolated compatibility regression.
-- Keep physical DirectionalLight injection separate from future shader-based rim lighting.
+- Keep physical DirectionalLight/SphereLight injection separate from future shader-based rim lighting.
+- Keep Advanced Lighting runtime logic separate from `tools/Booth.js` even if the eventual UI lives under the Booth tab.
 
 ### Standalone / External References
 
@@ -86,7 +91,7 @@ Current rule:
 - `BULLSHIT/DECALS_AND_TEXTURES.md`
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
 - `BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
-- `BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `BULLSHIT/KITBASHING_AND_BONES.md`
 - `BULLSHIT/JSON_AND_LIBRARY.md`
 - `BULLSHIT/MANIFEST_AND_LOADING.md`
@@ -96,4 +101,4 @@ Current rule:
 - Backfill any remaining PNG-series capture probes if new details surface.
 - Document current bone detection timing/path behavior in deeper detail.
 - Recover and inventory remaining standalone migration candidates in `HISTORY/STANDALONE_REFERENCES.md`.
-- Keep lighting/shadow documentation synchronized with each material probe milestone and correction.
+- Keep Advanced Lighting / Extra Lights documentation synchronized with each material probe milestone and correction.

@@ -4,6 +4,30 @@ Durable decisions that should guide future repo work.
 
 ## Active Decisions
 
+### 2026-07-13 — Advanced Lighting Uses One Dedicated Sub-Project Spec and a Separate Future Booth-Tab Module
+
+Decision:
+- Use `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md` as the canonical combined sub-project specification and technical history for Advanced Lighting / Extra Lights.
+- Follow the same documentation pattern as `HISTORY/BULLSHIT/DECAL_SLOT_SWAPPER.md`; do not create a second overlapping project-plan document that duplicates status, architecture, probe strategy, risks, and migration order.
+- When the feature is ready to migrate, prefer a separate visible module such as `tools/Advanced_Lighting.js` that registers into the existing `Booth` tab.
+- Do not merge experimental lighting runtime logic into `tools/Booth.js` merely because the user-facing controls are intended to appear under the Booth tab.
+- After the current v0.6 shadow diagnostic milestone is reviewed, split the cumulative standalone harness into a compact Lighting Injection Reference and a focused Shadow Pipeline Probe.
+
+Reason:
+- The cumulative probe has grown into a menu of historical experiments that are no longer all relevant to the current test round.
+- A compact known-good injection reference is safer for future parity testing and Witch Dock migration.
+- A focused shadow probe reduces diagnostic noise and prevents obsolete controls from being mistaken for active implementation requirements.
+- One dedicated sub-project/spec file matches the existing Decal Slot Swapper tracking model and avoids contradictory duplicate planning documents.
+- Persistent Booth is production behavior and should remain isolated from experimental lighting work.
+
+Applies to:
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- future standalone lighting probes
+- future `tools/Advanced_Lighting.js` or equivalent lighting module
+- `tools/Booth.js`
+- future Booth-tab registration and manifest work
+
 ### 2026-07-12 — Documentation Checkpoints Are Required During Investigation
 
 Decision:
@@ -33,15 +57,16 @@ Decision:
 - Keep custom physical DirectionalLight/SphereLight work separate from future Fresnel/shader-based rim lighting.
 - Keep advanced lighting investigation separate from Persistent Booth implementation.
 - Do not modify `tools/Booth.js` for lighting unless an isolated compatibility regression proves a concrete integration requirement.
-- Treat `HeroForge_Lighting_Injection_Probe_v0.3.0.txt` as the current partial working reference for pre-attach DirectionalLight shadows until a later probe is validated.
+- Treat `HeroForge_Lighting_Injection_Probe_v0.3.0.txt` as the compact partial working reference for the known-good second DirectionalLight injection behavior until the planned dedicated Lighting Injection Reference replaces it.
+- Treat `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` as the current active shadow diagnostic probe until its runtime report is reviewed.
 
 Reason:
 - Physical lights, shadow maps, and view-dependent rim shading use different renderer paths and failure modes.
 - Persistent Booth is already live/working, while the lighting probes are standalone and unresolved.
-- The current compatibility regression was confounded by canvas-preset changes and does not prove Witch Dock or Persistent Booth caused shadow failure.
+- The initial Witch Dock compatibility regression was confounded by canvas-preset changes and does not prove Witch Dock or Persistent Booth caused shadow failure.
 
 Applies to:
-- `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `HISTORY/STANDALONE_REFERENCES.md`
 - future lighting tools/modules
 - future shader/rim-light probe

@@ -2,13 +2,23 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-13 — Advanced Lighting v0.4-v0.6 Documentation Checkpoint
+
+- Target: correct the stale Advanced Lighting documentation after probe work continued beyond the July 12 v0.3 checkpoint.
+- Action: renamed the dedicated sub-project/spec from `LIGHTING_AND_SHADOWS.md` to `LIGHTING_AND_EXTRA_LIGHTS.md`; documented Injection Probe v0.4.0 and v0.5.0 results; registered v0.6.0 as the current active unvalidated diagnostic probe; corrected the earlier custom-shadow claim; recorded the planned split into a compact Lighting Injection Reference and focused Shadow Pipeline Probe.
+- Result: repo memory now records that visible independent custom DirectionalLight shadows are not confirmed, that HeroForge uses separate persistent `additionalSunShadowMap` textures on `HF.summonCircle` materials, that native visible shadows disappear when native sun state is overwritten and return when the original state is restored, and that the same shadow-resource object identities persist across working -> broken -> restored states.
+- Architecture: Advanced Lighting remains a standalone sub-project intended for a separate future module under the Witch Dock Booth tab; `tools/Booth.js` and Persistent Booth remain separate and unchanged.
+- Test notes: documentation-only update; no JavaScript, userscript probe source, `manifest.json`, storage keys, UI, or runtime behavior changed.
+- Follow-up: run and analyze `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`, checkpoint the result, then split the cumulative harness before the next major diagnostic branch.
+
 ## 2026-07-12 — Advanced Lighting Investigation Checkpoint
 
 - Target: persist the current HeroForge custom-light investigation and close the documentation gap that left validated probe findings only in chat.
 - Action: added `HISTORY/BULLSHIT/LIGHTING_AND_SHADOWS.md`; inventoried Lighting Probe v0.1.0 and Injection Probe v0.1.0-v0.3.0; updated `MASTER.md`, `HISTORY/Bullshit_Bible.md`, `HISTORY/STANDALONE_REFERENCES.md`, and `HISTORY/DECISIONS.md`; added a milestone-based documentation-checkpoint rule.
-- Result: repo memory now records the working second DirectionalLight, position/intensity behavior, Photo Booth pre-attach shadow allocation, editor/Photo Booth targeting difference, stale shadow-matrix regression, non-working but counted third SphereLight, canvas-preset confounder, Persistent Booth separation, and queued Fresnel/rim-light investigation.
+- Result: repo memory recorded the then-current working second DirectionalLight, position/intensity behavior, Photo Booth pre-attach shadow allocation, editor/Photo Booth targeting difference, stale shadow-matrix regression, non-working but counted third SphereLight, canvas-preset confounder, Persistent Booth separation, and queued Fresnel/rim-light investigation.
+- Historical correction: the v0.3 visible custom-shadow interpretation was later downgraded after v0.4-v0.5 controlled tests failed to reproduce independent visible custom shadows. Current active status lives in `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`.
 - Test notes: documentation-only update; no JavaScript, userscript metadata, `manifest.json`, storage keys, UI, or runtime behavior changed.
-- Follow-up: stabilize custom DirectionalLight shadow refresh/lifecycle behavior with standalone probes. After that, begin a read-only shader-hook probe for camera-relative Fresnel rim lighting.
+- Follow-up at that time: stabilize custom DirectionalLight shadow refresh/lifecycle behavior with standalone probes.
 
 ## 2026-07-09 — Standalone Reference Inventory Backfill
 
