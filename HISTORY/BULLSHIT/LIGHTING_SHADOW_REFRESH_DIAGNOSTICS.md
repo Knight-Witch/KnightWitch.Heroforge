@@ -173,32 +173,99 @@ The earlier v0.6 model correctly identified that direct native-sun mutation fail
 
 This narrows the missing behavior from a vague hidden resource replacement to a concrete shadow-camera/matrix update lifecycle.
 
+## Shadow Pipeline Probe v0.2.0 — Native `sun.shadow` Method Trace
+
+Report:
+
+- `HF_Shadow_Pipeline_Probe_v0.2.0_2026-07-15T07-40-40-928Z.json`
+
+### Confirmed negative result
+
+The native `sun.shadow` object does not expose an obvious refresh/update method on its callable prototype chain.
+
+The only non-`Object` callable methods found were:
+
+- `clone`
+- `copy`
+- `toJSON`
+
+The v0.2 trace excluded those serialization/copy methods. Because `toLocaleString` was not included in the exclusion list, the wrapper-selection logic accidentally installed a wrapper only for inherited `Object.prototype.toLocaleString`.
+
+Result:
+
+- wrapper count: `1`;
+- wrapped method: `toLocaleString`;
+- recorded method calls: `0`;
+- probe errors: `0`.
+
+This does **not** prove that the shadow refresh occurs without method calls.
+
+It proves that the v0.2 target was wrong: the useful refresh behavior is not exposed as a callable method on the native `sun.shadow` object itself.
+
+### Additional dirty-state evidence
+
+One captured transition showed:
+
+- native sun position changed to `(9, 10, 2)`;
+- native sun target changed to `(0, 2, 0)`;
+- native shadow camera and shadow matrix were still at the previous state;
+- `sun._matrixNeedsUpdate = 1`;
+- `sun._matrixWorldNeedsUpdate = 1`;
+- `lightingRoot._matrixWorldNeedsUpdate = 1`.
+
+A later captured state showed:
+
+- shadow camera synchronized to `(9, 10, 2)`;
+- shadow camera rotation updated;
+- `sun.shadow.matrix` changed;
+- the above matrix-dirty flags returned to `0`.
+
+The v0.2 run contained multiple watched UI interactions, so the elapsed time between those two snapshots must not be treated as an isolated automatic refresh delay.
+
+However, the state transition supports a stronger current model:
+
+`native sun mutation -> scene-graph matrix dirty state -> external camera/matrix refresh path -> dirty flags clear`
+
+### Current interpretation
+
+The shadow refresh is likely performed externally by a renderer, scene-graph update routine, or lighting controller that directly mutates:
+
+- native sun transform/update state;
+- native shadow camera transform/state;
+- native shadow matrix.
+
+This is consistent with the native `sun.shadow` prototype exposing no useful update method.
+
+Do not claim an exact renderer method or call chain yet.
+
 ## Next Probe Target
 
-Do not guess the refresh method yet.
+`HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` should trace only the specific live instances involved in the confirmed refresh sequence.
 
-The next Shadow Pipeline Probe should observe the callable API around the actual native shadow object during a legitimate native sun adjustment.
+Target instances:
 
-Recommended scope:
+1. native sun object;
+2. native sun position vector;
+3. native sun target-position vector;
+4. native shadow camera object;
+5. native shadow-camera position vector;
+6. native shadow matrix object.
 
-1. Enumerate callable own/prototype methods on:
-   - native `sun.shadow`;
-   - native shadow camera;
-   - native sun object.
-2. Instrument only the smallest relevant native shadow instance methods, not broad global prototypes.
-3. Preserve original functions exactly and restore them automatically after the watch ends.
-4. Capture:
-   - method name;
-   - timestamp;
-   - argument summaries;
-   - before/after sun position;
-   - before/after shadow camera state;
-   - before/after shadow-matrix hash;
-   - short stack trace where available.
-5. Repeat the clean native sun-adjustment test.
-6. Identify the method or call chain that occurs during the approximately 80 ms refresh phase.
+Target method families:
 
-A likely Three.js-family concept is a shadow-matrix update routine, but no exact method name should be treated as confirmed until runtime observation proves it.
+- matrix/world-matrix dirty/update methods on the native sun and shadow camera;
+- vector mutators such as `set` and `copy` on sun/camera position objects;
+- camera `lookAt`/transform update methods;
+- shadow-matrix mutators such as `set`, `copy`, `multiply`, `multiplyMatrices`, and related matrix composition methods.
+
+Rules:
+
+- wrap only those specific live instances;
+- do not patch global light, camera, vector, matrix, or renderer prototypes;
+- preserve original `this`, arguments, return values, exceptions, descriptors, and automatic restoration;
+- capture short call stacks and compact before/after dirty-state snapshots;
+- have the native Sun controls already open before arming the trace to reduce unrelated UI interactions;
+- test one native sun adjustment only.
 
 ## Do Not Repeat
 
@@ -206,5 +273,7 @@ A likely Three.js-family concept is a shadow-matrix update routine, but no exact
 - Do not assume texture `version` must change when a render target is rerendered.
 - Do not infer environment-preset internals from the native sun/shadow snapshot alone.
 - Do not use the full Booth preset as the primary timing reference when the manual sun control provides a cleaner isolated two-stage transition.
-- Do not globally monkey-patch renderer or light prototypes before the native shadow instance API is enumerated.
+- Do not interpret the v0.2 zero-call result as proof that no method-based update occurs; only an irrelevant inherited `toLocaleString` method was actually wrapped.
+- Do not keep targeting `sun.shadow` itself for an update method unless new runtime evidence exposes one.
+- Do not globally monkey-patch renderer or light prototypes before the targeted live-instance trace is exhausted.
 - Do not modify Persistent Booth for this investigation.
