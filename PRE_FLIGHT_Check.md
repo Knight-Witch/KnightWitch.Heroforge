@@ -2,6 +2,64 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-14-011 — Native Shadow Refresh Comparison Checkpoint
+
+Date: 2026-07-14
+Time: 18:08 PDT
+
+Target files:
+- `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- completed Lighting Injection Probe v0.6 findings
+- `HeroForge_Shadow_Pipeline_Probe_v0.1.0.txt`
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-02-14-906Z.json` — native sun adjustment only
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-03-42-554Z.json` — environmental lighting preset adjustment only
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-04-50-087Z.json` — full Booth preset selection only
+- user clarification that environmental lighting presets are distinct from full Booth presets
+- project rules requiring a documentation checkpoint before the next material shadow-probe code stage
+
+Connected modules reviewed:
+- current standalone second-DirectionalLight and shadow-probe separation through existing lighting documentation
+- native sun, shadow camera, shadow matrix, render-target, and interaction timing fields captured by Shadow Pipeline Probe v0.1.0
+- Persistent Booth separation through `MASTER.md` and existing Booth/lighting documentation
+- `manifest.json` loading rules through `MASTER.md`; no manifest change required
+
+Conflict risks:
+- Documentation-only update.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- The environmental-lighting result is narrow: the tested preset did not alter the captured native sun or native `sun.shadow` state, but the current probe did not deeply inspect `EnvironmentLight`, ambient-light, or environment-map internals.
+- The full Booth preset is a composite operation; its first scheduled post-click snapshots were delayed until the preset had already resolved, so its internal sun-vs-shadow update ordering was not isolated.
+- The isolated native sun-adjustment report is the clean timing reference: sun position changed before the native shadow camera and shadow matrix, which synchronized roughly 83 ms later in the captured run.
+- Stable render-target/texture object identity does not prove GPU contents are unchanged; successful native sun adjustment can rerender into the existing target.
+- Exact refresh method name remains unproven. Do not assume a Three.js-family method such as `updateMatrices` is the HeroForge call path until runtime tracing confirms it.
+- Persistent Booth remains live/working and separate; no edit to `tools/Booth.js` is justified.
+- `Knight-Witch/HeroForge.Compatibility` remains out of scope.
+
+Recommended action:
+- Proceed with a documentation-only checkpoint before the next material probe code stage.
+- Add a focused native-shadow refresh diagnostic appendix rather than another overlapping Advanced Lighting project-plan document.
+- Record the confirmed two-stage native sun -> shadow-camera/matrix refresh sequence.
+- Record the environmental-lighting preset as separate from captured native directional-shadow state.
+- Record the full Booth preset result with its timing limitation.
+- Next probe should enumerate and minimally instrument callable methods on the native `sun.shadow` instance during a clean native sun adjustment, restoring all wrappers after the watch ends.
+
 ## PFC-2026-07-14-010 — Advanced Lighting Probe v0.6 Result Checkpoint
 
 Date: 2026-07-14
