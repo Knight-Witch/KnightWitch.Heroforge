@@ -50,6 +50,7 @@ Current status:
 
 Detailed notes live in:
 - `BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
 - `BULLSHIT/TIMING_AND_STATE.md`
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
 - `../STANDALONE_REFERENCES.md`
@@ -58,9 +59,11 @@ Current status:
 - A second custom DirectionalLight is confirmed working for visible illumination, position, and intensity.
 - Independent visible custom DirectionalLight shadows are not confirmed; later controlled runs did not reproduce the initial v0.3 visual result.
 - Probe v0.6.0 confirmed the two previously traced `additionalSunShadowMap` textures are ordinary static image textures for `summonCircle_shadow_512.webp` and `foliage_shadow_512.webp`, not dynamic native sun shadow render targets.
-- The native `sun.shadow.map`, native shadow matrix, material shadow bindings, traced resource identities, and those static texture diagnostics remained unchanged while the native sun was overridden and then restored.
-- Native visible sun shadows disappeared when the native sun was overwritten with probe state and returned when the original native sun state was restored.
-- Strong current inference: direct light mutation changes illumination without regenerating the native shadow projection/map; restoring the original sun transform realigns the unchanged native shadow data.
+- Shadow Pipeline Probe v0.1.0 isolated the legitimate native sun refresh sequence: the native sun position changes first, then the native shadow camera and `sun.shadow.matrix` update in a short delayed second phase.
+- In the isolated sun-adjustment run, the first post-interaction snapshot had the new sun position but the old shadow camera/matrix; roughly 83 ms later the camera and matrix were synchronized.
+- The successful native update reused the existing shadow render-target and texture objects.
+- The tested environmental-lighting preset did not alter any captured native sun or native `sun.shadow` state; this does not describe unobserved `EnvironmentLight` internals.
+- A full Booth preset ended with synchronized sun and native shadow state but its composite transition timing was not isolated.
 - A third custom SphereLight is counted by materials but does not visibly illuminate.
 - Camera-relative Fresnel/rim lighting is queued after the physical-light foundation stabilizes.
 - This is standalone sub-project work, not a live Witch Dock module.
@@ -71,6 +74,8 @@ Current rules:
 - Do not treat an allocated shadow map as proof that character materials visibly consume it.
 - Do not treat `additionalSunShadowMap` as the native dynamic sun-shadow path merely because of its name; inspect the actual resource type and asset source.
 - Do not claim reliable visible custom DirectionalLight shadows from the initial v0.3 observation.
+- Preserve the observed two-stage native sun -> shadow-camera/matrix refresh timing until the actual method call path is identified.
+- Do not assume a successful native sun move replaces the shadow render target; the isolated native control reused the existing object.
 - Do not blame or modify Persistent Booth without an isolated compatibility regression.
 - Keep physical DirectionalLight/SphereLight injection separate from future shader-based rim lighting.
 - Keep Advanced Lighting runtime logic separate from `tools/Booth.js` even if the eventual UI lives under the Booth tab.
@@ -93,6 +98,7 @@ Current rule:
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
 - `BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
 - `BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
 - `BULLSHIT/KITBASHING_AND_BONES.md`
 - `BULLSHIT/JSON_AND_LIBRARY.md`
 - `BULLSHIT/MANIFEST_AND_LOADING.md`
