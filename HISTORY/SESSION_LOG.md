@@ -2,6 +2,18 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-15 — Shadow Pipeline Probe v0.2 Result and v0.3 Trace Target
+
+- Target: identify the callable native `sun.shadow` method responsible for the legitimate shadow-camera/matrix refresh observed in the v0.1 sun-only comparison.
+- Action: analyzed `HF_Shadow_Pipeline_Probe_v0.2.0_2026-07-15T07-40-40-928Z.json` and reviewed the exact v0.2 wrapper-selection implementation.
+- Result: native `sun.shadow` exposed only `clone`, `copy`, and `toJSON` beyond plain `Object` methods. Those three were intentionally excluded from tracing, while inherited `toLocaleString` was accidentally not excluded. The probe therefore wrapped only `toLocaleString` and recorded zero method calls.
+- Correction: the zero-call result does not prove that shadow refresh occurs without method calls. It proves that `sun.shadow` itself does not expose an obvious useful refresh method and that the v0.2 trace targeted the wrong object.
+- Additional finding: one captured transition showed the native sun and lighting root marked matrix-dirty while the shadow camera/matrix were still stale; a later captured state showed the shadow camera/matrix synchronized and those dirty flags cleared. Because the run contained multiple watched UI interactions, the elapsed time between those states is not treated as a clean automatic delay measurement.
+- Current direction: trace only the specific live sun, sun-position, sun-target-position, shadow-camera, shadow-camera-position, and shadow-matrix instances. Capture targeted mutator/update calls, stacks, and compact before/after dirty state. Do not patch global prototypes.
+- Artifact status: `HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` and its diff were created locally from v0.2.0 and syntax/stub-initialization checked; live HeroForge runtime validation is still pending.
+- Test notes: standalone diagnostic work only; no Witch Dock JavaScript, `manifest.json`, Persistent Booth, storage, UI, or live runtime behavior changed.
+- Follow-up: run v0.3.0 with the native Sun controls already open, arm the refresh trace, perform one native sun adjustment only, then analyze the report.
+
 ## 2026-07-14 — Native Shadow Refresh Comparison
 
 - Target: compare three legitimate HeroForge lighting transitions after splitting the cumulative lighting harness: native sun adjustment only, environmental lighting preset only, and full Booth preset only.
@@ -29,7 +41,7 @@ Chronological development and testing notes. Use this for concise project-state 
 
 - Target: correct the stale Advanced Lighting documentation after probe work continued beyond the July 12 v0.3 checkpoint.
 - Action: renamed the dedicated sub-project/spec from `LIGHTING_AND_SHADOWS.md` to `LIGHTING_AND_EXTRA_LIGHTS.md`; documented Injection Probe v0.4.0 and v0.5.0 results; registered v0.6.0 as the current active unvalidated diagnostic probe; corrected the earlier custom-shadow claim; recorded the planned split into a compact Lighting Injection Reference and focused Shadow Pipeline Probe.
-- Result: repo memory now records that visible independent custom DirectionalLight shadows are not confirmed, that HeroForge uses separate persistent `additionalSunShadowMap` textures on `HF.summonCircle` materials, that native visible shadows disappear when native sun state is overwritten and return when the original state is restored, and that the same shadow-resource object identities persist across working -> broken -> restored states.
+- Result: repo memory now records that visible independent custom DirectionalLight shadows are not confirmed, that HeroForge uses separate persistent `additionalSunShadowMap` textures on `HF.summonCircle` materials, that native visible shadows disappear when native sun state is overwritten and return when the original native sun state is restored, and that the same shadow-resource object identities persist across working -> broken -> restored states.
 - Architecture: Advanced Lighting remains a standalone sub-project intended for a separate future module under the Witch Dock Booth tab; `tools/Booth.js` and Persistent Booth remain separate and unchanged.
 - Test notes: documentation-only update; no JavaScript, userscript probe source, `manifest.json`, storage keys, UI, or runtime behavior changed.
 - Follow-up: run and analyze `HeroForge_Lighting_Injection_Probe_v0.6.0.txt`, checkpoint the result, then split the cumulative harness before the next major diagnostic branch.

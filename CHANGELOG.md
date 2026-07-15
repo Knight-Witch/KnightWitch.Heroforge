@@ -1,5 +1,54 @@
 # Changelog
 
+## DOCS-2026-07-15-012 — Shadow Pipeline Probe v0.2 Negative Result and v0.3 Target
+
+Date: 2026-07-15
+Time: 00:58 PDT
+
+### Changed
+
+- Updated `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md` with the Shadow Pipeline Probe v0.2.0 result, wrapper-selection correction, scene-graph dirty-state evidence, and the v0.3 targeted live-instance trace plan.
+- Updated `HISTORY/SESSION_LOG.md` with the v0.2 runtime result and current v0.3 artifact/test status.
+- Updated `PRE_FLIGHT_Check.md` with the required target files, history reviewed, connected systems, conflict risks, and recommended action.
+
+### Confirmed / Corrected Documentation
+
+- Confirmed that native `sun.shadow` exposes no obvious callable refresh/update method in its observed prototype chain; beyond plain `Object` methods, the inventory found only `clone`, `copy`, and `toJSON`.
+- Corrected the v0.2 zero-call interpretation: the trace excluded `clone`, `copy`, and `toJSON`, accidentally wrapped inherited `toLocaleString`, and therefore recorded zero calls to an irrelevant method. This does not prove that the refresh path is method-free.
+- Recorded one v0.2 transition where the native sun and lighting root were matrix-dirty while the shadow camera/matrix were stale, followed by a later synchronized camera/matrix state with those dirty flags cleared.
+- Recorded the timing limitation that the v0.2 run contained multiple watched UI interactions, so the elapsed time between those dirty and synchronized states is not treated as an isolated automatic refresh delay.
+- Narrowed the next target to specific live sun, sun-position, sun-target-position, shadow-camera, shadow-camera-position, and shadow-matrix instances rather than `sun.shadow` itself.
+- Recorded `HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` as a newly created local standalone test artifact that passed syntax and stub-initialization checks but has not yet been runtime-validated in HeroForge.
+
+### Runtime Evidence
+
+- `HF_Shadow_Pipeline_Probe_v0.2.0_2026-07-15T07-40-40-928Z.json`.
+- Probe report contained zero recorded errors.
+- Probe installed one wrapper: inherited `toLocaleString`.
+- Recorded method-call count: `0`.
+
+### Touched Files
+
+- `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only checkpoint.
+- No Witch Dock JavaScript files changed.
+- No standalone userscript probe source was committed by this update.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- Rolling back would remove the durable record that v0.2 targeted the wrong object and could cause a future session to repeat direct `sun.shadow` method tracing.
+
+### Test Notes
+
+- Runtime evidence came from standalone Shadow Pipeline Probe v0.2.0 only.
+- `HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` was syntax-checked with `node --check` using a temporary `.js` copy and initialized successfully in a stub userscript runtime.
+- No Witch Dock or Persistent Booth runtime code was changed or tested as part of this documentation checkpoint.
+
 ## DOCS-2026-07-14-011 — Native Shadow Refresh Comparison
 
 Date: 2026-07-14
