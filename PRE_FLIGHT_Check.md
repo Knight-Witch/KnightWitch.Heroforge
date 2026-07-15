@@ -2,6 +2,59 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-15-012 — Shadow Pipeline v0.2 Result and v0.3 Targeted Trace
+
+Date: 2026-07-15
+Time: 00:58 PDT
+
+Target files:
+- `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- `HeroForge_Shadow_Pipeline_Probe_v0.2.0.txt`
+- `HF_Shadow_Pipeline_Probe_v0.2.0_2026-07-15T07-40-40-928Z.json`
+- prior v0.1 sun-only, environmental-lighting, and full Booth-preset comparison results
+- current project rule requiring documentation before the next material probe/code stage
+
+Connected modules reviewed:
+- standalone Shadow Pipeline Probe v0.2.0 wrapper-selection logic
+- native sun, native shadow camera, native shadow matrix, and scene-graph dirty-state fields captured by the v0.2 report
+- Persistent Booth separation through current lighting/Booth documentation
+- `manifest.json` loading rules through `MASTER.md`; no manifest change required
+
+Conflict risks:
+- Documentation-only repository update.
+- No Witch Dock JavaScript files changed.
+- No standalone userscript probe source is committed by this documentation update.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or live runtime behavior changed.
+- The v0.2 `methodCallCount: 0` result must not be misreported as proof that no method-based refresh occurs; only inherited `toLocaleString` was actually wrapped.
+- The v0.2 run contained multiple watched UI interactions, so elapsed time between dirty and synchronized states is not treated as a clean automatic refresh delay.
+- The current evidence supports an external renderer/scene-graph/camera-matrix update path, but no exact method or call chain is yet confirmed.
+- v0.3.0 remains a standalone unvalidated test artifact until a live HeroForge report is reviewed.
+- Persistent Booth remains live/working and separate; no edit to `tools/Booth.js` is justified.
+- `Knight-Witch/HeroForge.Compatibility` remains out of scope.
+
+Recommended action:
+- Record v0.2 as a negative-result milestone that closes direct `sun.shadow` method tracing as the current target.
+- Preserve v0.2 unchanged.
+- Use v0.3 to wrap only specific live sun/camera/vector/matrix instances and targeted transform/matrix mutators.
+- Do not patch global prototypes or invoke guessed refresh methods.
+- Have native Sun controls already open before arming v0.3, then perform one sun adjustment only.
+
 ## PFC-2026-07-14-011 — Native Shadow Refresh Comparison Checkpoint
 
 Date: 2026-07-14
