@@ -2,6 +2,18 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-14 — Native Shadow Refresh Comparison
+
+- Target: compare three legitimate HeroForge lighting transitions after splitting the cumulative lighting harness: native sun adjustment only, environmental lighting preset only, and full Booth preset only.
+- Action: analyzed `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-02-14-906Z.json`, `...01-03-42-554Z.json`, and `...01-04-50-087Z.json`.
+- Result — native sun adjustment: the first post-interaction snapshot showed the new sun position while the native shadow camera and `sun.shadow.matrix` were still at baseline; roughly 83 ms later the shadow camera position/rotation and shadow matrix updated to the new sun state. The existing shadow render target and texture objects remained in place.
+- Result — environmental lighting preset: across 33 snapshots, no captured native sun or native `sun.shadow` field changed and no native-shadow change event fired. This is intentionally narrow; the probe did not deeply capture `EnvironmentLight` internals.
+- Result — full Booth preset: the completed preset changed native sun position, intensity, and color and ended with updated shadow camera/matrix state while reusing the existing shadow render-target objects. The first scheduled post-click callbacks were delayed until the composite preset had already resolved, so internal ordering was not isolated.
+- Correction: the missing behavior in the failed direct-mutation path is now concretely narrowed to the follow-up shadow-camera/matrix refresh phase rather than an unidentified shadow render-target replacement.
+- Documentation: added `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md` as a focused technical appendix.
+- Test notes: standalone probe runtime only; no Witch Dock JavaScript, `manifest.json`, Persistent Booth, storage, or live runtime behavior changed.
+- Follow-up: enumerate and minimally instrument callable methods on the native `sun.shadow` instance during another clean native sun adjustment to identify the exact method/call chain that performs the delayed refresh.
+
 ## 2026-07-14 — Advanced Lighting Probe v0.6 Result
 
 - Target: determine whether the two persistent `additionalSunShadowMap` textures changed internally across working baseline -> broken native-sun override -> restored native state.

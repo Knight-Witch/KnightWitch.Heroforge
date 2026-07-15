@@ -1,5 +1,61 @@
 # Changelog
 
+## DOCS-2026-07-14-011 — Native Shadow Refresh Comparison
+
+Date: 2026-07-14
+Time: 18:08 PDT
+
+### Added
+
+- Added `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md` as a focused technical appendix for the isolated native sun, environmental-lighting preset, and full Booth-preset shadow-refresh comparison.
+
+### Changed
+
+- Updated `HISTORY/Bullshit_Bible.md` with the confirmed two-stage native sun -> shadow-camera/matrix refresh behavior and the separate environmental-lighting result.
+- Updated `HISTORY/SESSION_LOG.md` with the three controlled Shadow Pipeline Probe v0.1.0 reports, timing findings, corrected shadow-pipeline model, and next probe target.
+- Updated `PRE_FLIGHT_Check.md` with target files, history checked, connected systems reviewed, conflict risks, and recommended next action.
+
+### Confirmed / Corrected Documentation
+
+- Confirmed that a legitimate native HeroForge sun adjustment changes the native sun position before the native shadow camera and `sun.shadow.matrix` update.
+- In the `906Z` sun-only run, the first post-interaction snapshot contained the new sun position with the old shadow camera/matrix; roughly 83 ms later the shadow camera position/rotation and shadow matrix were synchronized.
+- Confirmed that the successful native sun adjustment reused the existing shadow render-target and texture objects.
+- Confirmed that the tested environmental-lighting preset produced no captured change in native sun position/target/intensity/color, native shadow camera, native shadow matrix, or native shadow render-target/texture identity across 33 snapshots.
+- Narrowed the environmental-lighting conclusion: the probe did not deeply inspect `EnvironmentLight`, ambient-light, environment-map, or other environment-preset internals.
+- Confirmed that the full Booth preset changed native sun position, intensity, and color and ended with synchronized shadow camera/matrix state while retaining the existing shadow render-target objects.
+- Recorded the Booth-preset timing limitation: the first scheduled post-click snapshots were delayed until the composite preset had already resolved, so internal update ordering was not isolated.
+- Corrected the current shadow-pipeline model: the failed direct-property mutation is missing a concrete follow-up shadow-camera/matrix refresh phase, not an observed shadow render-target replacement.
+- Recorded that the next probe should enumerate and minimally instrument native `sun.shadow` instance methods during a clean native sun adjustment rather than guessing a method name.
+
+### Runtime Evidence
+
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-02-14-906Z.json` — native sun adjustment only.
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-03-42-554Z.json` — environmental lighting preset adjustment only.
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-04-50-087Z.json` — full Booth preset selection only.
+- All three reports contained zero recorded probe errors.
+
+### Touched Files
+
+- `HISTORY/BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only checkpoint.
+- No JavaScript files changed.
+- No standalone userscript probe files changed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- Rolling back would discard the durable record of the first isolated legitimate native shadow-camera/matrix refresh sequence.
+
+### Test Notes
+
+- Runtime evidence came from standalone Shadow Pipeline Probe v0.1.0 only.
+- No Witch Dock or Persistent Booth runtime code was changed or tested as part of this documentation checkpoint.
+
 ## DOCS-2026-07-14-010 — Advanced Lighting Probe v0.6 Static Shadow Texture Correction
 
 Date: 2026-07-14
