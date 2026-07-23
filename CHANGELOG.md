@@ -92,7 +92,7 @@ Time: 00:58 PDT
 - Confirmed that native `sun.shadow` exposes no obvious callable refresh/update method in its observed prototype chain; beyond plain `Object` methods, the inventory found only `clone`, `copy`, and `toJSON`.
 - Corrected the v0.2 zero-call interpretation: the trace excluded `clone`, `copy`, and `toJSON`, accidentally wrapped inherited `toLocaleString`, and therefore recorded zero calls to an irrelevant method. This does not prove that the refresh path is method-free.
 - Recorded one v0.2 transition where the native sun and lighting root were matrix-dirty while the shadow camera/matrix were stale, followed by a later synchronized camera/matrix state with those dirty flags cleared.
-- Recorded the timing limitation that the v0.2 run contained multiple watched UI interactions, so the elapsed time between those states is not treated as a clean automatic refresh delay.
+- Recorded the timing limitation that the v0.2 run contained multiple watched UI interactions, so the elapsed time between those dirty and synchronized states is not treated as an isolated automatic refresh delay.
 - Narrowed the next target to specific live sun, sun-position, sun-target-position, shadow-camera, shadow-camera-position, and shadow-matrix instances rather than `sun.shadow` itself.
 - Recorded `HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` as a newly created local standalone test artifact that passed syntax and stub-initialization checks but has not yet been runtime-validated in HeroForge.
 
@@ -255,7 +255,7 @@ Time: 19:12 PDT
 
 - Corrected the earlier active claim that v0.3 had proven reliable visible independent custom DirectionalLight shadows. Later controlled v0.4-v0.5 runs did not reproduce that visual result; independent visible custom shadows remain unconfirmed and currently appear non-working.
 - Confirmed v0.4 found at least two `HF.summonCircle` materials using `additionalSunShadow: true` with `additionalSunShadowMap` textures distinct from the native `sun.shadow.map`.
-- Confirmed that copying probe state onto the native sun caused visible native shadows to disappear and restoring the original native sun state caused visible shadows to return.
+- Confirmed that copying probe state onto the native sun caused visible native sun shadows to disappear and restoring the original native sun state caused visible shadows to return.
 - Confirmed v0.5 retained the same native `sun.shadow.map` object and the same two `additionalSunShadowMap` texture objects across working baseline -> broken override -> restored state.
 - Confirmed the direct material owners of the observed `additionalSunShadowMap` textures at `HF.summonCircle.children[0/1].material.uniforms.additionalSunShadowMap.value`.
 - Recorded `HeroForge_Lighting_Injection_Probe_v0.6.0.txt` as the current active diagnostic probe for texture/source/image/backing-resource state, but explicitly not yet validated by a returned runtime report at this checkpoint.
