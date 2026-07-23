@@ -19,6 +19,9 @@ Use this file for high-level rules and links. Put detailed notes in `HISTORY/BUL
 - Use documentation checkpoints after meaningful validated results. Do not create a commit for every trivial repeated observation, but do not begin the next material probe/code stage while current docs are knowingly stale.
 - When a finding is disproved or becomes outdated, correct or remove the old claim instead of appending a contradictory active claim elsewhere.
 - Label uncertain conclusions as observed, inferred, or unproven. Do not promote inference to confirmed behavior without evidence.
+- Treat archived HeroForge debug bundles, slot catalogs, and numbered-joint lists as historical discovery references, not current runtime contracts.
+- Do not load archived external userscripts through `manifest.json` or place them beside live `/tools/` or `/HeroForge_UI/` modules.
+- Preserve source filenames and hashes for large external archives even when only distilled findings are committed.
 
 ## High-Risk Current Topics
 
@@ -80,15 +83,51 @@ Current rules:
 - Keep physical DirectionalLight/SphereLight injection separate from future shader-based rim lighting.
 - Keep Advanced Lighting runtime logic separate from `tools/Booth.js` even if the eventual UI lives under the Booth tab.
 
+### Archived Debug UI / Internal Tools
+
+Detailed notes live in:
+- `BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `BULLSHIT/KITBASHING_AND_BONES.md`
+- `BULLSHIT/DECALS_AND_TEXTURES.md`
+- `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `../REFERENCES/README.md`
+
+Current rules:
+- The archived `DebugLive` bundle is a version-bound HeroForge internal QA interface, not a stable public API.
+- Extract one focused standalone probe at a time; do not migrate the complete debug userscript into Witch Dock.
+- Scene outliner, texture-uniform inspection, skeleton modifiers, character-state recording, and CSV export are useful references, but each requires current runtime validation.
+- The archived animator records complete character-state snapshots; it is not a normal per-bone keyframe editor.
+- Opening Photo Booth before render avoids one observed crash because the archived animator depends on Photo Booth/token-renderer initialization.
+- The archived Wireframe control only toggles a character setting; it does not contain the current `isUnlocked` or render-path gate.
+- Debug userscript v0.2 remains partially broken and must not be treated as a stable compatibility release.
+
+### Slots, Joints, and Attachments
+
+Detailed notes live in:
+- `BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
+- `BULLSHIT/KITBASHING_AND_BONES.md`
+- `BULLSHIT/DECAL_SLOT_SWAPPER.md`
+- `../REFERENCES/README.md`
+
+Current rules:
+- `Sourced_Slots`, `Free_Slots`, and `Numbered_Joint_IDs` are historical snapshots only.
+- `Free_Slots` is a filtered subset of the sourced catalog; the name does not prove current safety, availability, unlock state, or compatibility.
+- Verify candidate slots against current `CK.Options.slots`, current skeleton/monster-group ownership, source/target relationships, and `doesConfigFit` behavior.
+- Verify every joint name against the live scene/skeleton before using it.
+- Preserve source defects rather than silently normalizing them; the joint snapshot contains duplicate numeric IDs and entries without `_bind_jnt` suffixes.
+- Keep experimental slot/catalog mutation conditional and separate from live modules until validated.
+
 ### Standalone / External References
 
 Detailed notes live in:
 - `../STANDALONE_REFERENCES.md`
+- `../REFERENCES/README.md`
 
 Current rule:
 - Working external/probe scripts must be inventoried and compared before migration or replacement.
 - Deprecated pre-Witch Dock scripts should not be run beside Witch Dock unless explicitly revived for regression comparison.
 - HF Core Tweaks / Lob decal-slot behavior remains an external canonical reference for slot expansion behavior.
+- Large archived external sources may be represented by hashes, provenance, inventory, and distilled notes instead of being copied beside production code.
 
 ## Topic Files
 
@@ -99,6 +138,8 @@ Current rule:
 - `BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
 - `BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
 - `BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
+- `BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
 - `BULLSHIT/KITBASHING_AND_BONES.md`
 - `BULLSHIT/JSON_AND_LIBRARY.md`
 - `BULLSHIT/MANIFEST_AND_LOADING.md`
@@ -109,3 +150,4 @@ Current rule:
 - Document current bone detection timing/path behavior in deeper detail.
 - Recover and inventory remaining standalone migration candidates in `HISTORY/STANDALONE_REFERENCES.md`.
 - Keep Advanced Lighting / Extra Lights documentation synchronized with each material probe milestone and correction.
+- If raw debug/slot archive files are later committed, preserve their recorded hashes and keep them under `HISTORY/REFERENCES/` with non-installing filenames.
