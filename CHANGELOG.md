@@ -1,5 +1,81 @@
 # Changelog
 
+## DOCS-2026-07-22-013 — HeroForge Debug, Slot, Joint, and Lob Archive References
+
+Date: 2026-07-22
+Time: 20:20 PDT
+
+### Added
+
+- Added `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md` with the archived native HeroForge debug-loader model, debug-panel inventory, scene/texture/skeleton/JSON/animator references, known animator defects, wireframe gating limitation, and v0.2 compatibility defects.
+- Added `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md` with sourced/free slot schema notes, dataset statistics, joint ranges, duplicate/malformed source entries, cross-reference opportunities, and safe-use rules.
+- Added `HISTORY/REFERENCES/README.md` as the source manifest for exact filenames, SHA-256 hashes, provenance, parsed dataset counts, Lob archive inventory, and raw-reference storage rules.
+
+### Changed
+
+- Updated `HISTORY/README.md` to index the new topic files and source manifest and to define raw-reference storage rules.
+- Updated `HISTORY/Bullshit_Bible.md` with critical rules and high-risk summaries for archived debug internals and historical slot/joint/attachment data.
+- Updated `HISTORY/STANDALONE_REFERENCES.md` with archived Debug UI v0.1/v0.2 and the 2026-07-19 Lob public script archive, including status, source state, relevance, boundaries, and migration rules.
+- Updated `HISTORY/DECISIONS.md` with the decision to use distilled topic notes plus a source manifest for large unstable external archives unless repo-local raw copies become materially necessary.
+- Updated `HISTORY/SESSION_LOG.md` with the reference checkpoint, dataset findings, archive inventory, storage decision, and future-use scope.
+- Updated `PRE_FLIGHT_Check.md` with target files, history checked, connected modules reviewed, conflict risks, and recommended action.
+
+### Confirmed / Corrected Documentation
+
+- Confirmed the two supplied Debug UI v0.2 files are byte-identical and recorded their shared hash.
+- Confirmed the archived debug bundle identifies a November 6, 2024 HeroForge production build and should be treated as version-bound internal tooling.
+- Recorded that the archived animator stores complete character-state snapshots rather than conventional per-bone keyframes and relies on Photo Booth/token-renderer initialization.
+- Recorded that Debug UI v0.2 remains partially broken because removed webpack imports still have downstream references.
+- Confirmed `Sourced_Slots` contains 366 unique entries and `Free_Slots` contains 121 unique entries.
+- Confirmed every free-slot key is present in the sourced catalog and its preserved field values match the corresponding sourced entry.
+- Corrected the meaning of `Free_Slots`: it is a filtered historical subset, not proof that a slot is currently safe, available, unlocked, writable, or compatible.
+- Confirmed the numbered-joint snapshot contains 641 non-separator rows and 639 unique numeric IDs.
+- Recorded duplicate joint IDs `1204` and `1425` and three source entries lacking the normal `_bind_jnt` suffix.
+- Inventoried the Lob public archive's individual script filenames and internal metadata versions and recorded that filenames must not be used as the sole version source.
+- Preserved `Knight-Witch/HeroForge.Compatibility` as a separate project boundary and kept Persistent Booth separate and unchanged.
+
+### Source Evidence
+
+- `Enable Debug on HeroForge-0.1.txt`
+- `Enable Debug on HeroForge-0.2.txt`
+- `Enable Debug on HeroForge-0.2(1).txt`
+- `Sourced_Slots(1).txt`
+- `Free_Slots(1).txt`
+- `Numbered_Joint_IDs__21_.txt`
+- `hf-scripts-public-master.zip`
+- Exact hashes, archive source identifier, and parsed statistics are recorded in `HISTORY/REFERENCES/README.md`.
+
+### Touched Files
+
+- `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
+- `HISTORY/REFERENCES/README.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Documentation-only reference checkpoint.
+- No Witch Dock JavaScript files changed.
+- No standalone userscript/probe source was committed.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, Persistent Booth behavior, or live runtime behavior changed.
+- Rolling back would remove the durable source hashes, archive inventory, dataset caveats, and extracted debug/slot/joint reference findings but would not affect the installed userscript.
+
+### Test Notes
+
+- Parsed and compared the supplied JSON slot datasets.
+- Checked joint-list numeric ranges, duplicate IDs, and suffix anomalies.
+- Compared the two supplied v0.2 debug files byte-for-byte.
+- Inspected the Lob ZIP inventory and userscript metadata headers.
+- Documentation links and source-manifest references were cross-checked on the documentation branch.
+- No HeroForge runtime test was required because no executable code or live configuration changed.
+
 ## DOCS-2026-07-15-012 — Shadow Pipeline Probe v0.2 Negative Result and v0.3 Target
 
 Date: 2026-07-15
@@ -16,7 +92,7 @@ Time: 00:58 PDT
 - Confirmed that native `sun.shadow` exposes no obvious callable refresh/update method in its observed prototype chain; beyond plain `Object` methods, the inventory found only `clone`, `copy`, and `toJSON`.
 - Corrected the v0.2 zero-call interpretation: the trace excluded `clone`, `copy`, and `toJSON`, accidentally wrapped inherited `toLocaleString`, and therefore recorded zero calls to an irrelevant method. This does not prove that the refresh path is method-free.
 - Recorded one v0.2 transition where the native sun and lighting root were matrix-dirty while the shadow camera/matrix were stale, followed by a later synchronized camera/matrix state with those dirty flags cleared.
-- Recorded the timing limitation that the v0.2 run contained multiple watched UI interactions, so the elapsed time between those dirty and synchronized states is not treated as an isolated automatic refresh delay.
+- Recorded the timing limitation that the v0.2 run contained multiple watched UI interactions, so the elapsed time between those states is not treated as a clean automatic refresh delay.
 - Narrowed the next target to specific live sun, sun-position, sun-target-position, shadow-camera, shadow-camera-position, and shadow-matrix instances rather than `sun.shadow` itself.
 - Recorded `HeroForge_Shadow_Pipeline_Probe_v0.3.0.txt` as a newly created local standalone test artifact that passed syntax and stub-initialization checks but has not yet been runtime-validated in HeroForge.
 
