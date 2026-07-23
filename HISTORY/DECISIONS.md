@@ -4,6 +4,27 @@ Durable decisions that should guide future repo work.
 
 ## Active Decisions
 
+### 2026-07-22 — Large External HeroForge Archives Use Distilled Notes and a Source Manifest
+
+Decision:
+- Store extracted technical findings from large, unstable, or obsolete external HeroForge archives in focused `HISTORY/BULLSHIT/` topic files.
+- Record exact filenames, SHA-256 hashes, provenance, archive inventory, and dataset statistics in `HISTORY/REFERENCES/README.md`.
+- Do not copy old executable userscripts into live `/tools/`, `/HeroForge_UI/`, or `manifest.json` merely for preservation.
+- Keep raw source files in the GPT project/file archive unless a later investigation materially requires repo-local copies.
+- If raw copies are later committed, place them under `HISTORY/REFERENCES/`, use non-installing `.txt` filenames, and never register them as live modules.
+
+Reason:
+- The archived debug bundle and Lob script archive are valuable reverse-engineering references but contain stale APIs, partial compatibility patches, and executable code that should not sit beside production modules.
+- Distilled notes make high-value findings searchable without implying that historical object paths or slot catalogs are current HeroForge contracts.
+- Source hashes and inventory preserve provenance and make exact raw files recoverable or verifiable later.
+
+Applies to:
+- `HISTORY/REFERENCES/README.md`
+- `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- future external HeroForge archives and recovered standalone references
+
 ### 2026-07-13 — Advanced Lighting Uses One Dedicated Sub-Project Spec and a Separate Future Booth-Tab Module
 
 Decision:
@@ -178,49 +199,3 @@ Applies to:
 - `HeroForge_UI/Expanded_UI_Scroll_Guards.js`
 - `HeroForge_UI/HF_UI_Scroll_Split_Safe.js`
 - `tools/Utilities.js`
-
-### 2026-07-09 — Photo Mode PNG Series Must Preserve HF Booth Render Path
-
-Decision:
-- Future PNG series capture work should prioritize HeroForge's own Photo Booth/capture/export path where possible.
-- Capture work must preserve booth effects, overlays, and backgrounds when those are the intended output.
-- Do not treat DOM/CSS resizing or raw canvas capture as automatically equivalent to HeroForge Photo Booth export.
-
-Reason:
-- Prior probing found the 1:1 booth frame can be baked into the WebGL scene.
-- The user specifically needs Photo Booth effects/overlays.
-- Browser/Tampermonkey capture can access final pixels, but not hidden HDR/16-bit buffers.
-
-Applies to:
-- Future Photo Mode / PNG Series capture tool
-- `tools/Booth.js`
-- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
-- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
-
-### 2026-07-09 — Photo Mode PNG Capture Starts Conservative
-
-Decision:
-- First implementation target should be conservative: 1024x1024, around 72 PNG frames, ZIP output, metadata/failure records, explicit arming, and validated frame dimensions.
-- 2048, 4K, 16:9 cinematic output, overlay compositing, and companion app ideas are later-stage features unless they fall out safely from the first working path.
-
-Reason:
-- High-resolution PNG sequences can stress browser memory, ZIP generation, and download behavior.
-- The capture path is not solved yet, so reliability and correct Photo Booth output matter before max resolution or expanded feature surface.
-
-Applies to:
-- `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
-- Future Photo Mode / PNG Series capture tool
-- `MASTER.md` migration queue
-
-## Entry Template
-
-### YYYY-MM-DD — Decision Title
-
-Decision:
-- 
-
-Reason:
-- 
-
-Applies to:
-- 
