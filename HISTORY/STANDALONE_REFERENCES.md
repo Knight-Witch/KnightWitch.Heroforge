@@ -27,6 +27,7 @@ Status:
 Current source state:
 - Not stored as a Witch Dock module.
 - Reference came from Lob/HF Core Tweaks-style Tampermonkey scripts provided outside the repo.
+- A 2026-07-19 snapshot of Lob's public archive is inventoried in `HISTORY/REFERENCES/README.md`.
 
 Known behavior / relevance:
 - The working reference exposed extra decal slots beyond HeroForge default behavior.
@@ -38,11 +39,83 @@ Rules:
 - Diagnose against the working reference before editing Witch Dock slot expansion.
 - Do not make Witch Dock slot expansion unconditional.
 - Do not change unrelated HF Core Tweaks behavior when experimenting with slot count expansion.
+- Do not infer a userscript's actual version from an archive filename; verify the metadata header.
 
 Related files:
 - `HeroForge_UI/HF_UI_Slot_Bridge.js`
 - `HeroForge_UI/Expanded_Decal_Slots.js`
 - `tools/Utilities.js`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
+- `HISTORY/REFERENCES/README.md`
+
+### Archived HeroForge Debug UI v0.1 / v0.2
+
+Status:
+- Historical diagnostic reference / unstable archived internal tooling.
+
+Files:
+- Project source: `Enable Debug on HeroForge-0.1.txt`
+- Project source: `Enable Debug on HeroForge-0.2.txt`
+- Duplicate project copy: `Enable Debug on HeroForge-0.2(1).txt`
+- Exact hashes and provenance: `HISTORY/REFERENCES/README.md`
+
+Current source state:
+- Raw executable copies remain in the GPT project files and are not committed as live repository scripts.
+- Distilled findings are stored in `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`.
+- The embedded HeroForge bundle identifies itself as a November 6, 2024 production build.
+
+Known behavior / relevance:
+- Restores an archived native HeroForge `DebugLive` webpack bundle through the gated debug-loader path.
+- Exposes native internal panels for scene graph inspection, material/texture uniforms, skeleton pose modifiers, modifier conditions, character JSON, asset QA, animation-state recording/rendering, and CSV export.
+- Provides strong behavioral references for scene traversal, native transform gizmos, GPU texture readback, and skeleton modifier discovery.
+- The animator records complete character-state snapshots rather than per-bone timeline keyframes and depends on Photo Booth/token-renderer initialization.
+- The Wireframe toggle only changes character setting state; the actual unlock/render gate is not present in the supplied debug bundle.
+- v0.2 blocks two obsolete resource requests and changes one release path, but retains unresolved module-reference defects.
+
+Rules:
+- Do not load or integrate the complete debug userscript into Witch Dock.
+- Treat every webpack module ID, object path, API, and permission gate as version-bound until current runtime probing confirms it.
+- Extract one focused standalone probe at a time.
+- Preserve renderer state and lifecycle cleanup when reusing texture-readback or scene-transform concepts.
+- Do not treat v0.2 as a stable compatibility release.
+
+Related files:
+- `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/REFERENCES/README.md`
+
+### Lob Public HeroForge Script Archive — 2026-07-19 Snapshot
+
+Status:
+- External historical reference archive.
+
+File:
+- Project source: `hf-scripts-public-master.zip`
+- Exact hash, embedded source commit identifier, and archive inventory: `HISTORY/REFERENCES/README.md`
+
+Current source state:
+- Raw ZIP remains in the GPT project files.
+- It is not copied into the live Witch Dock branch or loaded by `manifest.json`.
+- Contents include HF Core Tweaks, Advanced Decal Posing, FullResDecals, extra-slot, kitbash-part, camera, Persistent Booth lighting, and Photo Booth shader scripts plus supporting reference data.
+
+Known behavior / relevance:
+- Preserves exact third-party source snapshots for future parity checks, recovery, and segmentation into isolated Tampermonkey tests.
+- Contains scripts whose archive filenames do not match their internal userscript metadata versions.
+- Includes the numbered-joint snapshot also documented in the slot/joint topic file.
+
+Rules:
+- Review and isolate individual scripts before testing; do not load the archive as a combined production package.
+- Treat a proven working standalone behavior as canonical until a migrated Witch Dock version is tested and confirmed.
+- Keep the separate `Knight-Witch/HeroForge.Compatibility` stabilization/refactor project out of Witch Dock feature work unless the user explicitly crosses that boundary.
+- Do not infer current HeroForge compatibility from the archive date alone.
+
+Related files:
+- `HISTORY/REFERENCES/README.md`
+- `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
 - `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
 
 ### HeroForge Lighting Probe v0.1.0
@@ -390,16 +463,18 @@ Related files:
 ### Bone / Kitbashing Standalone Probes
 
 Status:
-- Needs recovery.
+- Partially recovered / further source review still needed.
 
 Known behavior / relevance:
 - Current Witch Dock footer bone detection uses tolerant scene-graph probing, baseline snapshots, delayed diffing, pointer/click listeners, and startup retries.
-- Additional standalone probing history may exist and should be recovered before major bone/kitbashing changes.
+- The numbered-joint snapshot and Lob archive now provide additional source data, but other standalone probing history may still exist.
 
 Related files:
 - `Witch_Dock.user.js`
 - `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
 - `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/REFERENCES/README.md`
 
 ### Remaining Standalone Tampermonkey Scripts from User Uploads
 
@@ -408,7 +483,7 @@ Status:
 
 Known behavior / relevance:
 - User has provided external Tampermonkey script bundles during prior debugging.
-- Each standalone script should be inventoried by filename/source once recovered or re-uploaded.
+- The 2026-07-19 Lob public archive is now inventoried, but other uploads may remain outside the current source manifest.
 
 Rules:
 - Do not assume an uploaded standalone is obsolete until reviewed.
@@ -419,6 +494,8 @@ Rules:
 | Reference | Status | Likely Destination | Current Rule |
 |---|---|---|---|
 | HF Core Tweaks / Lob decal reference | External canonical reference | Maybe `HeroForge_UI/` or direct HF Core Tweaks edit, depending on final strategy | Compare before slot-expansion edits. |
+| Archived HeroForge Debug UI v0.1/v0.2 | Historical diagnostic reference | Focused standalone developer probes only | Do not integrate wholesale; validate each extracted API/path against current runtime. |
+| Lob public script archive 2026-07-19 | External historical reference archive | Separate script-by-script testing / `HeroForge.Compatibility` where applicable | Inventory and isolate before testing; do not load as a combined package. |
 | HeroForge Lighting Probe v0.1.0 | Read-only unresolved probe | Diagnostics only | Preserve read-only; use for runtime/bundle discovery. |
 | Lighting Injection Probe v0.1.0 | Historical diagnostic reference | None directly | Preserve proof of second DirectionalLight and non-working counted SphereLight. |
 | Lighting Injection Probe v0.2.0 | Historical diagnostic reference | None directly | Preserve transform controls and post-attach-shadow control result. |
@@ -434,4 +511,4 @@ Rules:
 | Sync Extra Arms | Deprecated | None | Do not use with Witch Dock. |
 | Body Editor / Body Editor BETA | Deprecated | Current `tools/Body_Editor.js` | Only compare if debugging regression. |
 | JSON Bulk Backup variants | Deprecated | Current `tools/JSON_Tool.js` | Only compare if debugging regression. |
-| Bone/kitbashing probes | Needs recovery | TBD | Recover before major bone/kitbashing changes. |
+| Bone/kitbashing probes | Partially recovered | TBD | Use new joint/slot references, but recover remaining probes before major changes. |

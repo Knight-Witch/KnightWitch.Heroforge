@@ -2,6 +2,79 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-07-22-013 — Debug, Slot, Joint, and Lob Archive Reference Checkpoint
+
+Date: 2026-07-22
+Time: 20:20 PDT
+
+Target files:
+- `HISTORY/BULLSHIT/DEBUG_UI_AND_INTERNALS.md`
+- `HISTORY/BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
+- `HISTORY/REFERENCES/README.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/README.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/DECISIONS.md`
+- `HISTORY/SESSION_LOG.md`
+- `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- `HISTORY/BULLSHIT/DECAL_SLOT_SWAPPER.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/LIGHTING_AND_EXTRA_LIGHTS.md`
+- uploaded `coding_rules.txt`
+- `Enable Debug on HeroForge-0.1.txt`
+- `Enable Debug on HeroForge-0.2.txt`
+- duplicate `Enable Debug on HeroForge-0.2(1).txt`
+- `Sourced_Slots(1).txt`
+- `Free_Slots(1).txt`
+- `Numbered_Joint_IDs__21_.txt`
+- `hf-scripts-public-master.zip` and its internal file inventory/userscript metadata headers
+- prior analysis of the archived HeroForge debug UI, animator, scene outliner, material/texture inspector, skeleton modifiers, JSON editor, and CSV exporter
+
+Connected modules reviewed:
+- `manifest.json` loading rules and directory roles through `MASTER.md`; no manifest change required
+- current conditional slot-expansion architecture through `HeroForge_UI/HF_UI_Slot_Bridge.js`, `HeroForge_UI/Expanded_Decal_Slots.js`, and existing documentation
+- current Witch Dock footer bone-detection behavior and tolerant scene-graph rules through `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md`
+- Decal Slot Swapper's unresolved slot-compatibility scope through its dedicated spec
+- Photo Booth/Persistent Booth separation through current Booth and lighting documentation
+- `Knight-Witch/HeroForge.Compatibility` project boundary; no files in that repository were touched
+
+Conflict risks:
+- Documentation-only repository update.
+- No Witch Dock JavaScript files changed.
+- No standalone userscript or probe source is committed by this update.
+- No `manifest.json` changes.
+- No storage keys, UI, styles, APIs, globals, or runtime behavior changed.
+- The archived debug bundle identifies a November 2024 HeroForge build; its webpack IDs, internal paths, APIs, permission gates, and UI behavior are historical until current runtime probing confirms them.
+- Debug userscript v0.2 is only a partial compatibility patch and retains unresolved module-reference defects.
+- The sourced/free slot catalogs and numbered-joint list are historical snapshots, not current authoritative HeroForge data.
+- `Free_Slots` is a filtered subset name, not proof that the slots are currently safe, available, writable, unlocked, or compatible.
+- The numbered-joint source contains duplicate numeric IDs and entries without normal `_bind_jnt` suffixes; source defects must not be silently normalized.
+- Large raw executable archives are intentionally not copied beside production code; exact hashes and provenance are recorded instead.
+- Persistent Booth remains live/working and separate; no edit to `tools/Booth.js` is justified.
+- `Knight-Witch/HeroForge.Compatibility` remains out of scope for this Witch Dock documentation checkpoint.
+
+Recommended action:
+- Add segmented debug-internals and slot/joint/attachment topic files rather than expanding the Bullshit Bible into a monolithic reference dump.
+- Add `HISTORY/REFERENCES/README.md` as the source manifest for hashes, provenance, dataset statistics, and archive inventory.
+- Inventory the archived debug userscripts and Lob public archive in `HISTORY/STANDALONE_REFERENCES.md`.
+- Keep the raw executable/source files in the GPT project archive for now.
+- If raw copies are later committed, store them only under `HISTORY/REFERENCES/` with non-installing `.txt` filenames and never register them in `manifest.json`.
+- Require current runtime verification before any future tool depends on a historical slot, joint, scene path, webpack module, or debug API.
+
 ## PFC-2026-07-15-012 — Shadow Pipeline v0.2 Result and v0.3 Targeted Trace
 
 Date: 2026-07-15

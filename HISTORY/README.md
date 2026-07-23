@@ -8,7 +8,18 @@ This folder stores durable project memory that should survive chat boundaries, c
 - `DECISIONS.md`: durable project decisions and why they were made.
 - `STANDALONE_REFERENCES.md`: inventory of standalone scripts, external references, probes, deprecated scripts, and migration status.
 - `Bullshit_Bible.md`: index of HeroForge engine weirdness and fragile rules.
-- `BULLSHIT/`: topic-specific notes for recurring HeroForge behavior problems, including `LIGHTING_AND_EXTRA_LIGHTS.md` for the Advanced Lighting / Extra Lights sub-project.
+- `BULLSHIT/`: topic-specific notes for recurring HeroForge behavior problems, including:
+  - `LIGHTING_AND_EXTRA_LIGHTS.md` for the Advanced Lighting / Extra Lights sub-project.
+  - `DEBUG_UI_AND_INTERNALS.md` for the archived native debug bundle and internal inspector references.
+  - `SLOTS_JOINTS_AND_ATTACHMENTS.md` for historical slot catalogs, joint IDs, attachment anchors, and dataset caveats.
+- `REFERENCES/README.md`: source manifest, hashes, provenance, and archive inventory for external historical reference files.
+
+## Reference Storage Rules
+
+- Keep obsolete or external executable userscripts out of `/tools/`, `/HeroForge_UI/`, and `manifest.json`.
+- Prefer distilled technical notes plus a source manifest for large unstable archives.
+- If raw copies are later committed, keep them under `HISTORY/REFERENCES/` with non-installing `.txt` filenames.
+- Historical datasets and archived internal bundles are discovery aids, not current HeroForge contracts.
 
 ## Documentation Checkpoints
 
