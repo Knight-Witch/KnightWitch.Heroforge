@@ -2,6 +2,18 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-07-22 — Debug, Slot, Joint, and Lob Archive Reference Checkpoint
+
+- Target: preserve useful reverse-engineering information from Lob's archived HeroForge debug userscripts, public script archive, sourced/free slot catalogs, and numbered-joint list without treating stale executable code or historical data as live HeroForge contracts.
+- Action: added focused notes for the archived native debug UI and for slot/joint/attachment maps; added a source manifest with exact filenames, SHA-256 hashes, dataset statistics, archive inventory, and provenance; indexed the new references in the History README and Bullshit Bible.
+- Debug result: the archived `DebugLive` bundle contains useful scene-graph, texture-uniform, skeleton-modifier, JSON, animation-state, and CSV references, but v0.2 remains partially broken and the complete userscript should not be integrated into Witch Dock.
+- Slot result: `Free_Slots` is a 121-entry subset of the 366-entry sourced catalog with matching preserved fields; the word `free` does not prove current availability, safety, or compatibility.
+- Joint result: the numbered-joint snapshot contains 641 rows and 639 unique numeric IDs, including duplicate IDs `1204` and `1425` plus three entries lacking `_bind_jnt` suffixes.
+- Archive result: inventoried the 2026-07-19 Lob public script ZIP and recorded its embedded source commit identifier, individual script filenames, and metadata versions.
+- Storage decision: keep raw large executable archives in the GPT project files for now; commit distilled findings and a source manifest. Any future raw copies belong under `HISTORY/REFERENCES/` as non-installing `.txt` files and must never be manifest-loaded.
+- Test notes: documentation and source-data analysis only; no Witch Dock JavaScript, standalone userscript source, `manifest.json`, storage keys, UI, Persistent Booth, or runtime behavior changed.
+- Follow-up: use the new topic files as pre-read material before scene-inspector, texture-inspector, animator, slot-injection, attachment, bone, or slot-swapping work.
+
 ## 2026-07-15 — Shadow Pipeline Probe v0.2 Result and v0.3 Trace Target
 
 - Target: identify the callable native `sun.shadow` method responsible for the legitimate shadow-camera/matrix refresh observed in the v0.1 sun-only comparison.
