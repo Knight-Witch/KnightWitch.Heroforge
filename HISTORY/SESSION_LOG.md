@@ -2,6 +2,15 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-08-22 — Booth v21 Lighting and Responsive Canvas Repair
+
+- Target: correct two regressions missed during initial v20 validation: Booth lighting data persisted but was no longer visibly applied outside Booth, and Black Canvas showed a narrow frame/checker artifact at smaller viewport or monitor sizes.
+- Lighting diagnosis: inside/outside `BT.maker.composeDisplayState().lighting` snapshots were identical. The saved state survived; HeroForge reset only its renderer application. A manual native `BT.display.lighting.apply(captured, current)` call restored the lighting immediately.
+- Canvas diagnosis: material transparency and plane scaling had no effect. The native `BT.display.overlays.resize()`, `refresh()`, and `applyVisibility()` sequence removed the artifact, confirming stale responsive overlay state.
+- Action: v21 captures native Booth lighting and reapplies it during both delayed restoration passes; it synchronizes overlays when Black Canvas is activated, Booth exits, or canvas dimensions/DPI change, then reasserts Black Canvas visibility.
+- Runtime result: the user confirmed the complete v21 DEV build works, including lighting persistence and removal of the size-dependent Black Canvas frame.
+- Release scope: `tools/Booth.js` and tracking documentation only. `Witch_Dock.user.js` remains v1.0.5; `manifest.json` remains unchanged.
+
 ## 2026-08-22 — Booth v20 BT Runtime and Black Canvas Repair
 
 - Target: repair Persistent Booth after HeroForge replaced the old `TN.tokenizer` runtime and restore Black Canvas without changing the Witch Dock loader.

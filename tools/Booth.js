@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v20';
+  const BUILD_TAG = 'v21';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -33,6 +33,7 @@
     editorTokenBgSelected: null,
 
     btCanvasVisualSnapshot: null,
+    btCanvasLayoutKey: null,
 
     originalMaterial: null,
     originalUniformValues: null,
@@ -51,6 +52,7 @@
     originalTokenizerDisable: null,
 
     capturedEffectState: null,
+    capturedLightingState: null,
 
     wrapMap: new WeakMap(),
     wrappedDisableObjs: new Set(),
@@ -250,6 +252,28 @@
     }
   }
 
+  function syncBTCanvasLayout(overlays, canvas) {
+    try {
+      const key = [
+        canvas.width,
+        canvas.height,
+        canvas.clientWidth,
+        canvas.clientHeight,
+        UW.devicePixelRatio || 1
+      ].join(':');
+      if (state.btCanvasLayoutKey === key) return false;
+
+      if (typeof overlays.resize === 'function') overlays.resize();
+      if (typeof overlays.refresh === 'function') overlays.refresh();
+      if (typeof overlays.applyVisibility === 'function') overlays.applyVisibility();
+
+      state.btCanvasLayoutKey = key;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   function enforceBTBlackCanvas() {
     try {
       const BT = UW.BT;
@@ -263,6 +287,7 @@
       if (!env || !overlays || !canvas) return false;
 
       captureBTCanvasVisualState();
+      syncBTCanvasLayout(overlays, canvas);
 
       if (typeof env.setDefaultEnvironmentVisibility === 'function') {
         env.setDefaultEnvironmentVisibility(false);
@@ -305,9 +330,11 @@
         if (canvas.parentElement) canvas.parentElement.style.backgroundColor = snap ? snap.holderBackground : '';
       }
       state.btCanvasVisualSnapshot = null;
+      state.btCanvasLayoutKey = null;
       return true;
     } catch {
       state.btCanvasVisualSnapshot = null;
+      state.btCanvasLayoutKey = null;
       return false;
     }
   }
@@ -714,6 +741,52 @@
       if (t && typeof t.enableOverlayEffects === 'function') {
         try { t.enableOverlayEffects(); } catch {}
       }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function copyBTLighting(value) {
+    try {
+      const CK = UW.CK;
+      if (CK && CK.Helpers && typeof CK.Helpers.deepCopy === 'function') {
+        return CK.Helpers.deepCopy(value);
+      }
+    } catch {}
+    return cloneJson(value);
+  }
+
+  function captureBTLightingState() {
+    try {
+      const BT = UW.BT;
+      const maker = BT && BT.maker;
+      if (!maker || typeof maker.composeDisplayState !== 'function') return false;
+      const composed = maker.composeDisplayState();
+      if (!composed || !composed.lighting) return false;
+      state.capturedLightingState = copyBTLighting(composed.lighting);
+      return !!state.capturedLightingState;
+    } catch {
+      return false;
+    }
+  }
+
+  function restoreBTLightingState() {
+    const captured = state.capturedLightingState;
+    if (!captured) return false;
+    try {
+      const BT = UW.BT;
+      const maker = BT && BT.maker;
+      const lighting = BT && BT.display ? BT.display.lighting : null;
+      if (!maker || !lighting || typeof lighting.apply !== 'function') return false;
+
+      let current = null;
+      if (typeof maker.composeDisplayState === 'function') {
+        const composed = maker.composeDisplayState();
+        current = composed && composed.lighting ? copyBTLighting(composed.lighting) : null;
+      }
+
+      lighting.apply(copyBTLighting(captured), current);
       return true;
     } catch {
       return false;
@@ -1274,6 +1347,7 @@ function waitForRuntime(cb) {
               if (!maker || !state.consent || !state.userBoothOn) return;
               if (typeof maker.enable === 'function') maker.enable();
               restoreEffectState(rt2);
+              restoreBTLightingState();
               dbg('bt.reenabled', { enabled: !!maker.enabled });
             } catch {}
           }, 300);
@@ -1284,6 +1358,7 @@ function waitForRuntime(cb) {
               if (rt3 && state.consent && state.userBoothOn) {
                 if (rt3.tokenizer && typeof rt3.tokenizer.enable === 'function') rt3.tokenizer.enable();
                 restoreEffectState(rt3);
+                restoreBTLightingState();
               }
             } catch {}
             state.oneShotBackdropRearmArmed = false;
@@ -1437,11 +1512,13 @@ function waitForRuntime(cb) {
             }
           } catch {}
           try { restoreEffectState(runtimeNow(tn)); } catch {}
+          try { restoreBTLightingState(); } catch {}
 
           // Hero Forge's booth teardown can finish in more than one pass. Restore
           // again after it settles so effect toggles do not remain reset to OFF.
           setTimeout(() => {
             try { restoreEffectState(runtimeNow(tn)); } catch {}
+            try { restoreBTLightingState(); } catch {}
           }, 700);
 
           state._suppressUI = false;
@@ -1497,6 +1574,11 @@ function waitForRuntime(cb) {
 
     if (inBooth) {
       state.seenBooth = true;
+      state.btCanvasLayoutKey = null;
+
+      if (TN && TN.__kwBT && state.consent && state.userBoothOn) {
+        try { captureBTLightingState(); } catch {}
+      }
 
       if (!state.prevInBooth || !state.capturedTokenBg) {
         try { captureBTBoothCanvas(); } catch {}
@@ -1541,7 +1623,7 @@ function waitForRuntime(cb) {
 
     if (state.boothOn) {
       hookTokenizerDisable(TN);
-      enforceLightingPersistence(TN);
+      if (!TN.__kwBT) enforceLightingPersistence(TN);
       wrapDisable(TN && TN.tokenizer ? TN.tokenizer : null);
     }
 
@@ -1622,6 +1704,7 @@ function waitForRuntime(cb) {
     const rt = resolveRuntime();
     if (rt && rt.__kwBT) {
       if (state.bgOn) {
+        state.btCanvasLayoutKey = null;
         enforceBTBlackCanvas();
       } else {
         restoreBTCanvasVisualState();
@@ -1707,6 +1790,8 @@ function waitForRuntime(cb) {
           hasCapturedBackdrop: !!state.capturedMaterial,
           hasCapturedTokenBg: !!state.capturedTokenBg,
           capturedTokenBgSelected: state.capturedTokenBgSelected,
+          hasCapturedLighting: !!state.capturedLightingState,
+          canvasLayoutKey: state.btCanvasLayoutKey,
           hasEnvironmentMesh: !!(env && env.mesh),
           loopActive: !!state.loopActive
         }, null, 2);

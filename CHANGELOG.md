@@ -1,5 +1,41 @@
 # Changelog
 
+## BOOTH-2026-08-22-015 — Booth v21 Lighting and Responsive Canvas Repair
+
+Date: 2026-08-22
+Time: 19:29 PDT
+
+### Changed
+
+- Updated `tools/Booth.js` from build v20 to v21.
+- Captured Booth lighting from `BT.maker.composeDisplayState().lighting` while inside Booth.
+- Restored visible lighting through `BT.display.lighting.apply(...)` during both delayed Booth restoration passes.
+- Replaced the ineffective BT lighting-disable wrapping path while preserving the legacy `TN` path.
+- Added cached canvas/client-size/DPI detection for responsive Black Canvas synchronization.
+- Ran HeroForge's native overlay `resize()`, `refresh()`, and `applyVisibility()` sequence when layout state changes, then reasserted Black Canvas visibility.
+- Corrected v20 documentation that had overstated lighting and small-viewport validation.
+
+### Touched Files
+
+- `tools/Booth.js`
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Revert this commit to return to v20's working core persistence and Black Canvas foundation without lighting reapplication or responsive overlay synchronization.
+- No `Witch_Dock.user.js`, `manifest.json`, storage key, install flow, unrelated tool, or public UI presentation changed.
+
+### Test Notes
+
+- Manual console test confirmed saved inside/outside lighting data remained identical and native `lighting.apply(...)` restored visible Booth lighting.
+- Manual overlay synchronization removed the size-dependent frame/checker artifact.
+- The complete v21 DEV build was runtime-confirmed by the user.
+- Final promoted Booth module passed JavaScript syntax and whitespace checks.
+
 ## BOOTH-2026-08-22-014 — Booth v20 BT Runtime and Black Canvas Repair
 
 Date: 2026-08-22

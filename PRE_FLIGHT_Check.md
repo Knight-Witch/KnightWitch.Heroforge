@@ -2,6 +2,48 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-08-22-015 — Booth v21 Lighting and Responsive Canvas Repair
+
+Date: 2026-08-22
+Time: 19:29 PDT
+
+Target files:
+- `tools/Booth.js`
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+
+Connected modules reviewed:
+- `Witch_Dock.user.js` live manifest loader
+- `manifest.json` `booth-tool` entry
+- `BT.maker.composeDisplayState()` lighting data
+- `BT.display.lighting.apply()` native renderer application
+- `BT.display.overlays` resize, refresh, visibility, planes, canvas dimensions, and DPI state
+- Existing v20 disable/enable timing, effect restoration, Black Canvas enforcement, and debug markers
+
+Conflict risks:
+- Replacing the confirmed v20 `BT.maker` lifecycle could regress core persistence.
+- Applying stale/default lighting rather than the captured Booth state could overwrite the user's scene lighting.
+- Running overlay resize/refresh every frame would add unnecessary renderer work and could fight HeroForge state changes.
+- Calling native overlay visibility after Black Canvas enforcement could restore the translucent frame unless Black Canvas visibility is reasserted afterward.
+
+Recommended action:
+- Preserve v20 wholesale and promote only the runtime-confirmed v21 DEV delta.
+- Capture current lighting inside Booth and restore it through the native controller during existing delayed passes.
+- Synchronize overlays only when layout state changes or is explicitly invalidated, then reassert Black Canvas.
+- Leave `Witch_Dock.user.js` and `manifest.json` unchanged.
+
 ## PFC-2026-08-22-014 — Booth v20 BT Runtime and Black Canvas Repair
 
 Date: 2026-08-22

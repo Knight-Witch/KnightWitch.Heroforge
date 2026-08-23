@@ -14,13 +14,13 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 
 ## Findings
 
-### Booth Tool Uses Build Tag `v20`
+### Booth Tool Uses Build Tag `v21`
 
 Context:
 - `tools/Booth.js` defines the current live Booth build tag.
 
 Observed behavior:
-- `BUILD_TAG` is `v20`.
+- `BUILD_TAG` is `v21`.
 - Debug helpers exposed: `window.KW_WD_BOOTH_DEBUG_DUMP` and `window.KW_WD_BOOTH_BUILD`.
 
 Working approach:
@@ -40,13 +40,35 @@ Observed behavior:
 - Wrapping the real `BT.maker.disable()` exit call, allowing HeroForge teardown to commit, then re-enabling `BT.maker` restores Persistent Booth behavior.
 - Black Canvas requires the combined display state: hide the default environment, keep `backgroundPlane` visible, hide `framePlane`, `shadowPlane`, and `mask`, and make the rendered canvas background black.
 - Re-entering Booth recreates overlay visibility state, and changing the selected Booth background refreshes display state. Black Canvas therefore needs continued enforcement rather than a one-time assignment.
-- Runtime testing confirmed that v20 preserves the selected 1:1 Booth background, keeps the outside canvas black, suppresses the translucent frame, survives Booth re-entry and backdrop changes, and restores the normal environment when disabled.
+- Initial v20 testing confirmed the core `BT.maker` persistence path and most Black Canvas behavior, but later testing found two missed regressions: applied lighting reset outside Booth, and a stale overlay frame appeared at smaller viewport/monitor sizes.
 
 Working approach:
 - Resolve `BT.maker` without removing tolerant legacy runtime detection.
 - Preserve the delayed disable/enable lifecycle and effect-state restoration.
 - Treat Black Canvas as framing/display enforcement; do not overwrite the user's selected `tokenBg` backdrop.
-- Preserve the v20 loop and visibility snapshots so disabling Black Canvas restores prior state.
+- Preserve the v20 lifecycle foundation and visibility snapshots so disabling Black Canvas restores prior state.
+
+Affected tools:
+- `tools/Booth.js`
+
+### v21 Restores Applied Lighting and Synchronizes Responsive Black Canvas
+
+Context:
+- v20 retained Booth lighting data in `BT.maker.composeDisplayState().lighting`, but HeroForge reset the visibly applied renderer lighting on Booth exit.
+- Black Canvas could show a narrow checker/frame artifact on smaller monitors or split-screen browser widths even though the same state looked correct at full ultrawide size.
+
+Observed behavior:
+- Lighting snapshots inside and outside Booth were byte-equivalent, proving the saved lighting data persisted while its rendered application did not.
+- Calling `BT.display.lighting.apply(capturedLighting, currentLighting)` outside Booth immediately restored the intended Booth lighting.
+- `BT.display.overlays.resize()`, `refresh()`, and `applyVisibility()` removed the size-dependent frame artifact.
+- Material transparency and background-plane scale changes did not affect the artifact.
+- The exposed 59-character `fragmentShader` was only a red placeholder, not HeroForge's compiled background shader.
+
+Working approach:
+- Capture a deep copy of `BT.maker.composeDisplayState().lighting` while inside Booth.
+- Reapply it through the native lighting controller during both delayed Booth restoration passes.
+- On Black Canvas activation, Booth exit, or canvas/client-size/DPI change, run the native overlay resize/refresh/visibility sequence, then reassert the tested Black Canvas visibility state.
+- Do not call the native resize sequence on every animation frame; cache the current canvas layout signature and rerun only when invalidated or changed.
 
 Affected tools:
 - `tools/Booth.js`
