@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v16';
+  const BUILD_TAG = 'v20';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -27,6 +27,13 @@
     capturedTextureUniforms: null,
     hookedMesh: null,
 
+    capturedTokenBg: null,
+    capturedTokenBgSelected: null,
+    editorTokenBg: null,
+    editorTokenBgSelected: null,
+
+    btCanvasVisualSnapshot: null,
+
     originalMaterial: null,
     originalUniformValues: null,
     originalTextureUniforms: null,
@@ -42,6 +49,8 @@
 
     tokenizerHooked: false,
     originalTokenizerDisable: null,
+
+    capturedEffectState: null,
 
     wrapMap: new WeakMap(),
     wrappedDisableObjs: new Set(),
@@ -111,6 +120,196 @@
     try {
       localStorage.setItem(key, JSON.stringify(val));
     } catch {}
+  }
+
+  let btRuntimeFacade = null;
+
+  function resolveRuntime() {
+    try {
+      if (UW.TN && UW.TN.tokenizer) return UW.TN;
+      const BT = UW.BT;
+      if (!BT || !BT.maker) return null;
+      if (!btRuntimeFacade) btRuntimeFacade = { __kwBT: true };
+      btRuntimeFacade.source = BT;
+      btRuntimeFacade.tokenizer = BT.maker;
+      btRuntimeFacade.lighting = BT.display && BT.display.lighting ? BT.display.lighting : null;
+      btRuntimeFacade.shader = BT.display || null;
+      btRuntimeFacade.currentMode = BT.currentMode || BT._boothMode || null;
+      return btRuntimeFacade;
+    } catch {
+      return null;
+    }
+  }
+
+  function runtimeNow(fallback) {
+    return resolveRuntime() || fallback || null;
+  }
+
+  function cloneJson(value) {
+    try { return JSON.parse(JSON.stringify(value)); } catch { return null; }
+  }
+
+  function readBTTokenBg() {
+    try {
+      const display = UW.BT && UW.BT.display;
+      const displayState = display && display.state;
+      const filters = displayState && displayState.filters;
+      if (!filters || !filters.tokenBg) return null;
+      return {
+        filter: cloneJson(filters.tokenBg),
+        selected: displayState.selected ? displayState.selected.tokenBg : null
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  function captureBTBoothCanvas() {
+    const snap = readBTTokenBg();
+    if (!snap || !snap.filter) return false;
+    state.capturedTokenBg = snap.filter;
+    state.capturedTokenBgSelected = snap.selected;
+    return true;
+  }
+
+  function applyBTTokenBg(filter, selected) {
+    try {
+      const maker = UW.BT && UW.BT.maker;
+      if (!maker || !filter) return false;
+      const next = cloneJson(filter);
+      if (!next) return false;
+
+      // Black Canvas is explicitly black even if the captured Booth background
+      // used tintable colors or a nonzero blur value.
+      const count = Math.max(3, Number(next.numColors) || 0);
+      next.numColors = count;
+      next.colors = Array.from({ length: count }, () => [0, 0, 0]);
+
+      if (selected !== null && selected !== undefined && typeof maker._tweakSaved === 'function') {
+        try { maker._tweakSaved({ selected: { tokenBg: selected } }); } catch {}
+      }
+      if (typeof maker.tweakFilters === 'function') maker.tweakFilters({ tokenBg: next }, false);
+      else if (typeof maker._tweakSaved === 'function') maker._tweakSaved({ filters: { tokenBg: next } });
+      if (typeof maker.pushDisplayState === 'function') maker.pushDisplayState();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function isBTCanvasApplied(selected) {
+    try {
+      const snap = readBTTokenBg();
+      if (!snap || !snap.filter || !Array.isArray(snap.filter.colors)) return false;
+      if (selected !== null && selected !== undefined && snap.selected !== selected) return false;
+      return snap.filter.colors.length > 0 && snap.filter.colors.every((c) =>
+        Array.isArray(c) && Number(c[0]) === 0 && Number(c[1]) === 0 && Number(c[2]) === 0
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  function restoreBTTokenBg() {
+    try {
+      const maker = UW.BT && UW.BT.maker;
+      if (!maker || !state.editorTokenBg) return false;
+      if (state.editorTokenBgSelected !== null && state.editorTokenBgSelected !== undefined && typeof maker._tweakSaved === 'function') {
+        try { maker._tweakSaved({ selected: { tokenBg: state.editorTokenBgSelected } }); } catch {}
+      }
+      if (typeof maker.tweakFilters === 'function') maker.tweakFilters({ tokenBg: cloneJson(state.editorTokenBg) }, false);
+      else if (typeof maker._tweakSaved === 'function') maker._tweakSaved({ filters: { tokenBg: cloneJson(state.editorTokenBg) } });
+      if (typeof maker.pushDisplayState === 'function') maker.pushDisplayState();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function captureBTCanvasVisualState() {
+    if (state.btCanvasVisualSnapshot) return state.btCanvasVisualSnapshot;
+    try {
+      const BT = UW.BT;
+      const overlays = BT && BT.display ? BT.display.overlays : null;
+      const canvas = UW.CK && UW.CK.renderManager && UW.CK.renderManager.renderer
+        ? UW.CK.renderManager.renderer.domElement
+        : null;
+      const holder = canvas && canvas.parentElement ? canvas.parentElement : null;
+      if (!overlays || !canvas) return null;
+      state.btCanvasVisualSnapshot = {
+        backgroundVisible: overlays.backgroundPlane ? !!overlays.backgroundPlane.visible : null,
+        frameVisible: overlays.framePlane ? !!overlays.framePlane.visible : null,
+        shadowVisible: overlays.shadowPlane ? !!overlays.shadowPlane.visible : null,
+        maskVisible: overlays.mask && 'visible' in overlays.mask ? !!overlays.mask.visible : null,
+        canvasBackground: canvas.style.backgroundColor || '',
+        holderBackground: holder ? (holder.style.backgroundColor || '') : ''
+      };
+      return state.btCanvasVisualSnapshot;
+    } catch {
+      return null;
+    }
+  }
+
+  function enforceBTBlackCanvas() {
+    try {
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const display = BT && BT.display;
+      const env = display && display.environment;
+      const overlays = display && display.overlays;
+      const canvas = CK && CK.renderManager && CK.renderManager.renderer
+        ? CK.renderManager.renderer.domElement
+        : null;
+      if (!env || !overlays || !canvas) return false;
+
+      captureBTCanvasVisualState();
+
+      if (typeof env.setDefaultEnvironmentVisibility === 'function') {
+        env.setDefaultEnvironmentVisibility(false);
+      }
+      if (overlays.backgroundPlane) overlays.backgroundPlane.visible = true;
+      if (overlays.framePlane) overlays.framePlane.visible = false;
+      if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
+      if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
+
+      canvas.style.backgroundColor = '#000000';
+      if (canvas.parentElement) canvas.parentElement.style.backgroundColor = '#000000';
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function restoreBTCanvasVisualState() {
+    const snap = state.btCanvasVisualSnapshot;
+    try {
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const display = BT && BT.display;
+      const env = display && display.environment;
+      const overlays = display && display.overlays;
+      const canvas = CK && CK.renderManager && CK.renderManager.renderer
+        ? CK.renderManager.renderer.domElement
+        : null;
+      if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
+        env.setDefaultEnvironmentVisibility(true);
+      }
+      if (snap && overlays) {
+        if (overlays.backgroundPlane && snap.backgroundVisible !== null) overlays.backgroundPlane.visible = snap.backgroundVisible;
+        if (overlays.framePlane && snap.frameVisible !== null) overlays.framePlane.visible = snap.frameVisible;
+        if (overlays.shadowPlane && snap.shadowVisible !== null) overlays.shadowPlane.visible = snap.shadowVisible;
+        if (overlays.mask && snap.maskVisible !== null && 'visible' in overlays.mask) overlays.mask.visible = snap.maskVisible;
+      }
+      if (canvas) {
+        canvas.style.backgroundColor = snap ? snap.canvasBackground : '';
+        if (canvas.parentElement) canvas.parentElement.style.backgroundColor = snap ? snap.holderBackground : '';
+      }
+      state.btCanvasVisualSnapshot = null;
+      return true;
+    } catch {
+      state.btCanvasVisualSnapshot = null;
+      return false;
+    }
   }
 
   function ensureStyles() {
@@ -465,8 +664,10 @@
   }
 
   function teardownBoothNow(TN) {
+    captureEffectState(TN);
     try {
-      const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
+      const rt = runtimeNow(TN);
+      const t = rt && rt.tokenizer ? rt.tokenizer : null;
       if (t && typeof t.disable === 'function') t.disable();
       else if (t && typeof state.originalTokenizerDisable === 'function') state.originalTokenizerDisable.call(t);
     } catch {}
@@ -478,6 +679,45 @@
         try { rec.original.call(obj); } catch {}
       });
     } catch {}
+  }
+
+  function captureEffectState(TN) {
+    try {
+      const rt = runtimeNow(TN);
+      const t = rt && rt.tokenizer ? rt.tokenizer : null;
+      const effects = t && t.effectState ? t.effectState : null;
+      if (!effects) return null;
+      if (typeof effects.toJson === 'function') {
+        state.capturedEffectState = effects.toJson();
+      }
+      return state.capturedEffectState;
+    } catch {
+      return null;
+    }
+  }
+
+  function restoreEffectState(TN) {
+    const snap = state.capturedEffectState;
+    if (!snap) return false;
+    try {
+      const rt = runtimeNow(TN);
+      const t = rt && rt.tokenizer ? rt.tokenizer : null;
+      const effects = t && t.effectState ? t.effectState : null;
+      if (!effects) return false;
+
+      if (typeof effects.fromJson === 'function') effects.fromJson(snap);
+      else if (typeof effects.load === 'function') effects.load(snap);
+      else return false;
+
+      // Lob's current Shader Fix owns this function. Calling it reapplies its
+      // required passes without replacing or fighting the non-configurable patch.
+      if (t && typeof t.enableOverlayEffects === 'function') {
+        try { t.enableOverlayEffects(); } catch {}
+      }
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function handleToggleChange(kind, nextVal, TN) {
@@ -504,7 +744,8 @@
       if (!state.userBoothOn && prevUser) state.boothPendingTeardown = true;
       if (state.userBoothOn && !prevUser) {
         try {
-          const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
+          const rt = runtimeNow(TN);
+          const t = rt && rt.tokenizer ? rt.tokenizer : null;
           dbg('silentCycle.on', {});
           if (t && typeof t.enable === 'function') t.enable();
         } catch {}
@@ -529,9 +770,10 @@
   try { dbg('init', { build: BUILD_TAG }); } catch {}
 
 
-function waitForTN(cb) {
-    if (UW.TN) return cb(UW.TN);
-    setTimeout(() => waitForTN(cb), 50);
+function waitForRuntime(cb) {
+    const rt = resolveRuntime();
+    if (rt) return cb(rt);
+    setTimeout(() => waitForRuntime(cb), 50);
   }
 
   function jparse(s) {
@@ -571,6 +813,9 @@ function waitForTN(cb) {
   }
 
   function isInBooth(TN) {
+    try {
+      if (TN && TN.__kwBT && TN.tokenizer) return !!TN.tokenizer.enabled;
+    } catch {}
     const mode = getTokenizerMode(TN);
     try {
       if (mode && mode.toLowerCase().includes('booth')) return true;
@@ -583,7 +828,7 @@ function waitForTN(cb) {
     if (state.exitRearmTimer) return;
     state.exitRearmTimer = setTimeout(() => {
       state.exitRearmTimer = null;
-      const tn = UW.TN || TN || null;
+      const tn = runtimeNow(TN);
       if (!tn || !state.userBoothOn) return;
       if (isInBooth(tn)) return;
 
@@ -592,7 +837,7 @@ function waitForTN(cb) {
         teardownBoothNow(tn); } catch {}
 
       setTimeout(() => {
-        const tn2 = UW.TN || tn;
+        const tn2 = runtimeNow(tn);
         if (!tn2 || !state.userBoothOn) return;
         if (isInBooth(tn2)) return;
         state.boothOn = true;
@@ -767,6 +1012,10 @@ function waitForTN(cb) {
   }
 
   function getBackground() {
+    try {
+      const env = UW.BT && UW.BT.display ? UW.BT.display.environment : null;
+      if (env && env.mesh) return env;
+    } catch {}
     const root = getRoot();
     return root && root.background ? root.background : null;
   }
@@ -993,19 +1242,59 @@ function waitForTN(cb) {
         try {
           let name = '';
           try {
-            if (UW.TN && UW.TN.tokenizer && obj === UW.TN.tokenizer) name = 'TN.tokenizer';
-            else if (UW.TN && UW.TN.lighting && obj === UW.TN.lighting) name = 'TN.lighting';
+            const rt = resolveRuntime();
+            if (rt && rt.tokenizer && obj === rt.tokenizer) name = rt.__kwBT ? 'BT.maker' : 'TN.tokenizer';
+            else if (rt && rt.lighting && obj === rt.lighting) name = rt.__kwBT ? 'BT.display.lighting' : 'TN.lighting';
           } catch {}
           dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
         } catch {}
       try {
-        const tn = UW.TN;
+        const tn = resolveRuntime();
         const tok = tn && tn.tokenizer;
         const isTokenizer = tok && obj === tok;
 
+        // Hero Forge's new Booth runtime exposes BT.maker instead of TN.tokenizer.
+        // Its real disable() call is the booth-exit signal. Allow that teardown
+        // exactly once, then re-enable after the new display state has committed.
+        if (tn && tn.__kwBT && isTokenizer && state.boothOn && state.consent && state.userBoothOn) {
+          if (state.oneShotBackdropRearmArmed) return true;
+          state.oneShotBackdropRearmArmed = true;
+          captureEffectState(tn);
+          dbg('bt.exit.disable', {});
+
+          state.allowTokenizerDisableOnce = true;
+          let result = true;
+          try { result = original.apply(this, arguments); } catch {}
+          state.allowTokenizerDisableOnce = false;
+
+          setTimeout(() => {
+            try {
+              const rt2 = resolveRuntime();
+              const maker = rt2 && rt2.tokenizer;
+              if (!maker || !state.consent || !state.userBoothOn) return;
+              if (typeof maker.enable === 'function') maker.enable();
+              restoreEffectState(rt2);
+              dbg('bt.reenabled', { enabled: !!maker.enabled });
+            } catch {}
+          }, 300);
+
+          setTimeout(() => {
+            try {
+              const rt3 = resolveRuntime();
+              if (rt3 && state.consent && state.userBoothOn) {
+                if (rt3.tokenizer && typeof rt3.tokenizer.enable === 'function') rt3.tokenizer.enable();
+                restoreEffectState(rt3);
+              }
+            } catch {}
+            state.oneShotBackdropRearmArmed = false;
+          }, 1200);
+
+          return result;
+        }
+
         if (state.boothOn) {
         try {
-          const tn = UW.TN || null;
+          const tn = resolveRuntime();
           const tok = tn && tn.tokenizer ? tn.tokenizer : null;
           if (tok && obj === tok && state.consent && state.userBoothOn && tn && !isInBooth(tn)) {
             dbg('exit.detect.disable', {});
@@ -1028,14 +1317,15 @@ function waitForTN(cb) {
           setTimeout(() => {
             state.oneShotBackdropRearmArmed = false;
             try {
-              const t2 = UW.TN && UW.TN.tokenizer;
+              const rt2 = resolveRuntime();
+              const t2 = rt2 && rt2.tokenizer;
               if (t2 && typeof t2.enable === 'function') t2.enable();
             } catch {}
           }, 200);
 
           setTimeout(() => {
             try {
-              const tn2 = UW.TN;
+              const tn2 = resolveRuntime();
               if (!tn2 || !state.userBoothOn) return;
               if (isInBooth(tn2)) return;
               const t3 = tn2.tokenizer;
@@ -1075,6 +1365,7 @@ function waitForTN(cb) {
   function detectExistingBooth(TN) {
     const t = TN && TN.tokenizer;
     if (!t) return false;
+    if (TN.__kwBT) return !!t.enabled || !!t._enabledFor;
     return !!(t.savedCamera || t.currentCamera);
   }
 
@@ -1108,7 +1399,7 @@ function waitForTN(cb) {
     state.silentCycleTimer = setTimeout(() => {
       state.silentCycleTimer = null;
 
-      const tn = UW.TN || TN || null;
+      const tn = runtimeNow(TN);
       if (!tn) return;
       if (isInBooth(tn)) return;
       if (!state.consent || !state.userBoothOn) return;
@@ -1122,39 +1413,36 @@ function waitForTN(cb) {
 
       try { if (uiToggle) uiToggle.disabled = true; } catch {}
 
-      function fireToggle(nextChecked) {
-        try {
-          if (!uiToggle) return false;
-          uiToggle.checked = !!nextChecked;
-          try { uiToggle.dispatchEvent(new Event('input', { bubbles: true })); } catch {}
-          try { uiToggle.dispatchEvent(new Event('change', { bubbles: true })); } catch {}
-          try { uiToggle.click(); } catch {}
-          return true;
-        } catch {
-          return false;
-        }
-      }
-
-      // OFF using real DOM events if possible; fallback to handler
-      const didDomOff = fireToggle(false);
-      if (!didDomOff) {
-        try { onUserBoothToggle(false); } catch {}
-      }
+      // Keep the visible switch frozen while the internal one-shot teardown runs.
+      // v16 also clicked the checkbox after dispatching change, which inverted the
+      // requested value a second time and left persistence in the wrong state.
+      try { onUserBoothToggle(false); } catch {}
 
       setTimeout(() => {
-        // ON
-        const didDomOn = fireToggle(true);
-        if (!didDomOn) {
-          try { onUserBoothToggle(true); } catch {}
-        }
+        try { onUserBoothToggle(true); } catch {}
 
         setTimeout(() => {
           try {
             if (!state.capturedMaterial) tryCaptureBackdropFromScene();
           } catch {}
           try { if (state.capturedMaterial) applyCapturedMaterial(); } catch {}
-          try { if (state.capturedUniformValues) applyUniformSnapshot(); } catch {}
-          try { if (state.capturedTextureUniforms) applyTextureSnapshot(); } catch {}
+          try {
+            if (state.capturedMaterial && state.capturedUniformValues) {
+              applyUniformSnapshot(state.capturedMaterial, state.capturedUniformValues);
+            }
+          } catch {}
+          try {
+            if (state.capturedMaterial && state.capturedTextureUniforms) {
+              applyTextureSnapshot(state.capturedMaterial, state.capturedTextureUniforms);
+            }
+          } catch {}
+          try { restoreEffectState(runtimeNow(tn)); } catch {}
+
+          // Hero Forge's booth teardown can finish in more than one pass. Restore
+          // again after it settles so effect toggles do not remain reset to OFF.
+          setTimeout(() => {
+            try { restoreEffectState(runtimeNow(tn)); } catch {}
+          }, 700);
 
           state._suppressUI = false;
           state.silentCycleInProgress = false;
@@ -1197,7 +1485,31 @@ function waitForTN(cb) {
       return inPhotoBoothUI();
     })();
 
-    if (inBooth) state.seenBooth = true;
+    if (TN && TN.__kwBT && !inBooth && !state.bgOn && !state.editorTokenBg) {
+      try {
+        const editor = readBTTokenBg();
+        if (editor) {
+          state.editorTokenBg = editor.filter;
+          state.editorTokenBgSelected = editor.selected;
+        }
+      } catch {}
+    }
+
+    if (inBooth) {
+      state.seenBooth = true;
+
+      if (!state.prevInBooth || !state.capturedTokenBg) {
+        try { captureBTBoothCanvas(); } catch {}
+      }
+
+      // Capture the actual booth backdrop while it exists, independently of
+      // whether persistence or Black Canvas is currently enabled. Previously
+      // Black Canvas only captured while already ON, so toggling it in the
+      // editor could merely capture/reapply the editor background and do nothing.
+      if (!state.prevInBooth || !state.capturedMaterial) {
+        try { tryCaptureBackdropFromScene(); } catch {}
+      }
+    }
 
     if (state.prevInBooth && !inBooth) {
       dbg('booth.exit', { mode: tokenizerMode });
@@ -1239,7 +1551,9 @@ function waitForTN(cb) {
       updateUI();
     }
 
-    if (state.bgOn) {
+    if (state.bgOn && TN && TN.__kwBT) {
+      try { enforceBTBlackCanvas(); } catch {}
+    } else if (state.bgOn) {
       if (!state.capturedMaterial) tryCaptureBackdropFromScene();
       if (!state.originalMaterial) captureOriginalBackdrop();
       maybeCaptureEditorBaseline();
@@ -1274,7 +1588,7 @@ function waitForTN(cb) {
 
   function onUserBoothToggle(v) {
     try { dbg('ui.boothToggle', { v: !!v, consent: !!state.consent }); } catch {}
-    const TN = UW.TN;
+    const TN = resolveRuntime();
     state.userBoothOn = !!v;
     if (!state.consent) {
       state.userBoothOn = false;
@@ -1293,7 +1607,8 @@ function waitForTN(cb) {
 
     if (state.userBoothOn && !prev) {
       try {
-        const t = (TN && TN.tokenizer) || (UW.TN && UW.TN.tokenizer) || null;
+        const rt = runtimeNow(TN);
+        const t = rt && rt.tokenizer ? rt.tokenizer : null;
         if (t && typeof t.enable === 'function') t.enable();
       } catch {}
     }
@@ -1303,6 +1618,19 @@ function waitForTN(cb) {
 
   function onUserBgToggle(v) {
     state.bgOn = !!v;
+
+    const rt = resolveRuntime();
+    if (rt && rt.__kwBT) {
+      if (state.bgOn) {
+        enforceBTBlackCanvas();
+      } else {
+        restoreBTCanvasVisualState();
+      }
+      reconcileLoop();
+      updateUI();
+      return;
+    }
+
     if (!state.bgOn) {
       try { restoreOriginalBackdrop(); } catch {}
     } else {
@@ -1316,7 +1644,7 @@ function waitForTN(cb) {
   function startLoop() {
     if (!state.loopActive) {
       state.loopActive = true;
-      waitForTN((TN) => requestAnimationFrame(() => tick(TN)));
+      waitForRuntime((TN) => requestAnimationFrame(() => tick(TN)));
     }
   }
 
@@ -1336,9 +1664,9 @@ function waitForTN(cb) {
     state.autoApplied = false;
     state.boothPendingTeardown = false;
     state.oneShotBackdropRearmArmed = false;
-    try { setShaderFrameHidden(false, UW.TN); } catch {}
+    try { setShaderFrameHidden(false, resolveRuntime()); } catch {}
     try { setBoothFrameHidden(false); } catch {}
-    try { teardownBoothNow(UW.TN); } catch {}
+    try { teardownBoothNow(resolveRuntime()); } catch {}
     updateUI();
   }
 
@@ -1361,6 +1689,30 @@ function waitForTN(cb) {
   try {
     UW.KW_WD_BOOTH_DEBUG_DUMP = function () {
       try { return JSON.stringify(state.debugLog, null, 2); } catch { return '[]'; }
+    };
+    UW.KW_WD_BOOTH_DIAG = function () {
+      try {
+        const rt = resolveRuntime();
+        const env = UW.BT && UW.BT.display ? UW.BT.display.environment : null;
+        return JSON.stringify({
+          build: BUILD_TAG,
+          runtime: rt ? (rt.__kwBT ? 'BT' : 'TN') : null,
+          mode: rt ? rt.currentMode : null,
+          makerEnabled: !!(rt && rt.tokenizer && rt.tokenizer.enabled),
+          makerEnabledFor: rt && rt.tokenizer ? rt.tokenizer._enabledFor : null,
+          tokenizerHooked: !!state.tokenizerHooked,
+          boothOn: !!state.boothOn,
+          userBoothOn: !!state.userBoothOn,
+          blackCanvasOn: !!state.bgOn,
+          hasCapturedBackdrop: !!state.capturedMaterial,
+          hasCapturedTokenBg: !!state.capturedTokenBg,
+          capturedTokenBgSelected: state.capturedTokenBgSelected,
+          hasEnvironmentMesh: !!(env && env.mesh),
+          loopActive: !!state.loopActive
+        }, null, 2);
+      } catch (e) {
+        return JSON.stringify({ build: BUILD_TAG, error: String(e) }, null, 2);
+      }
     };
     UW.KW_WD_BOOTH_BUILD = BUILD_TAG;
     try { console.log('[Booth] build', BUILD_TAG); } catch {}
