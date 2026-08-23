@@ -4,10 +4,11 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v21';
+  const BUILD_TAG = 'v24';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
+  const STORE_COMPONENTS = 'kw.witchDock.booth.components.v1';
 
   const state = {
     consent: false,
@@ -16,6 +17,10 @@
     boothOn: false,
     userBoothOn: false,
     bgOn: false,
+    persistLightingOn: true,
+    persistEffectsOn: true,
+    persistOverlaysOn: true,
+    persistBackgroundOn: true,
 
     autoApplied: false,
     seenBooth: false,
@@ -81,7 +86,6 @@
 
     debugLog: [],
 
-
     allowTokenizerDisableOnce: false,
     loopActive: false,
 
@@ -89,6 +93,10 @@
       root: null,
       consent: null,
       boothToggle: null,
+      lightingToggle: null,
+      effectsToggle: null,
+      overlaysToggle: null,
+      backgroundToggle: null,
       bgToggle: null,
       dirWrap: null,
       dirText: null,
@@ -292,7 +300,7 @@
       if (typeof env.setDefaultEnvironmentVisibility === 'function') {
         env.setDefaultEnvironmentVisibility(false);
       }
-      if (overlays.backgroundPlane) overlays.backgroundPlane.visible = true;
+      if (overlays.backgroundPlane) overlays.backgroundPlane.visible = !!state.persistBackgroundOn;
       if (overlays.framePlane) overlays.framePlane.visible = false;
       if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
       if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
@@ -346,6 +354,11 @@
     st.textContent = `
       .kwBoothTool{display:flex;flex-direction:column;gap:10px;padding:10px;}
       .kwBoothRow{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+      .kwBoothSubRow{padding-left:22px;}
+      .kwBoothSubRow .kwBoothToggle{width:36px;height:20px;}
+      .kwBoothSubRow .kwBoothSlider{border-radius:10px;}
+      .kwBoothSubRow .kwBoothSlider:before{width:14px;height:14px;top:3px;left:3px;}
+      .kwBoothSubRow .kwBoothToggle input:checked + .kwBoothSlider:before{transform:translateX(16px);}
       .kwBoothLeft{display:flex;align-items:center;gap:10px;}
       .kwBoothToggle{position:relative;display:inline-block;width:44px;height:24px;flex:0 0 auto;}
       .kwBoothToggle input{opacity:0;width:0;height:0;}
@@ -433,9 +446,22 @@
     }
 
     const boothT = mkToggle('Booth View');
+    const lightingT = mkToggle('Lighting');
+    const effectsT = mkToggle('Effects');
+    const overlaysT = mkToggle('Overlays');
+    const backgroundT = mkToggle('Background');
     const bgT = mkToggle('Black Canvas');
 
+    lightingT.row.classList.add('kwBoothSubRow');
+    effectsT.row.classList.add('kwBoothSubRow');
+    overlaysT.row.classList.add('kwBoothSubRow');
+    backgroundT.row.classList.add('kwBoothSubRow');
+
     togglesBox.appendChild(boothT.row);
+    togglesBox.appendChild(lightingT.row);
+    togglesBox.appendChild(effectsT.row);
+    togglesBox.appendChild(overlaysT.row);
+    togglesBox.appendChild(backgroundT.row);
     togglesBox.appendChild(bgT.row);
 
     const dirBox = document.createElement('div');
@@ -504,6 +530,10 @@
     state.ui.root = root;
     state.ui.consent = consentCb;
     state.ui.boothToggle = boothT.input;
+    state.ui.lightingToggle = lightingT.input;
+    state.ui.effectsToggle = effectsT.input;
+    state.ui.overlaysToggle = overlaysT.input;
+    state.ui.backgroundToggle = backgroundT.input;
     state.ui.bgToggle = bgT.input;
     state.ui.dirWrap = dirBox;
     state.ui.dirText = dirText;
@@ -512,9 +542,20 @@
 
     state.consent = !!gmGet(STORE_CONSENT, false);
     state.directionsHidden = !!gmGet(STORE_DIR_HIDDEN, false);
+    const components = gmGet(STORE_COMPONENTS, null);
+    if (components && typeof components === 'object') {
+      state.persistLightingOn = components.lighting !== false;
+      state.persistEffectsOn = components.effects !== false;
+      state.persistOverlaysOn = components.overlays !== false;
+      state.persistBackgroundOn = components.background !== false;
+    }
 
     consentCb.addEventListener('change', () => onConsentToggle(!!consentCb.checked));
     boothT.input.addEventListener('change', () => onUserBoothToggle(!!boothT.input.checked));
+    lightingT.input.addEventListener('change', () => onComponentToggle('lighting', !!lightingT.input.checked));
+    effectsT.input.addEventListener('change', () => onComponentToggle('effects', !!effectsT.input.checked));
+    overlaysT.input.addEventListener('change', () => onComponentToggle('overlays', !!overlaysT.input.checked));
+    backgroundT.input.addEventListener('change', () => onComponentToggle('background', !!backgroundT.input.checked));
     bgT.input.addEventListener('change', () => onUserBgToggle(!!bgT.input.checked));
 
     dirBtn.addEventListener('click', (e) => {
@@ -543,6 +584,24 @@
     if (!suppress && ui.boothToggle) {
       ui.boothToggle.disabled = !state.consent;
       ui.boothToggle.checked = !!state.userBoothOn;
+    }
+
+    const componentsDisabled = !state.consent || !state.userBoothOn;
+    if (!suppress && ui.lightingToggle) {
+      ui.lightingToggle.disabled = componentsDisabled;
+      ui.lightingToggle.checked = !!state.persistLightingOn;
+    }
+    if (!suppress && ui.effectsToggle) {
+      ui.effectsToggle.disabled = componentsDisabled;
+      ui.effectsToggle.checked = !!state.persistEffectsOn;
+    }
+    if (!suppress && ui.overlaysToggle) {
+      ui.overlaysToggle.disabled = componentsDisabled;
+      ui.overlaysToggle.checked = !!state.persistOverlaysOn;
+    }
+    if (!suppress && ui.backgroundToggle) {
+      ui.backgroundToggle.disabled = componentsDisabled;
+      ui.backgroundToggle.checked = !!state.persistBackgroundOn;
     }
 
     if (!suppress && ui.bgToggle) {
@@ -712,7 +771,19 @@
     try {
       const rt = runtimeNow(TN);
       const t = rt && rt.tokenizer ? rt.tokenizer : null;
-      const effects = t && t.effectState ? t.effectState : null;
+
+      // BT.maker.effectState() no longer exposes the saved Photo Booth state.
+      // The current runtime keeps the authoritative state in composeDisplayState().
+      if (rt && rt.__kwBT && t && typeof t.composeDisplayState === 'function') {
+        const composed = t.composeDisplayState();
+        if (composed && composed.effects) {
+          state.capturedEffectState = copyBTLighting(composed.effects);
+          return state.capturedEffectState;
+        }
+      }
+
+      const accessor = t && t.effectState ? t.effectState : null;
+      const effects = typeof accessor === 'function' ? accessor.call(t) : accessor;
       if (!effects) return null;
       if (typeof effects.toJson === 'function') {
         state.capturedEffectState = effects.toJson();
@@ -729,7 +800,8 @@
     try {
       const rt = runtimeNow(TN);
       const t = rt && rt.tokenizer ? rt.tokenizer : null;
-      const effects = t && t.effectState ? t.effectState : null;
+      const accessor = t && t.effectState ? t.effectState : null;
+      const effects = typeof accessor === 'function' ? accessor.call(t) : accessor;
       if (!effects) return false;
 
       if (typeof effects.fromJson === 'function') effects.fromJson(snap);
@@ -745,6 +817,52 @@
     } catch {
       return false;
     }
+  }
+
+  const BT_OVERLAY_PASSES = new Set(['Highlights', 'TransparencyOverlay']);
+
+  function capturedEffectPasses() {
+    try {
+      const passes = state.capturedEffectState &&
+        state.capturedEffectState.effects &&
+        state.capturedEffectState.effects.enabledPasses;
+      return Array.isArray(passes) ? passes.slice() : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function setBTEffectPass(pass, enabled) {
+    try {
+      const effects = UW.CK && UW.CK.Effects;
+      if (!effects || typeof effects.enablePass !== 'function') return false;
+      effects.enablePass(pass, !!enabled);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyBTComponentEffectState(TN) {
+    const rt = runtimeNow(TN);
+    if (!rt || !rt.__kwBT) return restoreEffectState(rt);
+
+    if (!capturedEffectPasses().length) captureEffectState(rt);
+
+    if (state.persistEffectsOn || state.persistOverlaysOn) {
+      restoreEffectState(rt);
+    }
+
+    const passes = capturedEffectPasses();
+    for (let i = 0; i < passes.length; i++) {
+      const pass = passes[i];
+      const overlayPass = BT_OVERLAY_PASSES.has(pass);
+      setBTEffectPass(pass, overlayPass ? state.persistOverlaysOn : state.persistEffectsOn);
+    }
+
+    setBTEffectPass('Highlights', state.persistOverlaysOn);
+    setBTEffectPass('TransparencyOverlay', state.persistOverlaysOn);
+    return true;
   }
 
   function copyBTLighting(value) {
@@ -772,25 +890,97 @@
   }
 
   function restoreBTLightingState() {
+    if (!state.persistLightingOn) return false;
+    if (!state.capturedLightingState) captureBTLightingState();
     const captured = state.capturedLightingState;
     if (!captured) return false;
     try {
       const BT = UW.BT;
-      const maker = BT && BT.maker;
       const lighting = BT && BT.display ? BT.display.lighting : null;
-      if (!maker || !lighting || typeof lighting.apply !== 'function') return false;
+      if (!lighting || typeof lighting.apply !== 'function') return false;
 
-      let current = null;
-      if (typeof maker.composeDisplayState === 'function') {
-        const composed = maker.composeDisplayState();
-        current = composed && composed.lighting ? copyBTLighting(composed.lighting) : null;
-      }
-
-      lighting.apply(copyBTLighting(captured), current);
+      // reset() restores editor lighting while composeDisplayState() continues to
+      // report the saved Booth values. Passing that identical composed state as
+      // the previous value makes Hero Forge skip its full lighting refresh.
+      lighting.apply(copyBTLighting(captured), null);
       return true;
     } catch {
       return false;
     }
+  }
+
+  function resetBTLightingState() {
+    try {
+      const lighting = UW.BT && UW.BT.display ? UW.BT.display.lighting : null;
+      if (!lighting) return false;
+      if (typeof lighting.reset === 'function') lighting.reset();
+      else if (typeof lighting.apply === 'function') lighting.apply(null);
+      else return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyBTComponentPlanes() {
+    try {
+      const overlays = UW.BT && UW.BT.display ? UW.BT.display.overlays : null;
+      if (!overlays) return false;
+      if (overlays.backgroundPlane) {
+        overlays.backgroundPlane.visible = !!state.persistBackgroundOn;
+      }
+      if (!state.persistOverlaysOn && overlays.framePlane) {
+        overlays.framePlane.visible = false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function refreshBTComponentRender() {
+    try {
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const overlays = BT && BT.display ? BT.display.overlays : null;
+
+      if (overlays) {
+        if (typeof overlays.resize === 'function') overlays.resize();
+        if (typeof overlays.refresh === 'function') overlays.refresh();
+        if (typeof overlays.applyVisibility === 'function') overlays.applyVisibility();
+      }
+
+      applyBTComponentPlanes();
+      if (state.bgOn) enforceBTBlackCanvas();
+
+      if (CK && CK.character && typeof CK.character.refresh === 'function') {
+        CK.character.refresh();
+      }
+
+      requestAnimationFrame(() => {
+        try {
+          if (overlays) {
+            if (typeof overlays.resize === 'function') overlays.resize();
+            if (typeof overlays.refresh === 'function') overlays.refresh();
+            if (typeof overlays.applyVisibility === 'function') overlays.applyVisibility();
+          }
+          applyBTComponentPlanes();
+          if (state.bgOn) enforceBTBlackCanvas();
+        } catch {}
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function saveComponentPreferences() {
+    gmSet(STORE_COMPONENTS, {
+      lighting: !!state.persistLightingOn,
+      effects: !!state.persistEffectsOn,
+      overlays: !!state.persistOverlaysOn,
+      background: !!state.persistBackgroundOn
+    });
   }
 
   function handleToggleChange(kind, nextVal, TN) {
@@ -1346,7 +1536,7 @@ function waitForRuntime(cb) {
               const maker = rt2 && rt2.tokenizer;
               if (!maker || !state.consent || !state.userBoothOn) return;
               if (typeof maker.enable === 'function') maker.enable();
-              restoreEffectState(rt2);
+              applyBTComponentEffectState(rt2);
               restoreBTLightingState();
               dbg('bt.reenabled', { enabled: !!maker.enabled });
             } catch {}
@@ -1357,7 +1547,7 @@ function waitForRuntime(cb) {
               const rt3 = resolveRuntime();
               if (rt3 && state.consent && state.userBoothOn) {
                 if (rt3.tokenizer && typeof rt3.tokenizer.enable === 'function') rt3.tokenizer.enable();
-                restoreEffectState(rt3);
+                applyBTComponentEffectState(rt3);
                 restoreBTLightingState();
               }
             } catch {}
@@ -1511,13 +1701,13 @@ function waitForRuntime(cb) {
               applyTextureSnapshot(state.capturedMaterial, state.capturedTextureUniforms);
             }
           } catch {}
-          try { restoreEffectState(runtimeNow(tn)); } catch {}
+          try { applyBTComponentEffectState(runtimeNow(tn)); } catch {}
           try { restoreBTLightingState(); } catch {}
 
           // Hero Forge's booth teardown can finish in more than one pass. Restore
           // again after it settles so effect toggles do not remain reset to OFF.
           setTimeout(() => {
-            try { restoreEffectState(runtimeNow(tn)); } catch {}
+            try { applyBTComponentEffectState(runtimeNow(tn)); } catch {}
             try { restoreBTLightingState(); } catch {}
           }, 700);
 
@@ -1578,6 +1768,7 @@ function waitForRuntime(cb) {
 
       if (TN && TN.__kwBT && state.consent && state.userBoothOn) {
         try { captureBTLightingState(); } catch {}
+        try { captureEffectState(TN); } catch {}
       }
 
       if (!state.prevInBooth || !state.capturedTokenBg) {
@@ -1645,6 +1836,10 @@ function waitForRuntime(cb) {
       enforceTextureUniforms();
     }
 
+    if (TN && TN.__kwBT && state.boothOn && !inBooth) {
+      try { applyBTComponentPlanes(); } catch {}
+    }
+
     state.prevInBooth = inBooth;
 
     requestAnimationFrame(() => tick(TN));
@@ -1695,6 +1890,45 @@ function waitForRuntime(cb) {
       } catch {}
     }
 
+    updateUI();
+  }
+
+  function onComponentToggle(kind, value) {
+    const next = !!value;
+    const rt = resolveRuntime();
+
+    if (kind === 'lighting') {
+      state.persistLightingOn = next;
+      if (next) {
+        if (!state.capturedLightingState) captureBTLightingState();
+        restoreBTLightingState();
+      } else {
+        if (!state.capturedLightingState) captureBTLightingState();
+        resetBTLightingState();
+      }
+    } else if (kind === 'effects') {
+      state.persistEffectsOn = next;
+      if (!capturedEffectPasses().length) captureEffectState(rt);
+      applyBTComponentEffectState(rt);
+    } else if (kind === 'overlays') {
+      state.persistOverlaysOn = next;
+      if (!capturedEffectPasses().length) captureEffectState(rt);
+      applyBTComponentEffectState(rt);
+      applyBTComponentPlanes();
+    } else if (kind === 'background') {
+      state.persistBackgroundOn = next;
+      if (state.bgOn && rt && rt.__kwBT) {
+        state.btCanvasLayoutKey = null;
+        enforceBTBlackCanvas();
+      } else {
+        applyBTComponentPlanes();
+      }
+    } else {
+      return;
+    }
+
+    refreshBTComponentRender();
+    saveComponentPreferences();
     updateUI();
   }
 
@@ -1787,6 +2021,12 @@ function waitForRuntime(cb) {
           boothOn: !!state.boothOn,
           userBoothOn: !!state.userBoothOn,
           blackCanvasOn: !!state.bgOn,
+          components: {
+            lighting: !!state.persistLightingOn,
+            effects: !!state.persistEffectsOn,
+            overlays: !!state.persistOverlaysOn,
+            background: !!state.persistBackgroundOn
+          },
           hasCapturedBackdrop: !!state.capturedMaterial,
           hasCapturedTokenBg: !!state.capturedTokenBg,
           capturedTokenBgSelected: state.capturedTokenBgSelected,
