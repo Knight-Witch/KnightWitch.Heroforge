@@ -2,6 +2,45 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-08-22-014 — Booth v20 BT Runtime and Black Canvas Repair
+
+Date: 2026-08-22
+Time: 18:31 PDT
+
+Target files:
+- `tools/Booth.js`
+- `Witch_Dock.user.js` (metadata correction only)
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/BULLSHIT/TIMING_AND_STATE.md`
+
+Connected modules reviewed:
+- `Witch_Dock.user.js` live manifest loader and current v1.0.5 metadata
+- `manifest.json` `booth-tool` entry and raw GitHub module URL
+- Booth storage keys, runtime globals, UI toggles, frame/overlay state, teardown/rearm timing, and build marker
+
+Conflict risks:
+- Blocking `BT.maker.disable()` entirely would prevent HeroForge from committing Booth state.
+- One-time Black Canvas assignments are overwritten by Booth re-entry and backdrop selection changes.
+- Changing `tokenBg` would overwrite the user's chosen 1:1 Booth background.
+- Bumping `Witch_Dock.user.js` is unnecessary and would incorrectly require a Tampermonkey shell update.
+
+Recommended action:
+- Promote the runtime-confirmed v20 Booth module with its `BUILD_TAG = 'v20'` marker.
+- Preserve the tested delayed lifecycle, polling/enforcement loop, effect restoration, and tolerant runtime paths.
+- Keep `Witch_Dock.user.js` at v1.0.5 and leave `manifest.json` unchanged.
+
 ## PFC-2026-07-22-013 — Debug, Slot, Joint, and Lob Archive Reference Checkpoint
 
 Date: 2026-07-22

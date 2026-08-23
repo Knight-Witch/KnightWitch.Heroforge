@@ -2,6 +2,15 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-08-22 — Booth v20 BT Runtime and Black Canvas Repair
+
+- Target: repair Persistent Booth after HeroForge replaced the old `TN.tokenizer` runtime and restore Black Canvas without changing the Witch Dock loader.
+- Diagnosis: the live Booth controller is now `BT.maker`; the old integrated module remained trapped waiting for the removed tokenizer path. The visible Black Canvas result depends on the default environment, Booth overlay planes, and rendered canvas background rather than a single backdrop-material assignment.
+- Action: migrated Booth persistence to the real `BT.maker.disable()`/`enable()` lifecycle while preserving teardown timing and effect-state restoration; changed Black Canvas into continuously enforced visual state that leaves the selected 1:1 Booth background intact.
+- Runtime result: the user confirmed Persistent Booth, Black Canvas, Booth re-entry, Booth-background changes, removal of the translucent frame, selected-background persistence, and Black Canvas disable/restore all work in v20.
+- Release scope: update `tools/Booth.js` only for runtime code. `Witch_Dock.user.js` remains v1.0.5 and `manifest.json` remains unchanged because Witch Dock fetches live modules from GitHub on page load.
+- Test notes: v20 passed JavaScript syntax and whitespace checks; runtime validation was completed in HeroForge through the standalone DEV build before promotion.
+
 ## 2026-07-22 — Debug, Slot, Joint, and Lob Archive Reference Checkpoint
 
 - Target: preserve useful reverse-engineering information from Lob's archived HeroForge debug userscripts, public script archive, sourced/free slot catalogs, and numbered-joint list without treating stale executable code or historical data as live HeroForge contracts.

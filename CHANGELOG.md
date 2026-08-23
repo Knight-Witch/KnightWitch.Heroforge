@@ -1,5 +1,43 @@
 # Changelog
 
+## BOOTH-2026-08-22-014 — Booth v20 BT Runtime and Black Canvas Repair
+
+Date: 2026-08-22
+Time: 18:31 PDT
+
+### Changed
+
+- Restored `Witch_Dock.user.js` metadata to v1.0.5 after an unnecessary metadata-only v1.0.6 bump; the loader/runtime itself is unchanged.
+- Updated `tools/Booth.js` from build v16 to v20.
+- Migrated live Persistent Booth control to HeroForge's current `BT.maker` runtime while retaining tolerant legacy resolution paths.
+- Wrapped the real Booth disable lifecycle so HeroForge can complete teardown, then re-enabled Booth state and restored captured effects after the transition settles.
+- Reworked Black Canvas as persistent display-state enforcement: default environment hidden, background plane retained, translucent frame/mask/shadow planes hidden, and the rendered canvas background forced black.
+- Preserved the user's selected 1:1 Booth background instead of overwriting `tokenBg`.
+- Reapplied Black Canvas state after Booth re-entry and Booth-background changes.
+- Updated project tracking and Booth runtime history to record the v20 baseline.
+
+### Touched Files
+
+- `tools/Booth.js`
+- `MASTER.md`
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `Witch_Dock.user.js` (metadata correction only; net public loader version remains v1.0.5)
+
+### Rollback Notes
+
+- Revert this commit to restore the previous v16 Booth implementation.
+- `Witch_Dock.user.js` remains v1.0.5.
+- No `manifest.json`, loading order, storage key, public install flow, or unrelated tool changed.
+
+### Test Notes
+
+- The standalone v20 DEV build passed JavaScript syntax validation before promotion.
+- Runtime-confirmed in HeroForge: Persistent Booth, Black Canvas, Booth re-entry, Booth-background changes, selected 1:1 backdrop preservation, translucent-frame suppression, and normal-environment restoration when Black Canvas is disabled.
+- Final promoted `tools/Booth.js` passed JavaScript syntax and whitespace checks.
+
 ## DOCS-2026-07-22-013 — HeroForge Debug, Slot, Joint, and Lob Archive References
 
 Date: 2026-07-22

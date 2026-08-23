@@ -115,13 +115,13 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 
 - Manifest ID: `booth-tool`.
 - Tool ID: `booth-tool`.
-- Build tag: `v16`.
+- Build tag: `v20`.
 - Registers into tab `Booth`.
 - Storage keys: `kw.witchDock.booth.consent.v1`, `kw.witchDock.booth.directionsHidden.v1`.
 - Exposes debug helpers: `window.KW_WD_BOOTH_DEBUG_DUMP`, `window.KW_WD_BOOTH_BUILD`.
 - Current visible section: `Persistent Booth`.
-- Status: Persistent Booth is live/working. It is not part of the open PNG-series capture todo. Remaining Booth work should be treated as minor fixes unless a new regression is confirmed.
-- Core behaviors include booth persistence consent, booth view toggle, black canvas toggle, tokenizer/mode detection, frame hiding, shader/backdrop handling, and a runtime tick loop.
+- Status: Persistent Booth and Black Canvas were runtime-confirmed working on the current `BT.maker` HeroForge runtime in v20. It is not part of the open PNG-series capture todo. Remaining Booth work should be treated as minor fixes unless a new regression is confirmed.
+- Core behaviors include booth persistence consent, booth view toggle, Black Canvas, `BT.maker` runtime detection, native Booth disable/enable rearming, default-environment suppression, overlay-plane visibility enforcement, selected Booth-background preservation, and a runtime tick loop.
 - Fragile area: heavy runtime behavior; do not simplify loops, tokenizer hooks, teardown/rearm logic, backdrop capture, or frame hiding without a tested reference.
 
 ### JSON Tool — `tools/JSON_Tool.js`

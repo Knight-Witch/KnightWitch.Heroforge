@@ -14,18 +14,39 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 
 ## Findings
 
-### Booth Tool Uses Build Tag `v16`
+### Booth Tool Uses Build Tag `v20`
 
 Context:
 - `tools/Booth.js` defines the current live Booth build tag.
 
 Observed behavior:
-- `BUILD_TAG` is `v16`.
+- `BUILD_TAG` is `v20`.
 - Debug helpers exposed: `window.KW_WD_BOOTH_DEBUG_DUMP` and `window.KW_WD_BOOTH_BUILD`.
 
 Working approach:
 - Preserve build/debug visibility when troubleshooting Booth regressions.
 - Use debug dump/build tag before guessing about runtime state.
+
+Affected tools:
+- `tools/Booth.js`
+
+### v20 Migrates Persistent Booth to `BT.maker` and Repairs Black Canvas
+
+Context:
+- HeroForge removed the old live `TN.tokenizer` path used by Persistent Booth.
+- The current Booth runtime is exposed through `BT.maker`.
+
+Observed behavior:
+- Wrapping the real `BT.maker.disable()` exit call, allowing HeroForge teardown to commit, then re-enabling `BT.maker` restores Persistent Booth behavior.
+- Black Canvas requires the combined display state: hide the default environment, keep `backgroundPlane` visible, hide `framePlane`, `shadowPlane`, and `mask`, and make the rendered canvas background black.
+- Re-entering Booth recreates overlay visibility state, and changing the selected Booth background refreshes display state. Black Canvas therefore needs continued enforcement rather than a one-time assignment.
+- Runtime testing confirmed that v20 preserves the selected 1:1 Booth background, keeps the outside canvas black, suppresses the translucent frame, survives Booth re-entry and backdrop changes, and restores the normal environment when disabled.
+
+Working approach:
+- Resolve `BT.maker` without removing tolerant legacy runtime detection.
+- Preserve the delayed disable/enable lifecycle and effect-state restoration.
+- Treat Black Canvas as framing/display enforcement; do not overwrite the user's selected `tokenBg` backdrop.
+- Preserve the v20 loop and visibility snapshots so disabling Black Canvas restores prior state.
 
 Affected tools:
 - `tools/Booth.js`
