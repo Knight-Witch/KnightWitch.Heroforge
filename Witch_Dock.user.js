@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v1.0.5
+// @name         Witch Dock v1.0.7
 // @namespace    KnightWitch
-// @version      1.0.5
+// @version      1.0.7
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -26,6 +26,7 @@
 const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
 const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
 const KOFI_URL = "https://ko-fi.com/knightwitch";
+const COMPACT_EMBLEM_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/ASSETS/emblem.png";
 const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
 
 function gmGetText(url) {
@@ -553,39 +554,31 @@ async function loadManifestAndTools() {
   position: fixed;
   z-index: 999999;
   display: none;
+  width: 54px;
+  height: 54px;
+  padding: 0;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 6px;
+  justify-content: center;
+  border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.16);
   background: rgba(20,20,22,0.92);
-  color: #eee;
-  font: 12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   backdrop-filter: blur(8px);
   user-select: none;
-  cursor: move;
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
 }
-#kwWDCompactTitle{
-  font-weight: 800;
-  letter-spacing: 0.25px;
+#kwWDCompact:active{ cursor: grabbing; }
+#kwWDCompactIcon{
+  width: 40px;
+  height: 40px;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
-#kwWDCompactExpand{
-  width: 34px;
-  height: 30px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 900;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  color: #eee;
-  cursor: default;
-}
-#kwWDCompactExpand:hover{ background: rgba(255,255,255,0.14); }
 
 .kwWDSection{
   border: 1px solid rgba(255,255,255,0.10);
@@ -1752,8 +1745,8 @@ function mountTool(def) {
     prefs.minimized = true;
 
     const { vh } = getViewport();
-    prefs.compactX = 16;
-    prefs.compactY = vh - 56;
+    if (prefs.compactX == null) prefs.compactX = 16;
+    if (prefs.compactY == null) prefs.compactY = vh - 70;
 
     savePrefs(prefs);
     applyMinimizedState();
@@ -1799,21 +1792,34 @@ function mountTool(def) {
 
   function startCompactDrag(e) {
     if (!state.compact) return;
-    const target = e.target;
-    if (target && target.closest("#kwWDCompactExpand")) return;
+    if (e.isPrimary === false) return;
+    if (typeof e.button === "number" && e.button !== 0) return;
+
+    e.preventDefault();
 
     state.compact.style.right = "";
     state.compact.style.bottom = "";
 
+    const pointerId = e.pointerId;
     const rect = state.compact.getBoundingClientRect();
     const startX = e.clientX;
     const startY = e.clientY;
     const startLeft = rect.left;
     const startTop = rect.top;
+    let dragging = false;
+
+    try { state.compact.setPointerCapture(pointerId); } catch {}
 
     function move(ev) {
+      if (ev.pointerId !== pointerId) return;
+
       const dx = ev.clientX - startX;
       const dy = ev.clientY - startY;
+
+      if (!dragging) {
+        if (Math.hypot(dx, dy) <= 5) return;
+        dragging = true;
+      }
 
       const { vw, vh } = getViewport();
       const w = state.compact.getBoundingClientRect().width;
@@ -1830,13 +1836,27 @@ function mountTool(def) {
       savePrefs(prefs);
     }
 
-    function up() {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
+    function cleanup() {
+      window.removeEventListener("pointermove", move, true);
+      window.removeEventListener("pointerup", up, true);
+      window.removeEventListener("pointercancel", cancel, true);
+      try { state.compact.releasePointerCapture(pointerId); } catch {}
     }
 
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
+    function up(ev) {
+      if (ev.pointerId !== pointerId) return;
+      cleanup();
+      if (!dragging) expandFromCompact();
+    }
+
+    function cancel(ev) {
+      if (ev.pointerId !== pointerId) return;
+      cleanup();
+    }
+
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", up, true);
+    window.addEventListener("pointercancel", cancel, true);
   }
 
 
@@ -2600,11 +2620,10 @@ function buildUI() {
     setTimeout(updateTabsCue, 0);
     setTimeout(updateTabsCue, 350);
 
-    state.compact = el("div", { id: "kwWDCompact", onpointerdown: startCompactDrag }, [
-      el("div", { id: "kwWDCompactTitle", text: "WITCH DOCK" }),
-      el("button", { id: "kwWDCompactExpand", type: "button", text: "▣", title: "Expand", onclick: expandFromCompact })
+    state.compact = el("div", { id: "kwWDCompact", title: "Open Witch Dock", onpointerdown: startCompactDrag }, [
+      el("img", { id: "kwWDCompactIcon", src: COMPACT_EMBLEM_URL, alt: "Witch Dock", draggable: "false" })
     ]);
-    state.compactExpandBtn = state.compact.querySelector("#kwWDCompactExpand");
+    state.compactExpandBtn = null;
     document.body.appendChild(state.compact);
 
     prefs.width = prefs.width || DEFAULTS.width;

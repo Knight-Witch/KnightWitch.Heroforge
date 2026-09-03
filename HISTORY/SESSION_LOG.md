@@ -2,6 +2,16 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-09-02 — Witch Dock Emblem Compact Launcher
+
+- Target: replace the fully closed horizontal `WITCH DOCK` bar with the Blender Quickbar-style square emblem launcher requested for public Witch Dock.
+- Diagnosis: the current public `Witch_Scripts/Witch_Dock.user.js` still used the old horizontal compact bar. `DEV_TEST` is an intentionally divergent scratch/testing branch and was not used as a merge source for this promotion.
+- Canonical test reference: standalone `Witch_Dock_DEV_Emblem_Launcher_v25.txt` / v1.0.7.25 behavior was runtime-confirmed by the user before promotion.
+- Action: transplanted only the tested compact-shell delta into the current live shell, added the exact supplied transparent white `ASSETS/emblem.png`, retained the existing `kw.witchDock.v1` storage, and preserved `compactX` / `compactY` positioning.
+- Interaction behavior: 54x54 launcher; click reopens Witch Dock; movement beyond 5px becomes drag and repositions the launcher without reopening it.
+- Release scope: `Witch_Dock.user.js`, the emblem asset, and release/tracking documentation only. `manifest.json`, all `/tools/`, all `/HeroForge_UI/`, Persistent Booth, and Photo Mode PNG Series Capture remain unchanged.
+- Versioning: public shell advances from v1.0.5 to v1.0.7; v1.0.6 is intentionally skipped because it existed transiently during earlier Booth work before rollback.
+
 ## 2026-08-22 — Booth v21 Lighting and Responsive Canvas Repair
 
 - Target: correct two regressions missed during initial v20 validation: Booth lighting data persisted but was no longer visibly applied outside Booth, and Black Canvas showed a narrow frame/checker artifact at smaller viewport or monitor sizes.

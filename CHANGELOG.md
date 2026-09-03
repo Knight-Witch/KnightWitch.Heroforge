@@ -1,5 +1,44 @@
 # Changelog
 
+## DOCK-2026-09-02-016 — Witch Dock Emblem Compact Launcher
+
+Date: 2026-09-02
+Time: 23:35 PDT
+
+### Changed
+
+- Updated the public `Witch_Dock.user.js` shell from v1.0.5 to v1.0.7.
+- Replaced the fully closed horizontal `WITCH DOCK` compact bar and separate expand button with a 54x54 square emblem launcher.
+- Added click-to-open behavior directly to the compact launcher.
+- Added the runtime-confirmed >5px pointer-drag threshold so intended dragging does not accidentally reopen the Dock.
+- Preserved compact launcher placement through the existing `compactX` / `compactY` preferences instead of resetting its position every time the Dock closes.
+- Added the exact supplied transparent white emblem as `ASSETS/emblem.png` and referenced it from the public shell.
+- Skipped public v1.0.6 because that metadata version existed transiently during prior Booth work before being rolled back to v1.0.5; v1.0.7 ensures forward Tampermonkey version ordering.
+
+### Touched Files
+
+- `Witch_Dock.user.js`
+- `ASSETS/emblem.png`
+- `MASTER.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Revert this commit to restore the previous horizontal closed-state `WITCH DOCK` bar with its separate expand button and v1.0.5 shell metadata.
+- No `manifest.json`, `/tools/`, `/HeroForge_UI/`, storage key, module loading behavior, Persistent Booth logic, Photo Mode PNG capture work, or unrelated public UI changed.
+- The existing `kw.witchDock.v1` preference object and `compactX` / `compactY` fields remain in use; no storage migration is required.
+
+### Test Notes
+
+- The standalone emblem-launcher DEV build (`Witch_Dock_DEV_Emblem_Launcher_v25.txt`, v1.0.7.25) was runtime-confirmed by the user before promotion.
+- Confirmed tested behavior: 54x54 emblem launcher, click to reopen, drag to reposition, and >5px movement threshold to distinguish drag from click.
+- The supplied emblem was confirmed as a 256x256 RGBA PNG with transparent background and white artwork.
+- Promotion was performed surgically against the current live `Witch_Scripts` shell rather than by merging the intentionally divergent `DEV_TEST` branch.
+- Final public source/asset/tree checks were completed before moving the live branch ref; post-release HeroForge retest remains available as a final smoke test.
+
 ## BOOTH-2026-08-22-015 — Booth v21 Lighting and Responsive Canvas Repair
 
 Date: 2026-08-22

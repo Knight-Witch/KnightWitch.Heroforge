@@ -2,6 +2,55 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-09-02-016 — Witch Dock Emblem Compact Launcher
+
+Date: 2026-09-02
+Time: 23:35 PDT
+
+Target files:
+- `Witch_Dock.user.js`
+- `ASSETS/emblem.png`
+- `MASTER.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
+- `HISTORY/SESSION_LOG.md`
+- `STYLE_KEYS.md`
+- current live `Witch_Dock.user.js`
+- current live `manifest.json`
+- runtime-confirmed standalone emblem-launcher behavior from `Witch_Dock_DEV_Emblem_Launcher_v25.txt` / v1.0.7.25 testing
+
+Connected modules reviewed:
+- `kw.witchDock.v1` dock preference storage, including `closed`, `minimized`, `compactX`, and `compactY`
+- `showClosedCompact()`, `closeDock()`, `expandFromCompact()`, and `startCompactDrag()`
+- footer bone detection's existing `#kwWDCompact` interaction exclusion
+- live manifest loading and module registration boundary
+- Persistent Booth / `tools/Booth.js` production boundary
+
+Conflict risks:
+- Merging the diverged `DEV_TEST` branch would import unrelated and stale branch history instead of the tested launcher delta.
+- Resetting `compactX` / `compactY` on every close would discard the user's launcher placement.
+- A click-only launcher without the tested drag threshold could reopen the Dock during intended dragging.
+- A missing or renamed emblem asset would produce a broken launcher image.
+- Editing `manifest.json`, `tools/Booth.js`, or any other tool/module would be unrelated to this shell-only UI promotion.
+
+Recommended action:
+- Start from the current live `Witch_Scripts/Witch_Dock.user.js` and transplant only the runtime-confirmed compact-launcher behavior.
+- Add the exact supplied transparent white emblem as `ASSETS/emblem.png`.
+- Preserve existing `kw.witchDock.v1` storage, hotkey behavior, open-state restoration, and `compactX` / `compactY` persistence.
+- Use the tested >5px drag threshold so click opens and drag repositions without accidental expansion.
+- Release the public shell as v1.0.7 and leave `manifest.json`, all `/tools/`, all `/HeroForge_UI/`, and Persistent Booth unchanged.
+
 ## PFC-2026-08-22-015 — Booth v21 Lighting and Responsive Canvas Repair
 
 Date: 2026-08-22

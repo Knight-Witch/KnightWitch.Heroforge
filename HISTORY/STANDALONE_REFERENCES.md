@@ -19,6 +19,34 @@ Use this file to prevent rehashing old investigations and to separate canonical 
 
 ## Canonical / High-Value References
 
+### Witch Dock Emblem Launcher v1.0.7.25
+
+Status:
+- Migrated / absorbed; runtime-confirmed standalone canonical test reference for compact-shell behavior.
+
+Files / source state:
+- Testing artifact: `Witch_Dock_DEV_Emblem_Launcher_v25.txt`.
+- The standalone test artifact is not committed as a live repo module.
+- Exact launcher artwork is committed separately as `ASSETS/emblem.png` in the public release.
+
+Known behavior / relevance:
+- Replaces the fully closed horizontal `WITCH DOCK` bar with a 54x54 square emblem launcher.
+- Clicking the launcher reopens Witch Dock.
+- Pointer movement must exceed 5px before the interaction becomes a drag, preventing ordinary clicks from being misread as movement and preventing intended drag from reopening the Dock.
+- Dragging repositions the launcher and persists its location through the existing `compactX` / `compactY` preferences.
+- The user runtime-confirmed this standalone behavior before public promotion.
+
+Migration / rules:
+- Promoted surgically into public `Witch_Dock.user.js` v1.0.7 on 2026-09-02.
+- The intentionally divergent `DEV_TEST` branch was not merged; only the approved compact-shell behavior was transplanted into the current live `Witch_Scripts` shell.
+- Preserve this click-vs-drag threshold, pointer handling, and position persistence when diagnosing future compact-launcher regressions.
+- Do not use this reference as justification to alter unrelated Dock UI, tools, manifest loading, Persistent Booth, or HeroForge runtime behavior.
+
+Related files:
+- `Witch_Dock.user.js`
+- `ASSETS/emblem.png`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+
 ### HF Core Tweaks / Lob Decal Slot Reference
 
 Status:
@@ -493,6 +521,7 @@ Rules:
 
 | Reference | Status | Likely Destination | Current Rule |
 |---|---|---|---|
+| Witch Dock Emblem Launcher v1.0.7.25 | Migrated / absorbed | Public `Witch_Dock.user.js` v1.0.7 | Preserve 54x54 emblem launcher, click-to-open, >5px drag threshold, and compact position persistence; do not merge unrelated DEV_TEST history. |
 | HF Core Tweaks / Lob decal reference | External canonical reference | Maybe `HeroForge_UI/` or direct HF Core Tweaks edit, depending on final strategy | Compare before slot-expansion edits. |
 | Archived HeroForge Debug UI v0.1/v0.2 | Historical diagnostic reference | Focused standalone developer probes only | Do not integrate wholesale; validate each extracted API/path against current runtime. |
 | Lob public script archive 2026-07-19 | External historical reference archive | Separate script-by-script testing / `HeroForge.Compatibility` where applicable | Inventory and isolate before testing; do not load as a combined package. |
