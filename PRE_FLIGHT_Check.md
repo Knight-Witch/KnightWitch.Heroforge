@@ -2,6 +2,49 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-09-03-017 — Embedded Emblem Asset Fix
+
+Date: 2026-09-03
+Time: 03:57 PDT
+
+Target files:
+- `Witch_Dock.user.js`
+- `MASTER.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/Bullshit_Bible.md`
+- `HISTORY/STANDALONE_REFERENCES.md`
+- `HISTORY/BULLSHIT/DOM_AND_LAYOUT.md`
+- current live `Witch_Dock.user.js`
+- runtime-confirmed `Witch_Dock_DEV_Emblem_Launcher_v26.txt` / v1.0.7.26 test build
+
+Connected modules reviewed:
+- current compact launcher DOM/CSS
+- `COMPACT_EMBLEM_URL`
+- `startCompactDrag()` click-vs-drag behavior
+- existing `kw.witchDock.v1` compact position preferences
+- live manifest/module boundary
+- Persistent Booth production boundary
+
+Conflict risks:
+- The v1.0.7 launcher shell itself is working; changing pointer, drag, minimize, restore, or storage behavior would introduce unnecessary regression risk.
+- The public raw-GitHub `<img>` source failed to render in HeroForge even though the same launcher worked in DEV.
+- Switching to another untested remote-resource mechanism would reintroduce the same class of asset-loading risk.
+- `manifest.json`, `/tools/`, `/HeroForge_UI/`, Persistent Booth, and PNG Series Capture are unrelated to this fix and must remain untouched.
+
+Recommended action:
+- Promote the runtime-confirmed v26 delta exactly: replace only the external raw-GitHub emblem URL with the same PNG embedded as a `data:image/png;base64,...` URI.
+- Preserve the 54x54 launcher, 40x40 icon box, click-to-open behavior, >5px drag threshold, compact position persistence, and existing storage keys unchanged.
+- Release public `Witch_Dock.user.js` as v1.0.8.
+- Leave `ASSETS/emblem.png` in place as the canonical source artwork, but do not depend on a page-level remote image request at runtime.
+- Leave `manifest.json`, all tools, all HeroForge UI modules, Persistent Booth, and PNG Series Capture unchanged.
+
 ## PFC-2026-09-02-016 — Witch Dock Emblem Compact Launcher
 
 Date: 2026-09-02

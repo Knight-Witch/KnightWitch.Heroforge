@@ -7,7 +7,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Repository: `Knight-Witch/KnightWitch.Heroforge`
 - Live branch: `Witch_Scripts`
 - Public install script: `Witch_Dock.user.js`
-- Current public userscript version: `1.0.7`
+- Current public userscript version: `1.0.8`
 - Install/update URL: raw GitHub `Witch_Scripts/Witch_Dock.user.js`
 - Manifest loader: `manifest.json`
 - Visible Witch Dock tools: `/tools/`
@@ -84,13 +84,14 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 
 ### Witch Dock Core — `Witch_Dock.user.js`
 
-- Userscript metadata version: `1.0.7`.
+- Userscript metadata version: `1.0.8`.
 - Loads `manifest.json` from the `Witch_Scripts` raw GitHub URL.
 - Uses `GM_xmlhttpRequest` to fetch manifest/modules.
 - Uses `kw.witchDock.toolEnabled.*` for tool enablement.
 - Uses `kw.witchDock.v1` for dock position/size/minimized/closed tab state.
 - Provides shared dock UI, tabs, sections, drag/resize behavior, compact mode, hotkey handling, undo/redo controls, About/Disclaimer modals, and footer bone detection.
-- Fully closed Dock uses a 54x54 movable emblem launcher sourced from `ASSETS/emblem.png`; clicking reopens the Dock, while dragging beyond the tested 5px threshold repositions it using the existing `compactX` / `compactY` preferences.
+- Fully closed Dock uses a 54x54 movable emblem launcher; clicking reopens the Dock, while dragging beyond the tested 5px threshold repositions it using the existing `compactX` / `compactY` preferences.
+- The compact emblem uses the exact `ASSETS/emblem.png` artwork embedded as a PNG data URI in the userscript, avoiding HeroForge/page-level blocking of the prior raw-GitHub `<img>` request.
 - Fragile area: footer bone detection uses delayed snapshot/diff behavior and tolerant scene graph probing. See `HISTORY/BULLSHIT/KITBASHING_AND_BONES.md` and `HISTORY/BULLSHIT/TIMING_AND_STATE.md`.
 
 ### Body Editor — `tools/Body_Editor.js`

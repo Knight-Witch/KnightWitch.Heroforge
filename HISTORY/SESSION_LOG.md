@@ -2,6 +2,15 @@
 
 Chronological development and testing notes. Use this for concise project-state updates that matter across chats.
 
+## 2026-09-03 — Embedded Emblem Asset Fix
+
+- Target: repair the public v1.0.7 compact launcher emblem without changing the confirmed launcher interaction behavior.
+- Diagnosis: public v1.0.7 rendered the 54x54 launcher but the raw-GitHub `<img>` failed in HeroForge, leaving only a tiny fallback mark; click/drag and positioning remained functional.
+- Action: DEV v26 replaced only `COMPACT_EMBLEM_URL` with the exact emblem PNG embedded as a data URI; no pointer, sizing, storage, manifest, tool, or Booth logic changed.
+- Runtime result: the user confirmed `Witch_Dock_DEV_Emblem_Launcher_v26.txt` works correctly in HeroForge.
+- Release scope: promote that exact asset-loading delta as public v1.0.8; keep `ASSETS/emblem.png` as source artwork; leave `manifest.json`, `/tools/`, `/HeroForge_UI/`, Persistent Booth, and PNG Series Capture unchanged.
+- Test notes: public v1.0.8 source passed `node --check` before release.
+
 ## 2026-09-02 — Witch Dock Emblem Compact Launcher
 
 - Target: replace the fully closed horizontal `WITCH DOCK` bar with the Blender Quickbar-style square emblem launcher requested for public Witch Dock.

@@ -1,5 +1,38 @@
 # Changelog
 
+## DOCK-2026-09-03-017 — Embedded Emblem Asset Fix
+
+Date: 2026-09-03
+Time: 03:57 PDT
+
+### Changed
+
+- Updated public `Witch_Dock.user.js` from v1.0.7 to v1.0.8.
+- Replaced the compact launcher's raw-GitHub `<img>` source with the exact same white transparent emblem PNG embedded directly in the userscript as a `data:image/png;base64,...` URI.
+- Preserved the existing 54x54 launcher shell, 40x40 icon box, click-to-open behavior, >5px drag threshold, compact position persistence, storage keys, and open-state restoration unchanged.
+- Kept `ASSETS/emblem.png` in the repository as the canonical source artwork; the live launcher no longer depends on HeroForge permitting a page-level request to the raw GitHub asset.
+
+### Touched Files
+
+- `Witch_Dock.user.js`
+- `MASTER.md`
+- `HISTORY/SESSION_LOG.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback Notes
+
+- Revert this commit to restore public v1.0.7 and its external raw-GitHub compact-emblem URL.
+- No `manifest.json`, `/tools/`, `/HeroForge_UI/`, Persistent Booth, Photo Mode PNG Series Capture, storage key, launcher interaction logic, or unrelated UI changed.
+
+### Test Notes
+
+- Public v1.0.7 reproduced the regression: the 54x54 compact launcher appeared, but the remote emblem image failed and rendered only a tiny fallback mark.
+- DEV build `Witch_Dock_DEV_Emblem_Launcher_v26.txt` / v1.0.7.26 changed only the emblem source to the embedded PNG data URI.
+- The user runtime-confirmed the v26 DEV build renders and works correctly in HeroForge.
+- Public v1.0.8 was built from that confirmed v26 code with only public userscript metadata restored.
+- `node --check` passed on the prepared v1.0.8 public userscript before release.
+
 ## DOCK-2026-09-02-016 — Witch Dock Emblem Compact Launcher
 
 Date: 2026-09-02
