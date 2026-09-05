@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock — Bound Decal Gizmo DEV
 // @namespace    KnightWitch
-// @version      0.3.0
+// @version      0.3.1
 // @description  DEV add-on: corrected bound decal gizmo with native HeroForge Transformer visuals.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -68,14 +68,56 @@
     return gmGetText(`${BASE}${path}?dev=${Date.now()}-${Math.random()}`);
   }
 
+  function replaceExactlyOnce(source, before, after, label) {
+    const first = source.indexOf(before);
+    if (first < 0) throw new Error(`DEV source fix missing expected ${label} anchor.`);
+    if (source.indexOf(before, first + before.length) >= 0) {
+      throw new Error(`DEV source fix found ambiguous ${label} anchors.`);
+    }
+    return source.slice(0, first) + after + source.slice(first + before.length);
+  }
+
+  function restoreValidatedV041Rules(source) {
+    // DEV-only extraction regression repair. v0.4.1 was validated with the
+    // normalized projector midpoint [0.5,0.5,0.5] and the locator world
+    // quaternion in every transform mode. Remove these source repairs when the
+    // maintained fragments are consolidated for public promotion.
+    source = replaceExactlyOnce(
+      source,
+      "const BUILD = \"1.0.1-dev-native-transformer-visual\";",
+      "const BUILD = \"1.0.2-dev-native-transformer-center-frame\";",
+      "build marker"
+    );
+    source = replaceExactlyOnce(
+      source,
+      "const localCenters = worldToCanonical.map(inverse => normalizeHomogeneous(mat4MulVec4(inverse, [0, 0, 0, 1])));",
+      "const localCenters = worldToCanonical.map(inverse => normalizeHomogeneous(mat4MulVec4(inverse, [0.5, 0.5, 0.5, 1])));",
+      "projector midpoint"
+    );
+    source = replaceExactlyOnce(
+      source,
+      "proxy.quaternion.copy(mode === 'translate' ? parentWorld.quaternion : locatorWorld.quaternion);",
+      "proxy.quaternion.copy(locatorWorld.quaternion);",
+      "Move sync orientation"
+    );
+    source = replaceExactlyOnce(
+      source,
+      "proxy.quaternion.copy(mode === \"translate\" ? parentWorld.quaternion : locatorWorld.quaternion);",
+      "proxy.quaternion.copy(locatorWorld.quaternion);",
+      "Move initial orientation"
+    );
+    return source;
+  }
+
   async function start() {
     try {
       await waitForDock();
       const parts = [];
       for (const path of GIZMO_PARTS) parts.push(await fetchFresh(path));
-      execute(parts.join(""), `${BASE}HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`);
+      const gizmoSource = restoreValidatedV041Rules(parts.join(""));
+      execute(gizmoSource, `${BASE}HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`);
       execute(await fetchFresh(UI_MODULE), `${BASE}${UI_MODULE}`);
-      console.info("[Witch Dock DEV] Corrected bound decal gizmo loaded.");
+      console.info("[Witch Dock DEV] Corrected bound decal gizmo v0.3.1 loaded with restored v0.4.1 center/orientation rules.");
     } catch (error) {
       console.error("[Witch Dock DEV] Bound decal gizmo load failed:", error);
     }
