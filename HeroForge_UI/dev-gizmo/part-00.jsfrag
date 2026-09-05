@@ -8,7 +8,7 @@
   const OVERLAY_ID = "kw-corrected-bound-decal-gizmo-overlay";
   const STYLE_ID = "kw-corrected-bound-decal-gizmo-style";
   const ENABLE_STORAGE_KEY = "kw.witchDock.decals.boundGizmo.enabled";
-  const BUILD = "1.0.0-dev-v041-extract";
+  const BUILD = "1.0.1-dev-native-transformer-visual";
 
   // Preserve validated v0.4.1 timing and current-build transform calibration.
   const REFRESH_MS = 400;
@@ -36,6 +36,7 @@
   const moveAxes = new Map();
   let latest = null;
   let activeMoveDrag = null;
+  let nativeMoveDrag = null;
   let lastForward = null;
   let statusText = "initializing";
   let statusError = false;

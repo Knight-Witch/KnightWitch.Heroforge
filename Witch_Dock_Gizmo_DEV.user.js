@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Witch Dock — Bound Decal Gizmo DEV
 // @namespace    KnightWitch
-// @version      0.2.0
-// @description  DEV add-on: loads the corrected bound decal gizmo into the installed Witch Dock.
+// @version      0.3.0
+// @description  DEV add-on: corrected bound decal gizmo with native HeroForge Transformer visuals.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end

@@ -1,157 +1,3 @@
-      worldDelta = [
-        drag.axisInfo.worldBasis[0] * scalarWorld,
-        drag.axisInfo.worldBasis[1] * scalarWorld,
-        drag.axisInfo.worldBasis[2] * scalarWorld
-      ];
-      drag.predictedScreen = [
-        drag.startAnchorScreen[0] + drag.axisInfo.unit[0] * scalarPixels,
-        drag.startAnchorScreen[1] + drag.axisInfo.unit[1] * scalarPixels
-      ];
-    }
-    if (!worldDelta || !worldDelta.every(Number.isFinite)) return;
-    try {
-      const rawDelta = worldDeltaToRawDelta(worldDelta, drag.worldFrame);
-      if (!rawDelta || !rawDelta.every(Number.isFinite)) throw new Error('Could not convert world Move delta into bound decal h/v/d frame.');
-      const raw = [
-        drag.startRaw[0] + rawDelta[0],
-        drag.startRaw[1] + rawDelta[1],
-        drag.startRaw[2] + rawDelta[2]
-      ];
-      drag.currentRaw = raw;
-      applyRawMove(raw, false);
-    } catch (error) {
-      setStatus(`Move blocked: ${error && error.message ? error.message : error}`, true);
-    }
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  function endMoveDrag(event) {
-    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
-    const drag = activeMoveDrag;
-    activeMoveDrag = null;
-    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
-    try {
-      verifyLiveBinding();
-      if (drag.currentRaw) applyRawMove(drag.currentRaw, true);
-      setStatus('Move finished; re-resolving stable projector center…');
-      window.setTimeout(refreshFeature, 140);
-    } catch (error) {
-      setStatus(`Move finish blocked: ${error && error.message ? error.message : error}`, true);
-    }
-    setOrbitEnabled(true);
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  function cancelMoveDrag(event) {
-    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
-    const drag = activeMoveDrag;
-    activeMoveDrag = null;
-    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
-    try {
-      applyRawMove(drag.startRaw, true);
-      setStatus('Move cancelled; start position restored.');
-    } catch (error) {
-      setStatus(`Move cancel restore failed: ${error && error.message ? error.message : error}`, true);
-    }
-    setOrbitEnabled(true);
-  }
-
-  function installMovePointerHandlers(node, axisIndex = null) {
-    node.addEventListener('pointerdown', event => beginMoveDrag(event, axisIndex));
-    node.addEventListener('pointermove', updateMoveDrag);
-    node.addEventListener('pointerup', endMoveDrag);
-    node.addEventListener('pointercancel', cancelMoveDrag);
-  }
-
-  function applyRotateFromProxy() {
-    const RK = getRK();
-    const proxyWorld = getWorldTransform(proxy);
-    const parentWorld = getWorldTransform(nativeLocator.parent);
-    const localQuaternion = new RK.Quaternion().copy(parentWorld.quaternion).inverse().multiply(proxyWorld.quaternion).normalize();
-    nativeLocator.quaternion.copy(localQuaternion);
-  }
-
-  function applyScaleFromProxy() {
-    const proxyWorld = getWorldTransform(proxy);
-    const parentWorld = getWorldTransform(nativeLocator.parent);
-    const sx = num(parentWorld.scale.x, 1), sy = num(parentWorld.scale.y, 1), sz = num(parentWorld.scale.z, 1);
-    if (Math.abs(sx) < 1e-8 || Math.abs(sy) < 1e-8 || Math.abs(sz) < 1e-8) throw new Error('Native locator parent has zero world scale.');
-    nativeLocator.scale.set(proxyWorld.scale.x / sx, proxyWorld.scale.y / sy, proxyWorld.scale.z / sz);
-  }
-
-  function forwardTransformProxy(finalize) {
-    if (!enabled || mode === 'translate' || !proxy || !transformer) return;
-    try {
-      verifyLiveBinding();
-      if (mode === 'rotate') applyRotateFromProxy();
-      else if (mode === 'scale') applyScaleFromProxy();
-      dispatchNative(finalize);
-      if (finalize) window.setTimeout(refreshFeature, 140);
-    } catch (error) {
-      setStatus(`Corrected ${mode} write blocked: ${error && error.message ? error.message : error}`, true);
-    }
-  }
-
-  function syncProxyFromCurrent(current) {
-    if (!proxy || !transformer || transformer.dragging) return;
-    const locatorWorld = getWorldTransform(current.nativeLocator);
-    proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);
-    proxy.quaternion.copy(locatorWorld.quaternion);
-    proxy.scale.copy(locatorWorld.scale);
-    markTransformDirty(proxy);
-    if (typeof transformer.refresh === 'function') transformer.refresh();
-  }
-
-  function updateMoveOverlayGeometry(current, cameraInfo = null) {
-    if (!moveRoot) return;
-    cameraInfo = cameraInfo || getCameraInfo(current.CK);
-    if (!cameraInfo) return;
-    for (let axisIndex = 0; axisIndex < 3; axisIndex += 1) {
-      const node = moveAxes.get(axisIndex);
-      if (!node) continue;
-      const info = axisScreenInfo(axisIndex, current.footprint.point, cameraInfo, current.projector.worldFrame);
-      if (!info) {
-        node.style.display = 'none';
-        continue;
-      }
-      node.style.display = 'block';
-      const angle = Math.atan2(info.unit[1], info.unit[0]) * 180 / Math.PI;
-      node.style.transform = `rotate(${angle}deg)`;
-      node.dataset.fallback = info.fallback ? '1' : '0';
-      const line = node.querySelector('.hfc-move-axis-line');
-      if (line) line.style.width = `${AXIS_VISUAL_LENGTH_PX}px`;
-    }
-  }
-
-  function updateOverlayFrame() {
-    rafId = window.requestAnimationFrame(updateOverlayFrame);
-    if (!enabled || mode !== 'translate' || !moveRoot) {
-      if (moveRoot) moveRoot.style.display = 'none';
-      return;
-    }
-    let x = null, y = null;
-    if (activeMoveDrag && activeMoveDrag.predictedScreen) {
-      [x, y] = activeMoveDrag.predictedScreen;
-    } else if (latest && latest.ok && latest.footprint && latest.footprint.point) {
-      const cameraInfo = getCameraInfo(latest.CK);
-      const liveScreen = cameraInfo ? worldToScreen(latest.footprint.point, cameraInfo) : latest.footprint.screen;
-      if (liveScreen && !liveScreen.behind) {
-        x = liveScreen.x;
-        y = liveScreen.y;
-        // The projector anchor is stable in world space; only its screen
-        // projection and axis directions need to follow camera motion.
-        updateMoveOverlayGeometry(latest, cameraInfo);
-      }
-    }
-    if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      moveRoot.style.display = 'none';
-      return;
-    }
-    moveRoot.style.display = 'block';
-    moveRoot.style.transform = `translate(${x}px, ${y}px)`;
-  }
 
   function createMoveOverlay() {
     const overlay = document.createElement('div');
@@ -199,14 +45,10 @@
 
     mode = nextMode;
     if (transformer) {
-      if (nextMode === "translate") {
-        transformer.visible = false;
-      } else {
-        transformer.visible = true;
-        transformer.setMode(nextMode);
-        if (typeof transformer.setSpace === "function") transformer.setSpace("local");
-        if (latest && latest.ok) syncProxyFromCurrent(latest);
-      }
+      transformer.visible = true;
+      transformer.setMode(nextMode);
+      if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+      if (latest && latest.ok) syncProxyFromCurrent(latest);
     }
     return true;
   }
@@ -235,6 +77,153 @@
       mode = readNativeMode(nativeTransformer);
 
       const locatorWorld = getWorldTransform(nativeLocator);
+      const parentWorld = getWorldTransform(nativeLocator.parent);
       proxy = new UW.RK.Object3D();
       proxy.name = "kwCorrectedBoundDecalGizmoProxy";
       proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);
+      proxy.quaternion.copy(mode === "translate" ? parentWorld.quaternion : locatorWorld.quaternion);
+      proxy.scale.copy(locatorWorld.scale);
+      current.CK.scene.add(proxy);
+      markTransformDirty(proxy);
+
+      transformer = new UW.EX.Transformer(current.CK.getDomElement());
+      transformer.addEventListener("dragging-changed", onTransformerDraggingChanged);
+      transformer.addEventListener("change", () => forwardTransformProxy(false));
+      transformer.addEventListener("change-finished", () => forwardTransformProxy(true));
+      transformer.scaleMinimum = 0.01;
+      transformer.attach(proxy, "k_");
+      current.CK.scene.add(transformer);
+      transformer.visible = true;
+      transformer.setMode(mode);
+      if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+
+      // Hide only the native Transformer visualization. Keep its attached
+      // decalLocator and listeners alive because Rotate/Scale state propagation
+      // intentionally reuses HeroForge's native callbacks.
+      suppressNativeVisual();
+
+      enabled = true;
+      latest = current;
+      updateMoveOverlayGeometry(current);
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+      return true;
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(`Enable failed: ${message}`, true);
+      return false;
+    }
+  }
+
+  function disableCorrectedGizmo(preserveStatus = false) {
+    const CK = getCK();
+    if (activeMoveDrag) {
+      // Legacy overlay path safety: restore any interrupted direct-Move drag.
+      try { applyRawMove(activeMoveDrag.startRaw, true); } catch (_) {}
+      activeMoveDrag = null;
+    }
+    if (nativeMoveDrag) {
+      try { applyRawMove(nativeMoveDrag.startRaw, true); } catch (_) {}
+      nativeMoveDrag = null;
+    }
+
+    enabled = false;
+    setOrbitEnabled(true);
+
+    if (transformer) {
+      try { transformer.detach(); } catch (_) {}
+      try { if (CK && CK.scene) CK.scene.remove(transformer); } catch (_) {}
+      try { if (typeof transformer.dispose === "function") transformer.dispose(); } catch (_) {}
+      transformer = null;
+    }
+    if (proxy) {
+      try { if (CK && CK.scene) CK.scene.remove(proxy); } catch (_) {}
+      proxy = null;
+    }
+
+    // Restore exactly the visibility state we observed before correction.
+    restoreNativeVisual();
+
+    nativeTransformer = null;
+    nativeLocator = null;
+    activeBinding = null;
+    latest = null;
+    if (moveRoot) moveRoot.style.display = "none";
+    if (!preserveStatus) setStatus(featureEnabled ? "Waiting for a bound Project-OFF decal with native gizmo enabled." : "Bound decal gizmo correction disabled in Witch Dock.", false);
+    return true;
+  }
+
+  function sameBinding(current) {
+    return Boolean(
+      enabled && current && current.ok &&
+      current.nativeTransformer === nativeTransformer &&
+      current.nativeLocator === nativeLocator &&
+      activeBinding &&
+      String(current.selected.mapping) === String(activeBinding.mapping) &&
+      Number(current.selected.record.id) === Number(activeBinding.decalId)
+    );
+  }
+
+  function refreshFeature() {
+    if (disposed || activeMoveDrag || (transformer && transformer.dragging)) return;
+
+    // A concurrently installed standalone v0.4.1 test would create a second
+    // corrected Transformer. Fail closed until that test is removed/disabled.
+    if (UW.HFCorrectedBoundDecalGizmoTest) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Standalone corrected-gizmo TEST script detected. Disable it before using the Witch Dock module.", true);
+      return;
+    }
+
+    if (!featureEnabled) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Bound decal gizmo correction disabled in Witch Dock.", false);
+      return;
+    }
+
+    const current = resolveCurrent();
+    latest = current.ok ? current : null;
+
+    if (!current.ok) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(current.reason, false);
+      return;
+    }
+
+    if (current.projector.maxSpread > PROJECTOR_SPREAD_TOLERANCE) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(`Projector spread ${current.projector.maxSpread.toFixed(5)} exceeds correction tolerance. Native gizmo left untouched.`, true);
+      return;
+    }
+
+    if (!sameBinding(current)) {
+      if (enabled) disableCorrectedGizmo(true);
+      latest = current;
+      enableCorrectedGizmo(current);
+      return;
+    }
+
+    try {
+      verifyLiveBinding();
+      suppressNativeVisual();
+
+      const nativeMode = readNativeMode(nativeTransformer);
+      if (nativeMode !== mode) setMode(nativeMode, false);
+
+      syncProxyFromCurrent(current);
+
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(message, true);
+    }
+  }
+
+  function setFeatureEnabled(next) {
+    featureEnabled = Boolean(next);
+    try { localStorage.setItem(ENABLE_STORAGE_KEY, featureEnabled ? "true" : "false"); } catch (_) {}
+    if (!featureEnabled) disableCorrectedGizmo();
+    else refreshFeature();
+    return featureEnabled;
+  }
