@@ -1,7 +1,7 @@
 # Photo Booth True Resolution
 
 Feature ID: `media.screenshot-resolution`  
-Public status: Witch Dock Stable promotion 2026-09-05  
+Public status: **Witch Dock Stable validated** / 2026-09-05  
 Last verified HeroForge build: `heroforge07.1.9.98`  
 Source baseline: `Knight-Witch/HeroForge.Compatibility` standalone v0.6
 
@@ -36,7 +36,7 @@ Current Lob/ADP can remain installed unchanged.
 
 When Lob injects 4096 and 8192 choices into HeroForge's own Photo Booth UI, those choices still issue the native high-resolution screenshot request. Witch Dock intercepts that downstream request and supplies the repaired source data. Users therefore keep the existing HeroForge UI workflow without Lob owning the maintained rasterization repair.
 
-When Lob is absent, Witch Dock's Booth tab provides direct TRUE 4K and TRUE 8K buttons. Injection of the same 4096/8192 choices into HeroForge's own resolution menu without Lob is a separate future UI-adapter task.
+When Lob is absent, Witch Dock's Booth tab provides direct TRUE 4K and TRUE 8K buttons. Injection of the same 4096/8192 choices into HeroForge's own resolution menu without Lob remains a separate future UI-adapter task.
 
 ## Lifecycle and ownership
 
@@ -65,8 +65,20 @@ WITCH_DEV_PHOTO integration with current Lob/ADP present:
 
 - Lob-injected HeroForge 4096 choice routed through Witch Dock provider: passed perfectly.
 - Lob-injected HeroForge 8192 choice routed through Witch Dock provider: passed perfectly.
-- Witch Dock direct TRUE 4K and TRUE 8K buttons: capture behavior passed after cycling the provider toggle.
-- Public readiness adapter addresses only that initial stale-disabled-state caveat; syntax check passed before promotion.
+- Witch Dock direct TRUE 4K and TRUE 8K capture behavior passed.
+- Initial direct-button disabled state was isolated to stale UI readiness, not capture behavior.
+
+Public Witch Dock Stable smoke after promotion:
+
+- temporary Dev/standalone test scripts disabled;
+- public readiness adapter worked without cycling the repair toggle;
+- public HeroForge/Lob 4K route: passed perfectly;
+- public HeroForge/Lob 8K route: passed perfectly;
+- public Witch Dock direct TRUE 4K route: passed perfectly;
+- public Witch Dock direct TRUE 8K route: passed perfectly;
+- user reported the public integration works perfectly.
+
+Public promotion commit: `e155f2c2f961463b4a0e26f7c88f21f603ce1b95`.
 
 ## Revalidation triggers
 
