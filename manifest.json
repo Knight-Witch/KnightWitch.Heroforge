@@ -59,6 +59,22 @@
       "enabledByDefault": true
     },
     {
+      "id": "photo-booth-true-resolution",
+      "title": "High Resolution Capture",
+      "tab": "Booth",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "photo-booth-true-resolution-readiness",
+      "title": "Photo Booth True Resolution Readiness",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",

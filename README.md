@@ -33,6 +33,14 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scrip
 - Automatic delivery of enabled tools and hidden utilities after refreshing HeroForge.
 - Current visible tool tabs include Body Editor, Pose, Booth, JSON, Utilities, and Decals.
 
+### Booth Tab
+
+- Persistent Booth and Black Canvas workflows.
+- TRUE 4K still capture using a genuine 4096px Effects source while preserving HeroForge's native Photo Booth compositor.
+- TRUE 8K still capture using four shifted 4096px sources for dramatically lower GPU pressure than a one-shot 8192 render target.
+- If Lob/Advanced Decal Posing already exposes 4096/8192 in HeroForge's own Photo Booth UI, those existing choices are repaired automatically by Witch Dock; Lob does not need to be modified for the current transition.
+- Users without Lob can use Witch Dock's direct `Capture TRUE 4K` / `Capture TRUE 8K` controls. Adding the same choices directly to HeroForge's native resolution selector without Lob is planned separately.
+
 ### Decals Tab
 
 - Corrected Bound Decal Gizmo: replaces HeroForge's incorrect floor/origin transform gizmo for bound / Project-OFF decals with a corrected projector-centered gizmo while preserving HeroForge's native-looking transform controls.
@@ -51,11 +59,11 @@ Some utilities can be removed live. Utilities that modify HeroForge data may req
 
 ### HeroForge UI Utilities
 
-These utilities load quietly through Witch Dock and can be controlled from the Utilities tab.
+These utilities load quietly through Witch Dock and can be controlled from the Utilities tab where applicable.
 
-- Decals Scroll Guards: makes the Decals source/object selector and decal slot grid scrollable and vertically resizable. The utility is scoped to the active Decals UI so it does not create empty resize zones on other HeroForge tabs.
+- Decals Scroll Guards: makes the Decals source/object selector and decal slot grid scrollable and vertically resizable.
 - Expanded Decal Slots Bridge: detects compatible HF Core Tweaks decal-slot data and expands the available decal slots further. If HF Core Tweaks is not installed or the expected signature is not present, this utility does nothing.
-- Runtime decal expansion status can be checked in the browser console with `window.KW_HeroForgeUI?.expandedDecalSlots`.
+- Photo Booth True Resolution Readiness: keeps Witch Dock's direct high-resolution capture controls synchronized with current Photo Booth/provider readiness.
 
 ---
 
