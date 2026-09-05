@@ -31,7 +31,12 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scrip
 - Floating dock UI for HeroForge tools.
 - Manifest-driven tool loading from the live GitHub repo.
 - Automatic delivery of enabled tools and hidden utilities after refreshing HeroForge.
-- Current visible tool tabs include Body Editor, Pose, Booth, JSON, and Utilities.
+- Current visible tool tabs include Body Editor, Pose, Booth, JSON, Utilities, and Decals.
+
+### Decals Tab
+
+- Corrected Bound Decal Gizmo: replaces HeroForge's incorrect floor/origin transform gizmo for bound / Project-OFF decals with a corrected projector-centered gizmo while preserving HeroForge's native-looking transform controls.
+- Move, Rotate, and Scale are supported. Unequal Project-OFF visible scaling and projector wireframe/bounding-box correction remain future enhancements.
 
 ### Utilities Tab
 

@@ -1,0 +1,76 @@
+
+  function installStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = `
+      #${OVERLAY_ID}{position:fixed;inset:0;z-index:2147483645;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-root{position:absolute;left:0;top:0;width:0;height:0;display:none;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-center{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(15,15,18,.78);border:2px solid white;color:white;font:700 15px Arial;cursor:move;pointer-events:auto;box-shadow:0 1px 4px #000}
+      #${OVERLAY_ID} .hfc-move-axis{position:absolute;left:0;top:0;transform-origin:0 0;height:0;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-axis-line{position:absolute;left:10px;top:-2px;height:4px;border-radius:2px;background:currentColor;opacity:.86}
+      #${OVERLAY_ID} .hfc-move-axis-knob{position:absolute;left:${AXIS_VISUAL_LENGTH_PX}px;top:0;transform:translate(-50%,-50%);width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1b1b1f;border:2px solid currentColor;color:currentColor;font:700 11px Arial;cursor:grab;pointer-events:auto;box-shadow:0 1px 4px #000}
+      #${OVERLAY_ID} .hfc-axis-h{color:#ff4e4e}
+      #${OVERLAY_ID} .hfc-axis-v{color:#47e56a}
+      #${OVERLAY_ID} .hfc-axis-d{color:#4d8dff}
+      #${OVERLAY_ID} .hfc-move-axis[data-fallback="1"] .hfc-move-axis-line{background:repeating-linear-gradient(90deg,currentColor 0 6px,transparent 6px 10px)}
+    `;
+    document.documentElement.appendChild(style);
+  }
+
+  function mount() {
+    if (refreshTimer !== null) return;
+    // Move now uses HeroForge's own EX.Transformer visual at the corrected anchor.
+    // The legacy DOM overlay remains unmounted as a rollback reference during DEV.
+    refreshTimer = window.setInterval(refreshFeature, REFRESH_MS);
+    refreshFeature();
+  }
+
+  function initialize() {
+    if (disposed) return false;
+    const CK = getCK();
+    if (CK && CK.scene && CK.character && CK.character.display && UW.RK && UW.EX) {
+      if (readinessTimer !== null) {
+        clearInterval(readinessTimer);
+        readinessTimer = null;
+      }
+      mount();
+      return true;
+    }
+    return false;
+  }
+
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    disableCorrectedGizmo(true);
+    if (readinessTimer !== null) { clearInterval(readinessTimer); readinessTimer = null; }
+    if (refreshTimer !== null) { clearInterval(refreshTimer); refreshTimer = null; }
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+    const overlay = document.getElementById(OVERLAY_ID);
+    if (overlay) overlay.remove();
+    const style = document.getElementById(STYLE_ID);
+    if (style) style.remove();
+    setStatus("Disposed; native HeroForge gizmo restored.", false);
+  }
+
+  UW[GLOBAL_ROOT] = UW[GLOBAL_ROOT] || {};
+  const prior = UW[GLOBAL_ROOT][GLOBAL_KEY];
+  if (prior && typeof prior.dispose === "function") {
+    try { prior.dispose(); } catch (_) {}
+  }
+
+  const api = {
+    featureId: FEATURE_ID,
+    build: BUILD,
+    enable: () => setFeatureEnabled(true),
+    disable: () => setFeatureEnabled(false),
+    setMode,
+    refresh: refreshFeature,
+    dispose,
+    getState: publicState
+  };
+  UW[GLOBAL_ROOT][GLOBAL_KEY] = api;
+
+  if (!initialize()) readinessTimer = window.setInterval(initialize, 500);
+})();

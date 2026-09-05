@@ -1,0 +1,240 @@
+(function () {
+  "use strict";
+
+  const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+  const FEATURE_ID = "decals.gizmo.bound-correction";
+  const GLOBAL_ROOT = "KW_HeroForgeUI";
+  const GLOBAL_KEY = "correctedBoundDecalGizmo";
+  const OVERLAY_ID = "kw-corrected-bound-decal-gizmo-overlay";
+  const STYLE_ID = "kw-corrected-bound-decal-gizmo-style";
+  const ENABLE_STORAGE_KEY = "kw.witchDock.decals.boundGizmo.enabled";
+  const BUILD = "1.0.1-dev-native-transformer-visual";
+
+  // Preserve validated v0.4.1 timing and current-build transform calibration.
+  const REFRESH_MS = 400;
+  const MAX_SCENE_VISITS = 5000;
+  const PROJECTOR_SPREAD_TOLERANCE = 0.08;
+  const SCREEN_JACOBIAN_EPS = 0.02;
+  const FALLBACK_AXIS_PX_PER_WORLD = 90;
+  const AXIS_VISUAL_LENGTH_PX = 76;
+  const TRANSLATE_AXIS_SCALE = Object.freeze({ x: 4, y: 4, z: 8 });
+
+  let readinessTimer = null;
+  let refreshTimer = null;
+  let rafId = null;
+  let enabled = false;
+  let featureEnabled = true;
+  let mode = "translate";
+  let nativeTransformer = null;
+  let nativeLocator = null;
+  let nativeVisibleBefore = null;
+  let activeBinding = null;
+  let proxy = null;
+  let transformer = null;
+  let moveRoot = null;
+  let moveCenter = null;
+  const moveAxes = new Map();
+  let latest = null;
+  let activeMoveDrag = null;
+  let nativeMoveDrag = null;
+  let lastForward = null;
+  let statusText = "initializing";
+  let statusError = false;
+  let disposed = false;
+
+  function storedEnabled() {
+    try {
+      const raw = localStorage.getItem(ENABLE_STORAGE_KEY);
+      if (raw == null || raw === "") return true;
+      return raw === "true" || raw === "1";
+    } catch (_) {
+      return true;
+    }
+  }
+
+  featureEnabled = storedEnabled();
+
+  function setStatus(text, isError = false) {
+    const next = String(text || "");
+    const changed = next !== statusText || Boolean(isError) !== statusError;
+    statusText = next;
+    statusError = Boolean(isError);
+    if (changed && isError) console.warn(`[Witch Dock] ${FEATURE_ID}: ${next}`);
+  }
+
+  function publicState() {
+    return {
+      featureId: FEATURE_ID,
+      build: BUILD,
+      enabledByUser: featureEnabled,
+      active: enabled,
+      mode,
+      status: statusText,
+      error: statusError,
+      selectedMapping: activeBinding ? activeBinding.mapping : null,
+      selectedDecalId: activeBinding ? activeBinding.decalId : null,
+      nativeSuppressed: Boolean(enabled && nativeTransformer && nativeTransformer.visible === false),
+      lastForward: lastForward ? { ...lastForward } : null
+    };
+  }
+
+  function normalizeMode(value) {
+    return ["translate", "rotate", "scale"].includes(value) ? value : "translate";
+  }
+
+  function readNativeMode(target) {
+    if (!target) return "translate";
+    return normalizeMode(target.mode);
+  }
+
+  function suppressNativeVisual() {
+    if (!nativeTransformer) return;
+    if (nativeVisibleBefore === null && typeof nativeTransformer.visible === "boolean") {
+      nativeVisibleBefore = nativeTransformer.visible;
+    }
+    if (typeof nativeTransformer.visible === "boolean") nativeTransformer.visible = false;
+  }
+
+  function restoreNativeVisual() {
+    if (nativeTransformer && nativeVisibleBefore !== null && typeof nativeTransformer.visible === "boolean") {
+      nativeTransformer.visible = nativeVisibleBefore;
+    }
+    nativeVisibleBefore = null;
+  }
+
+
+  function getCK() { return UW && UW.CK ? UW.CK : null; }
+
+  function getRK() { return UW && UW.RK ? UW.RK : null; }
+
+  function num(value, fallback = 0) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function vec3Array(value) {
+    if (!value) return null;
+    const out = [Number(value.x), Number(value.y), Number(value.z)];
+    return out.every(Number.isFinite) ? out : null;
+  }
+
+  function quatArray(value) {
+    if (!value) return null;
+    const out = [Number(value.x), Number(value.y), Number(value.z), Number(value.w)];
+    return out.every(Number.isFinite) ? out : null;
+  }
+
+  function distance3(a, b) {
+    if (!a || !b) return Infinity;
+    return Math.hypot(
+      num(a[0]) - num(b[0]),
+      num(a[1]) - num(b[1]),
+      num(a[2]) - num(b[2])
+    );
+  }
+
+  function cloneElements(matrixLike) {
+    const elements = matrixLike && matrixLike.elements;
+    if (!elements || typeof elements.length !== 'number' || elements.length < 16) return null;
+    const out = Array.from(elements).slice(0, 16).map(Number);
+    return out.every(Number.isFinite) ? out : null;
+  }
+
+  function mat4MulVec4(m, v) {
+    const x = v[0], y = v[1], z = v[2], w = v[3];
+    return [
+      m[0] * x + m[4] * y + m[8] * z + m[12] * w,
+      m[1] * x + m[5] * y + m[9] * z + m[13] * w,
+      m[2] * x + m[6] * y + m[10] * z + m[14] * w,
+      m[3] * x + m[7] * y + m[11] * z + m[15] * w
+    ];
+  }
+
+  function normalizeHomogeneous(v) {
+    if (!v || v.length < 4 || !Number.isFinite(v[3]) || Math.abs(v[3]) < 1e-12) return null;
+    return [v[0] / v[3], v[1] / v[3], v[2] / v[3], 1];
+  }
+
+  function invertMat4(a) {
+    const out = new Array(16);
+    const a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+    const a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+    const a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+    const a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+    const b00 = a00 * a11 - a01 * a10;
+    const b01 = a00 * a12 - a02 * a10;
+    const b02 = a00 * a13 - a03 * a10;
+    const b03 = a01 * a12 - a02 * a11;
+    const b04 = a01 * a13 - a03 * a11;
+    const b05 = a02 * a13 - a03 * a12;
+    const b06 = a20 * a31 - a21 * a30;
+    const b07 = a20 * a32 - a22 * a30;
+    const b08 = a20 * a33 - a23 * a30;
+    const b09 = a21 * a32 - a22 * a31;
+    const b10 = a21 * a33 - a23 * a31;
+    const b11 = a22 * a33 - a23 * a32;
+    let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+    if (!Number.isFinite(det) || Math.abs(det) < 1e-12) return null;
+    det = 1 / det;
+    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+    out[1] = (-a01 * b11 + a02 * b10 - a03 * b09) * det;
+    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+    out[3] = (-a21 * b05 + a22 * b04 - a23 * b03) * det;
+    out[4] = (-a10 * b11 + a12 * b08 - a13 * b07) * det;
+    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+    out[6] = (-a30 * b05 + a32 * b02 - a33 * b01) * det;
+    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+    out[9] = (-a00 * b10 + a01 * b08 - a03 * b06) * det;
+    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+    out[11] = (-a20 * b04 + a21 * b02 - a23 * b00) * det;
+    out[12] = (-a10 * b09 + a11 * b07 - a12 * b06) * det;
+    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+    out[14] = (-a30 * b03 + a31 * b01 - a32 * b00) * det;
+    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+    return out.every(Number.isFinite) ? out : null;
+  }
+
+  function median(values) {
+    const nums = values.filter(Number.isFinite).sort((a, b) => a - b);
+    if (!nums.length) return NaN;
+    const mid = Math.floor(nums.length / 2);
+    return nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+  }
+
+  function selectedSplatterInfo(CK) {
+    const display = CK && CK.character && CK.character.display;
+    const modded = display && display.modded;
+    const ordered = modded && modded.orderedDecals && modded.orderedDecals.splatter;
+    if (!Array.isArray(ordered) || !ordered.length) return { ok: false, reason: 'No ordered splatter decals are available.' };
+
+    const uiState = UW.UIState;
+    const selectedLabel = uiState && uiState.editorMenu_color_decals_decals != null
+      ? String(uiState.editorMenu_color_decals_decals)
+      : null;
+
+    let sourceLayer = -1;
+    let entry = null;
+    if (selectedLabel != null) {
+      for (let i = 0; i < ordered.length; i += 1) {
+        const candidate = ordered[i];
+        const data = candidate && candidate.decalSlotData;
+        const label = data && data.label != null ? String(data.label) : null;
+        const name = data && data.name != null ? String(data.name) : null;
+        if (label === selectedLabel || name === selectedLabel) {
+          sourceLayer = i;
+          entry = candidate;
+          break;
+        }
+      }
+    }
+    if (!entry && ordered.length === 1) {
+      sourceLayer = 0;
+      entry = ordered[0];
+    }
+    if (!entry) return { ok: false, reason: selectedLabel == null ? 'Selected decal label unavailable.' : `Could not map selected decal label "${selectedLabel}".` };
+
+    const mapping = entry.mapping != null
+      ? String(entry.mapping)
+      : (entry.decalSlotData && entry.decalSlotData.mapping != null ? String(entry.decalSlotData.mapping) : null);
+    if (!mapping) return { ok: false, reason: 'Selected splatter entry has no mapping key.' };

@@ -2,6 +2,59 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-09-05-018 — Corrected Bound Decal Gizmo Public Promotion
+
+Date: 2026-09-05
+
+Target files:
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag`
+- `tools/Decals.js`
+- `manifest.json`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `Knight-Witch/HeroForge.Compatibility/PROJECT_CONTRACT.md`
+- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, and `FEATURE_INVENTORY.md`
+- current public Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, and `Witch_Dock.user.js`
+- `HISTORY/BULLSHIT/DECALS_AND_TEXTURES.md`
+- WITCH_DEV `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO_DEV.md`
+- accepted WITCH_DEV v0.3.1 commit `c4900edeae2a2bfee98d8fae4e40bc9b4e154009`
+- prior validated Compatibility v0.4.1 bound-gizmo runtime investigation
+- current user acceptance after duplicate Tampermonkey DEV script was disabled
+
+Confirmed findings:
+- WITCH_DEV v0.3.1 works with normal Witch Dock when tested without the duplicate DEV script.
+- Native-looking Move orientation is correct relative to the decal/projector frame.
+- Move, Rotate, and Scale interactions function as expected.
+- The corrected transform pivot remains slightly offset from the visible artwork center but is accepted because movement/rotation behavior is accurate.
+- Native floor/origin gizmo suppression works while correction owns the bound decal.
+- v0.3.2's custom Move-arrow experiment is not the accepted public target.
+- Public `Witch_Dock.user.js` already provides the required manifest/module loader; no Tampermonkey shell change is required.
+
+Conflict risks:
+- Do not merge the WITCH_DEV branch wholesale; its head contains the rejected v0.3.2 experiment and temporary DEV loader material.
+- Do not run the old standalone corrected-gizmo test or WITCH_DEV add-on alongside the public feature; duplicate Transformers/scripts can mask behavior and create conflicts.
+- Preserve the native `decalLocator` and callback/state path; suppress only the native Transformer visualization while correction is active.
+- Preserve current 400 ms binding refresh, per-frame camera update, direct H/V/D Move write path, and known state sequencing.
+- Unequal Project-OFF visible scaling is deferred and must not block release.
+- Projector wireframe/bounding-box correction and exact visible-artwork-center polish are deferred.
+- Fragmented stable source is retained temporarily for exact tested parity. The stable loader must fail closed if expected v0.3.1 source anchors are missing or ambiguous.
+
+Recommended action:
+- Surgically promote the accepted v0.3.1 behavior from the current public `Witch_Scripts` base.
+- Add the corrected gizmo as an enabled hidden manifest service and `tools/Decals.js` as the visible `Decals` tab.
+- Keep `Witch_Dock.user.js` at v1.0.8.
+- Preserve unrelated Booth, Body, Pose, JSON, Utilities, expanded-slot, and scroll-guard code unchanged.
+- After public promotion, disable/remove the WITCH_DEV gizmo add-on and perform one final public smoke test after refresh.
+
 ## PFC-2026-09-03-017 — Embedded Emblem Asset Fix
 
 Date: 2026-09-03

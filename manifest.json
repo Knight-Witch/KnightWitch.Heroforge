@@ -29,6 +29,15 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "corrected-bound-decal-gizmo",
+      "title": "Corrected Bound Decal Gizmo",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
@@ -61,6 +70,13 @@
       "title": "Utilities",
       "tab": "Utilities",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "decals-dev",
+      "title": "Decals",
+      "tab": "Decals",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
       "enabledByDefault": true
     }
   ]

@@ -1,5 +1,66 @@
 # Changelog
 
+## DOCK-2026-09-05-018 — Corrected Bound Decal Gizmo Public Promotion
+
+Date: 2026-09-05
+
+### Added
+
+- Added `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` as the public hidden loader for the corrected bound / Project-OFF decal gizmo.
+- Added the exact accepted WITCH_DEV source fragments under `HeroForge_UI/corrected-bound-decal-gizmo/`.
+- Added `tools/Decals.js` as the visible Witch Dock `Decals` tab host.
+- Added `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md` as the durable public feature record.
+
+### Changed
+
+- Updated `manifest.json` to load the corrected gizmo service and Decals tab by default.
+- Preserved the accepted WITCH_DEV v0.3.1 native-visual behavior rather than the later v0.3.2 custom Move-arrow experiment.
+- The public loader applies the accepted v0.3.1 projector-midpoint and proxy-orientation corrections transactionally and fails closed if expected source anchors are missing or ambiguous.
+- Updated `MASTER.md` and `PRE_FLIGHT_Check.md` with the live feature status, acceptance result, known limitations, and promotion boundary.
+
+### Runtime behavior
+
+- Bound / Project-OFF decals receive the corrected projector-centered transform gizmo while HeroForge's native decal gizmo is enabled.
+- Native floor/origin Transformer visualization is suppressed only while correction owns the active bound decal; native locator/state callbacks remain intact.
+- Move, Rotate, and Scale use the user-confirmed v0.3.1 behavior.
+- The slight visual offset from the visible artwork center remains accepted; the actual transform pivot is accurate enough for release.
+- Unequal Project-OFF visible scaling and corrected projector wireframe/bounding-box display remain deferred.
+
+### Delivery
+
+- `Witch_Dock.user.js` remains v1.0.8 and is unchanged.
+- This is a manifest/module promotion, so existing users receive the feature after refreshing HeroForge; no Tampermonkey shell update is required.
+
+### Test notes
+
+- WITCH_DEV v0.3.1 was live-tested with normal Witch Dock and confirmed working after a duplicate DEV Tampermonkey script was discovered and disabled.
+- Confirmed user-visible behavior: correct decal-facing gizmo orientation, working Move/Rotate/Scale, native floor-gizmo suppression, and acceptable projector-center placement.
+- Earlier apparent v0.3.1/v0.3.2 no-change results were invalid because two DEV scripts were running simultaneously.
+- New public loader: `node --check` PASS.
+- New manifest JSON parse: PASS.
+- Public source reuses the exact accepted DEV fragment blobs and exact accepted Decals UI blob for parity.
+
+### Touched files
+
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag`
+- `HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag`
+- `tools/Decals.js`
+- `manifest.json`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback notes
+
+- Revert this promotion commit to remove the Decals tab and corrected bound gizmo from public delivery.
+- `Witch_Dock.user.js` is unchanged, so rollback does not require a userscript reinstall or metadata downgrade.
+- Unmodified HeroForge behavior remains the fallback if the corrected service fails its capability/source checks.
+
 ## DOCK-2026-09-03-017 — Embedded Emblem Asset Fix
 
 Date: 2026-09-03

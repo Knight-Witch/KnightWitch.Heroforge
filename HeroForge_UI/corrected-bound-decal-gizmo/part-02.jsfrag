@@ -1,0 +1,271 @@
+
+  function updateMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    let worldDelta;
+    if (drag.axisIndex == null) {
+      worldDelta = screenDeltaToMinimumWorldDelta(dx, dy, drag.jacobian);
+      drag.predictedScreen = [drag.startAnchorScreen[0] + dx, drag.startAnchorScreen[1] + dy];
+    } else {
+      const scalarPixels = dx * drag.axisInfo.unit[0] + dy * drag.axisInfo.unit[1];
+      const scalarWorld = scalarPixels / drag.axisInfo.pxPerWorld;
+      worldDelta = [
+        drag.axisInfo.worldBasis[0] * scalarWorld,
+        drag.axisInfo.worldBasis[1] * scalarWorld,
+        drag.axisInfo.worldBasis[2] * scalarWorld
+      ];
+      drag.predictedScreen = [
+        drag.startAnchorScreen[0] + drag.axisInfo.unit[0] * scalarPixels,
+        drag.startAnchorScreen[1] + drag.axisInfo.unit[1] * scalarPixels
+      ];
+    }
+    if (!worldDelta || !worldDelta.every(Number.isFinite)) return;
+    try {
+      const rawDelta = worldDeltaToRawDelta(worldDelta, drag.worldFrame);
+      if (!rawDelta || !rawDelta.every(Number.isFinite)) throw new Error('Could not convert world Move delta into bound decal h/v/d frame.');
+      const raw = [
+        drag.startRaw[0] + rawDelta[0],
+        drag.startRaw[1] + rawDelta[1],
+        drag.startRaw[2] + rawDelta[2]
+      ];
+      drag.currentRaw = raw;
+      applyRawMove(raw, false);
+    } catch (error) {
+      setStatus(`Move blocked: ${error && error.message ? error.message : error}`, true);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function endMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    activeMoveDrag = null;
+    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
+    try {
+      verifyLiveBinding();
+      if (drag.currentRaw) applyRawMove(drag.currentRaw, true);
+      setStatus('Move finished; re-resolving stable projector center…');
+      window.setTimeout(refreshFeature, 140);
+    } catch (error) {
+      setStatus(`Move finish blocked: ${error && error.message ? error.message : error}`, true);
+    }
+    setOrbitEnabled(true);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function cancelMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    activeMoveDrag = null;
+    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
+    try {
+      applyRawMove(drag.startRaw, true);
+      setStatus('Move cancelled; start position restored.');
+    } catch (error) {
+      setStatus(`Move cancel restore failed: ${error && error.message ? error.message : error}`, true);
+    }
+    setOrbitEnabled(true);
+  }
+
+  function installMovePointerHandlers(node, axisIndex = null) {
+    node.addEventListener('pointerdown', event => beginMoveDrag(event, axisIndex));
+    node.addEventListener('pointermove', updateMoveDrag);
+    node.addEventListener('pointerup', endMoveDrag);
+    node.addEventListener('pointercancel', cancelMoveDrag);
+  }
+
+  function applyRotateFromProxy() {
+    const RK = getRK();
+    const proxyWorld = getWorldTransform(proxy);
+    const parentWorld = getWorldTransform(nativeLocator.parent);
+    const localQuaternion = new RK.Quaternion().copy(parentWorld.quaternion).inverse().multiply(proxyWorld.quaternion).normalize();
+    nativeLocator.quaternion.copy(localQuaternion);
+  }
+
+  function applyScaleFromProxy() {
+    const proxyWorld = getWorldTransform(proxy);
+    const parentWorld = getWorldTransform(nativeLocator.parent);
+    const sx = num(parentWorld.scale.x, 1), sy = num(parentWorld.scale.y, 1), sz = num(parentWorld.scale.z, 1);
+    if (Math.abs(sx) < 1e-8 || Math.abs(sy) < 1e-8 || Math.abs(sz) < 1e-8) throw new Error('Native locator parent has zero world scale.');
+    nativeLocator.scale.set(proxyWorld.scale.x / sx, proxyWorld.scale.y / sy, proxyWorld.scale.z / sz);
+  }
+
+  function beginNativeMoveDrag() {
+    if (!enabled || mode !== 'translate' || !proxy || nativeMoveDrag) return;
+    verifyLiveBinding();
+    const current = resolveCurrent();
+    if (!current.ok) throw new Error(current.reason);
+    const proxyWorld = getWorldTransform(proxy);
+    nativeMoveDrag = {
+      startRaw: [
+        num(current.selected.record.h, 0),
+        num(current.selected.record.v, 0),
+        num(current.selected.record.d, 0)
+      ],
+      startWorld: vec3Array(proxyWorld.position),
+      currentRaw: null,
+      worldFrame: current.projector.worldFrame,
+      finalized: false
+    };
+    if (!nativeMoveDrag.startWorld) throw new Error('Corrected Move proxy world position unavailable.');
+    setStatus('Moving bound decal with native HeroForge gizmo…');
+  }
+
+  function forwardNativeMoveProxy(finalize) {
+    if (!enabled || mode !== 'translate' || !proxy || !transformer) return;
+    try {
+      verifyLiveBinding();
+      if (!nativeMoveDrag) beginNativeMoveDrag();
+      const drag = nativeMoveDrag;
+      if (!drag) return;
+      const proxyWorld = getWorldTransform(proxy);
+      const currentWorld = vec3Array(proxyWorld.position);
+      if (!currentWorld) throw new Error('Corrected Move proxy world position unavailable.');
+      const worldDelta = [
+        currentWorld[0] - drag.startWorld[0],
+        currentWorld[1] - drag.startWorld[1],
+        currentWorld[2] - drag.startWorld[2]
+      ];
+      const rawDelta = worldDeltaToRawDelta(worldDelta, drag.worldFrame);
+      if (!rawDelta || !rawDelta.every(Number.isFinite)) throw new Error('Could not convert native gizmo Move into bound decal h/v/d.');
+      const raw = [
+        drag.startRaw[0] + rawDelta[0],
+        drag.startRaw[1] + rawDelta[1],
+        drag.startRaw[2] + rawDelta[2]
+      ];
+      drag.currentRaw = raw;
+      applyRawMove(raw, finalize);
+      if (finalize) {
+        drag.finalized = true;
+        nativeMoveDrag = null;
+        setStatus('Move finished; re-resolving stable projector center…');
+        window.setTimeout(refreshFeature, 140);
+      }
+    } catch (error) {
+      setStatus(`Corrected Move write blocked: ${error && error.message ? error.message : error}`, true);
+    }
+  }
+
+  function onTransformerDraggingChanged(event) {
+    const dragging = Boolean(event && event.value);
+    setOrbitEnabled(!dragging);
+    if (mode !== 'translate') return;
+    if (dragging) {
+      try { beginNativeMoveDrag(); } catch (error) {
+        setStatus(`Move start blocked: ${error && error.message ? error.message : error}`, true);
+      }
+      return;
+    }
+    // change-finished normally finalizes first. If HeroForge ends a drag without
+    // that event, commit the last valid raw state rather than leaving an open undo step.
+    const drag = nativeMoveDrag;
+    if (drag && !drag.finalized) {
+      window.setTimeout(() => {
+        if (nativeMoveDrag === drag && !drag.finalized) {
+          if (drag.currentRaw) {
+            try {
+              applyRawMove(drag.currentRaw, true);
+              drag.finalized = true;
+              nativeMoveDrag = null;
+              window.setTimeout(refreshFeature, 140);
+            } catch (error) {
+              setStatus(`Move finish fallback failed: ${error && error.message ? error.message : error}`, true);
+            }
+          } else {
+            nativeMoveDrag = null;
+          }
+        }
+      }, 0);
+    }
+  }
+
+  function forwardTransformProxy(finalize) {
+    if (!enabled || !proxy || !transformer) return;
+    if (mode === 'translate') {
+      forwardNativeMoveProxy(finalize);
+      return;
+    }
+    try {
+      verifyLiveBinding();
+      if (mode === 'rotate') applyRotateFromProxy();
+      else if (mode === 'scale') applyScaleFromProxy();
+      dispatchNative(finalize);
+      if (finalize) window.setTimeout(refreshFeature, 140);
+    } catch (error) {
+      setStatus(`Corrected ${mode} write blocked: ${error && error.message ? error.message : error}`, true);
+    }
+  }
+
+  function syncProxyFromCurrent(current) {
+    if (!proxy || !transformer || transformer.dragging) return;
+    const locatorWorld = getWorldTransform(current.nativeLocator);
+    const parentWorld = getWorldTransform(current.nativeLocator.parent);
+    proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);
+    // Translate axes represent the bound projector H/V/D frame, not the decal's
+    // own post-rotation frame. Rotate/Scale continue to use the locator rotation.
+    proxy.quaternion.copy(mode === 'translate' ? parentWorld.quaternion : locatorWorld.quaternion);
+    proxy.scale.copy(locatorWorld.scale);
+    markTransformDirty(proxy);
+    if (typeof transformer.refresh === 'function') transformer.refresh();
+  }
+
+  function updateMoveOverlayGeometry(current, cameraInfo = null) {
+    if (!moveRoot) return;
+    cameraInfo = cameraInfo || getCameraInfo(current.CK);
+    if (!cameraInfo) return;
+    for (let axisIndex = 0; axisIndex < 3; axisIndex += 1) {
+      const node = moveAxes.get(axisIndex);
+      if (!node) continue;
+      const info = axisScreenInfo(axisIndex, current.footprint.point, cameraInfo, current.projector.worldFrame);
+      if (!info) {
+        node.style.display = 'none';
+        continue;
+      }
+      node.style.display = 'block';
+      const angle = Math.atan2(info.unit[1], info.unit[0]) * 180 / Math.PI;
+      node.style.transform = `rotate(${angle}deg)`;
+      node.dataset.fallback = info.fallback ? '1' : '0';
+      const line = node.querySelector('.hfc-move-axis-line');
+      if (line) line.style.width = `${AXIS_VISUAL_LENGTH_PX}px`;
+    }
+  }
+
+  function updateOverlayFrame() {
+    rafId = window.requestAnimationFrame(updateOverlayFrame);
+    if (!enabled || mode !== 'translate' || !moveRoot) {
+      if (moveRoot) moveRoot.style.display = 'none';
+      return;
+    }
+    let x = NaN, y = NaN;
+    if (activeMoveDrag && activeMoveDrag.predictedScreen) {
+      x = activeMoveDrag.predictedScreen[0];
+      y = activeMoveDrag.predictedScreen[1];
+    } else {
+      try {
+        const CK = getCK();
+        const cameraInfo = CK ? getCameraInfo(CK) : null;
+        if (cameraInfo && latest && latest.ok && latest.footprint && latest.footprint.point) {
+          const liveScreen = worldToScreen(latest.footprint.point, cameraInfo);
+          if (liveScreen && !liveScreen.behind) {
+            x = liveScreen.x;
+            y = liveScreen.y;
+            updateMoveOverlayGeometry(latest, cameraInfo);
+          }
+        }
+      } catch (_) {}
+      if ((!Number.isFinite(x) || !Number.isFinite(y)) && latest && latest.ok && latest.footprint && latest.footprint.screen) {
+        x = latest.footprint.screen.x;
+        y = latest.footprint.screen.y;
+      }
+    }
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      moveRoot.style.display = 'none';
+      return;
+    }
+    moveRoot.style.display = 'block';
+    moveRoot.style.transform = `translate(${x}px, ${y}px)`;
+  }

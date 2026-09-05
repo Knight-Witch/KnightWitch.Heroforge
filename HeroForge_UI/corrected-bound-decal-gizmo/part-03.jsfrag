@@ -1,0 +1,229 @@
+
+  function createMoveOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = OVERLAY_ID;
+    moveRoot = document.createElement('div');
+    moveRoot.className = 'hfc-move-root';
+
+    moveCenter = document.createElement('div');
+    moveCenter.className = 'hfc-move-center';
+    moveCenter.title = 'Move decal freely in the camera plane';
+    moveCenter.textContent = '●';
+    installMovePointerHandlers(moveCenter, null);
+    moveRoot.appendChild(moveCenter);
+
+    const defs = [
+      { axis: 0, label: 'H', cls: 'hfc-axis-h' },
+      { axis: 1, label: 'V', cls: 'hfc-axis-v' },
+      { axis: 2, label: 'D', cls: 'hfc-axis-d' }
+    ];
+    for (const def of defs) {
+      const axis = document.createElement('div');
+      axis.className = `hfc-move-axis ${def.cls}`;
+      const line = document.createElement('div');
+      line.className = 'hfc-move-axis-line';
+      const knob = document.createElement('div');
+      knob.className = 'hfc-move-axis-knob';
+      knob.textContent = def.label;
+      knob.title = `Drag ${def.label} parameter in the direction it actually moves on screen`;
+      installMovePointerHandlers(knob, def.axis);
+      axis.append(line, knob);
+      moveRoot.appendChild(axis);
+      moveAxes.set(def.axis, axis);
+    }
+    overlay.appendChild(moveRoot);
+    document.body.appendChild(overlay);
+  }
+
+  function setMode(nextMode, syncNative = true) {
+    nextMode = normalizeMode(nextMode);
+    if (activeMoveDrag || (transformer && transformer.dragging)) return false;
+
+    if (syncNative && nativeTransformer && typeof nativeTransformer.setMode === "function") {
+      try { nativeTransformer.setMode(nextMode); } catch (_) {}
+    }
+
+    mode = nextMode;
+    if (transformer) {
+      transformer.visible = true;
+      transformer.setMode(nextMode);
+      if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+      if (latest && latest.ok) syncProxyFromCurrent(latest);
+    }
+    return true;
+  }
+
+  function enableCorrectedGizmo(currentOverride = null) {
+    if (enabled || !featureEnabled || disposed) return enabled;
+    const current = currentOverride && currentOverride.ok ? currentOverride : resolveCurrent();
+    if (!current.ok) {
+      setStatus(current.reason, false);
+      return false;
+    }
+    if (current.projector.maxSpread > PROJECTOR_SPREAD_TOLERANCE) {
+      setStatus(`Projector spread ${current.projector.maxSpread.toFixed(5)} exceeds correction tolerance. Native gizmo left untouched.`, true);
+      return false;
+    }
+
+    try {
+      nativeTransformer = current.nativeTransformer;
+      nativeLocator = current.nativeLocator;
+      nativeVisibleBefore = null;
+      activeBinding = {
+        selectedLabel: current.selected.selectedLabel,
+        mapping: current.selected.mapping,
+        decalId: current.selected.record.id
+      };
+      mode = readNativeMode(nativeTransformer);
+
+      const locatorWorld = getWorldTransform(nativeLocator);
+      const parentWorld = getWorldTransform(nativeLocator.parent);
+      proxy = new UW.RK.Object3D();
+      proxy.name = "kwCorrectedBoundDecalGizmoProxy";
+      proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);
+      proxy.quaternion.copy(mode === "translate" ? parentWorld.quaternion : locatorWorld.quaternion);
+      proxy.scale.copy(locatorWorld.scale);
+      current.CK.scene.add(proxy);
+      markTransformDirty(proxy);
+
+      transformer = new UW.EX.Transformer(current.CK.getDomElement());
+      transformer.addEventListener("dragging-changed", onTransformerDraggingChanged);
+      transformer.addEventListener("change", () => forwardTransformProxy(false));
+      transformer.addEventListener("change-finished", () => forwardTransformProxy(true));
+      transformer.scaleMinimum = 0.01;
+      transformer.attach(proxy, "k_");
+      current.CK.scene.add(transformer);
+      transformer.visible = true;
+      transformer.setMode(mode);
+      if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+
+      // Hide only the native Transformer visualization. Keep its attached
+      // decalLocator and listeners alive because Rotate/Scale state propagation
+      // intentionally reuses HeroForge's native callbacks.
+      suppressNativeVisual();
+
+      enabled = true;
+      latest = current;
+      updateMoveOverlayGeometry(current);
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+      return true;
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(`Enable failed: ${message}`, true);
+      return false;
+    }
+  }
+
+  function disableCorrectedGizmo(preserveStatus = false) {
+    const CK = getCK();
+    if (activeMoveDrag) {
+      // Legacy overlay path safety: restore any interrupted direct-Move drag.
+      try { applyRawMove(activeMoveDrag.startRaw, true); } catch (_) {}
+      activeMoveDrag = null;
+    }
+    if (nativeMoveDrag) {
+      try { applyRawMove(nativeMoveDrag.startRaw, true); } catch (_) {}
+      nativeMoveDrag = null;
+    }
+
+    enabled = false;
+    setOrbitEnabled(true);
+
+    if (transformer) {
+      try { transformer.detach(); } catch (_) {}
+      try { if (CK && CK.scene) CK.scene.remove(transformer); } catch (_) {}
+      try { if (typeof transformer.dispose === "function") transformer.dispose(); } catch (_) {}
+      transformer = null;
+    }
+    if (proxy) {
+      try { if (CK && CK.scene) CK.scene.remove(proxy); } catch (_) {}
+      proxy = null;
+    }
+
+    // Restore exactly the visibility state we observed before correction.
+    restoreNativeVisual();
+
+    nativeTransformer = null;
+    nativeLocator = null;
+    activeBinding = null;
+    latest = null;
+    if (moveRoot) moveRoot.style.display = "none";
+    if (!preserveStatus) setStatus(featureEnabled ? "Waiting for a bound Project-OFF decal with native gizmo enabled." : "Bound decal gizmo correction disabled in Witch Dock.", false);
+    return true;
+  }
+
+  function sameBinding(current) {
+    return Boolean(
+      enabled && current && current.ok &&
+      current.nativeTransformer === nativeTransformer &&
+      current.nativeLocator === nativeLocator &&
+      activeBinding &&
+      String(current.selected.mapping) === String(activeBinding.mapping) &&
+      Number(current.selected.record.id) === Number(activeBinding.decalId)
+    );
+  }
+
+  function refreshFeature() {
+    if (disposed || activeMoveDrag || (transformer && transformer.dragging)) return;
+
+    // A concurrently installed standalone v0.4.1 test would create a second
+    // corrected Transformer. Fail closed until that test is removed/disabled.
+    if (UW.HFCorrectedBoundDecalGizmoTest) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Standalone corrected-gizmo TEST script detected. Disable it before using the Witch Dock module.", true);
+      return;
+    }
+
+    if (!featureEnabled) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Bound decal gizmo correction disabled in Witch Dock.", false);
+      return;
+    }
+
+    const current = resolveCurrent();
+    latest = current.ok ? current : null;
+
+    if (!current.ok) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(current.reason, false);
+      return;
+    }
+
+    if (current.projector.maxSpread > PROJECTOR_SPREAD_TOLERANCE) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(`Projector spread ${current.projector.maxSpread.toFixed(5)} exceeds correction tolerance. Native gizmo left untouched.`, true);
+      return;
+    }
+
+    if (!sameBinding(current)) {
+      if (enabled) disableCorrectedGizmo(true);
+      latest = current;
+      enableCorrectedGizmo(current);
+      return;
+    }
+
+    try {
+      verifyLiveBinding();
+      suppressNativeVisual();
+
+      const nativeMode = readNativeMode(nativeTransformer);
+      if (nativeMode !== mode) setMode(nativeMode, false);
+
+      syncProxyFromCurrent(current);
+
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(message, true);
+    }
+  }
+
+  function setFeatureEnabled(next) {
+    featureEnabled = Boolean(next);
+    try { localStorage.setItem(ENABLE_STORAGE_KEY, featureEnabled ? "true" : "false"); } catch (_) {}
+    if (!featureEnabled) disableCorrectedGizmo();
+    else refreshFeature();
+    return featureEnabled;
+  }
