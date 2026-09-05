@@ -2,6 +2,58 @@
 
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
+## PFC-2026-09-05-019 — Bound Decal Undo and Transform-State Repair
+
+Date: 2026-09-05
+
+Target files:
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+Relevant history checked:
+- `Knight-Witch/HeroForge.Compatibility/PROJECT_CONTRACT.md`
+- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, and `FEATURE_INVENTORY.md`
+- current public Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, and corrected gizmo feature record
+- current public `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- accepted public source fragments under `HeroForge_UI/corrected-bound-decal-gizmo/`
+- WITCH_DEV v0.4.0, v0.4.1, and v0.4.2 standalone override artifacts
+- live HF-Chat-Bridge undo/history and decal-record observations from the current session
+- current user runtime validation of v0.4.2
+
+Confirmed findings:
+- With correction disabled, HeroForge's native Project-OFF gizmo produces working undo entries.
+- Corrected Move had been calling `CK.activeTweak()` repeatedly during pointer movement; current runtime behavior records repeated history snapshots through that path.
+- A single corrected Move drag therefore appeared non-undoable because Ctrl+Z traversed microscopic intermediate states.
+- WITCH_DEV v0.4.0 changed live Move updates to a no-history character data change/refresh path while keeping `CK.passiveChangeFinish()` as the single release commit; Move, Rotate, and Scale undo/redo passed user testing.
+- Existing Project ON/OFF state preservation and artwork changes while Project OFF passed in v0.4.0.
+- Live record inspection confirmed HeroForge's bad fresh-bound initializer values near `v=1.503942117`, `s=1.768586891`, `sy=1.768586891`.
+- WITCH_DEV v0.4.1 failed the fresh-slot scale case because projected scale fields were incorrectly treated as an authoritative prior bound transform.
+- WITCH_DEV v0.4.2 tracks only genuine Project-OFF state as authoritative bound history and normalizes only `v/s/sy` when the confirmed bad first-bind signature appears with no prior bound state.
+- User runtime-confirmed v0.4.2 fixes the fresh-slot case.
+
+Material conflict risks:
+- Do not change the validated projector-center math or locator quaternion/orientation corrections from the accepted v0.3.1 behavior.
+- Do not restore `CK.activeTweak()` on every corrected Move pointer event; that recreates history flooding.
+- Do not suppress the single final `CK.passiveChangeFinish()` commit on successful Move release.
+- Cancel/interrupted Move restoration must not create fake undo entries.
+- Do not treat projected `s` / `sy` values as a valid first Project-OFF baseline for a fresh slot.
+- Do not zero transform values on every Project toggle. Normal Project ON/OFF memory that already contains sane bound state must remain untouched.
+- Artwork replacement while Project OFF must preserve the user's finite bound transform values.
+- The first-bind fallback is intentionally signature-gated and only normalizes `v`, `s`, and `sy`; H/D/rotation and unrelated fields must not be reset without evidence.
+- Preserve listener lifecycle: `characterEnterChange` registration must be removed and caches cleared on dispose.
+- Preserve public `Witch_Dock.user.js`, `manifest.json`, `tools/Decals.js`, source fragments, Booth, slot tools, and unrelated modules unchanged.
+- Unequal Project-OFF visible scaling, exact artwork-center polish, and projector wireframe correction remain deferred.
+
+Recommended action:
+- Promote the exact runtime-confirmed WITCH_DEV v0.4.2 repair rules into the existing public corrected-gizmo loader without changing the public module boundary or manifest.
+- Keep the current fragment layout/source-replacement delivery for this surgical repair; consolidation remains separate technical-debt work requiring its own validation.
+- Keep `Witch_Dock.user.js` at v1.0.8.
+- Update durable feature/master/changelog tracking in the same commit.
+- After promotion, disable the DEV override and perform one normal-public refresh smoke test if desired before beginning the next material feature stage.
+
 ## PFC-2026-09-05-018 — Corrected Bound Decal Gizmo Public Promotion
 
 Date: 2026-09-05
@@ -380,7 +432,7 @@ Relevant history checked:
 - `HeroForge_Shadow_Pipeline_Probe_v0.1.0.txt`
 - `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-02-14-906Z.json` — native sun adjustment only
 - `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-03-42-554Z.json` — environmental lighting preset adjustment only
-- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-04-50-087Z.json` — full Booth preset selection only
+- `HF_Shadow_Pipeline_Probe_v0.1.0_2026-07-15T01-04-50-087Z.json` — full Booth-preset selection only
 - user clarification that environmental lighting presets are distinct from full Booth presets
 - project rules requiring a documentation checkpoint before the next material shadow-probe code stage
 

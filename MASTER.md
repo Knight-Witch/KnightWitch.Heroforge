@@ -69,7 +69,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout scroll override. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional loader for expanded decal slots. |
 | HF UI | loaded by bridge | `HeroForge_UI/Expanded_Decal_Slots.js` | Live / conditional | Conditional expanded slots when compatible HF Core Tweaks data is detected. |
-| HF UI | `corrected-bound-decal-gizmo` | `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` | Live / hidden | Corrected projector-centered bound decal gizmo service; accepted WITCH_DEV v0.3.1 behavior. |
+| HF UI | `corrected-bound-decal-gizmo` | `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` | Live / hidden | Corrected projector-centered bound decal gizmo service; stable v1.1.0 behavior validated through WITCH_DEV v0.4.2, including undo/redo and bound-transform preservation. |
 | Planned | TBD | Advanced Lighting / Extra Lights | Investigating / unresolved | Second custom DirectionalLight works. Probe v0.6 ruled out the traced `additionalSunShadowMap` textures as the dynamic native sun-shadow path; actual native shadow refresh/update remains unresolved. Third SphereLight remains visually non-working. |
 | Planned | TBD | Camera-Relative Rim Lighting | Queued / unproven | Fresnel/shader-based rim effect queued after the physical-light foundation stabilizes. Separate from physical light injection. |
 | Planned | TBD | Photo Mode PNG Series Capture | Investigating / unresolved | High-resolution PNG sequence export from Photo Mode/photo booth while preserving HF effects/overlays. Separate from Persistent Booth. |
@@ -194,13 +194,16 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Feature ID: `decals.gizmo.bound-correction`.
 - Manifest service ID: `corrected-bound-decal-gizmo` (hidden, enabled by default).
 - Visible host: `tools/Decals.js`, registered into tab `Decals`.
-- Public behavior is the user-confirmed WITCH_DEV v0.3.1 behavior; the later v0.3.2 custom Move-arrow experiment is not promoted.
+- Current stable behavior is build `1.1.0-stable-undo-transform-preserve`, based on the accepted v0.3.1 native-visual geometry/orientation behavior plus the user-confirmed WITCH_DEV v0.4.2 undo and transform-state repairs.
 - Applies only when the selected splatter decal is bound / Project OFF and HeroForge's native decal gizmo exists.
 - Hides only the native floor/origin Transformer visualization while keeping `decalLocator` and native callbacks/state alive.
 - Uses the corrected projector-volume-center anchor; the visible artwork center remains slightly offset but the user-confirmed transform pivot is accurate enough for release.
 - Move, Rotate, Scale, suppression/restoration, and normal Witch Dock coexistence passed live user testing.
+- Ctrl+Z / Ctrl+Shift+Z are live-confirmed for corrected Move, Rotate, and Scale. Corrected Move performs no-history live data/refresh updates during the drag and keeps the existing final `CK.passiveChangeFinish()` commit on release, avoiding repeated microscopic undo snapshots.
+- A lifecycle-managed `characterEnterChange` listener preserves genuine finite Project-OFF transform state through normal Project toggles and decal-artwork replacement. Projected scale values are not treated as authoritative bound baselines.
+- For a brand-new slot with no known bound state, the feature recognizes the current HeroForge bad first-bind signature near `v≈1.50394`, `s≈1.76859`, `sy≈1.76859` and normalizes only those three values to `0`; sane remembered Project-OFF state is left untouched.
 - Unequal Project-OFF visible scaling and corrected projector wireframe/bounding-box display remain deferred.
-- Current public loader keeps the accepted source split into fragments for exact tested parity and fails closed if its v0.3.1 source anchors are missing or ambiguous.
+- Current public loader keeps the accepted source split into fragments and applies the validated correction set transactionally; missing or ambiguous expected source anchors fail closed.
 - Do not run the old standalone/DEV corrected-gizmo script alongside the public module.
 - Detailed record: `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`.
 
@@ -277,7 +280,7 @@ This is the source bible for the current Witch Dock repository state. Keep this 
 - Backfill project history from previous chats.
 - Keep `HISTORY/STANDALONE_REFERENCES.md` current as standalone/probe sources are recovered or created.
 - Fill `HISTORY/BULLSHIT/` topic files with durable HeroForge engine discoveries.
-- Treat corrected bound decal gizmo public promotion as complete; visual artwork-center alignment and corrected projector wireframe are deferred polish.
+- Treat corrected bound decal gizmo public promotion plus stable v1.1.0 undo/transform-state repair as complete; visual artwork-center alignment and corrected projector wireframe remain deferred polish.
 - Prioritize the current 4K/8K capture regression and new HeroForge WebP spin-capture investigation before returning to broader Decals/Foundation migration work.
 - Split the cumulative lighting harness into a compact Lighting Injection Reference and focused Shadow Pipeline Probe now that the v0.6 result is documented.
 - Focus the next shadow probe on the actual native `sun.shadow` refresh/update mechanism and legitimate HeroForge lighting-state transitions, not the static `additionalSunShadowMap` environment assets.
@@ -292,7 +295,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock. Deta
 
 | Tool / Script | Canonical Source | Target Location | Status | Notes |
 |---|---|---|---|---|
-| Corrected bound decal gizmo | WITCH_DEV v0.3.1 accepted behavior / Compatibility v0.4.1 investigation | `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` + `tools/Decals.js` | Live | Public manifest promotion completed 2026-09-05; v0.3.2 custom Move-arrow experiment rejected. |
+| Corrected bound decal gizmo | WITCH_DEV v0.4.2 validated repair / Compatibility v0.4.1 original investigation | `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` + `tools/Decals.js` | Live | Public promotion completed 2026-09-05; stable v1.1.0 adds validated undo/redo, transform preservation, and fresh-slot first-bind normalization; v0.3.2 custom Move-arrow experiment rejected. |
 | HF Core Tweaks / Lob decal slot reference | External user-provided / Lob-style Tampermonkey script | TBD; maybe direct HF Core Tweaks edit or `HeroForge_UI/` bridge strategy | External canonical reference | Compare before any slot-expansion edit. Current Witch Dock expansion depends on HF Core Tweaks signature and does not replace it. |
 | Advanced Lighting / Extra Lights | Lighting Probe v0.1.0; compact injection behavior in Injection Probe v0.3.0; diagnostics through v0.6.0 | Future separate `/tools/` lighting module, intended to register into the Booth tab | Investigating / unresolved | Second DirectionalLight works. v0.6 ruled out the traced `additionalSunShadowMap` assets as the dynamic native shadow path. Split the cumulative harness, then target actual native `sun.shadow` refresh/update behavior. Do not merge experimental lighting logic into `tools/Booth.js`. |
 | Camera-Relative Rim Lighting | Future read-only shader-hook probe | TBD; separate shader/material subsystem | Queued / unproven | Fresnel rim queued after physical-light stabilization. Do not fold into physical-light injection. |
@@ -312,7 +315,7 @@ Add standalone scripts here when they are ready to migrate into Witch Dock. Deta
 - Working standalone scripts remain canonical until the integrated Witch Dock version is tested and confirmed.
 - Presentation is frozen unless UI/UX changes are explicitly requested.
 - Booth, Decals, bone detection, JSON/library, and custom lighting workflows are high-fragility areas.
-- Corrected bound decal gizmo is live; slight visible-artwork-center offset, projector wireframe correction, and unequal Project-OFF visible scaling remain deferred rather than release blockers.
+- Corrected bound decal gizmo is live with undo/redo and transform preservation validated; slight visible-artwork-center offset, projector wireframe correction, and unequal Project-OFF visible scaling remain deferred rather than release blockers.
 - Persistent Booth is live/working. Do not classify it as an open PNG-series capture task or modify it for lighting without isolated evidence.
 - A second custom DirectionalLight visibly works, but reliable visible independent custom shadows are not confirmed.
 - The two traced `additionalSunShadowMap` textures are static environment-shadow image assets, not the unresolved dynamic native sun-shadow path.

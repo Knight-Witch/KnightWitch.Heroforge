@@ -1,5 +1,57 @@
 # Changelog
 
+## DOCK-2026-09-05-019 — Bound Decal Undo and Transform-State Repair
+
+Date: 2026-09-05
+
+### Fixed
+
+- Fixed corrected bound-decal Move history so one completed drag creates one usable undo transaction instead of recording microscopic pointer-move history entries.
+- Confirmed Ctrl+Z / Ctrl+Shift+Z behavior for corrected Move, Rotate, and Scale in WITCH_DEV v0.4.2.
+- Preserved existing sane Project-OFF transform values through normal Project ON/OFF toggling.
+- Preserved the user's existing bound transform when changing decal artwork while Project is OFF.
+- Added narrowly gated first-bind normalization for HeroForge's confirmed bad fresh-slot initializer: `v≈1.50394`, `s≈1.76859`, `sy≈1.76859` are normalized to `0` only when no genuine prior bound state exists and the known bad signature is observed.
+
+### Diagnosis
+
+- With the corrected gizmo disabled, HeroForge's native Project-OFF gizmo produced working undo entries, isolating the undo regression to the corrected-gizmo integration.
+- The corrected Move path was using `CK.activeTweak()` on every pointer movement; on the current runtime this routes through character history and creates repeated intermediate snapshots.
+- WITCH_DEV v0.4.1 failed the brand-new-slot scale case because projected scale fields were incorrectly treated as a meaningful prior bound baseline.
+- WITCH_DEV v0.4.2 fixed the model by treating only genuine Project-OFF state as authoritative bound transform history.
+
+### Changed
+
+- Updated `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` stable loader from the v0.3.1-only correction set to the runtime-confirmed v0.4.2 repair set, build `1.1.0-stable-undo-transform-preserve`.
+- Live Move updates now use the current character-data change/refresh path without adding a history point on every pointer move; `CK.passiveChangeFinish()` remains the single release commit.
+- Added `characterEnterChange` bound-transform preservation with lifecycle-managed event registration/cache cleanup.
+- Updated the durable gizmo feature record and master/pre-flight tracking.
+
+### Delivery
+
+- `Witch_Dock.user.js` remains v1.0.8 and is unchanged.
+- `manifest.json`, `tools/Decals.js`, and the five accepted source fragments are unchanged.
+- Existing users receive the repaired hidden gizmo module on HeroForge refresh through the existing manifest URL.
+
+### Test notes
+
+- WITCH_DEV v0.4.0: Move/Rotate/Scale undo-redo passed; existing Project ON/OFF memory passed; bound artwork-swap transform preservation passed; fresh-slot initialization remained wrong.
+- WITCH_DEV v0.4.1: fresh-slot scale normalization still failed; duplicate-script state was explicitly rechecked and ruled out.
+- WITCH_DEV v0.4.2: brand-new decal slot first Project-OFF conversion correctly kept vertical Move and red/green scale at `0`; user confirmed the repair worked.
+- Stable loader syntax check: PASS before commit.
+
+### Touched files
+
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Rollback notes
+
+- Revert this commit to return the public gizmo service to the earlier v0.3.1 behavior while leaving its public manifest/tool installation intact.
+- No Tampermonkey shell downgrade or manifest change is required for rollback.
+
 ## DOCK-2026-09-05-018 — Corrected Bound Decal Gizmo Public Promotion
 
 Date: 2026-09-05
@@ -357,7 +409,7 @@ Time: 18:08 PDT
 - Confirmed that the full Booth preset changed native sun position, intensity, and color and ended with synchronized shadow camera/matrix state while retaining the existing shadow render-target objects.
 - Recorded the Booth-preset timing limitation: the first scheduled post-click snapshots were delayed until the composite preset had already resolved, so internal update ordering was not isolated.
 - Corrected the current shadow-pipeline model: the failed direct-property mutation is missing a concrete follow-up shadow-camera/matrix refresh phase, not an observed shadow render-target replacement.
-- Recorded that the next probe should enumerate and minimally instrument native `sun.shadow` instance methods during a clean native sun adjustment rather than guessing a method name.
+- Recorded that the next probe should enumerate and minimally instrument callable methods on the native `sun.shadow` instance during a clean native sun adjustment rather than guessing a method name.
 
 ### Runtime Evidence
 
