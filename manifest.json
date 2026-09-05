@@ -38,6 +38,15 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "photo-booth-true-resolution",
+      "title": "Photo Booth True Resolution",
+      "tab": "Booth",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_PHOTO/features/media/Photo_Booth_True_Resolution.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
