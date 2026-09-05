@@ -1,0 +1,240 @@
+    const decals = CK.character && CK.character.data && CK.character.data.decals;
+    const splatter = decals && decals.splatter;
+    const record = splatter && splatter[mapping];
+    if (!record || typeof record !== 'object') return { ok: false, reason: `No decal record for mapping ${mapping}.` };
+
+    return { ok: true, CK, display, modded, selectedLabel, sourceLayer, mapping, record };
+  }
+
+  function resolveRenderedMatches(info) {
+    const displayDecals = info.modded && info.modded.displayDecals;
+    const meshes = info.display && info.display.meshes;
+    if (!displayDecals || typeof displayDecals !== 'object' || !meshes) return { ok: false, reason: 'Rendered display decal/mesh state unavailable.' };
+
+    const matches = [];
+    for (const part of Object.keys(displayDecals)) {
+      const list = displayDecals[part];
+      if (!Array.isArray(list)) continue;
+      for (let displayIndex = 0; displayIndex < list.length; displayIndex += 1) {
+        const item = list[displayIndex];
+        if (!item || item.sourceSlot !== 'splatter') continue;
+        if (Number(item.sourceLayer) !== info.sourceLayer) continue;
+        if (item.mapping != null && String(item.mapping) !== info.mapping) continue;
+        if (item.id != null && info.record.id != null && Number(item.id) !== Number(info.record.id)) continue;
+        const mesh = meshes[part];
+        const materials = mesh && mesh.bakeMaterials && mesh.bakeMaterials.colorDecals;
+        const material = materials && materials[displayIndex];
+        const uniforms = material && material.uniforms;
+        if (!mesh || !uniforms || !uniforms.l0_project || !uniforms.l0_project.value) continue;
+        if (uniforms.l0_projectBind && Number(uniforms.l0_projectBind.value) !== 1) continue;
+        matches.push({ key: `${part}[${displayIndex}]`, part, displayIndex, item, mesh, material, uniforms });
+      }
+    }
+    return matches.length ? { ok: true, matches } : { ok: false, reason: 'No bound rendered target materials resolved for selected decal.' };
+  }
+
+  // CONFIRMED current-build frame rule (current validated HF runtime): for bound projected
+  // splatter slots, l0_project is built in HeroForge's canonical projected-decal
+  // frame (base translate Y=2, scale 4/4/8) and does NOT contain the live
+  // character/display matrixWorld. Inverting l0_project therefore yields canonical
+  // character coordinates, not scene-world coordinates. Those points must be transformed
+  // through the one shared Character0 frame used by the native decalLocator—not through
+  // each rendered target mesh's own matrixWorld.
+
+  function sharedProjectorWorldFrame(nativeLocator) {
+    const parent = nativeLocator && nativeLocator.parent;
+    if (!parent) return null;
+    try { if (typeof parent.updateMatrixWorld === 'function') parent.updateMatrixWorld(); } catch (_) {}
+    return cloneElements(parent._matrixWorld) || cloneElements(parent.matrixWorld);
+  }
+
+  function canonicalPointToWorld(point4, worldFrame) {
+    if (!worldFrame) return null;
+    return normalizeHomogeneous(mat4MulVec4(worldFrame, point4));
+  }
+
+  function projectorCenter(match, worldFrame) {
+    const project = cloneElements(match.uniforms.l0_project && match.uniforms.l0_project.value);
+    if (!project || !worldFrame) return null;
+    const inverse = invertMat4(project);
+    if (!inverse) return null;
+    const canonical = normalizeHomogeneous(mat4MulVec4(inverse, [0.5, 0.5, 0.5, 1]));
+    if (!canonical) return null;
+    const world = canonicalPointToWorld(canonical, worldFrame);
+    return world ? world.slice(0, 3) : null;
+  }
+
+  function summarizeProjector(matches, worldFrame, frameTarget) {
+    if (!worldFrame) return { ok: false, reason: 'Shared character projector frame unavailable.' };
+    const centers = matches.map(match => projectorCenter(match, worldFrame)).filter(v => v && v.every(Number.isFinite));
+    if (!centers.length) return { ok: false, reason: 'No valid shared-frame bound projector centers could be computed.' };
+    const center = [
+      median(centers.map(v => v[0])),
+      median(centers.map(v => v[1])),
+      median(centers.map(v => v[2]))
+    ];
+    let maxSpread = 0;
+    for (const item of centers) maxSpread = Math.max(maxSpread, distance3(item, center));
+    return {
+      ok: true,
+      center,
+      centers,
+      maxSpread,
+      worldFrame,
+      frameTarget: frameTarget || 'shared character frame'
+    };
+  }
+
+  function getCameraInfo(CK) {
+    const orbit = CK && CK.orbitCamera;
+    const camera = orbit && (orbit.camera || orbit._perspectiveCamera || orbit._orthographicCamera);
+    const dom = CK && typeof CK.getDomElement === 'function' ? CK.getDomElement() : null;
+    if (!camera || !dom || typeof dom.getBoundingClientRect !== 'function') return null;
+    const projection = cloneElements(camera.projectionMatrix);
+    const view = cloneElements(camera._matrixWorldInverse) || cloneElements(camera.matrixWorldInverse);
+    const rect = dom.getBoundingClientRect();
+    if (!projection || !view || !rect || rect.width <= 0 || rect.height <= 0) return null;
+    return { projection, view, rect };
+  }
+
+  function worldToScreen(point, cameraInfo) {
+    const viewPos = mat4MulVec4(cameraInfo.view, [point[0], point[1], point[2], 1]);
+    const clip = mat4MulVec4(cameraInfo.projection, viewPos);
+    if (!Number.isFinite(clip[3]) || Math.abs(clip[3]) < 1e-9) return null;
+    const ndcX = clip[0] / clip[3];
+    const ndcY = clip[1] / clip[3];
+    const ndcZ = clip[2] / clip[3];
+    return {
+      x: cameraInfo.rect.left + ((ndcX + 1) * 0.5) * cameraInfo.rect.width,
+      y: cameraInfo.rect.top + ((1 - ndcY) * 0.5) * cameraInfo.rect.height,
+      ndcX, ndcY, ndcZ,
+      behind: clip[3] <= 0,
+      offscreen: ndcX < -1 || ndcX > 1 || ndcY < -1 || ndcY > 1 || ndcZ < -1 || ndcZ > 1
+    };
+  }
+
+  function isNativeDecalTransformer(node) {
+    if (!node || typeof node !== 'object') return false;
+    const object = node.object;
+    if (!object || object.name !== 'decalLocator') return false;
+    if (typeof node.attach !== 'function' || typeof node.detach !== 'function') return false;
+    if (typeof node.refresh !== 'function' || typeof node.setMode !== 'function' || typeof node.dispatchEvent !== 'function') return false;
+    const listeners = node._listeners;
+    return Boolean(listeners && Array.isArray(listeners.change) && listeners.change.some(fn => typeof fn === 'function') && Array.isArray(listeners['change-finished']) && listeners['change-finished'].some(fn => typeof fn === 'function'));
+  }
+
+  function findNativeDecalTransformers(scene) {
+    const matches = [];
+    const seen = new Set();
+    const stack = [scene];
+    let visited = 0;
+    while (stack.length && visited < MAX_SCENE_VISITS) {
+      const node = stack.pop();
+      if (!node || typeof node !== 'object' || seen.has(node)) continue;
+      seen.add(node);
+      visited += 1;
+      if (isNativeDecalTransformer(node)) matches.push(node);
+      const children = Array.isArray(node.children) ? node.children : [];
+      for (let i = children.length - 1; i >= 0; i -= 1) stack.push(children[i]);
+    }
+    return { matches, visited, limitReached: stack.length > 0 };
+  }
+
+  function resolveProjectorVolumeAnchor(CK, projector) {
+    if (!projector || !projector.ok || !projector.center) {
+      return { ok: false, reason: 'Stable projector center unavailable.' };
+    }
+    const cameraInfo = getCameraInfo(CK);
+    if (!cameraInfo) return { ok: false, reason: 'Camera matrices unavailable for projector anchoring.' };
+    const point = projector.center.slice();
+    const screen = worldToScreen(point, cameraInfo);
+    if (!screen || screen.behind) return { ok: false, reason: 'Stable projector center is behind the current camera.' };
+    return {
+      ok: true,
+      point,
+      screen,
+      hit: null,
+      targetKey: 'projector-volume-center',
+      part: null,
+      sampleCount: projector.centers ? projector.centers.length : 0,
+      hitCount: 0,
+      inFrustumHitCount: 0,
+      visibleHitCount: 0,
+      occludedHitCount: 0,
+      screenMedian: [screen.x, screen.y],
+      meshes: 0,
+      coverageWeighted: false,
+      occlusionFiltered: false,
+      centerUv: [0.5, 0.5],
+      lockMode: 'stable-projector-center',
+      projectorDepth: 0.5,
+      anchorLock: null,
+      visibleCandidates: []
+    };
+  }
+
+  function getWorldTransform(object) {
+    const RK = getRK();
+    if (!object || !RK) throw new Error('World transform unavailable.');
+    if (typeof object.updateMatrixWorld === 'function') object.updateMatrixWorld();
+    const position = new RK.Vec3();
+    const quaternion = new RK.Quaternion();
+    const scale = new RK.Vec3();
+    object.matrixWorld.decompose(position, quaternion, scale);
+    return { position, quaternion, scale };
+  }
+
+  function markTransformDirty(object) {
+    if (!object) return;
+    if (typeof object.setMatrixNeedsUpdate === 'function') object.setMatrixNeedsUpdate(true);
+    if (typeof object.updateMatrixWorld === 'function') object.updateMatrixWorld();
+  }
+
+  function resolveCurrent() {
+    const CK = getCK();
+    if (!CK) return { ok: false, reason: 'CK unavailable.' };
+    if (!UW.RK || typeof UW.RK.Object3D !== 'function') return { ok: false, reason: 'RK.Object3D unavailable.' };
+    if (!UW.EX || typeof UW.EX.Transformer !== 'function') return { ok: false, reason: 'EX.Transformer unavailable.' };
+    if (!CK.scene || typeof CK.scene.add !== 'function') return { ok: false, reason: 'CK.scene unavailable.' };
+    if (typeof CK.getDomElement !== 'function') return { ok: false, reason: 'CK.getDomElement unavailable.' };
+    if (typeof CK.activeTweak !== 'function') return { ok: false, reason: 'CK.activeTweak unavailable.' };
+
+    const selected = selectedSplatterInfo(CK);
+    if (!selected.ok) return selected;
+    if (selected.record.forceProjectedScript !== false) return { ok: false, reason: 'Selected decal must be Project OFF / bound.' };
+    const rendered = resolveRenderedMatches(selected);
+    if (!rendered.ok) return rendered;
+
+    const nativeScan = findNativeDecalTransformers(CK.scene);
+    if (nativeScan.matches.length === 0) return { ok: false, reason: 'Native decal gizmo not found. Turn HeroForge\'s decal gizmo ON.' };
+    if (nativeScan.matches.length !== 1) return { ok: false, reason: `Ambiguous native decal gizmos: ${nativeScan.matches.length}.` };
+    const nt = nativeScan.matches[0];
+    const locator = nt.object;
+    if (!locator || !locator.parent) return { ok: false, reason: 'Native decalLocator has no parent.' };
+
+    const worldFrame = sharedProjectorWorldFrame(locator);
+    if (!worldFrame) return { ok: false, reason: 'Native decalLocator parent world frame unavailable.' };
+    const projector = summarizeProjector(rendered.matches, worldFrame, `native ${locator.parent.name || 'decalLocator parent'}`);
+    if (!projector.ok) return projector;
+    const footprint = resolveProjectorVolumeAnchor(CK, projector);
+    if (!footprint.ok) return footprint;
+
+    return {
+      ok: true,
+      CK,
+      selected,
+      rendered,
+      projector,
+      footprint,
+      nativeTransformer: nt,
+      nativeLocator: locator,
+      nativeScan,
+      locatorPosition: vec3Array(locator.position),
+      locatorScale: vec3Array(locator.scale),
+      locatorQuaternion: quatArray(locator.quaternion)
+    };
+  }
+
+  function verifyLiveBinding() {
+    if (!enabled || !activeBinding || !nativeTransformer || !nativeLocator) throw new Error('Corrected gizmo binding unavailable.');
+    if (!nativeTransformer.parent || nativeTransformer.object !== nativeLocator || !nativeLocator.parent) throw new Error('Native decal gizmo was disabled, detached, or recreated.');

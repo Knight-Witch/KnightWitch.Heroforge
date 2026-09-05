@@ -1,0 +1,223 @@
+      proxy.quaternion.copy(locatorWorld.quaternion);
+      proxy.scale.copy(locatorWorld.scale);
+      current.CK.scene.add(proxy);
+      markTransformDirty(proxy);
+
+      transformer = new UW.EX.Transformer(current.CK.getDomElement());
+      transformer.addEventListener("dragging-changed", event => setOrbitEnabled(!event.value));
+      transformer.addEventListener("change", () => forwardTransformProxy(false));
+      transformer.addEventListener("change-finished", () => forwardTransformProxy(true));
+      transformer.scaleMinimum = 0.01;
+      transformer.attach(proxy, "k_");
+      current.CK.scene.add(transformer);
+      transformer.visible = mode !== "translate";
+      if (mode !== "translate") {
+        transformer.setMode(mode);
+        if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+      }
+
+      // Hide only the native Transformer visualization. Keep its attached
+      // decalLocator and listeners alive because Rotate/Scale state propagation
+      // intentionally reuses HeroForge's native callbacks.
+      suppressNativeVisual();
+
+      enabled = true;
+      latest = current;
+      updateMoveOverlayGeometry(current);
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+      return true;
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(`Enable failed: ${message}`, true);
+      return false;
+    }
+  }
+
+  function disableCorrectedGizmo(preserveStatus = false) {
+    const CK = getCK();
+    if (activeMoveDrag) {
+      // Roll an interrupted direct-Move drag back through the same validated
+      // raw-state adapter used during the drag, before disabling binding checks.
+      try { applyRawMove(activeMoveDrag.startRaw, true); } catch (_) {}
+      activeMoveDrag = null;
+    }
+
+    enabled = false;
+    setOrbitEnabled(true);
+
+    if (transformer) {
+      try { transformer.detach(); } catch (_) {}
+      try { if (CK && CK.scene) CK.scene.remove(transformer); } catch (_) {}
+      try { if (typeof transformer.dispose === "function") transformer.dispose(); } catch (_) {}
+      transformer = null;
+    }
+    if (proxy) {
+      try { if (CK && CK.scene) CK.scene.remove(proxy); } catch (_) {}
+      proxy = null;
+    }
+
+    // Restore exactly the visibility state we observed before correction.
+    restoreNativeVisual();
+
+    nativeTransformer = null;
+    nativeLocator = null;
+    activeBinding = null;
+    latest = null;
+    if (moveRoot) moveRoot.style.display = "none";
+    if (!preserveStatus) setStatus(featureEnabled ? "Waiting for a bound Project-OFF decal with native gizmo enabled." : "Bound decal gizmo correction disabled in Witch Dock.", false);
+    return true;
+  }
+
+  function sameBinding(current) {
+    return Boolean(
+      enabled && current && current.ok &&
+      current.nativeTransformer === nativeTransformer &&
+      current.nativeLocator === nativeLocator &&
+      activeBinding &&
+      String(current.selected.mapping) === String(activeBinding.mapping) &&
+      Number(current.selected.record.id) === Number(activeBinding.decalId)
+    );
+  }
+
+  function refreshFeature() {
+    if (disposed || activeMoveDrag || (transformer && transformer.dragging)) return;
+
+    // A concurrently installed standalone v0.4.1 test would create a second
+    // corrected Transformer. Fail closed until that test is removed/disabled.
+    if (UW.HFCorrectedBoundDecalGizmoTest) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Standalone corrected-gizmo TEST script detected. Disable it before using the Witch Dock module.", true);
+      return;
+    }
+
+    if (!featureEnabled) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus("Bound decal gizmo correction disabled in Witch Dock.", false);
+      return;
+    }
+
+    const current = resolveCurrent();
+    latest = current.ok ? current : null;
+
+    if (!current.ok) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(current.reason, false);
+      return;
+    }
+
+    if (current.projector.maxSpread > PROJECTOR_SPREAD_TOLERANCE) {
+      if (enabled) disableCorrectedGizmo(true);
+      setStatus(`Projector spread ${current.projector.maxSpread.toFixed(5)} exceeds correction tolerance. Native gizmo left untouched.`, true);
+      return;
+    }
+
+    if (!sameBinding(current)) {
+      if (enabled) disableCorrectedGizmo(true);
+      latest = current;
+      enableCorrectedGizmo(current);
+      return;
+    }
+
+    try {
+      verifyLiveBinding();
+      suppressNativeVisual();
+
+      const nativeMode = readNativeMode(nativeTransformer);
+      if (nativeMode !== mode) setMode(nativeMode, false);
+
+      if (mode === "translate") updateMoveOverlayGeometry(current);
+      else syncProxyFromCurrent(current);
+
+      setStatus(`Corrected bound decal ${mode === "translate" ? "Move" : mode} active.`, false);
+    } catch (error) {
+      const message = error && error.message ? error.message : String(error);
+      disableCorrectedGizmo(true);
+      setStatus(message, true);
+    }
+  }
+
+  function setFeatureEnabled(next) {
+    featureEnabled = Boolean(next);
+    try { localStorage.setItem(ENABLE_STORAGE_KEY, featureEnabled ? "true" : "false"); } catch (_) {}
+    if (!featureEnabled) disableCorrectedGizmo();
+    else refreshFeature();
+    return featureEnabled;
+  }
+
+  function installStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = `
+      #${OVERLAY_ID}{position:fixed;inset:0;z-index:2147483645;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-root{position:absolute;left:0;top:0;width:0;height:0;display:none;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-center{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(15,15,18,.78);border:2px solid white;color:white;font:700 15px Arial;cursor:move;pointer-events:auto;box-shadow:0 1px 4px #000}
+      #${OVERLAY_ID} .hfc-move-axis{position:absolute;left:0;top:0;transform-origin:0 0;height:0;pointer-events:none}
+      #${OVERLAY_ID} .hfc-move-axis-line{position:absolute;left:10px;top:-2px;height:4px;border-radius:2px;background:currentColor;opacity:.86}
+      #${OVERLAY_ID} .hfc-move-axis-knob{position:absolute;left:${AXIS_VISUAL_LENGTH_PX}px;top:0;transform:translate(-50%,-50%);width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1b1b1f;border:2px solid currentColor;color:currentColor;font:700 11px Arial;cursor:grab;pointer-events:auto;box-shadow:0 1px 4px #000}
+      #${OVERLAY_ID} .hfc-axis-h{color:#ff4e4e}
+      #${OVERLAY_ID} .hfc-axis-v{color:#47e56a}
+      #${OVERLAY_ID} .hfc-axis-d{color:#4d8dff}
+      #${OVERLAY_ID} .hfc-move-axis[data-fallback="1"] .hfc-move-axis-line{background:repeating-linear-gradient(90deg,currentColor 0 6px,transparent 6px 10px)}
+    `;
+    document.documentElement.appendChild(style);
+  }
+
+  function mount() {
+    if (document.getElementById(OVERLAY_ID)) return;
+    installStyle();
+    createMoveOverlay();
+    refreshTimer = window.setInterval(refreshFeature, REFRESH_MS);
+    if (rafId === null) rafId = window.requestAnimationFrame(updateOverlayFrame);
+    refreshFeature();
+  }
+
+  function initialize() {
+    if (disposed) return false;
+    const CK = getCK();
+    if (CK && CK.scene && CK.character && CK.character.display && UW.RK && UW.EX) {
+      if (readinessTimer !== null) {
+        clearInterval(readinessTimer);
+        readinessTimer = null;
+      }
+      mount();
+      return true;
+    }
+    return false;
+  }
+
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    disableCorrectedGizmo(true);
+    if (readinessTimer !== null) { clearInterval(readinessTimer); readinessTimer = null; }
+    if (refreshTimer !== null) { clearInterval(refreshTimer); refreshTimer = null; }
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+    const overlay = document.getElementById(OVERLAY_ID);
+    if (overlay) overlay.remove();
+    const style = document.getElementById(STYLE_ID);
+    if (style) style.remove();
+    setStatus("Disposed; native HeroForge gizmo restored.", false);
+  }
+
+  UW[GLOBAL_ROOT] = UW[GLOBAL_ROOT] || {};
+  const prior = UW[GLOBAL_ROOT][GLOBAL_KEY];
+  if (prior && typeof prior.dispose === "function") {
+    try { prior.dispose(); } catch (_) {}
+  }
+
+  const api = {
+    featureId: FEATURE_ID,
+    build: BUILD,
+    enable: () => setFeatureEnabled(true),
+    disable: () => setFeatureEnabled(false),
+    setMode,
+    refresh: refreshFeature,
+    dispose,
+    getState: publicState
+  };
+  UW[GLOBAL_ROOT][GLOBAL_KEY] = api;
+
+  if (!initialize()) readinessTimer = window.setInterval(initialize, 500);
+})();

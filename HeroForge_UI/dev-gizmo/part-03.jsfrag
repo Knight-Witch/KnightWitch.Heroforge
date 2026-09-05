@@ -1,0 +1,240 @@
+      worldDelta = [
+        drag.axisInfo.worldBasis[0] * scalarWorld,
+        drag.axisInfo.worldBasis[1] * scalarWorld,
+        drag.axisInfo.worldBasis[2] * scalarWorld
+      ];
+      drag.predictedScreen = [
+        drag.startAnchorScreen[0] + drag.axisInfo.unit[0] * scalarPixels,
+        drag.startAnchorScreen[1] + drag.axisInfo.unit[1] * scalarPixels
+      ];
+    }
+    if (!worldDelta || !worldDelta.every(Number.isFinite)) return;
+    try {
+      const rawDelta = worldDeltaToRawDelta(worldDelta, drag.worldFrame);
+      if (!rawDelta || !rawDelta.every(Number.isFinite)) throw new Error('Could not convert world Move delta into bound decal h/v/d frame.');
+      const raw = [
+        drag.startRaw[0] + rawDelta[0],
+        drag.startRaw[1] + rawDelta[1],
+        drag.startRaw[2] + rawDelta[2]
+      ];
+      drag.currentRaw = raw;
+      applyRawMove(raw, false);
+    } catch (error) {
+      setStatus(`Move blocked: ${error && error.message ? error.message : error}`, true);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function endMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    activeMoveDrag = null;
+    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
+    try {
+      verifyLiveBinding();
+      if (drag.currentRaw) applyRawMove(drag.currentRaw, true);
+      setStatus('Move finished; re-resolving stable projector center…');
+      window.setTimeout(refreshFeature, 140);
+    } catch (error) {
+      setStatus(`Move finish blocked: ${error && error.message ? error.message : error}`, true);
+    }
+    setOrbitEnabled(true);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function cancelMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    activeMoveDrag = null;
+    try { drag.captureTarget.releasePointerCapture(event.pointerId); } catch (_) {}
+    try {
+      applyRawMove(drag.startRaw, true);
+      setStatus('Move cancelled; start position restored.');
+    } catch (error) {
+      setStatus(`Move cancel restore failed: ${error && error.message ? error.message : error}`, true);
+    }
+    setOrbitEnabled(true);
+  }
+
+  function installMovePointerHandlers(node, axisIndex = null) {
+    node.addEventListener('pointerdown', event => beginMoveDrag(event, axisIndex));
+    node.addEventListener('pointermove', updateMoveDrag);
+    node.addEventListener('pointerup', endMoveDrag);
+    node.addEventListener('pointercancel', cancelMoveDrag);
+  }
+
+  function applyRotateFromProxy() {
+    const RK = getRK();
+    const proxyWorld = getWorldTransform(proxy);
+    const parentWorld = getWorldTransform(nativeLocator.parent);
+    const localQuaternion = new RK.Quaternion().copy(parentWorld.quaternion).inverse().multiply(proxyWorld.quaternion).normalize();
+    nativeLocator.quaternion.copy(localQuaternion);
+  }
+
+  function applyScaleFromProxy() {
+    const proxyWorld = getWorldTransform(proxy);
+    const parentWorld = getWorldTransform(nativeLocator.parent);
+    const sx = num(parentWorld.scale.x, 1), sy = num(parentWorld.scale.y, 1), sz = num(parentWorld.scale.z, 1);
+    if (Math.abs(sx) < 1e-8 || Math.abs(sy) < 1e-8 || Math.abs(sz) < 1e-8) throw new Error('Native locator parent has zero world scale.');
+    nativeLocator.scale.set(proxyWorld.scale.x / sx, proxyWorld.scale.y / sy, proxyWorld.scale.z / sz);
+  }
+
+  function forwardTransformProxy(finalize) {
+    if (!enabled || mode === 'translate' || !proxy || !transformer) return;
+    try {
+      verifyLiveBinding();
+      if (mode === 'rotate') applyRotateFromProxy();
+      else if (mode === 'scale') applyScaleFromProxy();
+      dispatchNative(finalize);
+      if (finalize) window.setTimeout(refreshFeature, 140);
+    } catch (error) {
+      setStatus(`Corrected ${mode} write blocked: ${error && error.message ? error.message : error}`, true);
+    }
+  }
+
+  function syncProxyFromCurrent(current) {
+    if (!proxy || !transformer || transformer.dragging) return;
+    const locatorWorld = getWorldTransform(current.nativeLocator);
+    proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);
+    proxy.quaternion.copy(locatorWorld.quaternion);
+    proxy.scale.copy(locatorWorld.scale);
+    markTransformDirty(proxy);
+    if (typeof transformer.refresh === 'function') transformer.refresh();
+  }
+
+  function updateMoveOverlayGeometry(current, cameraInfo = null) {
+    if (!moveRoot) return;
+    cameraInfo = cameraInfo || getCameraInfo(current.CK);
+    if (!cameraInfo) return;
+    for (let axisIndex = 0; axisIndex < 3; axisIndex += 1) {
+      const node = moveAxes.get(axisIndex);
+      if (!node) continue;
+      const info = axisScreenInfo(axisIndex, current.footprint.point, cameraInfo, current.projector.worldFrame);
+      if (!info) {
+        node.style.display = 'none';
+        continue;
+      }
+      node.style.display = 'block';
+      const angle = Math.atan2(info.unit[1], info.unit[0]) * 180 / Math.PI;
+      node.style.transform = `rotate(${angle}deg)`;
+      node.dataset.fallback = info.fallback ? '1' : '0';
+      const line = node.querySelector('.hfc-move-axis-line');
+      if (line) line.style.width = `${AXIS_VISUAL_LENGTH_PX}px`;
+    }
+  }
+
+  function updateOverlayFrame() {
+    rafId = window.requestAnimationFrame(updateOverlayFrame);
+    if (!enabled || mode !== 'translate' || !moveRoot) {
+      if (moveRoot) moveRoot.style.display = 'none';
+      return;
+    }
+    let x = null, y = null;
+    if (activeMoveDrag && activeMoveDrag.predictedScreen) {
+      [x, y] = activeMoveDrag.predictedScreen;
+    } else if (latest && latest.ok && latest.footprint && latest.footprint.point) {
+      const cameraInfo = getCameraInfo(latest.CK);
+      const liveScreen = cameraInfo ? worldToScreen(latest.footprint.point, cameraInfo) : latest.footprint.screen;
+      if (liveScreen && !liveScreen.behind) {
+        x = liveScreen.x;
+        y = liveScreen.y;
+        // The projector anchor is stable in world space; only its screen
+        // projection and axis directions need to follow camera motion.
+        updateMoveOverlayGeometry(latest, cameraInfo);
+      }
+    }
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      moveRoot.style.display = 'none';
+      return;
+    }
+    moveRoot.style.display = 'block';
+    moveRoot.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  function createMoveOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = OVERLAY_ID;
+    moveRoot = document.createElement('div');
+    moveRoot.className = 'hfc-move-root';
+
+    moveCenter = document.createElement('div');
+    moveCenter.className = 'hfc-move-center';
+    moveCenter.title = 'Move decal freely in the camera plane';
+    moveCenter.textContent = '●';
+    installMovePointerHandlers(moveCenter, null);
+    moveRoot.appendChild(moveCenter);
+
+    const defs = [
+      { axis: 0, label: 'H', cls: 'hfc-axis-h' },
+      { axis: 1, label: 'V', cls: 'hfc-axis-v' },
+      { axis: 2, label: 'D', cls: 'hfc-axis-d' }
+    ];
+    for (const def of defs) {
+      const axis = document.createElement('div');
+      axis.className = `hfc-move-axis ${def.cls}`;
+      const line = document.createElement('div');
+      line.className = 'hfc-move-axis-line';
+      const knob = document.createElement('div');
+      knob.className = 'hfc-move-axis-knob';
+      knob.textContent = def.label;
+      knob.title = `Drag ${def.label} parameter in the direction it actually moves on screen`;
+      installMovePointerHandlers(knob, def.axis);
+      axis.append(line, knob);
+      moveRoot.appendChild(axis);
+      moveAxes.set(def.axis, axis);
+    }
+    overlay.appendChild(moveRoot);
+    document.body.appendChild(overlay);
+  }
+
+  function setMode(nextMode, syncNative = true) {
+    nextMode = normalizeMode(nextMode);
+    if (activeMoveDrag || (transformer && transformer.dragging)) return false;
+
+    if (syncNative && nativeTransformer && typeof nativeTransformer.setMode === "function") {
+      try { nativeTransformer.setMode(nextMode); } catch (_) {}
+    }
+
+    mode = nextMode;
+    if (transformer) {
+      if (nextMode === "translate") {
+        transformer.visible = false;
+      } else {
+        transformer.visible = true;
+        transformer.setMode(nextMode);
+        if (typeof transformer.setSpace === "function") transformer.setSpace("local");
+        if (latest && latest.ok) syncProxyFromCurrent(latest);
+      }
+    }
+    return true;
+  }
+
+  function enableCorrectedGizmo(currentOverride = null) {
+    if (enabled || !featureEnabled || disposed) return enabled;
+    const current = currentOverride && currentOverride.ok ? currentOverride : resolveCurrent();
+    if (!current.ok) {
+      setStatus(current.reason, false);
+      return false;
+    }
+    if (current.projector.maxSpread > PROJECTOR_SPREAD_TOLERANCE) {
+      setStatus(`Projector spread ${current.projector.maxSpread.toFixed(5)} exceeds correction tolerance. Native gizmo left untouched.`, true);
+      return false;
+    }
+
+    try {
+      nativeTransformer = current.nativeTransformer;
+      nativeLocator = current.nativeLocator;
+      nativeVisibleBefore = null;
+      activeBinding = {
+        selectedLabel: current.selected.selectedLabel,
+        mapping: current.selected.mapping,
+        decalId: current.selected.record.id
+      };
+      mode = readNativeMode(nativeTransformer);
+
+      const locatorWorld = getWorldTransform(nativeLocator);
+      proxy = new UW.RK.Object3D();
+      proxy.name = "kwCorrectedBoundDecalGizmoProxy";
+      proxy.position.set(current.footprint.point[0], current.footprint.point[1], current.footprint.point[2]);

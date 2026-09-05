@@ -1,0 +1,240 @@
+    const currentSelected = selectedSplatterInfo(getCK());
+    if (!currentSelected.ok) throw new Error(currentSelected.reason);
+    if (currentSelected.record.forceProjectedScript !== false) throw new Error('Selected decal is no longer Project OFF / bound.');
+    if (currentSelected.mapping !== activeBinding.mapping || Number(currentSelected.record.id) !== Number(activeBinding.decalId)) throw new Error('Selected decal changed. Disable/re-enable.');
+  }
+
+  function dispatchNative(finalize) {
+    markTransformDirty(nativeLocator);
+    nativeTransformer.dispatchEvent({ type: finalize ? 'change-finished' : 'change', value: nativeLocator });
+    lastForward = {
+      mode,
+      finalize,
+      position: vec3Array(nativeLocator.position),
+      scale: vec3Array(nativeLocator.scale),
+      quaternion: quatArray(nativeLocator.quaternion),
+      at: Date.now()
+    };
+  }
+
+  function applyRawMove(raw, finalize = false) {
+    verifyLiveBinding();
+    if (!raw || raw.length < 3 || !raw.every(Number.isFinite)) throw new Error('Invalid bound Move h/v/d values.');
+
+    const CK = getCK();
+    const selected = selectedSplatterInfo(CK);
+    if (!selected.ok) throw new Error(selected.reason);
+    if (selected.mapping !== activeBinding.mapping || Number(selected.record.id) !== Number(activeBinding.decalId)) {
+      throw new Error('Selected decal changed while corrected Move was active.');
+    }
+
+    const decals = CK.character && CK.character.data && CK.character.data.decals;
+    const splatter = decals && decals.splatter;
+    if (!decals || !splatter) throw new Error('Current decal state unavailable.');
+
+    const currentRecord = splatter[activeBinding.mapping];
+    const nextRecord = {
+      ...currentRecord,
+      h: raw[0],
+      v: raw[1],
+      d: raw[2]
+    };
+
+    CK.activeTweak({
+      decals: {
+        ...decals,
+        splatter: {
+          ...splatter,
+          [activeBinding.mapping]: nextRecord
+        }
+      }
+    });
+
+    // Keep HeroForge's native locator/gizmo visually synchronized with the raw
+    // bound Move parameters, but do not dispatch its change listener here:
+    // live testing proved that listener drops the locator Z/depth component.
+    nativeLocator.position.set(raw[0], raw[1], raw[2]);
+    markTransformDirty(nativeLocator);
+    try {
+      if (typeof nativeTransformer.refresh === 'function') nativeTransformer.refresh();
+    } catch (_) {}
+
+    try {
+      const colorBake = CK.character && CK.character.display && CK.character.display.colorBake;
+      if (colorBake && typeof colorBake.requestRefreshRegular === 'function') colorBake.requestRefreshRegular();
+    } catch (_) {}
+    try {
+      if (CK.GameLoop && typeof CK.GameLoop.requestRenderRefresh === 'function') CK.GameLoop.requestRenderRefresh();
+    } catch (_) {}
+    try {
+      if (CK.Events && typeof CK.Events.emit === 'function') {
+        CK.Events.emit('sliderChanged');
+        CK.Events.emit('decalSliderChanged');
+        if (!finalize) CK.Events.emit('gizmoOnChange');
+      }
+    } catch (_) {}
+
+    if (finalize) {
+      try {
+        if (typeof CK.passiveChangeFinish === 'function') CK.passiveChangeFinish();
+      } catch (_) {}
+      try {
+        if (CK.Events && typeof CK.Events.emit === 'function') CK.Events.emit('gizmoAfterChange');
+      } catch (_) {}
+    }
+
+    lastForward = {
+      mode: 'translate',
+      finalize,
+      position: raw.slice(),
+      scale: vec3Array(nativeLocator.scale),
+      quaternion: quatArray(nativeLocator.quaternion),
+      at: Date.now()
+    };
+  }
+
+  function computeScreenJacobian(worldPoint, cameraInfo) {
+    const base = worldToScreen(worldPoint, cameraInfo);
+    if (!base || base.behind) return null;
+    const columns = [];
+    for (let axis = 0; axis < 3; axis += 1) {
+      const probe = worldPoint.slice();
+      probe[axis] += SCREEN_JACOBIAN_EPS;
+      const projected = worldToScreen(probe, cameraInfo);
+      if (!projected || projected.behind) return null;
+      columns.push([
+        (projected.x - base.x) / SCREEN_JACOBIAN_EPS,
+        (projected.y - base.y) / SCREEN_JACOBIAN_EPS
+      ]);
+    }
+    return { base, columns };
+  }
+
+  function screenDeltaToMinimumWorldDelta(dx, dy, jacobian) {
+    const [c0, c1, c2] = jacobian.columns;
+    const a00 = c0[0] * c0[0] + c1[0] * c1[0] + c2[0] * c2[0];
+    const a01 = c0[0] * c0[1] + c1[0] * c1[1] + c2[0] * c2[1];
+    const a11 = c0[1] * c0[1] + c1[1] * c1[1] + c2[1] * c2[1];
+    const det = a00 * a11 - a01 * a01;
+    if (!Number.isFinite(det) || Math.abs(det) < 1e-9) return null;
+    const y0 = (a11 * dx - a01 * dy) / det;
+    const y1 = (-a01 * dx + a00 * dy) / det;
+    return [
+      c0[0] * y0 + c0[1] * y1,
+      c1[0] * y0 + c1[1] * y1,
+      c2[0] * y0 + c2[1] * y1
+    ];
+  }
+
+  function frameVector(frame, vector) {
+    if (!frame || !vector) return null;
+    const out = mat4MulVec4(frame, [vector[0], vector[1], vector[2], 0]);
+    const v = out.slice(0, 3);
+    return v.every(Number.isFinite) ? v : null;
+  }
+
+  function normalize3(vector) {
+    if (!vector) return null;
+    const length = Math.hypot(vector[0], vector[1], vector[2]);
+    if (!Number.isFinite(length) || length < 1e-9) return null;
+    return [vector[0] / length, vector[1] / length, vector[2] / length];
+  }
+
+  function axisScreenInfo(axisIndex, worldPoint, cameraInfo, worldFrame) {
+    const basis = [[1,0,0],[0,1,0],[0,0,1]][axisIndex];
+    const worldBasis = normalize3(frameVector(worldFrame, basis));
+    if (!worldBasis) return null;
+    const base = worldToScreen(worldPoint, cameraInfo);
+    if (!base || base.behind) return null;
+    const probe = [
+      worldPoint[0] + worldBasis[0] * SCREEN_JACOBIAN_EPS,
+      worldPoint[1] + worldBasis[1] * SCREEN_JACOBIAN_EPS,
+      worldPoint[2] + worldBasis[2] * SCREEN_JACOBIAN_EPS
+    ];
+    const projected = worldToScreen(probe, cameraInfo);
+    if (!projected || projected.behind) return null;
+    const column = [
+      (projected.x - base.x) / SCREEN_JACOBIAN_EPS,
+      (projected.y - base.y) / SCREEN_JACOBIAN_EPS
+    ];
+    const mag = Math.hypot(column[0], column[1]);
+    if (Number.isFinite(mag) && mag >= 8) {
+      return { unit: [column[0] / mag, column[1] / mag], pxPerWorld: mag, worldBasis, fallback: false };
+    }
+    const fallbackDirections = [[1, 0], [0, -1], [-Math.SQRT1_2, Math.SQRT1_2]];
+    return { unit: fallbackDirections[axisIndex], pxPerWorld: FALLBACK_AXIS_PX_PER_WORLD, worldBasis, fallback: true };
+  }
+
+  function worldDeltaToRawDelta(worldDelta, worldFrame) {
+    const inverse = invertMat4(worldFrame);
+    if (!inverse) return null;
+    const canonical4 = mat4MulVec4(inverse, [worldDelta[0], worldDelta[1], worldDelta[2], 0]);
+    const canonical = canonical4.slice(0, 3);
+    if (!canonical.every(Number.isFinite)) return null;
+    return [
+      canonical[0] / TRANSLATE_AXIS_SCALE.x,
+      canonical[1] / TRANSLATE_AXIS_SCALE.y,
+      canonical[2] / TRANSLATE_AXIS_SCALE.z
+    ];
+  }
+
+  function setOrbitEnabled(value) {
+    try {
+      const CK = getCK();
+      if (CK && CK.orbitCamera && CK.orbitCamera.controls) CK.orbitCamera.controls.enabled = value;
+    } catch (_) {}
+  }
+
+  function beginMoveDrag(event, axisIndex = null) {
+    if (event.button !== 0 || activeMoveDrag || !enabled || mode !== 'translate') return;
+    try {
+      verifyLiveBinding();
+      const current = resolveCurrent();
+      if (!current.ok) throw new Error(current.reason);
+      const cameraInfo = getCameraInfo(current.CK);
+      if (!cameraInfo) throw new Error('Camera matrices unavailable.');
+      const jacobian = computeScreenJacobian(current.footprint.point, cameraInfo);
+      if (!jacobian) throw new Error('Could not compute camera/world Move mapping.');
+      const axisInfo = axisIndex == null ? null : axisScreenInfo(axisIndex, current.footprint.point, cameraInfo, current.projector.worldFrame);
+      if (axisIndex != null && !axisInfo) throw new Error('Could not compute selected Move axis mapping.');
+
+      activeMoveDrag = {
+        pointerId: event.pointerId,
+        axisIndex,
+        axisInfo,
+        startX: event.clientX,
+        startY: event.clientY,
+        startRaw: [
+          num(current.selected.record.h, 0),
+          num(current.selected.record.v, 0),
+          num(current.selected.record.d, 0)
+        ],
+        currentRaw: null,
+        startAnchorScreen: [current.footprint.screen.x, current.footprint.screen.y],
+        jacobian,
+        worldFrame: current.projector.worldFrame,
+        captureTarget: event.currentTarget,
+        predictedScreen: [current.footprint.screen.x, current.footprint.screen.y]
+      };
+      setOrbitEnabled(false);
+      try { event.currentTarget.setPointerCapture(event.pointerId); } catch (_) {}
+      setStatus(axisIndex == null ? 'Moving decal in camera plane…' : `Moving ${['H','V','D'][axisIndex]} axis${axisInfo.fallback ? ' (depth fallback)' : ''}…`);
+      event.preventDefault();
+      event.stopPropagation();
+    } catch (error) {
+      setStatus(`Move start blocked: ${error && error.message ? error.message : error}`, true);
+    }
+  }
+
+  function updateMoveDrag(event) {
+    if (!activeMoveDrag || event.pointerId !== activeMoveDrag.pointerId) return;
+    const drag = activeMoveDrag;
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    let worldDelta;
+    if (drag.axisIndex == null) {
+      worldDelta = screenDeltaToMinimumWorldDelta(dx, dy, drag.jacobian);
+      drag.predictedScreen = [drag.startAnchorScreen[0] + dx, drag.startAnchorScreen[1] + dy];
+    } else {
+      const scalarPixels = dx * drag.axisInfo.unit[0] + dy * drag.axisInfo.unit[1];
+      const scalarWorld = scalarPixels / drag.axisInfo.pxPerWorld;
