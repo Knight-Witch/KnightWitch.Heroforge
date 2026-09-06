@@ -1,39 +1,10 @@
 name: Record Witch Dock Tab Cleanup Pass
 on:
-  push:
-    branches: [witch-tab-cleanup-helper]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  record:
+  archived:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout helper
-        uses: actions/checkout@v4
-        with:
-          ref: witch-tab-cleanup-helper
-          path: helper
-      - name: Checkout WITCH_DEV_UI
-        uses: actions/checkout@v4
-        with:
-          ref: WITCH_DEV_UI
-          path: target
-          fetch-depth: 0
-      - name: Record validation
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd target
-          python ../helper/.github/scripts/record_tab_cleanup_pass.py
-          git diff --check
-      - name: Commit validation docs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd target
-          git config user.name "Knight Witch"
-          git config user.email "amanda.m.ivans@gmail.com"
-          git add CHANGELOG.md PRE_FLIGHT_Check.md MASTER.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md
-          git commit -m "Validate Witch Dock Dev tab cleanup"
-          git push origin HEAD:WITCH_DEV_UI
+      - run: echo "Archived helper workflow; tab cleanup validation already recorded."
