@@ -1,6 +1,6 @@
 /*
  * Witch Dock Dev feature: media.screenshot-resolution
- * Build: 0.7.0-witch-dock-dev-provider
+ * Build: 0.8.0-service-only-provider
  * Source baseline: HeroForge.Compatibility standalone v0.6.0
  *
  * Owns the true-resolution capture service and high-resolution provider adapter.
@@ -12,14 +12,12 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'media.screenshot-resolution';
-  const TOOL_ID = 'photo-booth-true-resolution';
-  const BUILD = '0.7.0-witch-dock-dev-provider';
+  const BUILD = '0.8.0-service-only-provider';
   const SOURCE_SIZE = 4096;
   const ALLOWED_SIZES = new Set([4096, 8192]);
   const MIN_NATIVE_TILE_SIZE = 256;
   const MAX_PHASE_GRID = 32;
   const STORE_ENABLED = 'kw.witchDock.media.screenshotResolution.enabled.v1';
-  const STYLE_ID = 'kwPBTrueResolutionStyle';
 
   const state = {
     enabled: true,
@@ -32,18 +30,9 @@
     providerGuard: null,
     upstreamTakeScreenshot: null,
     reconcileTimer: null,
-    registerTimer: null,
-    toolRegistered: false,
     lastCapture: null,
     lastStatus: 'Waiting for HeroForge Photo Booth runtime…',
-    lastError: null,
-    ui: {
-      enabled: null,
-      button4K: null,
-      button8K: null,
-      provider: null,
-      status: null
-    }
+    lastError: null
   };
 
   function readStoredEnabled() {
@@ -655,116 +644,20 @@
     return true;
   }
 
-  function ensureStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
-      .kwPBResRoot{display:flex;flex-direction:column;gap:10px;padding:2px 0;}
-      .kwPBResEnable{display:flex;align-items:center;gap:8px;font-size:12px;}
-      .kwPBResButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-      .kwPBResBtn{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:7px 10px;background:rgba(255,255,255,.06);color:inherit;font-size:12px;font-weight:700;cursor:pointer;}
-      .kwPBResBtn:disabled{opacity:.45;cursor:default;}
-      .kwPBResProvider,.kwPBResStatus,.kwPBResNote{font-size:11px;line-height:1.35;}
-      .kwPBResProvider{opacity:.9;}
-      .kwPBResStatus{opacity:.85;min-height:15px;}
-      .kwPBResNote{opacity:.68;}
-    `;
-    document.head.appendChild(style);
-  }
-
+  // Internal name retained so validated provider/capture call sites remain byte-identical.
+  // This hook no longer mutates DOM; the separate UI module is the sole presentation owner.
   function updateUI() {
-    const ui = state.ui;
-    if (ui.enabled) ui.enabled.checked = !!state.enabled;
-    const cap = readCapabilities(4096);
-    const buttonsDisabled = !state.enabled || state.busy || !cap.ok || !state.providerInstalled;
-    if (ui.button4K) ui.button4K.disabled = buttonsDisabled;
-    if (ui.button8K) ui.button8K.disabled = buttonsDisabled;
-    if (ui.provider) ui.provider.textContent = providerStatusText();
-    if (ui.status) ui.status.textContent = state.lastStatus || '';
-  }
-
-  function buildUI(container, api) {
-    ensureStyles();
-    const section = api.ui.createSection({ id: 'high-resolution-capture', title: 'High Resolution Capture' });
-    container.appendChild(section.root);
-
-    const root = document.createElement('div');
-    root.className = 'kwPBResRoot';
-    section.body.appendChild(root);
-
-    const enableLabel = document.createElement('label');
-    enableLabel.className = 'kwPBResEnable';
-    const enabled = document.createElement('input');
-    enabled.type = 'checkbox';
-    const enabledText = document.createElement('span');
-    enabledText.textContent = 'Repair HeroForge 4K / 8K capture requests';
-    enableLabel.appendChild(enabled);
-    enableLabel.appendChild(enabledText);
-    root.appendChild(enableLabel);
-
-    const buttons = document.createElement('div');
-    buttons.className = 'kwPBResButtons';
-    const button4K = document.createElement('button');
-    button4K.type = 'button';
-    button4K.className = 'kwPBResBtn';
-    button4K.textContent = 'Capture TRUE 4K';
-    const button8K = document.createElement('button');
-    button8K.type = 'button';
-    button8K.className = 'kwPBResBtn';
-    button8K.textContent = 'Capture TRUE 8K';
-    buttons.appendChild(button4K);
-    buttons.appendChild(button8K);
-    root.appendChild(buttons);
-
-    const provider = document.createElement('div');
-    provider.className = 'kwPBResProvider';
-    root.appendChild(provider);
-
-    const status = document.createElement('div');
-    status.className = 'kwPBResStatus';
-    root.appendChild(status);
-
-    const note = document.createElement('div');
-    note.className = 'kwPBResNote';
-    note.textContent = 'When Lob already exposes 4096 / 8192 in HeroForge\'s Photo Booth UI, those existing choices use this repair automatically. Lob-free native UI injection is a separate adapter and is not required for the capture provider itself.';
-    root.appendChild(note);
-
-    state.ui.enabled = enabled;
-    state.ui.button4K = button4K;
-    state.ui.button8K = button8K;
-    state.ui.provider = provider;
-    state.ui.status = status;
-
-    enabled.addEventListener('change', () => {
-      try { setEnabled(enabled.checked); }
-      catch (error) {
-        enabled.checked = state.enabled;
-        setStatus(error.message || String(error), true);
-      }
-    });
-    button4K.addEventListener('click', () => {
-      captureAndDownload(4096).catch((error) => setStatus(error.message || String(error), true));
-    });
-    button8K.addEventListener('click', () => {
-      captureAndDownload(8192).catch((error) => setStatus(error.message || String(error), true));
-    });
-
-    updateUI();
-  }
-
-  function registerTool() {
-    if (state.toolRegistered) return true;
-    const WD = UW && UW.WitchDock;
-    if (!WD || typeof WD.registerTool !== 'function') return false;
-    WD.registerTool({
-      id: TOOL_ID,
-      title: 'High Resolution Capture',
-      tab: 'Booth',
-      render: (container, api) => buildUI(container, api)
-    });
-    state.toolRegistered = true;
-    return true;
+    try {
+      window.dispatchEvent(new CustomEvent('kw:photo-booth-true-resolution-state', {
+        detail: {
+          build: BUILD,
+          enabled: state.enabled,
+          busy: state.busy,
+          providerInstalled: state.providerInstalled,
+          providerLost: state.providerLost
+        }
+      }));
+    } catch (_) {}
   }
 
   function initialize() {
@@ -772,14 +665,6 @@
     state.enabled = readStoredEnabled();
     state.initialized = true;
     installProvider();
-    if (!registerTool()) {
-      state.registerTimer = window.setInterval(() => {
-        if (!state.initialized || registerTool()) {
-          window.clearInterval(state.registerTimer);
-          state.registerTimer = null;
-        }
-      }, 200);
-    }
     state.reconcileTimer = window.setInterval(reconcileProvider, 1000);
     updateUI();
     return true;
@@ -789,12 +674,9 @@
     if (state.busy) throw new Error('Cannot dispose high-resolution capture while a capture is active.');
     if (state.reconcileTimer) window.clearInterval(state.reconcileTimer);
     state.reconcileTimer = null;
-    if (state.registerTimer) window.clearInterval(state.registerTimer);
-    state.registerTimer = null;
     restoreProvider();
-    document.getElementById(STYLE_ID)?.remove();
     state.initialized = false;
-    state.lastStatus = 'Disposed. Reload Witch Dock to remount the registered UI section.';
+    state.lastStatus = 'Disposed.';
     try { delete UW.KWPhotoBoothTrueResolution; } catch (_) { UW.KWPhotoBoothTrueResolution = undefined; }
     return true;
   }
@@ -811,7 +693,10 @@
     get enabled() { return state.enabled; },
     get providerInstalled() { return state.providerInstalled; },
     get providerLost() { return state.providerLost; },
-    get lastCapture() { return state.lastCapture; }
+    get lastCapture() { return state.lastCapture; },
+    get status() { return state.lastStatus; },
+    get lastError() { return state.lastError; },
+    get busy() { return state.busy; }
   };
 
   initialize();

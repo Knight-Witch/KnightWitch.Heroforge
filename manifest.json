@@ -122,8 +122,8 @@
       "path": "features/media/Photo_Booth_True_Resolution.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.7.0",
-      "build": "0.7.0-witch-dock-dev-provider",
+      "version": "0.8.0",
+      "build": "0.8.0-service-only-provider",
       "versionOrigin": "existing"
     },
     {
@@ -142,8 +142,8 @@
       "path": "features/media/Photo_Booth_True_Resolution_UI.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.2.0",
-      "build": "0.2.0-dev-developer-mode",
+      "version": "0.3.0",
+      "build": "0.3.0-service-ui-ownership",
       "versionOrigin": "existing"
     },
     {
@@ -261,10 +261,12 @@
     },
     {
       "id": "photo-booth-true-resolution",
-      "title": "High Res Image Capture",
-      "tab": "Booth",
+      "title": "High Res Image Capture Service",
+      "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
-      "enabledByDefault": true
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
     },
     {
       "id": "photo-booth-true-resolution-readiness",

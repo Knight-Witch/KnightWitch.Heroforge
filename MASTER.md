@@ -35,7 +35,7 @@ Branch: `WITCH_DEV_UI`.
 
 ### High Res Image Capture
 
-`features/media/Photo_Booth_True_Resolution_UI.js` build `0.2.0-dev-developer-mode` is the compact presentation adapter over the Stable true-resolution service.
+`features/media/Photo_Booth_True_Resolution_UI.js` v0.3.0 / build `0.3.0-service-ui-ownership` is the sole compact presentation owner over service-only `Photo_Booth_True_Resolution.js` v0.8.0 / build `0.8.0-service-only-provider`.
 
 Normal mode:
 
@@ -47,7 +47,7 @@ Normal mode:
 
 Developer Mode adds the provider kill switch and implementation/build diagnostics.
 
-Standalone visual smoke: **PASS by user report**. Direct 4K/8K regression through the compact UI and provider disable/re-enable recovery remain separately unconfirmed.
+Prior compact visual smoke: **PASS by user report**. Service/UI ownership cleanup is implemented in Dev; direct 4K/8K regression and provider disable/re-enable recovery are the current live gate.
 
 ### Developer Mode
 

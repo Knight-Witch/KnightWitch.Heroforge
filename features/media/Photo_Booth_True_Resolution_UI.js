@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Witch Dock DEV - High Res Image Capture UI
+// @name         Witch Dock - High Res Image Capture UI
 // @namespace    KnightWitch
-// @version      0.2.0
-// @description  Dev UI adapter for Witch Dock's validated 4K/8K Photo Booth capture service, with Developer Mode diagnostics.
+// @version      0.3.0
+// @description  Sole Witch Dock presentation owner for the validated 4K/8K Photo Booth capture service, with Developer Mode diagnostics.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        none
@@ -10,9 +10,9 @@
 // ==/UserScript==
 
 /*
- * Witch Dock Dev UI adapter for media.screenshot-resolution.
+ * Witch Dock UI owner for media.screenshot-resolution.
  * Presentation-only host for the already-validated true-resolution capture service.
- * Capture math/provider ownership remains in Photo_Booth_True_Resolution.js.
+ * Capture math/provider ownership remains exclusively in Photo_Booth_True_Resolution.js.
  */
 (function () {
   'use strict';
@@ -20,7 +20,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const GLOBAL = 'KWPhotoBoothTrueResolutionUI';
   const TOOL_ID = 'photo-booth-true-resolution';
-  const BUILD = '0.2.0-dev-developer-mode';
+  const BUILD = '0.3.0-service-ui-ownership';
   const STYLE_ID = 'kwPBTrueResolutionCompactUIStyle';
 
   let registerTimer = null;

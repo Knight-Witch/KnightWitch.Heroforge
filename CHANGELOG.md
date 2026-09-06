@@ -1,5 +1,26 @@
 # Changelog
 
+## DOCK-2026-09-06-031 — Separate High Res capture service and UI ownership
+
+Date: 2026-09-06
+
+### Changes
+
+- `Photo_Booth_True_Resolution.js` v0.8.0 is now service/provider-only and no longer creates DOM, styles, or registers the Booth tool.
+- Validated capture/provider function bodies are byte-identical to the prior v0.7.0 Dev service; only presentation ownership/lifecycle metadata changed.
+- `Photo_Booth_True_Resolution_UI.js` v0.3.0 is the sole Witch Dock presentation owner for `High Res Image Capture`.
+- The service is manifest-loaded as a hidden runtime service; the UI self-registers the visible Booth section after the service is available.
+- Readiness adapter remains unchanged and continues to synchronize `.kwPBResBtn` controls.
+- Compact normal UI and Developer-Mode provider diagnostics are preserved.
+
+### Gate
+
+Static ownership/syntax/manifest checks pass. Live Dev regression required: compact UI, direct TRUE 4K, direct TRUE 8K, Developer Mode provider disable -> enable recovery, and existing Spinny/Booth coexistence.
+
+**Runtime behavior changed:** yes, Dev architecture/presentation ownership only. Validated 4K/8K capture math unchanged.
+
+---
+
 ## DOCK-2026-09-06-030 — Validate Witch Dock Dev tab cleanup
 
 Date: 2026-09-06

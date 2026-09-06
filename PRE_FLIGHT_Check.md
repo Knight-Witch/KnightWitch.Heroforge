@@ -1,5 +1,45 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-031 — High Res service/UI ownership cleanup
+
+Date: 2026-09-06
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, `TESTING.md`;
+- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
+- current true-resolution service, compact UI adapter, readiness adapter, Developer Mode integration, and validated public provider boundary.
+
+### Confirmed diagnosis
+
+The Dev capture service still owned the legacy full Booth UI and registered `photo-booth-true-resolution`, while the compact presentation adapter later re-registered the same tool ID. This was the documented temporary migration technique and is no longer acceptable for Stable promotion.
+
+### Target files
+
+- `features/media/Photo_Booth_True_Resolution.js`
+- `features/media/Photo_Booth_True_Resolution_UI.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
+
+### Conflict risks
+
+- preserve validated 4K/8K Effects-source/phase-feed/provider functions byte-for-byte;
+- preserve `BT.maker.takeScreenshot` provider ownership and restore/reconcile sequencing;
+- preserve readiness adapter and compact button selectors;
+- preserve Developer Mode provider recovery controls;
+- do not modify Spinny or public Stable in this stage.
+
+### Decision
+
+Make the capture module service-only and the compact UI adapter the sole Witch Dock presentation owner. Require direct 4K/8K and disable/enable live regression before Stable promotion.
+
+**Runtime behavior changed:** yes, Dev ownership/lifecycle only.
+
+---
+
 ## PFC-2026-09-06-030 — Record Dev tab cleanup live validation
 
 Date: 2026-09-06
