@@ -13,384 +13,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: WITCH_DEV_UI
+          path: wd
           fetch-depth: 0
-      - name: Apply Spinny integration hardening
+      - name: Checkout staging helper
+        uses: actions/checkout@v4
+        with:
+          ref: spinny-dev-download-ux-fix
+          path: stage
+          fetch-depth: 1
+      - name: Apply and verify Spinny hardening
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          import json
-
-          def replace_one(text, old, new, label):
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'{label}: expected exactly 1 match, got {count}')
-              return text.replace(old, new, 1)
-
-          # --- Spinny service ---
-          p = Path('features/media/Spinny_Mini_WebP.js')
-          s = p.read_text()
-          s = replace_one(s, '// @version      0.5.0', '// @version      0.5.1', 'service userscript version')
-          s = replace_one(s, "const VERSION = '0.5.0';", "const VERSION = '0.5.1';", 'service VERSION')
-          s = replace_one(s, "const BUILD = '0.5.0-witch-dock-dev-service';", "const BUILD = '0.5.1-witch-dock-dev-download-scroll-guard';", 'service BUILD')
-          s = replace_one(s,
-              "    '1024': Object.freeze({ id: '1024', label: '1024px — HQ parity', size: 1024 }),\n"
-              "    '2048': Object.freeze({ id: '2048', label: '2048px — validated resolution', size: 2048 }),\n"
-              "    '3072': Object.freeze({ id: '3072', label: '3072px — TRUE 3K validated', size: 3072 })",
-              "    '1024': Object.freeze({ id: '1024', label: '1024px', size: 1024 }),\n"
-              "    '2048': Object.freeze({ id: '2048', label: '2048px', size: 2048 }),\n"
-              "    '3072': Object.freeze({ id: '3072', label: '3072px', size: 3072 })",
-              'resolution labels')
-
-          old_download = '''  function downloadBlob(blob, profile) {
-            const url = URL.createObjectURL(blob);
-            const anchor = document.createElement('a');
-            const name = (getCK() && getCK().data && getCK().data.meta && getCK().data.meta.character_name) || 'Hero';
-            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const shortTag = profile.mode === 'short-test' ? '_SHORT_TEST' : '';
-            anchor.href = url;
-            anchor.download = `${name}_Spinny${shortTag}_${profile.size}px_${profile.speedId}_${profile.frames}f_${stamp}.webp`;
-            document.body.appendChild(anchor);
-            anchor.click();
-            anchor.remove();
-            window.setTimeout(() => URL.revokeObjectURL(url), 10000);
-          }'''
-          new_download = '''  function buildDownloadFilename(profile) {
-            const name = (getCK() && getCK().data && getCK().data.meta && getCK().data.meta.character_name) || 'Hero';
-            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const shortTag = profile.mode === 'short-test' ? '_SHORT_TEST' : '';
-            return `${name}_Spinny${shortTag}_${profile.size}px_${profile.speedId}_${profile.frames}f_${stamp}.webp`;
-          }
-
-          async function downloadBlob(blob, profile) {
-            const filename = buildDownloadFilename(profile);
-            const host = window.WitchDock;
-            if (host && typeof host.downloadBlob === 'function') {
-              const result = await host.downloadBlob(blob, filename);
-              return {
-                confirmed: true,
-                method: result && result.method ? result.method : 'witch-dock-host',
-                filename
-              };
-            }
-
-            // Standalone/page-context compatibility fallback. Witch Dock Dev/Stable
-            // should provide the privileged download host so completion is confirmable.
-            const url = URL.createObjectURL(blob);
-            const anchor = document.createElement('a');
-            try {
-              anchor.href = url;
-              anchor.download = filename;
-              anchor.style.display = 'none';
-              document.body.appendChild(anchor);
-              anchor.click();
-            } finally {
-              anchor.remove();
-              window.setTimeout(() => URL.revokeObjectURL(url), 10000);
-            }
-            return { confirmed: false, method: 'anchor-fallback', filename };
-          }'''
-          s = replace_one(s, old_download, new_download, 'download boundary')
-          s = replace_one(s,
-              "      outputBytes: null,\n      parsed: null,",
-              "      outputBytes: null,\n      parsed: null,\n      downloadMethod: null,\n      downloadFilename: null,\n      downloadConfirmed: false,",
-              'download diagnostics fields')
-          s = replace_one(s,
-              "      validateAnimatedWebPMetrics(parsed, profile);\n      downloadBlob(outputBlob, profile);\n\n      lastCapture.status = 'downloaded';",
-              "      validateAnimatedWebPMetrics(parsed, profile);\n      const downloadResult = await downloadBlob(outputBlob, profile);\n      lastCapture.downloadMethod = downloadResult.method || null;\n      lastCapture.downloadFilename = downloadResult.filename || null;\n      lastCapture.downloadConfirmed = downloadResult.confirmed === true;\n\n      lastCapture.status = lastCapture.downloadConfirmed ? 'downloaded' : 'download-started';",
-              'await confirmed download')
-          s = replace_one(s,
-              "      const prefix = profile.mode === 'short-test' ? 'Downloaded SHORT TEST' : 'Downloaded';\n      setStatus(`${prefix} ${profile.size}px ${profile.speedLabel}: ${profile.frames} frames / ${(profile.durationMs / 1000).toFixed(1)} s / ${(outputBlob.size / 1048576).toFixed(1)} MiB`);",
-              "      const prefix = lastCapture.downloadConfirmed\n        ? (profile.mode === 'short-test' ? 'Downloaded SHORT TEST' : 'Downloaded')\n        : (profile.mode === 'short-test' ? 'Started SHORT TEST download' : 'Download started');\n      setStatus(`${prefix} ${profile.size}px ${profile.speedLabel}: ${profile.frames} frames / ${(profile.durationMs / 1000).toFixed(1)} s / ${(outputBlob.size / 1048576).toFixed(1)} MiB`);",
-              'download status wording')
-          s = replace_one(s,
-              "    diagnostics.lastGuardAttempt = { ...lastGuardAttempt };\n    if (!guardModal || guardModal.hidden) showGuardWarning(info);",
-              "    diagnostics.lastGuardAttempt = { ...lastGuardAttempt };\n\n    // Wheel/scroll is the high-frequency accidental case: suppress it silently.\n    // All other continuity-invalidating interactions keep the confirmation modal.\n    if (event.type === 'wheel') return;\n    if (!guardModal || guardModal.hidden) showGuardWarning(info);",
-              'silent wheel guard')
-          p.write_text(s)
-
-          # --- Spinny UI ---
-          p = Path('features/media/Spinny_Mini_WebP_UI.js')
-          u = p.read_text()
-          u = replace_one(u, '// @version      0.1.0', '// @version      0.1.1', 'UI userscript version')
-          u = replace_one(u, "const VERSION = '0.1.0';", "const VERSION = '0.1.1';", 'UI VERSION')
-          u = replace_one(u, "const BUILD = '0.1.0-dev-dock-popout';", "const BUILD = '0.1.1-dev-download-ux';", 'UI BUILD')
-          u = replace_one(u,
-              '      .kwSpinnyRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;}',
-              '      .kwSpinnyRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;color-scheme:dark;}',
-              'UI dark color scheme')
-          u = replace_one(u,
-              '      .kwSpinnyPopBtn:hover,.kwSpinnyReturnBtn:hover{background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}',
-              '      .kwSpinnyPopBtn:hover,.kwSpinnyReturnBtn:hover{background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}\n'
-              '      .kwSpinnyPopBtn{flex:0 0 30px;width:30px;height:30px;padding:5px;display:inline-flex;align-items:center;justify-content:center;}\n'
-              '      .kwSpinnyPopBtn svg{width:15px;height:15px;display:block;pointer-events:none;}',
-              'popout icon styling')
-          u = replace_one(u,
-              '      .kwSpinnyGrid select{width:100%;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:6px 7px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;}',
-              '      .kwSpinnyGrid select{width:100%;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:6px 7px;background:#29292d;color:#fff;font-size:11px;color-scheme:dark;}\n'
-              '      .kwSpinnyGrid select option{background:#29292d;color:#fff;}',
-              'select option dark styling')
-          u = replace_one(u,
-              '      .kwSpinnyStatus{min-height:15px;font-size:11px;line-height:1.35;overflow-wrap:anywhere;}',
-              '      .kwSpinnySuccess{max-height:0;opacity:0;overflow:hidden;transform:translateY(-2px);color:#9fe2b5;font-size:11px;font-weight:800;line-height:1.35;transition:opacity .22s ease,transform .22s ease,max-height .22s ease;}\n'
-              '      .kwSpinnySuccess[data-show="1"]{max-height:24px;opacity:1;transform:translateY(0);}\n'
-              '      .kwSpinnyStatus{min-height:15px;font-size:11px;line-height:1.35;overflow-wrap:anywhere;}',
-              'download success styling')
-          u = replace_one(u,
-              "  let statusEl = null;\n  let timingEl = null;\n  let metaEl = null;",
-              "  let statusEl = null;\n  let successEl = null;\n  let timingEl = null;\n  let metaEl = null;\n  let successTimer = null;\n  let lastSuccessKey = null;",
-              'UI success state')
-          u = replace_one(u,
-              '        <button type="button" class="kwSpinnyPopBtn">Pop Out</button>',
-              '        <button type="button" class="kwSpinnyPopBtn" title="Pop out into free-floating window" aria-label="Pop out into free-floating window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3h7v7M13 11l8-8M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>',
-              'popout icon markup')
-          u = replace_one(u,
-              '      <div class="kwSpinnyStatus" data-error="0"></div>',
-              '      <div class="kwSpinnySuccess" data-show="0" role="status" aria-live="polite"></div>\n      <div class="kwSpinnyStatus" data-error="0"></div>',
-              'success indicator markup')
-          u = replace_one(u,
-              "    statusEl = controlsRoot.querySelector('.kwSpinnyStatus');\n    timingEl = controlsRoot.querySelector('.kwSpinnyTiming');",
-              "    statusEl = controlsRoot.querySelector('.kwSpinnyStatus');\n    successEl = controlsRoot.querySelector('.kwSpinnySuccess');\n    timingEl = controlsRoot.querySelector('.kwSpinnyTiming');",
-              'success indicator reference')
-
-          success_fn = '''  function showDownloadSuccess(last) {
-            if (!successEl || !last || last.status !== 'downloaded' || last.downloadConfirmed !== true) return;
-            const key = `${last.completedAt || ''}:${last.outputBytes || ''}:${last.downloadFilename || ''}`;
-            if (key === lastSuccessKey) return;
-            lastSuccessKey = key;
-            const size = last.requested && Number(last.requested.size);
-            successEl.textContent = `✓ Download complete${Number.isFinite(size) ? ` — ${size}px WebP` : ''}`;
-            successEl.dataset.show = '1';
-            if (successTimer) window.clearTimeout(successTimer);
-            successTimer = window.setTimeout(() => {
-              if (successEl) successEl.dataset.show = '0';
-              successTimer = null;
-            }, 1800);
-          }
-
-          '''
-          u = replace_one(u, '  function refreshDeveloperVisibility() {', success_fn + '  function refreshDeveloperVisibility() {', 'success function insertion')
-          u = replace_one(u,
-              "      statusEl.dataset.error = service.statusError ? '1' : '0';\n    }\n    if (timingEl)",
-              "      statusEl.dataset.error = service.statusError ? '1' : '0';\n    }\n    showDownloadSuccess(service.lastCapture);\n    if (timingEl)",
-              'success refresh hook')
-          u = replace_one(u,
-              "    if (refreshTimer) window.clearInterval(refreshTimer);\n    refreshTimer = null;",
-              "    if (refreshTimer) window.clearInterval(refreshTimer);\n    refreshTimer = null;\n    if (successTimer) window.clearTimeout(successTimer);\n    successTimer = null;",
-              'success timer disposal')
-          p.write_text(u)
-
-          # --- Dev loader privileged download host ---
-          p = Path('Witch_Dock_DEV.user.js')
-          d = p.read_text()
-          d = replace_one(d, '// @version      1.0.8.1', '// @version      1.0.8.2', 'Dev loader userscript version')
-          d = replace_one(d, '// @grant        GM_xmlhttpRequest\n', '// @grant        GM_xmlhttpRequest\n// @grant        GM_download\n', 'GM_download grant')
-          host_code = '''const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-
-function kwFormatDownloadError(error) {
-  if (!error) return "unknown error";
-  if (typeof error === "string") return error;
-  const reason = error.error || error.message || "download failed";
-  let details = "";
-  if (error.details) {
-    try { details = ` (${typeof error.details === "string" ? error.details : JSON.stringify(error.details)})`; }
-    catch { details = ""; }
-  }
-  return `${reason}${details}`;
-}
-
-function kwDownloadBlob(blob, filename) {
-  return new Promise((resolve, reject) => {
-    if (typeof GM_download !== "function") {
-      reject(new Error("Tampermonkey GM_download is unavailable."));
-      return;
-    }
-    const name = String(filename || "download.bin");
-    let settled = false;
-    const finish = (fn, value) => {
-      if (settled) return;
-      settled = true;
-      fn(value);
-    };
-    try {
-      GM_download({
-        url: blob,
-        name,
-        saveAs: false,
-        conflictAction: "uniquify",
-        onload: () => finish(resolve, { ok: true, method: "GM_download", filename: name }),
-        onerror: (error) => finish(reject, new Error(`Witch Dock download failed: ${kwFormatDownloadError(error)}`)),
-        ontimeout: () => finish(reject, new Error("Witch Dock download timed out."))
-      });
-    } catch (error) {
-      finish(reject, error instanceof Error ? error : new Error(String(error)));
-    }
-  });
-}
-'''
-          d = replace_one(d, 'const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;\n', host_code, 'download host insertion')
-          d = replace_one(d,
-              '  UW.WitchDock.registerTool = registerTool;\n  UW.WitchDock.ensureDock = buildUI;',
-              '  UW.WitchDock.registerTool = registerTool;\n  UW.WitchDock.ensureDock = buildUI;\n  UW.WitchDock.downloadBlob = kwDownloadBlob;',
-              'download host exposure')
-          p.write_text(d)
-
-          # --- Canonical module versions ---
-          mp = Path('manifest.json')
-          m = json.loads(mp.read_text())
-          registry = {entry['id']: entry for entry in m.get('moduleRegistry', [])}
-          required = ['witch-dock-dev-loader', 'spinny-mini-webp', 'spinny-mini-webp-ui']
-          missing = [x for x in required if x not in registry]
-          if missing:
-              raise SystemExit(f'missing registry entries: {missing}')
-          registry['witch-dock-dev-loader'].update(version='0.2.0', build='1.0.8.2-spinny-dev-download-host')
-          registry['spinny-mini-webp'].update(version='0.5.1', build='0.5.1-witch-dock-dev-download-scroll-guard')
-          registry['spinny-mini-webp-ui'].update(version='0.1.1', build='0.1.1-dev-download-ux')
-          mp.write_text(json.dumps(m, indent=2, ensure_ascii=False) + '\n')
-
-          # --- Durable docs ---
-          changelog = Path('CHANGELOG.md')
-          old = changelog.read_text()
-          entry = '''# Changelog
-
-## DOCK-2026-09-06-028 — Harden Spinny Dev download and capture UX
-
-Date: 2026-09-06
-
-### Confirmed live findings before this patch
-
-- Integrated Spinny capture, Pause/Resume, cancellation, interaction guards, Developer-Mode Short Test visibility, and draggable popout all passed user smoke testing.
-- Full and Short Test captures completed their render/mux path but the final browser download did not start from the Witch Dock-loaded context.
-- Resolution/rotation native select popups opened with a white option surface and low-contrast text.
-- User requested plain resolution labels, icon-only Pop Out presentation, brief successful-download feedback, and silent blocking for wheel/scroll while retaining confirmation warnings for other guarded actions.
-
-### Changes
-
-- Dev loader adds a privileged `GM_download` Blob host and exposes it as `WitchDock.downloadBlob`; the Spinny service now awaits confirmed host download completion instead of assuming `anchor.click()` succeeded.
-- Spinny diagnostics now record download method, filename, and confirmation state.
-- Wheel/scroll events are still prevented during capture/paused state but no longer open the guard modal; all other guarded mutations retain Keep Capture / Cancel Capture.
-- Resolution labels are now `1024px`, `2048px`, and `3072px`.
-- Select/options use explicit dark styling and `color-scheme: dark`.
-- Pop Out is now a standard external-window SVG icon with tooltip/ARIA label.
-- UI flashes a short `Download complete` indicator only after the privileged download host confirms completion.
-
-### Module versions
-
-- `witch-dock-dev-loader`: v0.2.0 / build `1.0.8.2-spinny-dev-download-host`.
-- `spinny-mini-webp`: v0.5.1 / build `0.5.1-witch-dock-dev-download-scroll-guard`.
-- `spinny-mini-webp-ui`: v0.1.1 / build `0.1.1-dev-download-ux`.
-
-### Test status
-
-Static syntax/manifest/assertion checks run in the materialization workflow. Live download and UI re-smoke remain required before Stable promotion.
-
-Rollback: revert this single Dev hardening commit; prior validated capture/mux engine remains otherwise unchanged.
-
-**Runtime behavior changed:** yes, Dev branch only. Public `Witch_Scripts` unchanged.'''
-          changelog.write_text(entry + '\n\n---\n\n' + old)
-
-          pre = Path('PRE_FLIGHT_Check.md')
-          old = pre.read_text()
-          entry = '''# Pre-Flight Check Log
-
-## PFC-2026-09-06-028 — Spinny Dev download/UX hardening
-
-Date: 2026-09-06
-
-### Reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, architecture, feature inventory, Spinny feature spec, maintained v0.5.0 source/status;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, manifest registry;
-- `Witch_Dock_DEV.user.js` host/grant boundary;
-- `Spinny_Mini_WebP.js` final mux/download boundary and guard dispatcher;
-- `Spinny_Mini_WebP_UI.js` select/popout/status presentation;
-- user live smoke results from the integrated Dev build.
-
-### Confirmed diagnosis
-
-The Spinny service's capture/mux code reached its completion path, but Witch Dock reused the standalone page-anchor save routine. The standalone source uses the same routine successfully, so the failure is isolated to the final download initiation boundary in the Witch Dock userscript-hosted integration rather than the validated render/mux engine. Tampermonkey's current `GM_download` API supports Blob/File input, providing a host-level download path with explicit completion/error callbacks.
-
-### Target files
-
-- `Witch_Dock_DEV.user.js`
-- `features/media/Spinny_Mini_WebP.js`
-- `features/media/Spinny_Mini_WebP_UI.js`
-- `manifest.json`
-- `MASTER.md`
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-
-### Conflict risks
-
-- Do not alter frame production, TRUE-3K phase-feed math, RIFF mux/parser, timing, rotation restoration, or High Res still-provider ownership.
-- Download completion must not be reported until the host API confirms it.
-- Wheel must remain blocked before HeroForge receives it even though its warning modal is removed.
-- Other guarded actions must retain the existing confirmation behavior.
-- Public Stable must remain untouched.
-
-### Decision
-
-Apply a Dev-only privileged download host plus surgical service/UI corrections. Bump all affected active-module versions in the same commit and require live re-smoke before Stable promotion.
-
-**Runtime behavior changed:** yes, Dev branch only.'''
-          pre.write_text(entry + '\n\n---\n\n' + old)
-
-          master = Path('MASTER.md')
-          x = master.read_text()
-          replacements = {
-            '- integrate Spinny beneath High Res Image Capture by default;': '- Spinny beneath High Res Image Capture: integrated; placement smoke PASS;',
-            '- shared-state draggable Spinny popout with close/collapse behavior;': '- shared-state draggable Spinny popout: integrated; user smoke PASS;',
-            '- Pause/Resume only between completed frames;': '- Pause/Resume: integrated; user smoke PASS;',
-            '- semantic/layout-independent guards for capture-invalidating Booth interactions;': '- capture-invalidating interaction guards: integrated; user smoke PASS; wheel/scroll now silently blocks without a modal;',
-            '1. Record and evaluate the completed 3072px Spinny result.': '1. Re-smoke the Dev Spinny privileged download host and UI hardening patch.',
-            '2. If 3072 Standard passes, close that standalone validation gate and continue Spinny Pause/guard work.': '2. Confirm a 1024 Short Test download completes through the host and the brief success indicator fires.',
-            '6. Integrate validated Spinny/WebP beneath High Res Image Capture in Witch Dock Dev and implement the preserved popout/Pause/guard UX.': '6. If the Dev hardening re-smoke passes, prepare the exact accepted Spinny delta for separate Stable promotion review.',
-            'Service v0.5.0 preserves the validated 1024/2048/TRUE-3K 3072 capture engine, Pause/Resume and interaction guards. UI v0.1.0 registers `Spinny Mini WebP` in the Booth tab directly after High Res Image Capture and supports a draggable movable popout that physically moves the same controls between hosts.': 'Service v0.5.1 preserves the validated 1024/2048/TRUE-3K 3072 capture engine while hardening the Witch Dock download boundary and making wheel/scroll guard behavior silent. UI v0.1.1 registers `Spinny Mini WebP` directly after High Res Image Capture, keeps the validated shared-state draggable popout, fixes dark select options, uses plain resolution labels and an icon-only Pop Out control, and adds confirmed-download feedback.',
-            'Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. 4K animated WebP remains deferred. Live Dev smoke is pending; public `Witch_Scripts` is unchanged.': 'Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. Initial integrated Dev smoke passed capture/Pause/guard/popout behavior; the final download initiation failed and triggered this hardening pass. Live re-smoke of download/UI changes is pending. 4K animated WebP remains deferred and public `Witch_Scripts` is unchanged.'
-          }
-          for old_s, new_s in replacements.items():
-              if old_s not in x:
-                  raise SystemExit(f'MASTER replacement missing: {old_s}')
-              x = x.replace(old_s, new_s, 1)
-          master.write_text(x)
-
-          follow = Path('HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md')
-          f = follow.read_text()
-          for old_s, new_s in {
-            '## Pending — Spinny/WebP Witch Dock UX': '## Integrated / validation — Spinny/WebP Witch Dock UX',
-            '### 4. Booth placement': '### 4. Booth placement — PASS',
-            '### 5. Popout mode': '### 5. Popout mode — PASS',
-            '### 6. Pause / Resume': '### 6. Pause / Resume — PASS',
-            '### 7. Capture-invalidating interaction guards': '### 7. Capture-invalidating interaction guards — PASS with wheel UX hardening'
-          }.items():
-              if old_s not in f:
-                  raise SystemExit(f'follow-up replacement missing: {old_s}')
-              f = f.replace(old_s, new_s, 1)
-          latest = '''## 2026-09-06 integrated Spinny smoke result
-
-User smoke confirms the integrated Witch Dock Dev Spinny placement, shared-state draggable popout, Pause/Resume, cancellation, Developer-Mode Short Test visibility, and interaction guards all behave correctly. Remaining defects were isolated to final download initiation plus select-popup contrast; requested polish is plain resolution labels, icon-only Pop Out, brief confirmed-download feedback, and silent wheel/scroll blocking while keeping warnings for other guarded mutations.
-
-Dev hardening versions: loader v0.2.0, Spinny service v0.5.1, Spinny UI v0.1.1. Re-smoke is required before Stable promotion. Public `Witch_Scripts` remains unchanged.'''
-          f = f.replace('## Purpose', latest + '\n\n## Purpose', 1)
-          follow.write_text(f)
-          PY
-
-          node --check features/media/Spinny_Mini_WebP.js
-          node --check features/media/Spinny_Mini_WebP_UI.js
-          node --check Witch_Dock_DEV.user.js
-          python -m json.tool manifest.json >/dev/null
+          python stage/staging/patch_spinny_download_ux.py wd
+          node --check wd/features/media/Spinny_Mini_WebP.js
+          node --check wd/features/media/Spinny_Mini_WebP_UI.js
+          node --check wd/Witch_Dock_DEV.user.js
+          python -m json.tool wd/manifest.json >/dev/null
           python - <<'PY'
           import json
-          s=open('features/media/Spinny_Mini_WebP.js').read()
-          u=open('features/media/Spinny_Mini_WebP_UI.js').read()
-          d=open('Witch_Dock_DEV.user.js').read()
-          m=json.load(open('manifest.json'))
+          s=open('wd/features/media/Spinny_Mini_WebP.js').read()
+          u=open('wd/features/media/Spinny_Mini_WebP_UI.js').read()
+          d=open('wd/Witch_Dock_DEV.user.js').read()
+          m=json.load(open('wd/manifest.json'))
           r={x['id']:x for x in m['moduleRegistry']}
           assert "const VERSION = '0.5.1'" in s
-          assert "await downloadBlob(outputBlob, profile)" in s
-          assert "downloadConfirmed" in s
+          assert 'const downloadResult = await downloadBlob(outputBlob, profile);' in s
+          assert 'downloadConfirmed' in s
           assert "if (event.type === 'wheel') return;" in s
           assert "label: '1024px'" in s and "label: '2048px'" in s and "label: '3072px'" in s
           assert "const VERSION = '0.1.1'" in u
@@ -404,13 +53,13 @@ Dev hardening versions: loader v0.2.0, Spinny service v0.5.1, Spinny UI v0.1.1. 
           assert r['spinny-mini-webp']['version']=='0.5.1'
           assert r['spinny-mini-webp-ui']['version']=='0.1.1'
           PY
-          git diff --check
-      - name: Commit Dev hardening
+          git -C wd diff --check
+      - name: Commit to Witch Dock Dev
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'Knight Witch'
-          git config user.email 'amanda.m.ivans@gmail.com'
-          git add Witch_Dock_DEV.user.js features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js manifest.json MASTER.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md PRE_FLIGHT_Check.md CHANGELOG.md
-          git commit -m 'Harden Spinny Dev download and capture UX'
-          git push origin HEAD:WITCH_DEV_UI
+          git -C wd config user.name 'Knight Witch'
+          git -C wd config user.email 'amanda.m.ivans@gmail.com'
+          git -C wd add Witch_Dock_DEV.user.js features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js manifest.json MASTER.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md PRE_FLIGHT_Check.md CHANGELOG.md
+          git -C wd commit -m 'Harden Spinny Dev download and capture UX'
+          git -C wd push origin HEAD:WITCH_DEV_UI
