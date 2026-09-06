@@ -10,9 +10,11 @@ ui = ui_path.read_text()
 
 # Preserve fingerprints of validated capture/provider functions. These must remain byte-identical.
 def extract_function(text, name):
-    marker = f'  function {name}('
-    start = text.index(marker)
-    brace = text.index('{', start)
+    match = re.search(rf'^  (?:async )?function {re.escape(name)}\(', text, re.M)
+    if not match:
+        raise RuntimeError(f'Could not locate function {name}')
+    start = match.start()
+    brace = text.index('{', match.end())
     depth = 0
     i = brace
     while i < len(text):
