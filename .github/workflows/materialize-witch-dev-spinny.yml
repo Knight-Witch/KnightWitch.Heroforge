@@ -1,0 +1,56 @@
+name: Materialize Witch Dock Dev Spinny
+on:
+  push:
+    branches: [spinny-wd-dev-materialize]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spinny-wd-dev-materialize
+          fetch-depth: 0
+      - name: Preserve staging helpers
+        run: |
+          cp staging/make_spinny_service.py /tmp/make_spinny_service.py
+          cp staging/update_witch_dev_spinny.py /tmp/update_witch_dev_spinny.py
+          cp staging/Spinny_Mini_WebP_UI.js /tmp/Spinny_Mini_WebP_UI.js
+      - name: Build atomic WITCH_DEV_UI candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin WITCH_DEV_UI
+          git checkout -B WITCH_DEV_UI origin/WITCH_DEV_UI
+          python /tmp/make_spinny_service.py
+          python /tmp/update_witch_dev_spinny.py
+          node --check features/media/Spinny_Mini_WebP.js
+          node --check features/media/Spinny_Mini_WebP_UI.js
+          python - <<'PY'
+          import json
+          m=json.load(open('manifest.json'))
+          reg={x['id']:x for x in m['moduleRegistry']}
+          assert reg['spinny-mini-webp']['version']=='0.5.0'
+          assert reg['spinny-mini-webp-ui']['version']=='0.1.0'
+          ids=[x['id'] for x in m['tools']]
+          assert ids.index('photo-booth-true-resolution-ui') < ids.index('spinny-mini-webp') < ids.index('spinny-mini-webp-ui') < ids.index('decals-dev')
+          service=open('features/media/Spinny_Mini_WebP.js').read()
+          ui=open('features/media/Spinny_Mini_WebP_UI.js').read()
+          assert "const GLOBAL = 'KWSpinnyMiniWebP'" in service
+          assert "0.5.0-witch-dock-dev-service" in service
+          assert "target.closest('[data-kw-spinny-owned=\"1\"]')" in service
+          assert 'captureShortTest' in service and 'togglePause' in service
+          assert 'BT.maker.takeScreenshot =' not in service
+          assert 'Spinny Mini WebP' in ui and 'Pop Out' in ui
+          assert 'pointerdown' in ui and 'pointermove' in ui
+          assert 'kwSpinnyDevRow' in ui and 'getDeveloperMode' in ui
+          PY
+          git diff --check
+          git status --short
+          git config user.name 'Knight Witch'
+          git config user.email 'amanda.m.ivans@gmail.com'
+          git add features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md
+          git commit -m 'Integrate Spinny Mini WebP into Witch Dock Dev'
+          git push origin HEAD:WITCH_DEV_UI
