@@ -37,6 +37,7 @@ jobs:
           cd target
           git config user.name "Knight Witch"
           git config user.email "amanda.m.ivans@gmail.com"
+          sed -i 's/[[:space:]]\+$//' HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md
           git add Witch_Dock.user.js manifest.json features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md
           git diff --cached --check
           git commit -m "Release Witch Dock v1.1.0 Spinny Mini WebP"
