@@ -1,0 +1,95 @@
+name: Materialize Witch Dock Dev Loader
+on:
+  push:
+    branches: [spinny-wd-dev-materialize]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          fetch-depth: 0
+      - name: Create isolated Dev userscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          src=Path('Witch_Dock.user.js').read_text()
+          replacements={
+            '// @name         Witch Dock v1.0.8':'// @name         Witch Dock DEV — Spinny Integration',
+            '// @version      1.0.8':'// @version      1.0.8.1',
+            '// @description  UI for all Witch Scripts - The official release!':'// @description  DEV test loader for Witch Dock WITCH_DEV_UI modules. Do not use as public Stable.',
+            '// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js':'// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/Witch_Dock_DEV.user.js',
+            '// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js':'// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/Witch_Dock_DEV.user.js',
+            'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";':'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/manifest.json";'
+          }
+          for old,new in replacements.items():
+              if old not in src:
+                  raise SystemExit(f'missing required loader replacement: {old}')
+              src=src.replace(old,new,1)
+          banner='''\n/*\n * DEV TEST LOADER ONLY.\n * Loads WITCH_DEV_UI/manifest.json and is intentionally separate from public Witch_Dock.user.js.\n */\n'''
+          marker='(function () {'
+          src=src.replace(marker,banner+'\n'+marker,1)
+          Path('Witch_Dock_DEV.user.js').write_text(src)
+
+          mp=Path('manifest.json')
+          m=json.loads(mp.read_text())
+          reg=[x for x in m.get('moduleRegistry',[]) if x.get('id')!='witch-dock-dev-loader']
+          reg.insert(1,{
+            'id':'witch-dock-dev-loader','title':'Witch Dock Dev Loader','path':'Witch_Dock_DEV.user.js',
+            'kind':'core','load':'userscript-dev','version':'0.1.0','build':'1.0.8.1-spinny-dev-loader','versionOrigin':'new-dev-harness'
+          })
+          m['moduleRegistry']=reg
+          mp.write_text(json.dumps(m,indent=2,ensure_ascii=False)+'\n')
+
+          def prepend(path, block):
+              p=Path(path); p.write_text(block.rstrip()+'\n\n---\n\n'+p.read_text())
+          prepend('CHANGELOG.md','''# Changelog
+
+## DOCK-2026-09-06-027 — Add isolated WITCH_DEV_UI Tampermonkey loader
+
+Date: 2026-09-06
+
+Added `Witch_Dock_DEV.user.js` as a Dev-only test harness. It loads `WITCH_DEV_UI/manifest.json` and has Dev-branch update/download URLs, preventing the Spinny integration smoke test from silently loading the public Stable manifest.
+
+Public `Witch_Dock.user.js` and `Witch_Scripts` remain unchanged.
+
+Module registry adds `witch-dock-dev-loader` v0.1.0 / build `1.0.8.1-spinny-dev-loader`.
+
+**Runtime behavior changed:** Dev test harness only.''')
+          prepend('PRE_FLIGHT_Check.md','''# Pre-Flight Check Log
+
+## PFC-2026-09-06-027 — Isolated Dev installer for Spinny smoke
+
+Date: 2026-09-06
+
+Reviewed the current Dev integration commit, public core loader, manifest URL ownership, module-version contract, and Stable/Dev separation.
+
+Risk: installing the branch copy of the public-named userscript would still load the Stable manifest and could auto-update against Stable URLs. Decision: create a distinct `Witch_Dock_DEV.user.js` with WITCH_DEV_UI manifest/update/download URLs. No public core edit.''')
+          PY
+          node --check Witch_Dock_DEV.user.js
+          python - <<'PY'
+          import json
+          s=open('Witch_Dock_DEV.user.js').read()
+          assert '@name         Witch Dock DEV — Spinny Integration' in s
+          assert '@version      1.0.8.1' in s
+          assert 'WITCH_DEV_UI/manifest.json' in s
+          assert 'WITCH_DEV_UI/Witch_Dock_DEV.user.js' in s
+          assert 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/manifest.json";' in s
+          m=json.load(open('manifest.json'))
+          r={x['id']:x for x in m['moduleRegistry']}
+          assert r['witch-dock-dev-loader']['version']=='0.1.0'
+          PY
+          git diff --check
+          git config user.name 'Knight Witch'
+          git config user.email 'amanda.m.ivans@gmail.com'
+          git add Witch_Dock_DEV.user.js manifest.json CHANGELOG.md PRE_FLIGHT_Check.md
+          git commit -m 'Add isolated Witch Dock Dev test loader'
+          git push origin HEAD:WITCH_DEV_UI
