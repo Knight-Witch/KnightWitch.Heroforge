@@ -177,3 +177,9 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 - `HISTORY/Bullshit_Bible.md`
 
 Historical detailed state remains available in Git history.
+
+## Spinny Mini WebP — Active Dev Candidate
+
+`media.spinny-mini-webp` is now integrated into `WITCH_DEV_UI` as a two-module service/UI pair. Service v0.5.0 preserves the validated 1024/2048/TRUE-3K 3072 capture engine, Pause/Resume and interaction guards. UI v0.1.0 registers `Spinny Mini WebP` in the Booth tab directly after High Res Image Capture and supports a draggable movable popout that physically moves the same controls between hosts.
+
+Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. 4K animated WebP remains deferred. Live Dev smoke is pending; public `Witch_Scripts` is unchanged.

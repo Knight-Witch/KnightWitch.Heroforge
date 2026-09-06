@@ -1,5 +1,40 @@
 # Changelog
 
+## DOCK-2026-09-06-026 — Integrate Spinny Mini WebP into Witch Dock Dev
+
+Date: 2026-09-06
+
+### Summary
+
+Integrated the validated `media.spinny-mini-webp` v0.5.0 capture service into `WITCH_DEV_UI` and added a Witch Dock Booth-tab presentation adapter.
+
+### Runtime changes
+
+- new `features/media/Spinny_Mini_WebP.js` service, adapted from the exact checksum-verified HFC v0.5.0 source;
+- new `features/media/Spinny_Mini_WebP_UI.js` Dock UI;
+- default placement after High Res Image Capture in the Booth tab;
+- movable draggable popout using the same control DOM/service state as the docked host;
+- closing/docking the popout restores controls to the Booth tab without losing settings;
+- Short Test remains part of the service but is visible only when Developer Mode is enabled;
+- Pause/Resume/Cancel/progress/ETA and interaction guards are exposed through the Witch Dock host;
+- Spinny-owned dock/popout UI is exempt from capture guards; HeroForge/Booth interaction remains guarded;
+- 4096 animated WebP remains deferred and the existing 4096/8192 still-image provider ownership is unchanged.
+
+### Module versions
+
+- `spinny-mini-webp`: v0.5.0 / build `0.5.0-witch-dock-dev-service`;
+- `spinny-mini-webp-ui`: v0.1.0 / build `0.1.0-dev-dock-popout`.
+
+### Gate
+
+Static integration checks passed. Live `WITCH_DEV_UI` smoke is required before any Stable promotion.
+
+**Runtime behavior changed:** yes, Dev branch only. Public `Witch_Scripts` unchanged.
+
+---
+
+# Changelog
+
 ## DOCK-2026-09-06-025 — Preserve Witch Dock UI / Spinny follow-up queue
 
 Date: 2026-09-06

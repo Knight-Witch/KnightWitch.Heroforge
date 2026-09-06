@@ -146,3 +146,18 @@ Return to `media.spinny-mini-webp` now that the 3072px capture has completed:
 4. then resume the Spinny Pause/guard/integration queue above.
 
 Public `Witch_Scripts` remains untouched until Dev validation/promotion gates are explicitly satisfied.
+
+## 2026-09-06 implementation checkpoint
+
+The standalone Spinny gate is now closed at v0.5.0 and the planned Witch Dock Dev UX has been implemented for live smoke:
+
+- Booth placement below High Res Image Capture: implemented in Dev manifest load order;
+- one shared Spinny service: implemented;
+- draggable popout: implemented;
+- close/Dock returns the same controls to the Booth section: implemented;
+- frame-boundary Pause/Resume: inherited from validated v0.5 service;
+- interaction guards: inherited from validated v0.5 service and updated to recognize Witch Dock Spinny-owned UI;
+- Short Test Developer-Mode-only visibility: implemented;
+- 4096 Spinny: still deferred.
+
+Status: **implementation complete, integrated Dev smoke pending**. Public Stable remains untouched until user approval.

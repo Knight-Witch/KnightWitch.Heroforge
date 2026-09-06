@@ -1,37 +1,310 @@
 {
   "version": 1,
   "moduleRegistry": [
-    {"id":"witch-dock-core","title":"Witch Dock Core","path":"Witch_Dock.user.js","kind":"core","load":"userscript","version":"1.0.8","build":"1.0.8","versionOrigin":"existing"},
-    {"id":"expanded-ui-scroll-guards","title":"Expanded UI Scroll Guards","path":"HeroForge_UI/Expanded_UI_Scroll_Guards.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","build":"2026-07-03-layouts","versionOrigin":"baseline-2026-09-06"},
-    {"id":"hf-ui-scroll-split-safe","title":"HF UI Scroll Split Safe","path":"HeroForge_UI/HF_UI_Scroll_Split_Safe.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"hf-ui-slot-bridge","title":"HF UI Slot Bridge","path":"HeroForge_UI/HF_UI_Slot_Bridge.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"expanded-decal-slots","title":"Expanded Decal Slots","path":"HeroForge_UI/Expanded_Decal_Slots.js","kind":"heroForgeUI","load":"conditional","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"corrected-bound-decal-gizmo","title":"Corrected Bound Decal Gizmo","path":"HeroForge_UI/Corrected_Bound_Decal_Gizmo.js","kind":"heroForgeUI","load":"manifest","version":"1.1.0","build":"1.1.0-stable-undo-transform-preserve","versionOrigin":"existing"},
-    {"id":"witch-dock-developer-mode","title":"Developer Mode","path":"features/core/Witch_Dock_Developer_Mode.js","kind":"core-feature","load":"manifest","version":"0.2.0","build":"0.2.0-dev-module-version-registry","versionOrigin":"existing"},
-    {"id":"body-editor","title":"Body Editor","path":"tools/Body_Editor.js","kind":"tool","load":"manifest","version":"4.0.0","build":"v4","versionOrigin":"normalized-existing"},
-    {"id":"pose-tool","title":"Pose","path":"tools/Pose.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"booth-tool","title":"Booth","path":"tools/Booth.js","kind":"tool","load":"manifest","version":"24.0.0","build":"v24","versionOrigin":"normalized-existing"},
-    {"id":"photo-booth-true-resolution","title":"High Res Image Capture Service","path":"features/media/Photo_Booth_True_Resolution.js","kind":"feature-service","load":"manifest","version":"0.7.0","build":"0.7.0-witch-dock-dev-provider","versionOrigin":"existing"},
-    {"id":"photo-booth-true-resolution-readiness","title":"Photo Booth True Resolution Readiness","path":"HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","build":"1.0.0-public-readiness","versionOrigin":"existing"},
-    {"id":"photo-booth-true-resolution-ui","title":"High Res Image Capture UI","path":"features/media/Photo_Booth_True_Resolution_UI.js","kind":"feature-ui","load":"manifest","version":"0.2.0","build":"0.2.0-dev-developer-mode","versionOrigin":"existing"},
-    {"id":"decals-dev","title":"Decals","path":"tools/Decals.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"json-tool","title":"JSON","path":"tools/JSON_Tool.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
-    {"id":"utilities","title":"Utilities","path":"tools/Utilities.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"}
+    {
+      "id": "witch-dock-core",
+      "title": "Witch Dock Core",
+      "path": "Witch_Dock.user.js",
+      "kind": "core",
+      "load": "userscript",
+      "version": "1.0.8",
+      "build": "1.0.8",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "expanded-ui-scroll-guards",
+      "title": "Expanded UI Scroll Guards",
+      "path": "HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "kind": "heroForgeUI",
+      "load": "manifest",
+      "version": "1.0.0",
+      "build": "2026-07-03-layouts",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "hf-ui-scroll-split-safe",
+      "title": "HF UI Scroll Split Safe",
+      "path": "HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
+      "kind": "heroForgeUI",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "hf-ui-slot-bridge",
+      "title": "HF UI Slot Bridge",
+      "path": "HeroForge_UI/HF_UI_Slot_Bridge.js",
+      "kind": "heroForgeUI",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "expanded-decal-slots",
+      "title": "Expanded Decal Slots",
+      "path": "HeroForge_UI/Expanded_Decal_Slots.js",
+      "kind": "heroForgeUI",
+      "load": "conditional",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "corrected-bound-decal-gizmo",
+      "title": "Corrected Bound Decal Gizmo",
+      "path": "HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
+      "kind": "heroForgeUI",
+      "load": "manifest",
+      "version": "1.1.0",
+      "build": "1.1.0-stable-undo-transform-preserve",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "witch-dock-developer-mode",
+      "title": "Developer Mode",
+      "path": "features/core/Witch_Dock_Developer_Mode.js",
+      "kind": "core-feature",
+      "load": "manifest",
+      "version": "0.2.0",
+      "build": "0.2.0-dev-module-version-registry",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "body-editor",
+      "title": "Body Editor",
+      "path": "tools/Body_Editor.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "4.0.0",
+      "build": "v4",
+      "versionOrigin": "normalized-existing"
+    },
+    {
+      "id": "pose-tool",
+      "title": "Pose",
+      "path": "tools/Pose.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "booth-tool",
+      "title": "Booth",
+      "path": "tools/Booth.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "24.0.0",
+      "build": "v24",
+      "versionOrigin": "normalized-existing"
+    },
+    {
+      "id": "photo-booth-true-resolution",
+      "title": "High Res Image Capture Service",
+      "path": "features/media/Photo_Booth_True_Resolution.js",
+      "kind": "feature-service",
+      "load": "manifest",
+      "version": "0.7.0",
+      "build": "0.7.0-witch-dock-dev-provider",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "photo-booth-true-resolution-readiness",
+      "title": "Photo Booth True Resolution Readiness",
+      "path": "HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "kind": "heroForgeUI",
+      "load": "manifest",
+      "version": "1.0.0",
+      "build": "1.0.0-public-readiness",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "photo-booth-true-resolution-ui",
+      "title": "High Res Image Capture UI",
+      "path": "features/media/Photo_Booth_True_Resolution_UI.js",
+      "kind": "feature-ui",
+      "load": "manifest",
+      "version": "0.2.0",
+      "build": "0.2.0-dev-developer-mode",
+      "versionOrigin": "existing"
+    },
+    {
+      "id": "spinny-mini-webp",
+      "title": "Spinny Mini WebP Service",
+      "path": "features/media/Spinny_Mini_WebP.js",
+      "kind": "feature-service",
+      "load": "manifest",
+      "version": "0.5.0",
+      "build": "0.5.0-witch-dock-dev-service",
+      "versionOrigin": "validated-hfc-v0.5.0"
+    },
+    {
+      "id": "spinny-mini-webp-ui",
+      "title": "Spinny Mini WebP UI",
+      "path": "features/media/Spinny_Mini_WebP_UI.js",
+      "kind": "feature-ui",
+      "load": "manifest",
+      "version": "0.1.0",
+      "build": "0.1.0-dev-dock-popout",
+      "versionOrigin": "new-dev-module"
+    },
+    {
+      "id": "decals-dev",
+      "title": "Decals",
+      "path": "tools/Decals.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "json-tool",
+      "title": "JSON",
+      "path": "tools/JSON_Tool.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    },
+    {
+      "id": "utilities",
+      "title": "Utilities",
+      "path": "tools/Utilities.js",
+      "kind": "tool",
+      "load": "manifest",
+      "version": "1.0.0",
+      "versionOrigin": "baseline-2026-09-06"
+    }
   ],
   "tools": [
-    {"id":"witch-dock-developer-mode","title":"Developer Mode","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/core/Witch_Dock_Developer_Mode.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"expanded-ui-scroll-guards","title":"Expanded UI Scroll Guards","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"hf-ui-scroll-split-safe","title":"HF UI Scroll Split Safe","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"hf-ui-slot-bridge","title":"HF UI Slot Bridge","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"corrected-bound-decal-gizmo","title":"Corrected Bound Decal Gizmo","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"body-editor","title":"Body Editor","tab":"Body","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js","enabledByDefault":true},
-    {"id":"pose-tool","title":"Pose","tab":"Pose","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js","enabledByDefault":true},
-    {"id":"booth-tool","title":"Booth","tab":"Booth","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js","enabledByDefault":true},
-    {"id":"photo-booth-true-resolution","title":"High Res Image Capture","tab":"Booth","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js","enabledByDefault":true},
-    {"id":"photo-booth-true-resolution-readiness","title":"Photo Booth True Resolution Readiness","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"photo-booth-true-resolution-ui","title":"High Res Image Capture UI","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Photo_Booth_True_Resolution_UI.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
-    {"id":"decals-dev","title":"Decals","tab":"Decals","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js","enabledByDefault":true},
-    {"id":"json-tool","title":"JSON","tab":"JSON","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js","enabledByDefault":true},
-    {"id":"utilities","title":"Utilities","tab":"Utilities","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js","enabledByDefault":true}
+    {
+      "id": "witch-dock-developer-mode",
+      "title": "Developer Mode",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/core/Witch_Dock_Developer_Mode.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "expanded-ui-scroll-guards",
+      "title": "Expanded UI Scroll Guards",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "hf-ui-scroll-split-safe",
+      "title": "HF UI Scroll Split Safe",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "hf-ui-slot-bridge",
+      "title": "HF UI Slot Bridge",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "corrected-bound-decal-gizmo",
+      "title": "Corrected Bound Decal Gizmo",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "body-editor",
+      "title": "Body Editor",
+      "tab": "Body",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "pose-tool",
+      "title": "Pose",
+      "tab": "Pose",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "booth-tool",
+      "title": "Booth",
+      "tab": "Booth",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "photo-booth-true-resolution",
+      "title": "High Res Image Capture",
+      "tab": "Booth",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "photo-booth-true-resolution-readiness",
+      "title": "Photo Booth True Resolution Readiness",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "photo-booth-true-resolution-ui",
+      "title": "High Res Image Capture UI",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Photo_Booth_True_Resolution_UI.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "spinny-mini-webp",
+      "title": "Spinny Mini WebP Service",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "spinny-mini-webp-ui",
+      "title": "Spinny Mini WebP UI",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP_UI.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "decals-dev",
+      "title": "Decals",
+      "tab": "Decals",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "json-tool",
+      "title": "JSON",
+      "tab": "JSON",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
+      "enabledByDefault": true
+    },
+    {
+      "id": "utilities",
+      "title": "Utilities",
+      "tab": "Utilities",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "enabledByDefault": true
+    }
   ]
 }

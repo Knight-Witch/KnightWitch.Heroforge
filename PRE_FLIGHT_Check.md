@@ -1,5 +1,48 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-026 — Witch Dock Dev Spinny integration
+
+Date: 2026-09-06
+
+### Reviewed
+
+- current `WITCH_DEV_UI` head and manifest/module registry;
+- `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`;
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`;
+- Developer Mode v0.2.0;
+- compact High Res Image Capture UI and 0.7.0 provider service;
+- exact validated HFC Spinny v0.5.0 source and standalone live validation results.
+
+The Witch Dock repository has no separate `ARCHITECTURE.md` / `FEATURE_INVENTORY.md` at this Dev head; `MASTER.md`, module registry, module-version contract and durable HISTORY records are the active repo architecture/inventory sources.
+
+### Target files
+
+- `features/media/Spinny_Mini_WebP.js` (new)
+- `features/media/Spinny_Mini_WebP_UI.js` (new)
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
+
+### Material risks checked
+
+- do not replace/displace High Res still provider ownership of `BT.maker.takeScreenshot`;
+- preserve TRUE-3K phase-feed capture logic and validated timing/state sequencing;
+- one service shared by dock and popout; no duplicate capture engine;
+- popout drag must remain inside Spinny-owned guard surface;
+- Developer Mode controls Short Test visibility only;
+- 4K Spinny remains deferred;
+- public Stable remains untouched.
+
+### Decision
+
+Proceed with Dev-only service/UI integration and require live user smoke before promotion.
+
+---
+
+# Pre-Flight Check Log
+
 Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
 
 ## PFC-2026-09-06-025 — Preserve Witch Dock UI / Spinny follow-up queue
