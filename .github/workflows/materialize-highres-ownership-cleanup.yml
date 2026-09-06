@@ -1,0 +1,73 @@
+name: Materialize High Res Ownership Cleanup
+on:
+  push:
+    branches: [witch-highres-ownership-helper]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper
+        uses: actions/checkout@v4
+        with:
+          ref: witch-highres-ownership-helper
+          path: helper
+      - name: Checkout WITCH_DEV_UI
+        uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          path: target
+          fetch-depth: 0
+      - name: Apply service/UI cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          python ../helper/.github/scripts/highres_service_ui_cleanup.py
+      - name: Static ownership gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          node --check features/media/Photo_Booth_True_Resolution.js
+          node --check features/media/Photo_Booth_True_Resolution_UI.js
+          python -m json.tool manifest.json >/dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          service=Path('features/media/Photo_Booth_True_Resolution.js').read_text()
+          ui=Path('features/media/Photo_Booth_True_Resolution_UI.js').read_text()
+          m=json.loads(Path('manifest.json').read_text())
+          reg={x['id']:x for x in m['moduleRegistry']}
+          assert reg['photo-booth-true-resolution']['version']=='0.8.0'
+          assert reg['photo-booth-true-resolution']['build']=='0.8.0-service-only-provider'
+          assert reg['photo-booth-true-resolution-ui']['version']=='0.3.0'
+          assert reg['photo-booth-true-resolution-ui']['build']=='0.3.0-service-ui-ownership'
+          tools={x['id']:x for x in m['tools']}
+          svc=tools['photo-booth-true-resolution']
+          assert svc.get('hidden') is True and svc.get('type')=='heroForgeUI' and svc.get('tab')=='HeroForge UI'
+          assert 'function buildUI(' not in service
+          assert 'function registerTool(' not in service
+          assert 'kwPBResRoot' not in service
+          assert "const BUILD = '0.8.0-service-only-provider'" in service
+          assert "const BUILD = '0.3.0-service-ui-ownership'" in ui
+          assert "id: TOOL_ID" in ui and "tab: 'Booth'" in ui
+          assert "title: 'High Res Image Capture'" in ui
+          assert '.kwPBResBtn' in ui
+          assert 'KWPhotoBoothTrueResolutionReadiness' in ui
+          print('High Res service/UI ownership static gate: PASS')
+          PY
+          git diff --check
+      - name: Commit Dev candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          git config user.name "Knight Witch"
+          git config user.email "amanda.m.ivans@gmail.com"
+          git add features/media/Photo_Booth_True_Resolution.js features/media/Photo_Booth_True_Resolution_UI.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md
+          git diff --cached --check
+          git commit -m "Separate High Res capture service and UI ownership"
+          git push origin HEAD:WITCH_DEV_UI
