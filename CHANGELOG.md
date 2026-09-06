@@ -1,5 +1,52 @@
 # Changelog
 
+## DOCK-2026-09-06-022 — Release Witch Dock v1.1.0 with Spinny Mini WebP
+
+Date: 2026-09-06
+
+### Summary
+
+Promoted the explicitly approved, integrated Dev-tested `media.spinny-mini-webp` feature into public Witch Dock Stable as a narrow accepted delta. Public userscript version advances from 1.0.8 to 1.1.0.
+
+### Public runtime changes
+
+- added `features/media/Spinny_Mini_WebP.js` v0.5.1 / build `0.5.1-witch-dock-stable-download-scroll-guard`;
+- added `features/media/Spinny_Mini_WebP_UI.js` v0.1.1 / build `0.1.1-stable-download-ux`;
+- added 1024px, 2048px and validated TRUE-3K 3072px animated WebP profiles;
+- retained Standard / Slow / Slower / Very Slow profiles at 40 ms per encoded frame;
+- added safe frame-boundary Pause/Resume and cancel-while-paused behavior;
+- added continuity guards for camera/Booth interaction;
+- wheel/scroll attempts during capture are silently suppressed;
+- other continuity-invalidating interactions retain Keep Capture / Cancel Capture warning behavior;
+- added the validated shared-state draggable Spinny popout;
+- added dark dropdown styling and plain public resolution labels;
+- public `Witch_Dock.user.js` now grants/exposes `GM_download` as the confirmed Blob download boundary;
+- Short Test remains hidden in ordinary Stable because Developer Mode is not part of this promotion;
+- 4096 animated WebP remains deferred.
+
+### Validation
+
+Prior standalone and Dev validation covered native lower-resolution capture, TRUE-3K 3072 repair, full 250/500-frame production runs, parser/mux output, rotation restoration, ETA, Pause/Resume, cancel, popout, interaction guards and repeated use.
+
+Final integrated Dev re-smoke immediately before approval:
+
+- silent scroll block: PASS;
+- privileged WebP download: PASS;
+- remaining integrated behavior: user reported everything works perfectly;
+- optional transient in-panel completion flash: not observed and explicitly treated as non-gating.
+
+### Excluded Dev work
+
+This is not a merge of `WITCH_DEV_UI`. Developer Mode, compact High Res UI, module-version registry, Dev loader and unrelated ordering/UI work remain outside this Stable release.
+
+### Rollback
+
+Revert this release commit to restore v1.0.8, remove the two Spinny manifest/modules, and remove the `GM_download` host. Existing true-resolution still capture and other Stable modules are otherwise unchanged.
+
+**Runtime behavior changed:** yes — public Stable feature release.
+
+---
+
 ## DOCK-2026-09-05-021 — Public Photo Booth Smoke Acceptance
 
 Date: 2026-09-05

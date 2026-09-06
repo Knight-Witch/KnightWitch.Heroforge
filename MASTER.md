@@ -7,25 +7,27 @@ This is the canonical high-level source for current public Witch Dock state. Det
 - Repository: `Knight-Witch/KnightWitch.Heroforge`
 - Live branch: `Witch_Scripts`
 - Public install script: `Witch_Dock.user.js`
-- Current public userscript version: `1.0.8`
+- Current public userscript version: `1.1.0`
 - Manifest loader: `manifest.json`
 - Public module delivery: raw GitHub files pinned to the live `Witch_Scripts` branch
 - Visible tools: `/tools/` plus feature modules that register their own Witch Dock host
 - Hidden HeroForge/runtime utilities: `/HeroForge_UI/`
 - Maintained feature services may live under `/features/` while future shared Foundation extraction is pending
 
-`Witch_Dock.user.js` itself is unchanged by the 2026-09-05 true-resolution Photo Booth promotion; existing installs receive that feature through manifest/module refresh.
+Public Stable v1.1.0 adds the validated Spinny Mini animated-WebP feature and the privileged download host required by that feature. It does not promote the diverged `WITCH_DEV_UI` branch wholesale.
 
 ## Live Feature Inventory
 
 | Area | Manifest ID | File | Status | Notes |
 |---|---|---|---|---|
-| Core | n/a | `Witch_Dock.user.js` | Live | Floating dock shell, manifest loader, shared UI, storage, undo/redo, footer utilities, compact emblem launcher. |
+| Core | n/a | `Witch_Dock.user.js` | **Live v1.1.0** | Floating dock shell, manifest loader, shared UI, storage, undo/redo, footer utilities, compact emblem launcher, privileged Blob download host. |
 | Body | `body-editor` | `tools/Body_Editor.js` | Live | Body editing/symmetry workflows. |
 | Pose | `pose-tool` | `tools/Pose.js` | Live | Figure Main/Extra swap workflow. |
 | Booth persistence | `booth-tool` | `tools/Booth.js` | Live | Current build `v24`; Persistent Booth, lighting/effects/overlay/background persistence, Black Canvas. |
 | Photo Booth true resolution | `photo-booth-true-resolution` | `features/media/Photo_Booth_True_Resolution.js` | **Live / Stable validated** | `media.screenshot-resolution`; true 4K and grouped low-pressure true 8K provider plus direct Booth-tab buttons. |
 | Photo Booth UI readiness | `photo-booth-true-resolution-readiness` | `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` | **Live / Stable validated / hidden** | Keeps direct 4K/8K buttons synchronized when Photo Booth becomes ready after provider initialization. |
+| Spinny service | `spinny-mini-webp` | `features/media/Spinny_Mini_WebP.js` | **Live / Stable promoted; public smoke pending** | `media.spinny-mini-webp` v0.5.1; 1024/2048 native frame source, TRUE-3K 3072 repair, Pause/Resume, cancel, ETA, interaction guards, animated-WebP mux and confirmed download host. |
+| Spinny UI | `spinny-mini-webp-ui` | `features/media/Spinny_Mini_WebP_UI.js` | **Live / Stable promoted; public smoke pending** | Booth-tab controls plus shared-state draggable popout; public resolution labels are 1024px/2048px/3072px. Short Test remains hidden in ordinary public mode. |
 | JSON | `json-tool` | `tools/JSON_Tool.js` | Live | Bulk JSON library backup. |
 | Utilities | `utilities` | `tools/Utilities.js` | Live | User-facing controls for optional HF UI helpers. |
 | Decals | `decals-dev` | `tools/Decals.js` | Live | Bound decal gizmo host; legacy internal ID retained for tested parity. |
@@ -34,28 +36,42 @@ This is the canonical high-level source for current public Witch Dock state. Det
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional expanded decal-slot bridge. |
 | HF UI | `corrected-bound-decal-gizmo` | `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` | Live / hidden | Stable corrected projector-centered bound decal gizmo, including validated undo/redo and transform-state preservation. |
 
+## Spinny Mini WebP
+
+Feature ID: `media.spinny-mini-webp`.
+
+Public Stable service version: `0.5.1`; build `0.5.1-witch-dock-stable-download-scroll-guard`.
+Public Stable UI version: `0.1.1`; build `0.1.1-stable-download-ux`.
+Compatibility target: `heroforge07.1.9.98`.
+
+Validated behavior promoted from standalone -> Witch Dock Dev -> Stable review:
+
+- 1024 and 2048 use native `BT.maker.takeScreenshot` frame production;
+- 3072 uses the validated TRUE-3K `CK.Effects.renderToCanvas` phase-feed repair rather than HeroForge's blurry native 3072 source path;
+- Standard / Slow / Slower / Very Slow retain 40 ms per-frame animation timing while slower rotations use more angular samples;
+- frame-boundary Pause/Resume works without leaving a partial TRUE-3K wrapper installed;
+- cancel while active or paused restores capture state;
+- paused wall-clock time is excluded from active ETA accounting;
+- camera/canvas and Booth-state interaction guards protect animation continuity;
+- wheel/scroll during capture is silently suppressed without a warning modal;
+- other continuity-invalidating interactions retain the Keep Capture / Cancel Capture warning;
+- draggable popout shares the same service/control state as the docked UI;
+- dropdowns use public labels `1024px`, `2048px`, `3072px` and dark option styling;
+- public downloads use the userscript-level `GM_download` host and wait for success/error callbacks rather than relying on a silent page-anchor click;
+- public UI keeps the 16-frame Short Test diagnostic hidden because Developer Mode is not part of this Stable promotion;
+- 4096 animated WebP remains explicitly deferred.
+
+Final integrated Dev re-smoke on 2026-09-06: download successful; silent scroll block successful; user reported the integrated feature works perfectly. The optional transient in-panel download-complete flash was not observed and is not a Stable acceptance gate because browser download confirmation and the privileged download callback are authoritative.
+
+Detailed record: `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`.
+
 ## Photo Booth True Resolution
 
 Feature ID: `media.screenshot-resolution`.
 
 Validated source baseline: HeroForge.Compatibility standalone v0.6 on `heroforge07.1.9.98`.
 
-Public behavior:
-
-- intercepts only square 4096 and 8192 `BT.maker.takeScreenshot` calls;
-- leaves all other capture sizes untouched;
-- TRUE 4K uses one genuine 4096 Effects source;
-- TRUE 8K uses four shifted 4096 Effects sources covering the complete native 64-phase 8K lattice;
-- does not allocate an 8192 WebGL Effects target;
-- preserves HeroForge's native Booth compositor and staging;
-- temporarily wraps named `CK.Effects.renderToCanvas` only during repaired capture;
-- restores owned runtime methods after capture/disable where ownership remains intact;
-- passes through a future already-native full-resolution Effects path;
-- current Lob/ADP may remain installed and supply the visible HeroForge 4096/8192 choices; Witch Dock repairs those requests downstream;
-- without Lob, Witch Dock direct TRUE 4K/TRUE 8K buttons remain available;
-- Lob-absent injection into HeroForge's own resolution selector remains a future adapter rather than part of the stable capture engine.
-
-Public Stable smoke on 2026-09-05 passed after temporary test scripts were disabled. HeroForge/Lob 4K and 8K routes, Witch Dock direct TRUE 4K and TRUE 8K routes, and the readiness adapter all worked without requiring a repair-toggle cycle.
+Public behavior remains unchanged by Spinny v1.1.0. The still provider continues to intercept only square 4096 and 8192 requests; all lower sizes including Spinny 1024/2048/3072 remain outside that owning provider boundary.
 
 Detailed record: `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`.
 
@@ -74,24 +90,26 @@ Detailed record: `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`.
 - `Witch_Scripts` is production; experimental development occurs on separate branches/modules first.
 - Public Witch Dock must not depend on `HeroForge.Compatibility/main`, HF-Chat-Bridge, or an unstable future Foundation head at runtime.
 - Validated Compatibility features may be promoted as self-contained public modules after Dev integration testing and explicit approval.
-- When Foundation exists, public consumers should use pinned/versioned stable Foundation releases.
 - Do not merge diverged Dev branches wholesale into production; promote only the accepted feature delta.
 - Preserve runtime capability checks, lifecycle restoration, timing/state sequencing, and failure isolation.
+- Spinny does not displace the existing 4096/8192 still-provider ownership of `BT.maker.takeScreenshot`.
 
 ## Current Near-Term Queue
 
-1. Add Lob-absent 4096/8192 injection into HeroForge's native Photo Booth resolution UI only after the current UI lifecycle is probed and a non-bundle-patch adapter is validated.
-2. Continue Photo Mode WEBP/spin capture investigation separately from still-image true-resolution capture.
-3. Continue planned Foundation/shared compatibility design; do not make public Stable depend on an unstable development head.
-4. Keep Persistent Booth and corrected bound decal gizmo isolated from unrelated refactors.
+1. Perform one clean public Stable Spinny smoke after userscript update/permission approval; do not reopen standalone/Dev investigation unless a regression appears.
+2. Keep 4096 animated WebP deferred until a separately validated explicit frame path can coexist with the still provider.
+3. Continue planned Foundation/shared compatibility design without making public Stable depend on an unstable development head.
+4. Keep Persistent Booth, true-resolution still capture, and corrected bound decal gizmo isolated from unrelated refactors.
+5. Compact High Res UI, Developer Mode, module-registry work, and other `WITCH_DEV_UI` changes remain separate Dev work and are not implicitly promoted by v1.1.0.
 
 ## Durable Records
 
 - `PRE_FLIGHT_Check.md` — current pre-flight decision; older entries preserved in Git history.
 - `CHANGELOG.md` — current release/validation entry; older entries preserved in Git history.
+- `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md` — Spinny architecture, validation and public promotion record.
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md` — true-resolution still capture architecture/validation.
 - `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md` — corrected bound decal gizmo record.
 - `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` — broader Booth/render/export history.
 - `HISTORY/Bullshit_Bible.md` — fragile HeroForge behavior index.
 
-Historical detailed master state through the public promotion commit `e155f2c2f961463b4a0e26f7c88f21f603ce1b95` remains preserved in Git history.
+Historical detailed master state through public Stable v1.0.8 remains preserved in Git history.

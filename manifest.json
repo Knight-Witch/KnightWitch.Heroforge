@@ -75,6 +75,24 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "spinny-mini-webp",
+      "title": "Spinny Mini WebP Service",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "spinny-mini-webp-ui",
+      "title": "Spinny Mini WebP UI",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP_UI.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
