@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Witch Dock DEV - High Res Image Capture UI
 // @namespace    KnightWitch
-// @version      0.1.0
-// @description  Dev UI adapter for Witch Dock's validated 4K/8K Photo Booth capture service.
+// @version      0.2.0
+// @description  Dev UI adapter for Witch Dock's validated 4K/8K Photo Booth capture service, with Developer Mode diagnostics.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        none
@@ -20,7 +20,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const GLOBAL = 'KWPhotoBoothTrueResolutionUI';
   const TOOL_ID = 'photo-booth-true-resolution';
-  const BUILD = '0.1.0-dev-compact-ui';
+  const BUILD = '0.2.0-dev-developer-mode';
   const STYLE_ID = 'kwPBTrueResolutionCompactUIStyle';
 
   let registerTimer = null;
@@ -28,6 +28,9 @@
   let statusEl = null;
   let button4K = null;
   let button8K = null;
+  let developerRoot = null;
+  let developerEnabled = null;
+  let developerMeta = null;
   let activity = null;
 
   function getService() {
@@ -38,6 +41,10 @@
     return UW && UW.KWPhotoBoothTrueResolutionReadiness
       ? UW.KWPhotoBoothTrueResolutionReadiness
       : null;
+  }
+
+  function getDeveloperMode() {
+    return UW && UW.KWDeveloperMode ? UW.KWDeveloperMode : null;
   }
 
   function ensureStyles() {
@@ -53,6 +60,11 @@
       .kwPBResCompactRoot .kwPBResBtn:disabled{opacity:.45;cursor:default;}
       .kwPBResCompactStatus{min-height:15px;font-size:11px;line-height:1.35;opacity:.85;overflow-wrap:anywhere;}
       .kwPBResCompactStatus[data-error="1"]{color:#ff8a8a;opacity:1;}
+      .kwPBResCompactDev{display:flex;flex-direction:column;gap:6px;margin-top:3px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);font-size:11px;line-height:1.35;}
+      .kwPBResCompactDev[hidden]{display:none!important;}
+      .kwPBResCompactDevToggle{display:flex;align-items:center;gap:7px;font-weight:700;}
+      .kwPBResCompactDevMeta{white-space:pre-line;opacity:.72;overflow-wrap:anywhere;}
+      .kwPBResCompactDevNote{opacity:.58;}
     `;
     document.head.appendChild(style);
   }
@@ -148,9 +160,39 @@
     if (button8K) button8K.disabled = disabled;
   }
 
+  function providerStateLabel(service) {
+    if (!service) return 'service unavailable';
+    if (!service.enabled) return 'disabled';
+    if (service.providerLost) return 'DEGRADED / ownership lost';
+    if (service.providerInstalled) return 'active';
+    return 'not installed';
+  }
+
+  function refreshDeveloperDetails() {
+    if (!developerRoot) return;
+    const dev = getDeveloperMode();
+    const show = !!(dev && dev.enabled);
+    developerRoot.hidden = !show;
+    if (!show) return;
+
+    const service = getService();
+    const readiness = getReadiness();
+    if (developerEnabled) developerEnabled.checked = !!(service && service.enabled);
+    if (developerEnabled) developerEnabled.disabled = !service || !!(service.lastCapture && service.lastCapture.status === 'running');
+    if (developerMeta) {
+      developerMeta.textContent = [
+        `UI: ${BUILD}`,
+        `Service: ${service && service.build ? service.build : 'unreported'}`,
+        `Readiness: ${readiness && readiness.build ? readiness.build : 'unreported'}`,
+        `Provider: ${providerStateLabel(service)}`
+      ].join('\n');
+    }
+  }
+
   function refresh() {
     refreshStatus();
     syncButtons();
+    refreshDeveloperDetails();
   }
 
   async function capture(size) {
@@ -181,6 +223,21 @@
         size,
         message: error && error.message ? error.message : String(error)
       };
+      refresh();
+      return false;
+    }
+  }
+
+  function setProviderEnabled(next) {
+    const service = getService();
+    if (!service) return false;
+    try {
+      if (next) service.enable();
+      else service.disable();
+      refresh();
+      return true;
+    } catch (error) {
+      activity = { kind: 'error', message: error && error.message ? error.message : String(error) };
       refresh();
       return false;
     }
@@ -227,8 +284,33 @@
     statusEl.dataset.error = '0';
     root.appendChild(statusEl);
 
+    developerRoot = document.createElement('div');
+    developerRoot.className = 'kwPBResCompactDev';
+    developerRoot.hidden = true;
+
+    const devToggle = document.createElement('label');
+    devToggle.className = 'kwPBResCompactDevToggle';
+    developerEnabled = document.createElement('input');
+    developerEnabled.type = 'checkbox';
+    const devToggleText = document.createElement('span');
+    devToggleText.textContent = 'Repair provider enabled';
+    devToggle.appendChild(developerEnabled);
+    devToggle.appendChild(devToggleText);
+    developerRoot.appendChild(devToggle);
+
+    developerMeta = document.createElement('div');
+    developerMeta.className = 'kwPBResCompactDevMeta';
+    developerRoot.appendChild(developerMeta);
+
+    const devNote = document.createElement('div');
+    devNote.className = 'kwPBResCompactDevNote';
+    devNote.textContent = 'When enabled, HeroForge/Lob square 4096 and 8192 screenshot requests route through the maintained Witch Dock repair provider.';
+    developerRoot.appendChild(devNote);
+    root.appendChild(developerRoot);
+
     button4K.addEventListener('click', () => { capture(4096); });
     button8K.addEventListener('click', () => { capture(8192); });
+    developerEnabled.addEventListener('change', () => { setProviderEnabled(developerEnabled.checked); });
 
     refresh();
     if (!refreshTimer) refreshTimer = window.setInterval(refresh, 500);
@@ -238,13 +320,18 @@
     const WD = UW && UW.WitchDock;
     if (!WD || typeof WD.registerTool !== 'function' || !getService()) return false;
 
-    WD.registerTool({
+    const def = {
       id: TOOL_ID,
       title: 'High Res Image Capture',
       tab: 'Booth',
       build: BUILD,
       render: (container, api) => buildUI(container, api)
-    });
+    };
+    const dev = getDeveloperMode();
+    if (dev && typeof dev.registerToolMeta === 'function') {
+      try { dev.registerToolMeta(def); } catch (_) {}
+    }
+    WD.registerTool(def);
     return true;
   }
 

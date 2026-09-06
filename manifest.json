@@ -38,6 +38,15 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "witch-dock-developer-mode",
+      "title": "Developer Mode",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/core/Witch_Dock_Developer_Mode.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",

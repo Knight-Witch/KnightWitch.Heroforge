@@ -1,73 +1,118 @@
 # Changelog
 
+## DOCK-2026-09-05-023 — Modular Developer Mode Dev candidate
+
+Date: 2026-09-05
+
+### Summary
+
+Added Witch Dock Developer Mode as a standalone hidden module rather than editing the public core shell. Updated the compact High Res Image Capture Dev UI to consume that shared mode for its provider kill switch and build/provider diagnostics.
+
+### Added
+
+- `features/core/Witch_Dock_Developer_Mode.js`
+- build `0.1.0-dev-registry-about-toggle`
+- persistent default-off Developer Mode state via `kw.witchDock.developerMode.v1`
+- `Developer Mode` checkbox injected into the existing Witch Dock `?` / About modal
+- reversible `WitchDock.registerTool` wrapper that records declared tool metadata
+- per-tool developer rows showing `DEV · <tool-id> · build <declared-build>` while Developer Mode is on
+- explicit `build unreported` when a tool does not declare build/version metadata
+- shared global `KWDeveloperMode` API with set/toggle/listener/registry/lifecycle methods
+- dedicated architecture record `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
+
+### High Res Image Capture update
+
+`features/media/Photo_Booth_True_Resolution_UI.js` advanced from `0.1.0-dev-compact-ui` to `0.2.0-dev-developer-mode`.
+
+Normal mode remains deliberately minimal:
+
+- `High Res Image Capture`
+- `Capture: [4K] [8K]`
+- violet hover highlight
+- compact status line
+
+Developer Mode additionally reveals:
+
+- `Repair provider enabled` kill switch, backed by the existing service `enable()` / `disable()` methods;
+- compact UI build;
+- Stable capture-service build;
+- readiness-adapter build;
+- provider ownership/state;
+- implementation note for HeroForge/Lob 4096/8192 routing.
+
+### Manifest behavior
+
+- Developer Mode is loaded as a hidden module before visible tools on `WITCH_DEV_UI` so subsequent tool registrations can be observed.
+- Existing Dev default order keeps `Decals` before `JSON`.
+- Public `Witch_Scripts` manifest is unchanged.
+
+### Preserved behavior
+
+- `Witch_Dock.user.js` is unchanged.
+- `features/media/Photo_Booth_True_Resolution.js` is unchanged.
+- `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` is unchanged.
+- TRUE 4K/8K capture architecture and provider ownership behavior are unchanged.
+- Developer Mode does not touch HeroForge `CK`, `BT`, Webpack, bundle code, character state, camera state, or Photo Booth renderer state.
+- Developer Mode is not required for ordinary Witch Dock operation.
+- Active Spinny/WebP 3072px validation was not queried or disturbed.
+
+### Test status
+
+Before commit:
+
+- `Witch_Dock_Developer_Mode.js` local `node --check`: PASS.
+- High Res UI v0.2.0 local `node --check`: PASS.
+- live About-toggle / registry / provider-control smoke: pending after the active 3K Spinny capture completes.
+
+### Known limitations / next gate
+
+- Older tools that do not declare `build` or `version` accurately display `build unreported`; metadata should be added incrementally rather than inferred.
+- No Developer Mode hotkey exists in this first candidate.
+- High Res UI same-ID re-registration remains a Dev migration technique; explicit service/UI ownership cleanup is still required before Stable promotion.
+
+### Touched files
+
+- `features/core/Witch_Dock_Developer_Mode.js` (new)
+- `features/media/Photo_Booth_True_Resolution_UI.js`
+- `manifest.json`
+- `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md` (new)
+- `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+**Runtime behavior changed:** Dev-only diagnostics/presentation. Public Stable behavior did not change.
+
+---
+
 ## DOCK-2026-09-05-022 — High Res Image Capture UI cleanup and Decals tab order Dev candidate
 
 Date: 2026-09-05
 
 ### Summary
 
-Added a Dev-only presentation adapter for the already-validated `media.screenshot-resolution` service and changed the Dev manifest default tab registration order so `Decals` sits between `Booth` and `JSON`. The Stable 4K/8K capture engine and readiness adapter are unchanged.
+Added a presentation-only Dev adapter for the Stable `media.screenshot-resolution` service and changed the Dev manifest default registration order so `Decals` sits between `Booth` and `JSON`.
 
-### Added
+### Dev UI target
 
-- `features/media/Photo_Booth_True_Resolution_UI.js` build `0.1.0-dev-compact-ui`.
-- The adapter is both a standalone Tampermonkey test and a future manifest-loadable module.
-- It re-registers the existing `photo-booth-true-resolution` Witch Dock tool ID as a presentation-only host while calling the existing `KWPhotoBoothTrueResolution` service API.
-
-### Dev UI changes
-
-Normal user presentation now targets:
-
-- tool/section title `High Res Image Capture`;
-- compact `Capture: [4K] [8K]` row;
-- visible violet hover highlight on enabled capture buttons;
-- idle status `Active — click 4K or 8K to begin image capture`;
-- no ordinary-user repair-provider checkbox;
-- no ordinary-user provider implementation line;
-- no ordinary-user Lob/provider explanatory blurb.
-
-The adapter reuses the public `.kwPBResBtn` readiness path and does not duplicate 4K/8K renderer capability logic.
-
-### Kill-switch direction
-
-The existing service-level `enable()` / `disable()` behavior remains intact. The provider checkbox is being removed from normal presentation because it is a troubleshooting kill switch, not an everyday capture control. User-approved direction is to expose it later only through Witch Dock-wide Developer Mode.
-
-### Default tab order
-
-- Moved `decals-dev` in the Dev manifest so first-load registration order becomes `... Booth → Decals → JSON → Utilities`.
-- This does not alter the Decals tool itself or any capture/runtime code.
+- `High Res Image Capture`
+- `Capture: [4K] [8K]`
+- visible violet hover highlight
+- idle status `Active — click 4K or 8K to begin image capture`
+- provider kill switch and implementation notes hidden from ordinary users
 
 ### Preserved behavior
 
-- `features/media/Photo_Booth_True_Resolution.js` is unchanged.
-- `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` is unchanged.
-- TRUE 4K remains one 4096 Effects source.
-- TRUE 8K remains four shifted 4096 Effects sources with no 8192 Effects target.
-- Existing provider ownership/restoration, failure isolation, direct capture functions, and Lob coexistence remain unchanged.
-- Public `Witch_Scripts` is untouched.
-- Spinny/WebP runtime and the active 3K validation capture are untouched.
+- Stable capture engine/readiness adapter unchanged.
+- TRUE 4K/8K implementation unchanged.
+- Public `Witch_Scripts` untouched.
+- Spinny/WebP runtime untouched.
 
-### Known Dev-only migration caveat
+### Known Dev caveat
 
-The presentation adapter replaces the visible tool container by registering the same tool ID. The Stable service still retains references to its now-detached legacy UI nodes until reload. Before public promotion, the final integration should make UI ownership explicit rather than shipping this as a permanent duplicate-host arrangement.
+Same-ID UI replacement leaves detached legacy UI references in the Stable capture service until reload; final Stable integration must make UI ownership explicit.
 
-### Touched files
-
-- `features/media/Photo_Booth_True_Resolution_UI.js` (new)
-- `manifest.json`
-- `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-
-### Test status
-
-- Source/architecture review: complete.
-- Standalone UI adapter live test: pending until the active 3K Spinny capture completes.
-- Direct 4K/8K regression through the new UI: pending.
-- Default Decals tab-order smoke: pending future Dev-manifest loading.
-
-**Runtime behavior changed:** Dev-only presentation/default order. Public Stable behavior did not change.
+**Runtime behavior changed:** Dev-only presentation/default order.
 
 ---
 
@@ -75,38 +120,12 @@ The presentation adapter replaces the visible tool container by registering the 
 
 Date: 2026-09-05
 
-### Summary
-
-Documentation-only checkpoint recording final public acceptance of `media.screenshot-resolution` after the Stable promotion.
-
-### Confirmed public result
-
-- Temporary standalone v0.6 and WITCH_DEV_PHOTO test scripts were disabled for the clean public test.
-- Public readiness adapter worked without requiring the repair toggle to be cycled.
-- Existing Lob-injected HeroForge 4096 capture routed through public Witch Dock and passed perfectly.
-- Existing Lob-injected HeroForge 8192 capture routed through public Witch Dock and passed perfectly.
-- Public Witch Dock direct TRUE 4K capture passed perfectly.
-- Public Witch Dock direct TRUE 8K capture passed perfectly.
-- Amanda reported the public integration works perfectly.
-
-### Status
-
+- Public HeroForge/Lob 4096 and 8192 routes passed perfectly.
+- Public Witch Dock direct TRUE 4K and TRUE 8K passed perfectly.
+- Readiness adapter passed without repair-toggle cycling.
 - `media.screenshot-resolution`: **Witch Dock Stable validated**.
-- TRUE 4K maintained architecture: one 4096 Effects source.
-- TRUE 8K maintained architecture: four shifted 4096 Effects sources; no 8192 WebGL Effects target.
-- Lob/ADP remains unchanged and compatible as the current HeroForge-UI source for 4096/8192 choices.
-- Lob-absent HeroForge-native resolution-menu injection remains future work and does not block Stable status.
 
-### Runtime impact
-
-**No runtime behavior changed.** No JavaScript, manifest, userscript shell, or capture behavior changed in this checkpoint.
-
-### Touched files
-
-- `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
+**Runtime behavior changed:** no.
 
 ---
 
