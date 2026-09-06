@@ -4,6 +4,12 @@ Status: **active handoff queue**
 Branch: `WITCH_DEV_UI`  
 Recorded: 2026-09-06
 
+## 2026-09-06 integrated Spinny smoke result
+
+User smoke confirms the integrated Witch Dock Dev Spinny placement, shared-state draggable popout, Pause/Resume, cancellation, Developer-Mode Short Test visibility, and interaction guards all behave correctly. Remaining defects were isolated to final download initiation plus select-popup contrast; requested polish is plain resolution labels, icon-only Pop Out, brief confirmed-download feedback, and silent wheel/scroll blocking while keeping warnings for other guarded mutations.
+
+Dev hardening versions: loader v0.2.0, Spinny service v0.5.1, Spinny UI v0.1.1. Re-smoke is required before Stable promotion. Public `Witch_Scripts` remains unchanged.
+
 ## Purpose
 
 Preserve the Witch Dock side-project work discussed while the standalone 3072px Spinny/WebP validation capture was running, so those items do not get lost when development returns to the Spinny result.
@@ -58,15 +64,15 @@ The Dev manifest already targets:
 
 Still pending: integrated Dev-manifest smoke confirming the actual tab order and that existing tab/tool behavior is unchanged.
 
-## Pending — Spinny/WebP Witch Dock UX
+## Integrated / validation — Spinny/WebP Witch Dock UX
 
-### 4. Booth placement
+### 4. Booth placement — PASS
 
 Once the standalone Spinny gate is closed, integrate the Spinny capture toolset into Witch Dock Dev **directly below High Res Image Capture** by default.
 
 Users may continue to use whatever Witch Dock rearrangement behavior is supported; this is only the default placement.
 
-### 5. Popout mode
+### 5. Popout mode — PASS
 
 Desired UX:
 
@@ -79,7 +85,7 @@ Desired UX:
 
 Do not duplicate capture engines between dock and popout. Both presentations should bind to the same Spinny service/state.
 
-### 6. Pause / Resume
+### 6. Pause / Resume — PASS
 
 Desired capture invariant:
 
@@ -93,7 +99,7 @@ Desired capture invariant:
 
 Diagnostics should eventually expose pause state/count/duration separately from active capture processing time.
 
-### 7. Capture-invalidating interaction guards
+### 7. Capture-invalidating interaction guards — PASS with wheel UX hardening
 
 While a Spinny capture is active or paused, protect it from Booth changes that would invalidate frame consistency.
 

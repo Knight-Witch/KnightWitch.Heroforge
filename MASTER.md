@@ -137,10 +137,10 @@ Key pending items:
 - integrated Developer Mode + compact High Res Dev smoke/promotion;
 - High Res service/UI ownership cleanup before Stable;
 - integrated `Booth -> Decals -> JSON` order smoke;
-- integrate Spinny beneath High Res Image Capture by default;
-- shared-state draggable Spinny popout with close/collapse behavior;
-- Pause/Resume only between completed frames;
-- semantic/layout-independent guards for capture-invalidating Booth interactions;
+- Spinny beneath High Res Image Capture: integrated; placement smoke PASS;
+- shared-state draggable Spinny popout: integrated; user smoke PASS;
+- Pause/Resume: integrated; user smoke PASS;
+- capture-invalidating interaction guards: integrated; user smoke PASS; wheel/scroll now silently blocks without a modal;
 - 4096 animated WebP explicitly deferred because of the confirmed 4096 still-provider collision;
 - optional Developer Mode hotkey remains non-required/deferred.
 
@@ -157,12 +157,12 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 
 ## Current Near-Term Queue
 
-1. Record and evaluate the completed 3072px Spinny result.
-2. If 3072 Standard passes, close that standalone validation gate and continue Spinny Pause/guard work.
+1. Re-smoke the Dev Spinny privileged download host and UI hardening patch.
+2. Confirm a 1024 Short Test download completes through the host and the brief success indicator fires.
 3. Later, smoke integrated `WITCH_DEV_UI` Developer Mode + compact High Res behavior, including provider disable/re-enable and direct 4K/8K regression.
 4. Smoke integrated default `Booth -> Decals -> JSON` order.
 5. Cleanly separate High Res service/UI ownership before public promotion.
-6. Integrate validated Spinny/WebP beneath High Res Image Capture in Witch Dock Dev and implement the preserved popout/Pause/guard UX.
+6. If the Dev hardening re-smoke passes, prepare the exact accepted Spinny delta for separate Stable promotion review.
 
 ## Durable Records
 
@@ -180,6 +180,6 @@ Historical detailed state remains available in Git history.
 
 ## Spinny Mini WebP — Active Dev Candidate
 
-`media.spinny-mini-webp` is now integrated into `WITCH_DEV_UI` as a two-module service/UI pair. Service v0.5.0 preserves the validated 1024/2048/TRUE-3K 3072 capture engine, Pause/Resume and interaction guards. UI v0.1.0 registers `Spinny Mini WebP` in the Booth tab directly after High Res Image Capture and supports a draggable movable popout that physically moves the same controls between hosts.
+`media.spinny-mini-webp` is now integrated into `WITCH_DEV_UI` as a two-module service/UI pair. Service v0.5.1 preserves the validated 1024/2048/TRUE-3K 3072 capture engine while hardening the Witch Dock download boundary and making wheel/scroll guard behavior silent. UI v0.1.1 registers `Spinny Mini WebP` directly after High Res Image Capture, keeps the validated shared-state draggable popout, fixes dark select options, uses plain resolution labels and an icon-only Pop Out control, and adds confirmed-download feedback.
 
-Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. 4K animated WebP remains deferred. Live Dev smoke is pending; public `Witch_Scripts` is unchanged.
+Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. Initial integrated Dev smoke passed capture/Pause/guard/popout behavior; the final download initiation failed and triggered this hardening pass. Live re-smoke of download/UI changes is pending. 4K animated WebP remains deferred and public `Witch_Scripts` is unchanged.

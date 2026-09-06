@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Spinny Mini WebP Service
 // @namespace    KnightWitch
-// @version      0.5.0
+// @version      0.5.1
 // @description  Validated Spinny Mini animated WebP capture service for Witch Dock Dev.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
   const STYLE_ID = `${PANEL_ID}-style`;
   const GUARD_MODAL_ID = `${PANEL_ID}-guard-modal`;
   const GUARD_EVENT_TYPES = Object.freeze(['pointerdown','mousedown','touchstart','wheel','click','change','input','keydown']);
-  const VERSION = '0.5.0';
-  const BUILD = '0.5.0-witch-dock-dev-service';
+  const VERSION = '0.5.1';
+  const BUILD = '0.5.1-witch-dock-dev-download-scroll-guard';
 
   const QUALITY = 0.95;
   const LOOP_COUNT = 0;
@@ -31,9 +31,9 @@
   const MAX_PHASE_GRID = 32;
 
   const RESOLUTIONS = Object.freeze({
-    '1024': Object.freeze({ id: '1024', label: '1024px — HQ parity', size: 1024 }),
-    '2048': Object.freeze({ id: '2048', label: '2048px — validated resolution', size: 2048 }),
-    '3072': Object.freeze({ id: '3072', label: '3072px — TRUE 3K validated', size: 3072 })
+    '1024': Object.freeze({ id: '1024', label: '1024px', size: 1024 }),
+    '2048': Object.freeze({ id: '2048', label: '2048px', size: 2048 }),
+    '3072': Object.freeze({ id: '3072', label: '3072px', size: 3072 })
   });
   const SPEEDS = Object.freeze({
     standard: Object.freeze({ id: 'standard', label: 'Standard', durationMs: 10000, frames: 250, frameDurationMs: 40 }),
@@ -730,18 +730,40 @@
     }
   }
 
-  function downloadBlob(blob, profile) {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
+  function buildDownloadFilename(profile) {
     const name = (getCK() && getCK().data && getCK().data.meta && getCK().data.meta.character_name) || 'Hero';
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
     const shortTag = profile.mode === 'short-test' ? '_SHORT_TEST' : '';
-    anchor.href = url;
-    anchor.download = `${name}_Spinny${shortTag}_${profile.size}px_${profile.speedId}_${profile.frames}f_${stamp}.webp`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+    return `${name}_Spinny${shortTag}_${profile.size}px_${profile.speedId}_${profile.frames}f_${stamp}.webp`;
+  }
+
+  async function downloadBlob(blob, profile) {
+    const filename = buildDownloadFilename(profile);
+    const host = window.WitchDock;
+    if (host && typeof host.downloadBlob === 'function') {
+      const result = await host.downloadBlob(blob, filename);
+      return {
+        confirmed: true,
+        method: result && result.method ? result.method : 'witch-dock-host',
+        filename
+      };
+    }
+
+    // Page-context compatibility fallback. Witch Dock Dev/Stable should provide
+    // the privileged host so download completion is explicitly confirmable.
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    try {
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.style.display = 'none';
+      document.body.appendChild(anchor);
+      anchor.click();
+    } finally {
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+    return { confirmed: false, method: 'anchor-fallback', filename };
   }
 
   function requestPause() {
@@ -890,6 +912,9 @@
       encodedFrameBytes: 0,
       outputBytes: null,
       parsed: null,
+      downloadMethod: null,
+      downloadFilename: null,
+      downloadConfirmed: false,
       elapsedMs: null,
       activeElapsedMs: null,
       timing: null,
@@ -967,9 +992,12 @@
       lastCapture.outputBytes = outputBlob.size;
       lastCapture.parsed = parsed;
       validateAnimatedWebPMetrics(parsed, profile);
-      downloadBlob(outputBlob, profile);
+      const downloadResult = await downloadBlob(outputBlob, profile);
+      lastCapture.downloadMethod = downloadResult.method || null;
+      lastCapture.downloadFilename = downloadResult.filename || null;
+      lastCapture.downloadConfirmed = downloadResult.confirmed === true;
 
-      lastCapture.status = 'downloaded';
+      lastCapture.status = lastCapture.downloadConfirmed ? 'downloaded' : 'download-started';
       lastCapture.completedAt = new Date().toISOString();
       lastCapture.elapsedMs = performance.now() - activeTiming.startedPerfMs;
       lastCapture.activeElapsedMs = activeElapsedMs();
@@ -997,7 +1025,9 @@
         updatedAt: lastCapture.completedAt
       };
       setProgressBar(1);
-      const prefix = profile.mode === 'short-test' ? 'Downloaded SHORT TEST' : 'Downloaded';
+      const prefix = lastCapture.downloadConfirmed
+        ? (profile.mode === 'short-test' ? 'Downloaded SHORT TEST' : 'Downloaded')
+        : (profile.mode === 'short-test' ? 'Started SHORT TEST download' : 'Download started');
       setStatus(`${prefix} ${profile.size}px ${profile.speedLabel}: ${profile.frames} frames / ${(profile.durationMs / 1000).toFixed(1)} s / ${(outputBlob.size / 1048576).toFixed(1)} MiB`);
       return true;
     } catch (error) {
@@ -1179,6 +1209,10 @@
     };
     if (lastCapture) lastCapture.guardedAction = { ...lastGuardAttempt };
     diagnostics.lastGuardAttempt = { ...lastGuardAttempt };
+
+    // Wheel/scroll is the high-frequency accidental case: suppress it silently.
+    // All other continuity-invalidating interactions keep the confirmation modal.
+    if (event.type === 'wheel') return;
     if (!guardModal || guardModal.hidden) showGuardWarning(info);
   }
 

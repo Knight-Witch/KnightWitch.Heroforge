@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Spinny Mini WebP UI
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.1.1
 // @description  Docked + draggable popout UI for the validated Witch Dock Spinny Mini WebP service.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -15,8 +15,8 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const GLOBAL = 'KWSpinnyMiniWebPUI';
   const TOOL_ID = 'spinny-mini-webp';
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-dock-popout';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-dev-download-ux';
   const STYLE_ID = 'kwSpinnyMiniWebPUIStyle';
   const POPOUT_ID = 'kwSpinnyMiniWebPPopout';
   const STORE_POS = 'kw.spinnyMiniWebP.popoutPosition.v1';
@@ -39,8 +39,11 @@
   let progressTrack = null;
   let progressFill = null;
   let statusEl = null;
+  let successEl = null;
   let timingEl = null;
   let metaEl = null;
+  let successTimer = null;
+  let lastSuccessKey = null;
   let popoutButton = null;
   let returnButton = null;
   let dragState = null;
@@ -58,14 +61,17 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .kwSpinnyRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
+      .kwSpinnyRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;color-scheme:dark;}
       .kwSpinnyToolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;}
       .kwSpinnyToolbarLabel{font-size:11px;font-weight:700;opacity:.72;}
       .kwSpinnyPopBtn,.kwSpinnyReturnBtn{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:5px 8px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;font-weight:800;cursor:pointer;}
       .kwSpinnyPopBtn:hover,.kwSpinnyReturnBtn:hover{background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}
+      .kwSpinnyPopBtn{flex:0 0 30px;width:30px;height:30px;padding:5px;display:inline-flex;align-items:center;justify-content:center;}
+      .kwSpinnyPopBtn svg{width:15px;height:15px;display:block;pointer-events:none;}
       .kwSpinnyGrid{display:grid;grid-template-columns:82px 1fr;gap:6px 8px;align-items:center;}
       .kwSpinnyGrid label{font-size:11px;font-weight:700;opacity:.82;}
-      .kwSpinnyGrid select{width:100%;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:6px 7px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;}
+      .kwSpinnyGrid select{width:100%;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:6px 7px;background:#29292d;color:#fff;font-size:11px;color-scheme:dark;}
+      .kwSpinnyGrid select option{background:#29292d;color:#fff;}
       .kwSpinnyCapability{font-size:10px;line-height:1.3;opacity:.68;overflow-wrap:anywhere;}
       .kwSpinnyActions{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:6px;}
       .kwSpinnyActions button,.kwSpinnyDevRow button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:7px 8px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;font-weight:800;cursor:pointer;}
@@ -78,6 +84,8 @@
       .kwSpinnyDevTag{align-self:center;font-size:9px;font-weight:900;letter-spacing:.04em;color:rgba(220,195,255,.88);}
       .kwSpinnyProgress{height:8px;overflow:hidden;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.07);}
       .kwSpinnyProgressFill{height:100%;width:0%;border-radius:999px;background:rgba(225,225,232,.86);transition:width .14s linear;}
+      .kwSpinnySuccess{max-height:0;opacity:0;overflow:hidden;transform:translateY(-2px);color:#9fe2b5;font-size:11px;font-weight:800;line-height:1.35;transition:opacity .22s ease,transform .22s ease,max-height .22s ease;}
+      .kwSpinnySuccess[data-show="1"]{max-height:24px;opacity:1;transform:translateY(0);}
       .kwSpinnyStatus{min-height:15px;font-size:11px;line-height:1.35;overflow-wrap:anywhere;}
       .kwSpinnyStatus[data-error="1"]{color:#ff8a8a;}
       .kwSpinnyTiming{min-height:15px;font-size:10px;line-height:1.35;opacity:.76;overflow-wrap:anywhere;}
@@ -235,7 +243,7 @@
     controlsRoot.innerHTML = `
       <div class="kwSpinnyToolbar">
         <div class="kwSpinnyToolbarLabel">Animated WebP spin capture</div>
-        <button type="button" class="kwSpinnyPopBtn">Pop Out</button>
+        <button type="button" class="kwSpinnyPopBtn" title="Pop out into free-floating window" aria-label="Pop out into free-floating window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3h7v7M13 11l8-8M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
       <div class="kwSpinnyGrid">
         <label>Resolution</label><select class="kwSpinnyResolution">${optionMarkup(service && service.resolutions)}</select>
@@ -251,6 +259,7 @@
         <span class="kwSpinnyDevTag">DEV</span>
         <button type="button" class="kwSpinnyShort">Short Test (16f)</button>
       </div>
+      <div class="kwSpinnySuccess" data-show="0" role="status" aria-live="polite"></div>
       <div class="kwSpinnyStatus" data-error="0"></div>
       <div class="kwSpinnyProgress" role="progressbar" aria-label="Spinny capture progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="kwSpinnyProgressFill"></div></div>
       <div class="kwSpinnyTiming"></div>
@@ -267,6 +276,7 @@
     progressTrack = controlsRoot.querySelector('.kwSpinnyProgress');
     progressFill = controlsRoot.querySelector('.kwSpinnyProgressFill');
     statusEl = controlsRoot.querySelector('.kwSpinnyStatus');
+    successEl = controlsRoot.querySelector('.kwSpinnySuccess');
     timingEl = controlsRoot.querySelector('.kwSpinnyTiming');
     metaEl = controlsRoot.querySelector('.kwSpinnyMeta');
 
@@ -303,6 +313,21 @@
     });
 
     return controlsRoot;
+  }
+
+  function showDownloadSuccess(last) {
+    if (!successEl || !last || last.status !== 'downloaded' || last.downloadConfirmed !== true) return;
+    const key = `${last.completedAt || ''}:${last.outputBytes || ''}:${last.downloadFilename || ''}`;
+    if (key === lastSuccessKey) return;
+    lastSuccessKey = key;
+    const size = last.requested && Number(last.requested.size);
+    successEl.textContent = `✓ Download complete${Number.isFinite(size) ? ` — ${size}px WebP` : ''}`;
+    successEl.dataset.show = '1';
+    if (successTimer) window.clearTimeout(successTimer);
+    successTimer = window.setTimeout(() => {
+      if (successEl) successEl.dataset.show = '0';
+      successTimer = null;
+    }, 1800);
   }
 
   function refreshDeveloperVisibility() {
@@ -356,6 +381,7 @@
       statusEl.textContent = service.statusText || (capability && capability.reason) || '';
       statusEl.dataset.error = service.statusError ? '1' : '0';
     }
+    showDownloadSuccess(service.lastCapture);
     if (timingEl) timingEl.textContent = service.timingText || '';
     if (metaEl) {
       const source = profile.frameSource === 'true3k-phase-feed' ? 'TRUE-3K phase-feed' : 'native frame source';
@@ -430,6 +456,8 @@
     registerTimer = null;
     if (refreshTimer) window.clearInterval(refreshTimer);
     refreshTimer = null;
+    if (successTimer) window.clearTimeout(successTimer);
+    successTimer = null;
     if (developerUnsubscribe) {
       try { developerUnsubscribe(); } catch (_) {}
       developerUnsubscribe = null;

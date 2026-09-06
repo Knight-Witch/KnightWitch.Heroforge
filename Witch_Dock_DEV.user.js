@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Spinny Integration
 // @namespace    KnightWitch
-// @version      1.0.8.1
+// @version      1.0.8.2
 // @description  DEV test loader for Witch Dock WITCH_DEV_UI modules. Do not use as public Stable.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -15,6 +15,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
+// @grant        GM_download
 // @connect      raw.githubusercontent.com
 // ==/UserScript==
 
@@ -27,6 +28,47 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
+function kwFormatDownloadError(error) {
+  if (!error) return "unknown error";
+  if (typeof error === "string") return error;
+  const reason = error.error || error.message || "download failed";
+  let details = "";
+  if (error.details) {
+    try { details = ` (${typeof error.details === "string" ? error.details : JSON.stringify(error.details)})`; }
+    catch { details = ""; }
+  }
+  return `${reason}${details}`;
+}
+
+function kwDownloadBlob(blob, filename) {
+  return new Promise((resolve, reject) => {
+    if (typeof GM_download !== "function") {
+      reject(new Error("Tampermonkey GM_download is unavailable."));
+      return;
+    }
+    const name = String(filename || "download.bin");
+    let settled = false;
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      fn(value);
+    };
+    try {
+      GM_download({
+        url: blob,
+        name,
+        saveAs: false,
+        conflictAction: "uniquify",
+        onload: () => finish(resolve, { ok: true, method: "GM_download", filename: name }),
+        onerror: (error) => finish(reject, new Error(`Witch Dock download failed: ${kwFormatDownloadError(error)}`)),
+        ontimeout: () => finish(reject, new Error("Witch Dock download timed out."))
+      });
+    } catch (error) {
+      finish(reject, error instanceof Error ? error : new Error(String(error)));
+    }
+  });
+}
 
 const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/manifest.json";
 const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
@@ -2668,6 +2710,7 @@ function buildUI() {
   UW.WitchDock = UW.WitchDock || {};
   UW.WitchDock.registerTool = registerTool;
   UW.WitchDock.ensureDock = buildUI;
+  UW.WitchDock.downloadBlob = kwDownloadBlob;
 
   buildUI();
     installDockHotkey();

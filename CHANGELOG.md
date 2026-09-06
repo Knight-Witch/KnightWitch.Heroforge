@@ -1,5 +1,44 @@
 # Changelog
 
+## DOCK-2026-09-06-028 — Harden Spinny Dev download and capture UX
+
+Date: 2026-09-06
+
+### Confirmed live findings before this patch
+
+- Integrated Spinny capture, Pause/Resume, cancellation, interaction guards, Developer-Mode Short Test visibility, and draggable popout all passed user smoke testing.
+- Full and Short Test captures completed their render/mux path but the final browser download did not start from the Witch Dock-loaded context.
+- Resolution/rotation native select popups opened with a white option surface and low-contrast text.
+- User requested plain resolution labels, icon-only Pop Out presentation, brief successful-download feedback, and silent blocking for wheel/scroll while retaining confirmation warnings for other guarded actions.
+
+### Changes
+
+- Dev loader adds a privileged `GM_download` Blob host and exposes it as `WitchDock.downloadBlob`; the Spinny service now awaits confirmed host download completion instead of assuming `anchor.click()` succeeded.
+- Spinny diagnostics now record download method, filename, and confirmation state.
+- Wheel/scroll events are still prevented during capture/paused state but no longer open the guard modal; all other guarded mutations retain Keep Capture / Cancel Capture.
+- Resolution labels are now `1024px`, `2048px`, and `3072px`.
+- Select/options use explicit dark styling and `color-scheme: dark`.
+- Pop Out is now a standard external-window SVG icon with tooltip/ARIA label.
+- UI flashes a short `Download complete` indicator only after the privileged download host confirms completion.
+
+### Module versions
+
+- `witch-dock-dev-loader`: v0.2.0 / build `1.0.8.2-spinny-dev-download-host`.
+- `spinny-mini-webp`: v0.5.1 / build `0.5.1-witch-dock-dev-download-scroll-guard`.
+- `spinny-mini-webp-ui`: v0.1.1 / build `0.1.1-dev-download-ux`.
+
+### Test status
+
+Static syntax/manifest/assertion checks run in the materialization workflow. Live download and UI re-smoke remain required before Stable promotion.
+
+Rollback: revert this single Dev hardening commit; prior validated capture/mux engine remains otherwise unchanged.
+
+**Runtime behavior changed:** yes, Dev branch only. Public `Witch_Scripts` unchanged.
+
+---
+
+# Changelog
+
 ## DOCK-2026-09-06-027 - Add isolated WITCH_DEV_UI Tampermonkey loader
 
 Date: 2026-09-06

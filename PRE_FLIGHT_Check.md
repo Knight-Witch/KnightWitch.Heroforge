@@ -1,5 +1,51 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-028 — Spinny Dev download/UX hardening
+
+Date: 2026-09-06
+
+### Reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, architecture, feature inventory, Spinny feature spec, maintained v0.5.0 source/status;
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, manifest registry;
+- `Witch_Dock_DEV.user.js` host/grant boundary;
+- `Spinny_Mini_WebP.js` final mux/download boundary and guard dispatcher;
+- `Spinny_Mini_WebP_UI.js` select/popout/status presentation;
+- user live smoke results from the integrated Dev build.
+
+### Confirmed diagnosis
+
+The Spinny service's capture/mux code reached its completion path, but Witch Dock reused the standalone page-anchor save routine. The standalone source uses the same routine successfully, so the failure is isolated to the final download initiation boundary in the Witch Dock userscript-hosted integration rather than the validated render/mux engine. The Dev loader now owns a privileged Tampermonkey download adapter with explicit completion/error callbacks.
+
+### Target files
+
+- `Witch_Dock_DEV.user.js`
+- `features/media/Spinny_Mini_WebP.js`
+- `features/media/Spinny_Mini_WebP_UI.js`
+- `manifest.json`
+- `MASTER.md`
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+
+### Conflict risks
+
+- Do not alter frame production, TRUE-3K phase-feed math, RIFF mux/parser, timing, rotation restoration, or High Res still-provider ownership.
+- Download completion must not be reported until the host API confirms it.
+- Wheel must remain blocked before HeroForge receives it even though its warning modal is removed.
+- Other guarded actions must retain the existing confirmation behavior.
+- Public Stable must remain untouched.
+
+### Decision
+
+Apply a Dev-only privileged download host plus surgical service/UI corrections. Bump all affected active-module versions in the same commit and require live re-smoke before Stable promotion.
+
+**Runtime behavior changed:** yes, Dev branch only.
+
+---
+
+# Pre-Flight Check Log
+
 ## PFC-2026-09-06-027 - Isolated Dev installer for Spinny smoke
 
 Date: 2026-09-06
