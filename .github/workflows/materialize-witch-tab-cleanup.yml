@@ -1,72 +1,10 @@
 name: Materialize Witch Dock Tab Cleanup
 on:
-  push:
-    branches: [witch-tab-cleanup-helper]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  materialize:
+  archived:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout helper
-        uses: actions/checkout@v4
-        with:
-          ref: witch-tab-cleanup-helper
-          path: helper
-          fetch-depth: 1
-      - name: Checkout WITCH_DEV_UI
-        uses: actions/checkout@v4
-        with:
-          ref: WITCH_DEV_UI
-          path: target
-          fetch-depth: 0
-      - name: Apply tab cleanup
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd target
-          python ../helper/.github/scripts/apply_witch_tab_cleanup.py
-      - name: Static gate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd target
-          node --check Witch_Dock_DEV.user.js
-          python -m json.tool manifest.json >/dev/null
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          m=json.loads(Path('manifest.json').read_text())
-          ids=[x['id'] for x in m['tools']]
-          visible=['body-editor','pose-tool','decals-dev','booth-tool','json-tool','utilities']
-          positions=[ids.index(x) for x in visible]
-          assert positions == sorted(positions), (visible, positions)
-          assert ids[-1] == 'utilities', ids[-3:]
-          reg={x['id']:x for x in m['moduleRegistry']}
-          assert reg['witch-dock-dev-loader']['version']=='0.3.0'
-          assert reg['witch-dock-dev-loader']['build']=='1.0.8.3-tab-order-icon'
-          src=Path('Witch_Dock_DEV.user.js').read_text()
-          for needle in [
-              'function reorderTabButtons()',
-              'function makeTabCogIcon()',
-              'name === "Body Editor" ? "Body" : name',
-              'btn.title = "Utilities";',
-              '["Utilities", 1000]',
-              '.kwWDTab.kwWDTabIconOnly'
-          ]:
-              assert needle in src, needle
-          print('Witch Dock tab cleanup static gate: PASS')
-          PY
-          git diff --check
-      - name: Commit WITCH_DEV_UI candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd target
-          git config user.name "Knight Witch"
-          git config user.email "amanda.m.ivans@gmail.com"
-          git add Witch_Dock_DEV.user.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md
-          git diff --cached --check
-          git commit -m "Clean Witch Dock Dev tab order and Utilities icon"
-          git push origin HEAD:WITCH_DEV_UI
+      - run: echo "Archived helper workflow; tab cleanup already materialized."
