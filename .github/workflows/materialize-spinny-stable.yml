@@ -1,0 +1,43 @@
+name: Materialize Spinny Stable Candidate
+on:
+  push:
+    branches: [spinny-stable-promotion-helper]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout promotion helper
+        uses: actions/checkout@v4
+        with:
+          ref: spinny-stable-promotion-helper
+          path: helper
+          fetch-depth: 1
+      - name: Checkout Stable candidate
+        uses: actions/checkout@v4
+        with:
+          ref: spinny-stable-candidate
+          path: target
+          fetch-depth: 0
+      - name: Fetch validated Dev source
+        shell: bash
+        run: git -C target fetch origin WITCH_DEV_UI:refs/remotes/origin/WITCH_DEV_UI
+      - name: Apply and verify narrow Stable promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          python ../helper/.github/scripts/promote_spinny_stable.py
+      - name: Commit Stable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          git config user.name "Knight Witch"
+          git config user.email "amanda.m.ivans@gmail.com"
+          git add Witch_Dock.user.js manifest.json features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md
+          git diff --cached --check
+          git commit -m "Release Witch Dock v1.1.0 Spinny Mini WebP"
+          git push origin HEAD:spinny-stable-candidate
