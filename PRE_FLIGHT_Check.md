@@ -1,5 +1,22 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-030 — Record Dev tab cleanup live validation
+
+Date: 2026-09-06
+
+### Confirmed live results
+
+- `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`: PASS.
+- Utilities cog tooltip `Utilities`: PASS.
+- Correct tool opens from every tab: PASS.
+- Persisted active tab restores after refresh: PASS.
+
+The Dev core ordering/presentation change is validated and may be considered for later narrow Stable promotion. No runtime files change in this checkpoint.
+
+**Runtime behavior changed:** no.
+
+---
+
 ## PFC-2026-09-06-029 — Dev tab order / Utilities icon cleanup
 
 Date: 2026-09-06

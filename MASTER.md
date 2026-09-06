@@ -187,3 +187,8 @@ Historical detailed state remains available in Git history.
 `media.spinny-mini-webp` is now integrated into `WITCH_DEV_UI` as a two-module service/UI pair. Service v0.5.1 preserves the validated 1024/2048/TRUE-3K 3072 capture engine while hardening the Witch Dock download boundary and making wheel/scroll guard behavior silent. UI v0.1.1 registers `Spinny Mini WebP` directly after High Res Image Capture, keeps the validated shared-state draggable popout, fixes dark select options, uses plain resolution labels and an icon-only Pop Out control, and adds confirmed-download feedback.
 
 Normal mode hides Short Test. Developer Mode reveals the 16-frame diagnostic control. Initial integrated Dev smoke passed capture/Pause/guard/popout behavior; the final download initiation failed and triggered this hardening pass. Live re-smoke of download/UI changes is pending. 4K animated WebP remains deferred and public `Witch_Scripts` is unchanged.
+
+
+### Default tab order — validated Dev candidate
+
+Dev tab cleanup is live-smoke validated. Default/structural order is `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`. Utilities is pinned last by the Dev dock core rather than relying only on manifest timing, the cog tooltip reads `Utilities`, and persisted active-tab selection remains compatible.

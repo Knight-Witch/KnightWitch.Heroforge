@@ -184,3 +184,14 @@ The standalone Spinny gate is now closed at v0.5.0 and the planned Witch Dock De
 - 4096 Spinny: still deferred.
 
 Status: **implementation complete, integrated Dev smoke pending**. Public Stable remains untouched until user approval.
+
+## 2026-09-06 tab-cleanup validation — PASS
+
+User live smoke passed the Dev tab cleanup at `cb973c983dfaa723d7e6cb6d7c4474a1c875682e`:
+
+- `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)` order: PASS;
+- Utilities cog tooltip: PASS;
+- all tabs open the correct tool: PASS;
+- active-tab persistence across refresh: PASS.
+
+The next UI stage is compact High Res Image Capture integration with explicit service/UI ownership cleanup, followed by public Developer Mode promotion work.

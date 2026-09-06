@@ -1,5 +1,15 @@
 # Changelog
 
+## DOCK-2026-09-06-030 — Validate Witch Dock Dev tab cleanup
+
+Date: 2026-09-06
+
+User live smoke passed the Dev tab cleanup introduced at `cb973c983dfaa723d7e6cb6d7c4474a1c875682e`. Confirmed default/structural order is `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`, Utilities renders as the cog icon with `Utilities` tooltip and remains pinned last, each tab still opens the correct tool, and persisted active-tab selection restores after refresh.
+
+**Runtime behavior changed:** no. Documentation-only validation checkpoint.
+
+---
+
 ## DOCK-2026-09-06-029 — Dev tab cleanup and pinned Utilities icon
 
 Date: 2026-09-06
