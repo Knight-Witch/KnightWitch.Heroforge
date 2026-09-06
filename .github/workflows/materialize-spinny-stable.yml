@@ -30,6 +30,11 @@ jobs:
           set -euo pipefail
           cd target
           python ../helper/.github/scripts/promote_spinny_stable.py
+          sed -i 's/Validated Spinny Mini animated WebP capture service for Witch Dock Dev\./Validated Spinny Mini animated WebP capture service for Witch Dock./' features/media/Spinny_Mini_WebP.js
+          sed -i 's/| Spinny service | `spinny-mini-webp` | `features\/media\/Spinny_Mini_WebP.js` | \*\*Live \/ Stable validated\*\* |/| Spinny service | `spinny-mini-webp` | `features\/media\/Spinny_Mini_WebP.js` | **Live \/ Stable promoted; public smoke pending** |/' MASTER.md
+          sed -i 's/| Spinny UI | `spinny-mini-webp-ui` | `features\/media\/Spinny_Mini_WebP_UI.js` | \*\*Live \/ Stable validated\*\* |/| Spinny UI | `spinny-mini-webp-ui` | `features\/media\/Spinny_Mini_WebP_UI.js` | **Live \/ Stable promoted; public smoke pending** |/' MASTER.md
+          sed -i 's/Public status: \*\*Witch Dock Stable promotion approved \/ candidate static gate required\*\*/Public status: **Witch Dock Stable promoted \/ public smoke pending**/' HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md
+          node --check features/media/Spinny_Mini_WebP.js
       - name: Commit Stable candidate
         shell: bash
         run: |
