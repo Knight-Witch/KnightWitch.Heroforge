@@ -1,87 +1,95 @@
 # Changelog
 
-## DOCK-2026-09-05-023 — Modular Developer Mode Dev candidate
+## DOCK-2026-09-06-024 — Canonical module version registry
 
-Date: 2026-09-05
+Date: 2026-09-06
 
 ### Summary
 
-Added Witch Dock Developer Mode as a standalone hidden module rather than editing the public core shell. Updated the compact High Res Image Capture Dev UI to consume that shared mode for its provider kill switch and build/provider diagnostics.
+Established a canonical numeric version for every active Witch Dock runtime module without editing Stable feature source solely for bookkeeping. Developer Mode advances to v0.2.0 and can display canonical versions for visible, hidden, core, and conditional modules.
 
 ### Added
 
-- `features/core/Witch_Dock_Developer_Mode.js`
-- build `0.1.0-dev-registry-about-toggle`
-- persistent default-off Developer Mode state via `kw.witchDock.developerMode.v1`
-- `Developer Mode` checkbox injected into the existing Witch Dock `?` / About modal
-- reversible `WitchDock.registerTool` wrapper that records declared tool metadata
-- per-tool developer rows showing `DEV · <tool-id> · build <declared-build>` while Developer Mode is on
-- explicit `build unreported` when a tool does not declare build/version metadata
-- shared global `KWDeveloperMode` API with set/toggle/listener/registry/lifecycle methods
-- dedicated architecture record `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
+- `manifest.json.moduleRegistry` as the canonical active-module version inventory.
+- `MODULE_VERSIONING.md` as the binding module-version maintenance contract.
+- Developer Mode `Module Versions` inventory inside the About developer section.
+- provenance metadata distinguishing existing versions, normalized legacy tags, and 2026-09-06 tracking baselines.
 
-### High Res Image Capture update
+### Initial canonical versions
 
-`features/media/Photo_Booth_True_Resolution_UI.js` advanced from `0.1.0-dev-compact-ui` to `0.2.0-dev-developer-mode`.
+- Witch Dock Core: `1.0.8`.
+- Expanded UI Scroll Guards: `1.0.0` baseline; build `2026-07-03-layouts` preserved.
+- HF UI Scroll Split Safe: `1.0.0` baseline.
+- HF UI Slot Bridge: `1.0.0` baseline.
+- Expanded Decal Slots: `1.0.0` baseline.
+- Corrected Bound Decal Gizmo: `1.1.0`.
+- Developer Mode: `0.2.0`.
+- Body Editor: `4.0.0`, normalized from existing `v4` identity.
+- Pose: `1.0.0` baseline.
+- Booth: `24.0.0`, normalized from existing `v24` build.
+- High Res Image Capture service: `0.7.0`.
+- Photo Booth True Resolution Readiness: `1.0.0`.
+- High Res Image Capture UI: `0.2.0`.
+- Decals host: `1.0.0` baseline.
+- JSON Tool: `1.0.0` baseline.
+- Utilities: `1.0.0` baseline.
 
-Normal mode remains deliberately minimal:
+New `1.0.0` values are tracking baselines as of this date, not reconstructed historical release counts.
 
-- `High Res Image Capture`
-- `Capture: [4K] [8K]`
-- violet hover highlight
-- compact status line
+### Developer Mode update
 
-Developer Mode additionally reveals:
+`features/core/Witch_Dock_Developer_Mode.js` advances from `0.1.0-dev-registry-about-toggle` to `0.2.0-dev-module-version-registry`.
 
-- `Repair provider enabled` kill switch, backed by the existing service `enable()` / `disable()` methods;
-- compact UI build;
-- Stable capture-service build;
-- readiness-adapter build;
-- provider ownership/state;
-- implementation note for HeroForge/Lob 4096/8192 routing.
+- reads canonical `manifest.json.moduleRegistry` metadata;
+- combines canonical numeric versions with runtime-declared build tags;
+- visible tools show canonical version plus build where useful;
+- About exposes a Developer-only `Module Versions` list for hidden/conditional modules too;
+- exposes module-registry snapshot/reload state through `KWDeveloperMode`;
+- registry fetch failure remains diagnostic-only.
 
-### Manifest behavior
+### Version maintenance rule
 
-- Developer Mode is loaded as a hidden module before visible tools on `WITCH_DEV_UI` so subsequent tool registrations can be observed.
-- Existing Dev default order keeps `Decals` before `JSON`.
-- Public `Witch_Scripts` manifest is unchanged.
+Going forward, any active module change affecting runtime behavior, UI, API, storage, compatibility, initialization/disposal, or HeroForge integration must bump that module's canonical version in the same commit. Source-local build/version identifiers must also be kept consistent when present.
 
 ### Preserved behavior
 
-- `Witch_Dock.user.js` is unchanged.
-- `features/media/Photo_Booth_True_Resolution.js` is unchanged.
-- `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` is unchanged.
-- TRUE 4K/8K capture architecture and provider ownership behavior are unchanged.
-- Developer Mode does not touch HeroForge `CK`, `BT`, Webpack, bundle code, character state, camera state, or Photo Booth renderer state.
-- Developer Mode is not required for ordinary Witch Dock operation.
-- Active Spinny/WebP 3072px validation was not queried or disturbed.
+- No Stable tool/service/HeroForge UI module source changed for this bookkeeping pass.
+- Public `Witch_Scripts` remains untouched.
+- 4K/8K capture, Booth, Body Editor, Pose, Decals, JSON, Utilities, scroll/slot helpers, and corrected gizmo runtime behavior are unchanged.
+- No HF-Chat-Bridge access or active Spinny interaction occurred.
 
 ### Test status
 
-Before commit:
-
-- `Witch_Dock_Developer_Mode.js` local `node --check`: PASS.
-- High Res UI v0.2.0 local `node --check`: PASS.
-- live About-toggle / registry / provider-control smoke: pending after the active 3K Spinny capture completes.
-
-### Known limitations / next gate
-
-- Older tools that do not declare `build` or `version` accurately display `build unreported`; metadata should be added incrementally rather than inferred.
-- No Developer Mode hotkey exists in this first candidate.
-- High Res UI same-ID re-registration remains a Dev migration technique; explicit service/UI ownership cleanup is still required before Stable promotion.
+- Developer Mode v0.2.0 local `node --check`: PASS.
+- Dev manifest JSON parse: PASS.
+- Registry IDs unique: PASS.
+- Registry covers every Dev manifest tool ID: PASS.
+- Live v0.2.0 registry display: pending.
 
 ### Touched files
 
-- `features/core/Witch_Dock_Developer_Mode.js` (new)
-- `features/media/Photo_Booth_True_Resolution_UI.js`
+- `features/core/Witch_Dock_Developer_Mode.js`
 - `manifest.json`
-- `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md` (new)
-- `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
+- `MODULE_VERSIONING.md` (new)
+- `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `MASTER.md`
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
 
-**Runtime behavior changed:** Dev-only diagnostics/presentation. Public Stable behavior did not change.
+**Runtime behavior changed:** Developer Mode Dev diagnostics only. Existing Stable module behavior did not change.
+
+---
+
+## DOCK-2026-09-05-023 — Modular Developer Mode Dev candidate
+
+Date: 2026-09-05
+
+- Added standalone hidden Developer Mode module and About toggle.
+- Added reversible tool metadata wrapper and shared diagnostics API.
+- Updated High Res UI to consume Developer Mode for provider recovery/build diagnostics.
+- Local syntax checks passed; user later confirmed standalone Developer Mode and compact High Res UI looked correct.
+
+**Runtime behavior changed:** Dev-only diagnostics/presentation.
 
 ---
 
@@ -89,28 +97,10 @@ Before commit:
 
 Date: 2026-09-05
 
-### Summary
-
-Added a presentation-only Dev adapter for the Stable `media.screenshot-resolution` service and changed the Dev manifest default registration order so `Decals` sits between `Booth` and `JSON`.
-
-### Dev UI target
-
-- `High Res Image Capture`
-- `Capture: [4K] [8K]`
-- visible violet hover highlight
-- idle status `Active — click 4K or 8K to begin image capture`
-- provider kill switch and implementation notes hidden from ordinary users
-
-### Preserved behavior
-
-- Stable capture engine/readiness adapter unchanged.
-- TRUE 4K/8K implementation unchanged.
-- Public `Witch_Scripts` untouched.
-- Spinny/WebP runtime untouched.
-
-### Known Dev caveat
-
-Same-ID UI replacement leaves detached legacy UI references in the Stable capture service until reload; final Stable integration must make UI ownership explicit.
+- Added compact High Res Image Capture Dev UI.
+- Hid provider kill switch/implementation notes from ordinary users.
+- Moved Dev default Decals order before JSON.
+- Stable capture engine/readiness and public branch remained unchanged.
 
 **Runtime behavior changed:** Dev-only presentation/default order.
 

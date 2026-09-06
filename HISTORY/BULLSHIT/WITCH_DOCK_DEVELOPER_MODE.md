@@ -2,7 +2,7 @@
 
 Status: **Dev candidate / not public**  
 Branch: `WITCH_DEV_UI`  
-Build: `0.1.0-dev-registry-about-toggle`
+Build: `0.2.0-dev-module-version-registry`
 
 ## Purpose
 
@@ -15,76 +15,64 @@ Developer Mode is a Witch Dock concern, not a HeroForge runtime feature. It must
 - Default: off.
 - Persistence: `kw.witchDock.developerMode.v1` in page localStorage.
 - User access: a `Developer Mode` checkbox injected into Witch Dock's existing `?` / About modal.
-- No secret keyboard shortcut in the first candidate; that remains optional later.
-- Turning Developer Mode on reveals developer-only tool metadata and any feature-specific troubleshooting controls that explicitly consume the shared mode.
-- Turning it off returns the normal compact user presentation without disabling the underlying Witch Dock features.
+- No secret keyboard shortcut in the current candidate; that remains optional later.
+- Turning Developer Mode on reveals developer-only tool metadata and feature-specific troubleshooting controls that consume the shared mode.
+- Turning it off returns the normal compact user presentation without disabling underlying Witch Dock features.
+- Developer Mode also exposes a `Module Versions` list in About using the canonical module registry.
 
 ## Shared runtime API
 
 Global: `window.KWDeveloperMode`.
 
-Candidate API:
+Current API:
 
 - `build`
+- `version`
 - `enabled` getter
 - `setEnabled(value)`
 - `toggle()`
 - `onChange(listener)`
 - `registerToolMeta(def)`
+- `registerModuleMeta(meta)`
 - `registrySnapshot()`
+- `moduleRegistrySnapshot()`
+- `reloadModuleRegistry()`
+- `registryLoaded` getter
+- `registryError` getter
 - `initialize()`
 - `dispose()`
 
 The module also emits `kw:witchdock-developer-mode` when the state changes.
 
-## Tool build registry
+## Canonical module version registry
 
-The module wraps the named Witch Dock `registerTool` boundary rather than modifying the core shell. It records:
+As of v0.2.0, Developer Mode reads the canonical `manifest.json.moduleRegistry` data and combines that with runtime-declared tool metadata when available. This avoids version-only edits across large validated runtime files while still giving every active Witch Dock module an explicit numeric identifier.
 
-- tool ID;
-- title;
-- tab;
-- declared `build`;
-- declared `version`.
+Detailed policy: `MODULE_VERSIONING.md`.
 
-When Developer Mode is on, each mounted Witch Dock tool container receives a compact line:
+Visible tool containers can show lines such as:
 
-`DEV · <tool-id> · build <declared-build>`
+`DEV · booth-tool · v24.0.0 · build v24`
 
-If a tool does not declare `build` or `version`, the UI says `build unreported`. Do not infer or invent a version from filenames, dates, titles, or unrelated globals.
+The About modal's `Module Versions` list also covers hidden and conditional active modules that do not mount visible Witch Dock tool containers. Registry lookup failure is diagnostic-only and must not disable normal Witch Dock behavior.
 
-Existing tools can add accurate metadata incrementally by including `build` or `version` in their `registerTool` definition. This should be treated as metadata-only work unless the module otherwise changes behavior.
+## Version provenance
+
+The 2026-09-06 registry initialization distinguishes:
+
+- `existing`: an explicit numeric version already existed;
+- `normalized-existing`: an existing legacy numeric tag such as `v4` or `v24` was normalized to `4.0.0` / `24.0.0`;
+- `baseline-2026-09-06`: the active module had no trustworthy numeric version and received a new tracking baseline, normally `1.0.0`.
+
+These baselines are not reconstructed historical release counts.
 
 ## High Res Image Capture integration
 
-`features/media/Photo_Booth_True_Resolution_UI.js` v0.2.0 consumes Developer Mode.
-
-Normal mode remains:
-
-- `High Res Image Capture`;
-- `Capture: [4K] [8K]`;
-- compact status only.
-
-Developer Mode adds:
-
-- `Repair provider enabled` checkbox using the existing service `enable()` / `disable()` API;
-- UI adapter build;
-- capture service build;
-- readiness-adapter build;
-- provider state;
-- implementation note explaining that enabled square 4096/8192 HeroForge/Lob requests route through the maintained repair provider.
-
-The capture service itself is unchanged.
+`features/media/Photo_Booth_True_Resolution_UI.js` v0.2.0 consumes Developer Mode. Normal mode remains compact; Developer Mode adds the repair-provider kill switch, UI/service/readiness builds, provider state, and the implementation note. The Stable capture service itself is unchanged.
 
 ## Architecture rationale
 
-A hidden Witch Dock module is preferred over editing the large public shell for the first candidate because:
-
-- the public shell remains a stable loader/UI host;
-- Developer Mode can be independently enabled, disabled, tested, and disposed;
-- tool registration is already a named Witch Dock API boundary;
-- the module can be loaded before visible tools in the manifest and record their declared metadata;
-- standalone Tampermonkey metadata allows isolated testing over current public Witch Dock before manifest promotion.
+A hidden Witch Dock module is preferred over editing the large public shell because the shell remains a stable loader/UI host, Developer Mode is independently disposable, and the canonical version registry can live with the active loading inventory in `manifest.json`.
 
 This is not a HeroForge patch and does not touch `CK`, `BT`, Webpack, bundle code, capture state, character state, or Photo Booth renderer state.
 
@@ -92,26 +80,19 @@ This is not a HeroForge patch and does not touch `CK`, `BT`, Webpack, bundle cod
 
 - If Witch Dock is not ready yet, the module waits and retries wrapping `registerTool`.
 - If the About modal has not been created yet, the module waits; it does not force the modal open.
-- Disposal clears timers, removes injected About/tool metadata UI, removes the dock developer-mode class, clears listeners, and restores the original `WitchDock.registerTool` function only if the module still owns the wrapper.
-- If another module replaces `registerTool` after Developer Mode wraps it, disposal does not blindly overwrite that later owner.
+- If the module registry cannot be fetched, Developer Mode reports the registry error but normal Witch Dock behavior remains unaffected.
+- Disposal clears timers, removes injected About/tool metadata UI, clears registries/listeners, and restores the original `WitchDock.registerTool` only when it still owns the wrapper.
 
 ## Validation status
 
-Pre-commit local syntax:
+v0.1.0 standalone Developer Mode and the compact High Res UI were user-confirmed working and visually accepted on 2026-09-06.
 
-- `Witch_Dock_Developer_Mode.js`: `node --check` PASS.
-- High Res UI v0.2.0 consumer: `node --check` PASS.
+v0.2.0 module-registry expansion:
 
-Live validation pending after the active 3072px Spinny capture finishes. First live checks should cover:
-
-1. About modal shows Developer Mode toggle.
-2. Off state shows no developer metadata/control clutter.
-3. On state reveals tool-ID/build lines.
-4. High Res Image Capture reveals provider kill switch/build diagnostics only while Developer Mode is on.
-5. Provider disable/enable works and direct 4K/8K readiness recovers.
-6. Toggle state persists across reload.
-7. No effect on HeroForge or Witch Dock behavior when Developer Mode remains off.
+- local `node --check`: PASS;
+- manifest JSON parse/unique-ID/coverage validation: PASS;
+- live Module Versions registry display: pending.
 
 ## Promotion gate
 
-Do not promote Developer Mode to `Witch_Scripts` until live Dev smoke passes. Before claiming complete build visibility across all Witch Dock toolsets, add explicit build/version metadata to any older tool that currently reports `build unreported`; do not guess those values.
+Do not promote Developer Mode to `Witch_Scripts` until the v0.2.0 registry display is smoke-tested. Public promotion must also include the canonical module registry and `MODULE_VERSIONING.md` contract.
