@@ -12,6 +12,16 @@
       "versionOrigin": "existing"
     },
     {
+      "id": "witch-dock-dev-loader",
+      "title": "Witch Dock Dev Loader",
+      "path": "Witch_Dock_DEV.user.js",
+      "kind": "core",
+      "load": "userscript-dev",
+      "version": "0.1.0",
+      "build": "1.0.8.1-spinny-dev-loader",
+      "versionOrigin": "new-dev-harness"
+    },
+    {
       "id": "expanded-ui-scroll-guards",
       "title": "Expanded UI Scroll Guards",
       "path": "HeroForge_UI/Expanded_UI_Scroll_Guards.js",

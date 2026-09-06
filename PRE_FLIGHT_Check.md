@@ -1,5 +1,17 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-027 - Isolated Dev installer for Spinny smoke
+
+Date: 2026-09-06
+
+Reviewed current Dev integration, public core loader, manifest URL ownership, module-version contract, and Stable/Dev separation.
+
+Risk: the public-named userscript loads Stable manifest/update URLs. Decision: create a distinct Dev userscript with WITCH_DEV_UI manifest/update/download URLs. No public core edit.
+
+---
+
+# Pre-Flight Check Log
+
 ## PFC-2026-09-06-026 — Witch Dock Dev Spinny integration
 
 Date: 2026-09-06

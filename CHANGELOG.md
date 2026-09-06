@@ -1,5 +1,21 @@
 # Changelog
 
+## DOCK-2026-09-06-027 - Add isolated WITCH_DEV_UI Tampermonkey loader
+
+Date: 2026-09-06
+
+Added `Witch_Dock_DEV.user.js` as a Dev-only test harness. It loads `WITCH_DEV_UI/manifest.json` and uses Dev-branch update/download URLs, preventing the Spinny integration smoke from silently loading Stable.
+
+Public `Witch_Dock.user.js` and `Witch_Scripts` remain unchanged.
+
+Module registry adds `witch-dock-dev-loader` v0.1.0 / build `1.0.8.1-spinny-dev-loader`.
+
+**Runtime behavior changed:** Dev test harness only.
+
+---
+
+# Changelog
+
 ## DOCK-2026-09-06-026 — Integrate Spinny Mini WebP into Witch Dock Dev
 
 Date: 2026-09-06
