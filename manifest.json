@@ -60,7 +60,7 @@
     },
     {
       "id": "photo-booth-true-resolution",
-      "title": "High Resolution Capture",
+      "title": "High Res Image Capture",
       "tab": "Booth",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
       "enabledByDefault": true
@@ -75,6 +75,22 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "photo-booth-true-resolution-ui",
+      "title": "High Res Image Capture UI",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Photo_Booth_True_Resolution_UI.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "decals-dev",
+      "title": "Decals",
+      "tab": "Decals",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
+      "enabledByDefault": true
+    },
+    {
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
@@ -86,13 +102,6 @@
       "title": "Utilities",
       "tab": "Utilities",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
-      "enabledByDefault": true
-    },
-    {
-      "id": "decals-dev",
-      "title": "Decals",
-      "tab": "Decals",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
       "enabledByDefault": true
     }
   ]

@@ -54,6 +54,32 @@ The Dev provider can install before Photo Booth opens. Its UI originally evaluat
 
 Public `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` is deliberately narrow. It does not touch capture math or provider ownership. Every 500 ms it synchronizes only the direct `.kwPBResBtn` disabled state from current service state, Photo Booth readiness, named Effects availability, active-capture state, and 4096 renderer limits.
 
+## Dev UI presentation adapter
+
+Branch: `WITCH_DEV_UI`.
+
+`features/media/Photo_Booth_True_Resolution_UI.js` build `0.1.0-dev-compact-ui` is a presentation-only candidate over the existing Stable service. It does not reproduce or alter high-resolution capture math.
+
+Requested normal-user presentation:
+
+- title `High Res Image Capture`;
+- one row: `Capture: [4K] [8K]`;
+- visible violet hover highlight on enabled buttons;
+- idle status `Active — click 4K or 8K to begin image capture`;
+- no provider enable/disable checkbox in normal mode;
+- no provider/Lob implementation-status line in normal mode;
+- no explanatory provider blurb in normal mode.
+
+The adapter calls the existing `KWPhotoBoothTrueResolution.capture4096()` / `capture8192()` service methods and reuses the existing `.kwPBResBtn` readiness helper. It includes Tampermonkey metadata so it can be installed directly over current public Witch Dock as an isolated Dev UI test; the same file can later be loaded as a normal manifest module because the metadata is comments.
+
+The service's enable/disable control remains intact. The approved direction is to expose that kill switch only through future Witch Dock-wide Developer Mode, alongside developer-only provider/build diagnostics.
+
+### Temporary Dev migration behavior
+
+The current Stable service registers both behavior and its legacy UI. To avoid rewriting the validated 818-line capture engine merely for presentation testing, the Dev adapter re-registers the same `photo-booth-true-resolution` tool ID. Witch Dock removes the old visible container and mounts the compact adapter UI.
+
+The service still retains references to the detached legacy UI nodes until reload. This is acceptable for isolated Dev testing but is **not** the intended final Stable architecture. Before promotion, make ownership explicit by suppressing/removing legacy service UI registration or otherwise separating service and UI cleanly.
+
 ## Validation
 
 Standalone baseline:
@@ -78,6 +104,13 @@ Public Witch Dock Stable smoke after promotion:
 - public Witch Dock direct TRUE 8K route: passed perfectly;
 - user reported the public integration works perfectly.
 
+Current Dev UI adapter:
+
+- source/architecture review: complete;
+- live UI smoke: pending until the active 3072px Spinny capture completes;
+- direct 4K/8K regression through compact adapter: pending;
+- default Decals-before-JSON Dev manifest order: pending smoke when the Dev manifest is loaded.
+
 Public promotion commit: `e155f2c2f961463b4a0e26f7c88f21f603ce1b95`.
 
 ## Revalidation triggers
@@ -90,8 +123,11 @@ Revalidate when:
 - native tile topology becomes mixed, duplicate, incomplete, non-integral, or otherwise incompatible;
 - HeroForge begins supplying a native true-resolution Effects path;
 - Painterly/special effect profiles alter the phase geometry or render path;
-- provider arbitration changes because Lob or another script adopts a new high-resolution implementation.
+- provider arbitration changes because Lob or another script adopts a new high-resolution implementation;
+- final public UI/service separation changes service initialization or provider registration order.
 
 ## Migration direction
 
 The current public Witch Dock module is the Stable consumer copy of the validated Compatibility feature. When the planned Foundation/shared compatibility repository exists and has versioned stable releases, the capture service should move behind that shared module boundary. Public Witch Dock must depend on a pinned/versioned stable Foundation release rather than an unstable development head.
+
+Independently of that future Foundation move, Witch Dock UI ownership should be separated from the capture service before the compact Dev presentation is promoted. The UI should consume named service methods/state rather than making the renderer/provider layer own normal-user presentation.
