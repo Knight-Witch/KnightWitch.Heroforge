@@ -1,0 +1,37 @@
+name: Build Dev Loader Simple
+on:
+  push:
+    branches:
+      - spinny-wd-dev-materialize
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev target
+        uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          path: wd
+          fetch-depth: 0
+      - name: Checkout staging helpers
+        uses: actions/checkout@v4
+        with:
+          ref: spinny-wd-dev-materialize
+          path: stage
+      - name: Generate and verify
+        run: |
+          python stage/staging/make_dev_loader.py wd
+          node --check wd/Witch_Dock_DEV.user.js
+          python -m json.tool wd/manifest.json > /dev/null
+          grep -q 'WITCH_DEV_UI/manifest.json' wd/Witch_Dock_DEV.user.js
+          grep -q 'WITCH_DEV_UI/Witch_Dock_DEV.user.js' wd/Witch_Dock_DEV.user.js
+          git -C wd diff --check
+      - name: Commit to WITCH_DEV_UI
+        run: |
+          git -C wd config user.name 'Knight Witch'
+          git -C wd config user.email 'amanda.m.ivans@gmail.com'
+          git -C wd add Witch_Dock_DEV.user.js manifest.json CHANGELOG.md PRE_FLIGHT_Check.md
+          git -C wd commit -m 'Add isolated Witch Dock Dev test loader'
+          git -C wd push origin HEAD:WITCH_DEV_UI
