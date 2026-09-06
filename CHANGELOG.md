@@ -1,80 +1,66 @@
 # Changelog
 
-## DOCK-2026-09-06-024 — Canonical module version registry
+## DOCK-2026-09-06-025 — Preserve Witch Dock UI / Spinny follow-up queue
 
 Date: 2026-09-06
 
 ### Summary
 
-Established a canonical numeric version for every active Witch Dock runtime module without editing Stable feature source solely for bookkeeping. Developer Mode advances to v0.2.0 and can display canonical versions for visible, hidden, core, and conditional modules.
+Documentation-only checkpoint preserving the Witch Dock side-project work discussed while the standalone 3072px Spinny/WebP validation run was active. No runtime source, manifest behavior, module version, or public Stable behavior changed.
 
-### Added
+### Confirmed completed / visually accepted
 
-- `manifest.json.moduleRegistry` as the canonical active-module version inventory.
-- `MODULE_VERSIONING.md` as the binding module-version maintenance contract.
-- Developer Mode `Module Versions` inventory inside the About developer section.
-- provenance metadata distinguishing existing versions, normalized legacy tags, and 2026-09-06 tracking baselines.
+- Standalone compact `High Res Image Capture` Dev UI loaded and looked correct.
+- Developer Mode loaded and worked through the About UI.
+- Developer Mode v0.2 per-tool canonical version display looked correct.
+- About `Module Versions` inventory was visible and looked correct.
+- The standalone 3072px Spinny capture has finished; detailed result intake is the next Spinny task.
 
-### Initial canonical versions
+These visual confirmations do not claim that direct 4K/8K regression, provider disable/re-enable recovery, or integrated Dev-manifest loading has passed.
 
-- Witch Dock Core: `1.0.8`.
-- Expanded UI Scroll Guards: `1.0.0` baseline; build `2026-07-03-layouts` preserved.
-- HF UI Scroll Split Safe: `1.0.0` baseline.
-- HF UI Slot Bridge: `1.0.0` baseline.
-- Expanded Decal Slots: `1.0.0` baseline.
-- Corrected Bound Decal Gizmo: `1.1.0`.
-- Developer Mode: `0.2.0`.
-- Body Editor: `4.0.0`, normalized from existing `v4` identity.
-- Pose: `1.0.0` baseline.
-- Booth: `24.0.0`, normalized from existing `v24` build.
-- High Res Image Capture service: `0.7.0`.
-- Photo Booth True Resolution Readiness: `1.0.0`.
-- High Res Image Capture UI: `0.2.0`.
-- Decals host: `1.0.0` baseline.
-- JSON Tool: `1.0.0` baseline.
-- Utilities: `1.0.0` baseline.
+### Durable pending queue recorded
 
-New `1.0.0` values are tracking baselines as of this date, not reconstructed historical release counts.
+Added `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md` covering:
 
-### Developer Mode update
-
-`features/core/Witch_Dock_Developer_Mode.js` advances from `0.1.0-dev-registry-about-toggle` to `0.2.0-dev-module-version-registry`.
-
-- reads canonical `manifest.json.moduleRegistry` metadata;
-- combines canonical numeric versions with runtime-declared build tags;
-- visible tools show canonical version plus build where useful;
-- About exposes a Developer-only `Module Versions` list for hidden/conditional modules too;
-- exposes module-registry snapshot/reload state through `KWDeveloperMode`;
-- registry fetch failure remains diagnostic-only.
-
-### Version maintenance rule
-
-Going forward, any active module change affecting runtime behavior, UI, API, storage, compatibility, initialization/disposal, or HeroForge integration must bump that module's canonical version in the same commit. Source-local build/version identifiers must also be kept consistent when present.
+- integrated Developer Mode + compact High Res smoke/promotion;
+- final High Res service/UI ownership cleanup before Stable;
+- integrated `Booth -> Decals -> JSON` tab-order smoke;
+- Spinny placement directly below High Res Image Capture;
+- draggable Spinny popout with close/collapse behavior and shared service state;
+- Pause/Resume at completed-frame boundaries;
+- layout-independent capture-invalidating interaction guards for Booth exit, camera drag, view/backdrop/overlay/lighting/effect changes, and other proven frame-mutating controls;
+- explicit 4096px animated-WebP deferral because of the confirmed 4096 still-provider collision;
+- optional Developer Mode hotkey as non-required future convenience only.
 
 ### Preserved behavior
 
-- No Stable tool/service/HeroForge UI module source changed for this bookkeeping pass.
-- Public `Witch_Scripts` remains untouched.
-- 4K/8K capture, Booth, Body Editor, Pose, Decals, JSON, Utilities, scroll/slot helpers, and corrected gizmo runtime behavior are unchanged.
-- No HF-Chat-Bridge access or active Spinny interaction occurred.
-
-### Test status
-
-- Developer Mode v0.2.0 local `node --check`: PASS.
-- Dev manifest JSON parse: PASS.
-- Registry IDs unique: PASS.
-- Registry covers every Dev manifest tool ID: PASS.
-- Live v0.2.0 registry display: pending.
+- `Witch_Scripts` unchanged.
+- `WITCH_DEV_UI` runtime modules unchanged.
+- `manifest.json` unchanged.
+- Canonical module versions unchanged; `MODULE_VERSIONING.md` requires no bump for documentation-only work.
+- High Res 4K/8K provider/capture math unchanged.
+- Spinny/WebP capture code unchanged.
+- No HF-Chat-Bridge access occurred.
 
 ### Touched files
 
-- `features/core/Witch_Dock_Developer_Mode.js`
-- `manifest.json`
-- `MODULE_VERSIONING.md` (new)
-- `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md` (new)
 - `MASTER.md`
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
+
+**Runtime behavior changed:** no.
+
+---
+
+## DOCK-2026-09-06-024 — Canonical module version registry
+
+Date: 2026-09-06
+
+- Established a canonical numeric version for every active Witch Dock runtime module in `manifest.json.moduleRegistry`.
+- Added `MODULE_VERSIONING.md` as the binding future version-bump contract.
+- Advanced Developer Mode to v0.2.0 with canonical per-tool versions and About module inventory.
+- No Stable feature source was edited solely for bookkeeping.
 
 **Runtime behavior changed:** Developer Mode Dev diagnostics only. Existing Stable module behavior did not change.
 
@@ -87,7 +73,6 @@ Date: 2026-09-05
 - Added standalone hidden Developer Mode module and About toggle.
 - Added reversible tool metadata wrapper and shared diagnostics API.
 - Updated High Res UI to consume Developer Mode for provider recovery/build diagnostics.
-- Local syntax checks passed; user later confirmed standalone Developer Mode and compact High Res UI looked correct.
 
 **Runtime behavior changed:** Dev-only diagnostics/presentation.
 

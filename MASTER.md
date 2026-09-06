@@ -35,7 +35,19 @@ Branch: `WITCH_DEV_UI`.
 
 ### High Res Image Capture
 
-`features/media/Photo_Booth_True_Resolution_UI.js` build `0.2.0-dev-developer-mode` is the compact presentation adapter over the Stable true-resolution service. Normal mode shows `High Res Image Capture`, `Capture: [4K] [8K]`, hover feedback, and compact status only. Developer Mode adds the provider kill switch and implementation/build diagnostics.
+`features/media/Photo_Booth_True_Resolution_UI.js` build `0.2.0-dev-developer-mode` is the compact presentation adapter over the Stable true-resolution service.
+
+Normal mode:
+
+- title `High Res Image Capture`;
+- compact `Capture: [4K] [8K]` row;
+- visible hover feedback;
+- compact status only;
+- provider kill switch and implementation notes hidden from ordinary users.
+
+Developer Mode adds the provider kill switch and implementation/build diagnostics.
+
+Standalone visual smoke: **PASS by user report**. Direct 4K/8K regression through the compact UI and provider disable/re-enable recovery remain separately unconfirmed.
 
 ### Developer Mode
 
@@ -50,11 +62,13 @@ Branch: `WITCH_DEV_UI`.
 - registry failure is diagnostic-only;
 - no HeroForge runtime patching and no public shell edit required.
 
+Standalone visual smoke for Developer Mode, canonical version rows, and About module inventory: **PASS by user report**.
+
 Detailed record: `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`.
 
 ### Default tab order candidate
 
-The Dev manifest registers `Decals` after Booth-related modules and before `JSON`, yielding `... Booth → Decals → JSON → Utilities` by default.
+The Dev manifest registers `Decals` after Booth-related modules and before `JSON`, yielding `... Booth -> Decals -> JSON -> Utilities` by default. Integrated Dev-manifest tab-order smoke remains pending.
 
 ## Active Module Version Baseline — 2026-09-06
 
@@ -84,12 +98,12 @@ New `1.0.0` values are tracking anchors only, not reconstructed historical relea
 | Area | Manifest ID | File | Status | Notes |
 |---|---|---|---|---|
 | Core | n/a | `Witch_Dock.user.js` | Live | Dock shell/loader/shared UI. |
-| Developer Mode | `witch-dock-developer-mode` | `features/core/Witch_Dock_Developer_Mode.js` | **Dev candidate only** | Modular diagnostics and version registry. |
+| Developer Mode | `witch-dock-developer-mode` | `features/core/Witch_Dock_Developer_Mode.js` | **Dev candidate only** | Modular diagnostics/version registry; standalone visual smoke passed. |
 | Body | `body-editor` | `tools/Body_Editor.js` | Live | Body editing/symmetry. |
 | Pose | `pose-tool` | `tools/Pose.js` | Live | Main/Extra swap. |
 | Booth | `booth-tool` | `tools/Booth.js` | Live | Build `v24`; Persistent Booth/Black Canvas. |
 | Photo Booth true resolution | `photo-booth-true-resolution` | `features/media/Photo_Booth_True_Resolution.js` | **Live / Stable validated** | TRUE 4K/8K service. |
-| Photo Booth true-resolution UI | `photo-booth-true-resolution-ui` | `features/media/Photo_Booth_True_Resolution_UI.js` | **Dev candidate only** | Compact UI/Developer Mode consumer. |
+| Photo Booth true-resolution UI | `photo-booth-true-resolution-ui` | `features/media/Photo_Booth_True_Resolution_UI.js` | **Dev candidate only** | Compact UI/Developer Mode consumer; standalone visual smoke passed. |
 | Photo Booth readiness | `photo-booth-true-resolution-readiness` | `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` | **Live / Stable validated / hidden** | Direct-button readiness sync. |
 | JSON | `json-tool` | `tools/JSON_Tool.js` | Live | Bulk JSON library backup. |
 | Utilities | `utilities` | `tools/Utilities.js` | Live | Optional HF UI controls. |
@@ -112,6 +126,26 @@ Feature ID: `decals.gizmo.bound-correction`. Current Stable service build: `1.1.
 
 Detailed record: `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`.
 
+## Spinny / Witch Dock Follow-Up Queue
+
+The Witch Dock UX/integration decisions discussed while the standalone 3072px Spinny run was active are preserved in:
+
+`HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
+
+Key pending items:
+
+- integrated Developer Mode + compact High Res Dev smoke/promotion;
+- High Res service/UI ownership cleanup before Stable;
+- integrated `Booth -> Decals -> JSON` order smoke;
+- integrate Spinny beneath High Res Image Capture by default;
+- shared-state draggable Spinny popout with close/collapse behavior;
+- Pause/Resume only between completed frames;
+- semantic/layout-independent guards for capture-invalidating Booth interactions;
+- 4096 animated WebP explicitly deferred because of the confirmed 4096 still-provider collision;
+- optional Developer Mode hotkey remains non-required/deferred.
+
+The standalone 3072px Spinny run has completed; detailed user result intake is now the immediate next task.
+
 ## Current Integration Rules
 
 - `Witch_Scripts` is production; experiments stay on Dev branches/modules first.
@@ -123,19 +157,19 @@ Detailed record: `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`.
 
 ## Current Near-Term Queue
 
-1. Finish the active 3072px Spinny validation without disturbing it.
-2. Smoke-test Developer Mode v0.2.0 canonical module-version display.
-3. Validate Developer Mode persistence and High Res provider kill-switch recovery.
-4. Validate compact direct 4K/8K UI behavior.
-5. Smoke Dev default `Booth → Decals → JSON` order.
-6. Cleanly separate High Res service/UI ownership before public promotion.
-7. Integrate validated Spinny/WebP into Witch Dock Dev only after standalone validation closes.
+1. Record and evaluate the completed 3072px Spinny result.
+2. If 3072 Standard passes, close that standalone validation gate and continue Spinny Pause/guard work.
+3. Later, smoke integrated `WITCH_DEV_UI` Developer Mode + compact High Res behavior, including provider disable/re-enable and direct 4K/8K regression.
+4. Smoke integrated default `Booth -> Decals -> JSON` order.
+5. Cleanly separate High Res service/UI ownership before public promotion.
+6. Integrate validated Spinny/WebP beneath High Res Image Capture in Witch Dock Dev and implement the preserved popout/Pause/guard UX.
 
 ## Durable Records
 
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
 - `MODULE_VERSIONING.md`
+- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
 - `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
