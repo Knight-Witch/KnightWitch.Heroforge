@@ -1,5 +1,42 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-029 — Dev tab order / Utilities icon cleanup
+
+Date: 2026-09-06
+
+### Reviewed
+
+- binding HeroForge.Compatibility project contract and current Witch Dock Dev tracking;
+- `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`;
+- `Witch_Dock_DEV.user.js` tab construction/order code and tab CSS;
+- `manifest.json` load order and module registry;
+- Body Editor / Decals / Utilities registration behavior;
+- active UI follow-up queue and the newly accepted public Developer Mode direction.
+
+### Target behavior
+
+- display tabs as `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`;
+- preserve the existing `Body Editor` internal tab key/persisted preference while displaying `Body`;
+- render Utilities as an SVG cog with tooltip/ARIA label `Utilities`;
+- structurally pin Utilities last even if future tabs register after it;
+- keep unknown future tabs ahead of Utilities;
+- keep this change Dev-only until visual smoke.
+
+### Conflict risks
+
+- do not alter the tool modules themselves or their HeroForge behavior;
+- do not invalidate persisted active-tab values;
+- do not rely only on manifest timing for the final order;
+- do not promote unrelated Developer Mode/High Res Dev work in this tab-only stage.
+
+### Version decision
+
+`witch-dock-dev-loader` advances to v0.3.0 / build `1.0.8.3-tab-order-icon`. No Body, Pose, Decals, Booth, JSON or Utilities module version changes are required because their runtime modules are untouched.
+
+**Runtime behavior changed:** yes, Dev shell presentation/order only.
+
+---
+
 ## PFC-2026-09-06-028 — Spinny Dev download/UX hardening
 
 Date: 2026-09-06

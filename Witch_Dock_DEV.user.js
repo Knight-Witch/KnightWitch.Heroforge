@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Spinny Integration
 // @namespace    KnightWitch
-// @version      1.0.8.2
+// @version      1.0.8.3
 // @description  DEV test loader for Witch Dock WITCH_DEV_UI modules. Do not use as public Stable.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -535,6 +535,21 @@ async function loadManifestAndTools() {
   cursor: default;
   font-weight: 700;
   white-space: nowrap;
+}
+.kwWDTab.kwWDTabIconOnly{
+  width: 32px;
+  min-width: 32px;
+  height: 29px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.kwWDTab.kwWDTabIconOnly svg{
+  width: 16px;
+  height: 16px;
+  display: block;
+  pointer-events: none;
 }
 
 .kwWDTab[aria-selected="true"]{
@@ -1202,10 +1217,104 @@ async function loadManifestAndTools() {
     updateDockUndoRedoButtons();
   }
 
+
+  const TAB_ORDER_RANK = new Map([
+    ["Body Editor", 0],
+    ["Body", 0],
+    ["Pose", 10],
+    ["Decals", 20],
+    ["Booth", 30],
+    ["JSON", 40],
+    ["Utilities", 1000]
+  ]);
+
+  function tabDisplayName(name) {
+    return name === "Body Editor" ? "Body" : name;
+  }
+
+  function tabRank(name) {
+    return TAB_ORDER_RANK.has(name) ? TAB_ORDER_RANK.get(name) : 900;
+  }
+
+  function makeTabCogIcon() {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const ring = document.createElementNS(ns, "circle");
+    ring.setAttribute("cx", "12");
+    ring.setAttribute("cy", "12");
+    ring.setAttribute("r", "6.25");
+    ring.setAttribute("fill", "none");
+    ring.setAttribute("stroke", "currentColor");
+    ring.setAttribute("stroke-width", "2");
+
+    const hub = document.createElementNS(ns, "circle");
+    hub.setAttribute("cx", "12");
+    hub.setAttribute("cy", "12");
+    hub.setAttribute("r", "2.25");
+    hub.setAttribute("fill", "currentColor");
+
+    svg.appendChild(ring);
+    svg.appendChild(hub);
+
+    for (let i = 0; i < 8; i += 1) {
+      const angle = (Math.PI * 2 * i) / 8;
+      const line = document.createElementNS(ns, "line");
+      line.setAttribute("x1", String(12 + Math.cos(angle) * 7.25));
+      line.setAttribute("y1", String(12 + Math.sin(angle) * 7.25));
+      line.setAttribute("x2", String(12 + Math.cos(angle) * 10));
+      line.setAttribute("y2", String(12 + Math.sin(angle) * 10));
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-width", "2.4");
+      line.setAttribute("stroke-linecap", "round");
+      svg.appendChild(line);
+    }
+
+    return svg;
+  }
+
+  function reorderTabButtons() {
+    if (!state.tabsBar) return;
+    const buttons = Array.from(state.tabsBar.children).filter(
+      (node) => node && node.classList && node.classList.contains("kwWDTab")
+    );
+    const originalIndex = new Map(buttons.map((button, index) => [button, index]));
+
+    buttons.sort((a, b) => {
+      const aName = a.getAttribute("data-tab-name") || "";
+      const bName = b.getAttribute("data-tab-name") || "";
+      const rankDelta = tabRank(aName) - tabRank(bName);
+      if (rankDelta) return rankDelta;
+      return originalIndex.get(a) - originalIndex.get(b);
+    });
+
+    for (const button of buttons) state.tabsBar.appendChild(button);
+    if (state.updateTabsCue) state.updateTabsCue();
+  }
+
   function ensureTab(name) {
     if (state.tabs.has(name)) return state.tabs.get(name);
 
-    const btn = el("button", { class: "kwWDTab", type: "button", text: name, "aria-selected": "false" });
+    const iconOnly = name === "Utilities";
+    const btn = el("button", {
+      class: iconOnly ? "kwWDTab kwWDTabIconOnly" : "kwWDTab",
+      type: "button",
+      "aria-selected": "false"
+    });
+    btn.setAttribute("data-tab-name", name);
+
+    if (iconOnly) {
+      btn.title = "Utilities";
+      btn.setAttribute("aria-label", "Utilities");
+      btn.appendChild(makeTabCogIcon());
+    } else {
+      btn.textContent = tabDisplayName(name);
+      btn.setAttribute("aria-label", tabDisplayName(name));
+    }
+
     const panel = el("div", { class: "kwWDPanel", "aria-hidden": "true" });
     const list = el("div", { class: "kwWDToolList" });
     panel.appendChild(list);
@@ -1213,11 +1322,11 @@ async function loadManifestAndTools() {
     btn.addEventListener("click", () => setActiveTab(name));
 
     state.tabsBar.appendChild(btn);
-    if (state.updateTabsCue) state.updateTabsCue();
     state.body.appendChild(panel);
 
     const tab = { name, btn, panel, list };
     state.tabs.set(name, tab);
+    reorderTabButtons();
 
     if (!prefs.activeTab) prefs.activeTab = name;
     if (!state.activeTab) state.activeTab = prefs.activeTab || name;

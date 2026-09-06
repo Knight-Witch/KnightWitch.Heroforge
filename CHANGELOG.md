@@ -1,5 +1,30 @@
 # Changelog
 
+## DOCK-2026-09-06-029 — Dev tab cleanup and pinned Utilities icon
+
+Date: 2026-09-06
+
+### Changes
+
+- Dev tab presentation now displays `Body` instead of `Body Editor` without changing the internal/persisted tab key.
+- Default/runtime tab order is enforced as `Body -> Pose -> Decals -> Booth -> JSON -> Utilities`.
+- Utilities is an icon-only SVG cog with hover tooltip and ARIA label `Utilities`.
+- Utilities is structurally pinned last; later/unknown tabs are inserted ahead of it rather than pushing Settings/Utilities into the middle.
+- Manifest load order is aligned with the same visible order so registration order and core ordering agree.
+
+### Version
+
+- `witch-dock-dev-loader`: v0.3.0 / build `1.0.8.3-tab-order-icon`; userscript `@version` 1.0.8.3.
+- Tool module sources unchanged.
+
+### Developer Mode direction recorded
+
+Developer Mode is intended for eventual Stable availability as a default-OFF About-menu toggle so users can expose module/build/version diagnostics when troubleshooting. This commit does not promote Developer Mode to Stable.
+
+**Runtime behavior changed:** yes, Dev shell presentation/order only. Public Stable remains unchanged by this checkpoint.
+
+---
+
 ## DOCK-2026-09-06-028 — Harden Spinny Dev download and capture UX
 
 Date: 2026-09-06

@@ -7,14 +7,14 @@ This is the canonical high-level source for current public Witch Dock state. Det
 - Repository: `Knight-Witch/KnightWitch.Heroforge`
 - Live branch: `Witch_Scripts`
 - Public install script: `Witch_Dock.user.js`
-- Current public userscript version: `1.0.8`
+- Current public userscript version: `1.1.0`
 - Manifest loader: `manifest.json`
 - Public module delivery: raw GitHub files pinned to the live `Witch_Scripts` branch
 - Visible tools: `/tools/` plus feature modules that register their own Witch Dock host
 - Hidden HeroForge/runtime utilities: `/HeroForge_UI/`
 - Maintained feature services may live under `/features/`
 
-Public Stable remains unchanged by the current `WITCH_DEV_UI` work.
+Public Stable v1.1.0 is the current production baseline. The tab cleanup below remains Dev-only until its own smoke/promotion gate.
 
 ## Module Version Contract
 
@@ -66,9 +66,13 @@ Standalone visual smoke for Developer Mode, canonical version rows, and About mo
 
 Detailed record: `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`.
 
-### Default tab order candidate
+### Default tab order / tab presentation candidate
 
-The Dev manifest registers `Decals` after Booth-related modules and before `JSON`, yielding `... Booth -> Decals -> JSON -> Utilities` by default. Integrated Dev-manifest tab-order smoke remains pending.
+Current accepted target:
+
+`Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`
+
+Dev core presentation keeps the existing `Body Editor` tab key for preference compatibility while displaying `Body`. Utilities renders as an icon-only cog with native hover tooltip/ARIA label `Utilities`. The core reorders known tabs and assigns unknown future tabs ahead of Utilities, so Utilities remains structurally pinned last instead of relying only on manifest load order. Integrated Dev smoke is pending.
 
 ## Active Module Version Baseline — 2026-09-06
 
@@ -152,17 +156,17 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 - Public Witch Dock must not depend on unstable Compatibility/Foundation heads or HF-Chat-Bridge.
 - Promote only accepted feature deltas; do not merge diverged Dev branches wholesale.
 - Preserve capability checks, lifecycle restoration, timing/state sequencing, and failure isolation.
-- Developer Mode must remain optional.
+- Developer Mode must remain optional. Accepted Stable direction: default OFF, user-toggleable only through About, with module/build/version diagnostics available when troubleshooting.
 - Every active module runtime change must obey `MODULE_VERSIONING.md` and bump the canonical version in the same commit.
 
 ## Current Near-Term Queue
 
-1. Re-smoke the Dev Spinny privileged download host and UI hardening patch.
-2. Confirm a 1024 Short Test download completes through the host and the brief success indicator fires.
-3. Later, smoke integrated `WITCH_DEV_UI` Developer Mode + compact High Res behavior, including provider disable/re-enable and direct 4K/8K regression.
-4. Smoke integrated default `Booth -> Decals -> JSON` order.
-5. Cleanly separate High Res service/UI ownership before public promotion.
-6. If the Dev hardening re-smoke passes, prepare the exact accepted Spinny delta for separate Stable promotion review.
+1. Smoke the Dev tab cleanup: `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`, with Utilities pinned last.
+2. Promote the accepted tab cleanup separately after user approval.
+3. Smoke integrated Developer Mode + compact High Res behavior, including provider disable/re-enable and direct 4K/8K regression.
+4. Cleanly separate High Res service/UI ownership before promoting the compact High Res presentation.
+5. Promote Developer Mode as an About-only, default-OFF public diagnostic feature after its integrated smoke.
+6. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
 
 ## Durable Records
 

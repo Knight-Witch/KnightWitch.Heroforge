@@ -10,6 +10,23 @@ User smoke confirms the integrated Witch Dock Dev Spinny placement, shared-state
 
 Dev hardening versions: loader v0.2.0, Spinny service v0.5.1, Spinny UI v0.1.1. Re-smoke is required before Stable promotion. Public `Witch_Scripts` remains unchanged.
 
+## 2026-09-06 tab cleanup + Developer Mode direction
+
+Accepted tab target for the next Dev smoke:
+
+`Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`
+
+- `Body Editor` remains the internal tab key for preference compatibility but displays as `Body`.
+- Utilities uses an icon-only cog with tooltip `Utilities`.
+- Utilities must remain structurally last, not merely last by current manifest order.
+- Unknown future tabs should appear before Utilities automatically.
+
+Developer Mode product direction is now decided: it should eventually be available in public Stable, default OFF, toggled from About, primarily to expose module/version/build diagnostics during troubleshooting. No separate toolbar control or hotkey is required.
+
+After tab cleanup smoke/promotion, resume the compact High Res integration/service-UI ownership work, then the Developer Mode Stable promotion gate.
+
+---
+
 ## Purpose
 
 Preserve the Witch Dock side-project work discussed while the standalone 3072px Spinny/WebP validation capture was running, so those items do not get lost when development returns to the Spinny result.
