@@ -107,6 +107,16 @@
       "versionOrigin": "dev-ui-host-cleanup-2026-09-06"
     },
     {
+      "id": "booth-runtime-bootstrap",
+      "title": "Booth Runtime Bootstrap",
+      "path": "features/booth/Booth_Runtime_Bootstrap.js",
+      "kind": "compatibility-feature",
+      "load": "manifest",
+      "version": "0.1.0",
+      "build": "0.1.0-dev-native-booth-bootstrap",
+      "versionOrigin": "new-dev-module"
+    },
+    {
       "id": "booth-tool",
       "title": "Booth",
       "path": "tools/Booth.js",
@@ -263,17 +273,26 @@
       "enabledByDefault": true
     },
     {
+      "id": "booth-runtime-bootstrap",
+      "title": "Booth Runtime Bootstrap",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.0-dev-native-booth-bootstrap",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js?v=27.0.0-v27",
       "enabledByDefault": true
     },
     {
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.0-dev-post-display-update-replay",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -334,7 +353,7 @@
       "id": "utilities",
       "title": "Utilities",
       "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Utilities.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Utilities.js?v=1.2.1",
       "enabledByDefault": true
     }
   ]

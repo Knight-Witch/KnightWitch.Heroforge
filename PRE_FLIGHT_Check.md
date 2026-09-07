@@ -1,616 +1,84 @@
 # Pre-Flight Check Log
 
-## PFC-2026-09-07-038 — Booth Black Canvas post-display replay
+## PFC-2026-09-07-039 — Add Dev Booth runtime bootstrap
 
 Date: 2026-09-07
 
 ### Required material reviewed
 
 - binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, and `manifest.json`;
-- current `tools/Booth.js` v27 plus its exported `KW_WD_BOOTH.getState()` boundary;
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` and `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;
-- current `WITCH_DEV_UI` head `a4c6e1bdd9f0cebd1c343f9d4c246c2ad8a10483` / tree `f58dbde8456e73243bb583a923cd903f2817375a`;
-- live HeroForge `heroforge07.1.9.98` diagnostics through the private HF-Chat-Bridge, including the full Black Canvas white-flash isolation sequence.
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, `tools/Booth.js` v27, `tools/Utilities.js` v1.2.1, and Black Canvas replay module;
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` and the prior standalone Booth bootstrap investigation/results;
+- current Dev head `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`;
+- live public evidence after hard refresh confirming Booth v27 is actually loaded while saved Booth/Black Canvas startup still fails;
+- live bridge evidence from the earlier bootstrap probe confirming same-origin HeroForge `/gated/booth.js` creates `BT` and named `BT.setBoothMode(savedMode)` successfully initializes/enables the Booth runtime.
 
 ### Confirmed findings
 
-- the common native sequence is `CK.character.refresh()` -> `display.change()` -> resource load -> `display.update()`;
-- a clean test that suppressed only `display.update()` produced no white flash while `refresh()`, `display.change()`, resource loading, and visible Black Canvas remained present, proving the flash lies inside the native update/rebuild boundary;
-- production must not suppress `display.update()` because that would block normal HeroForge model application;
-- the same flash class occurs in Booth, so the recent Kitbash-specific line-by-line chase is rejected as the production direction;
-- renderer clear-color/auto-clear state, renderer resize/backing-store changes, loading state, Booth overlay resize/refresh, environment setter repetition, lighting, ground, custom update hooks, deferred FX, Kitbash mirror state, Kitbash parenting, and Kitbash mesh replacement were ruled out as sufficient causes;
-- an observation trace showed the flash-causing Kitbash action removed/re-attached only the `label` text mesh, not the Kitbash mesh itself;
-- v27 Black Canvas misses the real main-scene background object. Live inspection identified it semantically from `BT.display.overlays.backgroundPlane.parent` through named `environment` -> `background`; hiding that object restores the actual black viewport;
-- the diagnostic child-index path is not acceptable production architecture.
+- fresh HeroForge startup has no `BT` global before Booth core is loaded;
+- Booth v27 `readSavedBoothConfig()` still checks `CK.data.custom` only after an existing BT runtime is present;
+- this creates a circular dependency: persistence needs saved config to justify Booth activation, but v27 refuses to inspect that saved config until Booth already exists;
+- the user reproduced this on the current public v27 build: saved Booth Persistence and Black Canvas defaults were ON, yet neither restored at startup;
+- the public stale-module issue is separate: after a hard refresh the page definitely loaded Booth v27, so the persistence failure is not a v24/cache artifact;
+- HeroForge may replace `CK.data` while a figure is settling, so bootstrap eligibility must not be decided from one transient read;
+- bare camera state must not qualify because a new figure can have ordinary camera data without a saved Photo Booth setup.
 
 ### Decision
 
-Add a separate hidden Dev compatibility module, `booth.black-canvas-display-replay` v0.1.0/build `0.1.0-dev-post-display-update-replay`, rather than broadening `tools/Booth.js` again tonight.
+Do not broaden the already-large Booth v27 tool. Add a separate hidden compatibility feature `booth.runtime-bootstrap` v0.1.0/build `0.1.0-dev-native-booth-bootstrap`.
 
 The module:
 
-- wraps only the current primary `CK.character.display` instance's named `update()` method;
-- always calls HeroForge's native update untouched;
-- synchronously reasserts Black Canvas state in `finally` only when `KW_WD_BOOTH.getState().sessionBlackCanvas` is true;
-- rediscovers and re-wraps if HeroForge replaces the primary display instance;
-- semantically discovers/captures/hides/restores the real main-scene background without child indexes;
-- leaves `overlays.backgroundPlane.visible` under the existing Booth Background component owner's control;
-- does not request an extra render refresh;
-- owns a narrow `dispose()` path that restores its wrapper and semantic-background visibility.
+- reads the existing `kw.witchDock.booth.consent.v1` default;
+- inspects `CK.data.custom` independently of BT for strong saved Booth signals;
+- excludes bare-camera-only figures;
+- requires four consecutive 200 ms observations of the same `CK.data` object, mode, and signal signature;
+- loads only HeroForge's own same-origin gated `booth.js` when BT is absent;
+- derives the current HeroForge build from loaded script/resource URLs instead of hard-coding a minified bundle identity;
+- requires named `BT.setBoothMode()` and uses the saved mode;
+- verifies `BT.liveEngine || BT.maker` becomes enabled;
+- then uses the existing `KW_WD_BOOTH` API to reconcile default-owned Booth View and Black Canvas;
+- single-flights work, records diagnostics, and exposes `dispose()` to stop owned polling.
 
 ### Target files
 
-- `features/booth/Black_Canvas_Display_Replay.js` (new)
+- `features/booth/Booth_Runtime_Bootstrap.js` (new)
 - `manifest.json`
 - `MASTER.md`
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md` (new)
+- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md` (new)
 
 ### Conflict risks / preservation requirements
 
-- `tools/Booth.js` remains byte-unchanged at v27.0.0/build `v27`;
-- do not wrap the display prototype or child displays; only the current primary display instance is owned;
-- do not stack wrappers after display replacement or duplicate module loading;
-- Black Canvas OFF must perform no post-update black mutation and must restore the module-owned semantic background state;
-- failure to resolve `CK.character.display.update`, `KW_WD_BOOTH`, or the semantic background must degrade without blocking HeroForge or unrelated Witch Dock tools;
-- do not force the Booth Background component ON/OFF from the compatibility module;
-- no child-index scene paths in maintained source;
-- public `Witch_Scripts`, Corrected Bound Decal Gizmo, Spinny, High Res Image Capture, JSON, Utilities, Developer Mode, and tab infrastructure remain untouched.
+- `tools/Booth.js` must remain byte-unchanged at v27.0.0/build `v27`;
+- `features/booth/Black_Canvas_Display_Replay.js` must remain byte-unchanged;
+- `tools/Utilities.js` must remain byte-unchanged at v1.2.1;
+- do not load HeroForge `boothui.js`;
+- do not use Webpack/module/minified discovery when named `BT.setBoothMode` is available;
+- do not bootstrap a camera-only/new figure;
+- do not initialize when the persistence default is OFF;
+- failure must degrade to ordinary unmodified HeroForge rather than suppressing model updates;
+- public `Witch_Scripts` remains untouched until Dev validation.
 
 ### Static validation
 
-- Node syntax check for the new module: PASS.
-- Mock lifecycle test: PASS. Native update executed; wrapper replay hid semantic background/frame/shadow/mask and blackened canvas/holder; Black Canvas OFF restored semantic background; dispose restored the original update method.
-- Manifest/module version is v0.1.0 in the same candidate commit.
+- Node syntax check for `Booth_Runtime_Bootstrap.js`: PASS.
+- Saved-figure mock: PASS. Four stable observations caused native `portrait` mode bootstrap, runtime enable verification, and saved Black Canvas reconciliation.
+- Fresh-camera-only mock: PASS. Zero native script insertions and zero bootstrap attempts.
+- Manifest entry is versioned in the same candidate and is ordered before `booth-tool` so polling can begin while the normal Booth tool loads.
+- Dev-owned Booth/Utilities/replay URLs receive explicit version query keys in this manifest candidate to avoid stale module responses once the new manifest itself is obtained.
+- The fixed manifest URL in the Dev/public shell remains a separate loader-cache problem and is not claimed fixed by this commit.
 - No GitHub Actions workflow exists for this Dev branch; no CI claim is made.
 
 ### Live gate
 
-Refresh the Dev userscript/page, confirm Black Canvas is visibly black, trigger one action that reliably produced the white frame (including native Booth), then report `no flash` or `still flashes`. Also verify Black Canvas OFF restores the normal background and ordinary character changes still apply.
+Use the Dev userscript only. With Booth Persistence Across Sessions and Black Canvas Across Sessions ON, load a figure that already contains a saved Booth setup and refresh without manually opening Photo Booth. Expected result: Booth View restores and the viewport is black. Then verify the known flash-causing action remains flash-free and a fresh `+ New Figure` does not auto-bootstrap Booth.
 
-Do not promote to Stable until this live smoke passes.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
-
----
-
-## PFC-2026-09-06-037 — Booth v27 startup/state stabilization
-
-Date: 2026-09-06
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
-- current `tools/Booth.js` v26 and directly connected `tools/Utilities.js` v1.2.1;
-- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` and current Photo Booth/runtime findings;
-- current `WITCH_DEV_UI` head `9b59f624cdb89f3930d6487d3e09eb5b3c460b36`;
-- live HeroForge runtime through the approved private HF-Chat-Bridge Power workbench.
-
-### Confirmed v26 regressions / source findings
-
-- v26 `resolveRuntime()` required `BT.maker`, and both startup-default application and the runtime loop waited for that object. On the observed live session this delayed the supposed startup path until HeroForge later initialized Photo Booth runtime.
-- when the delayed runtime appeared, v26 replayed Black Canvas startup recovery six times. Each recovery called `refreshBTComponentRender()`, which explicitly called `CK.character.refresh()`.
-- saved Booth effects and lighting remained present in `CK.data.custom.portrait`; the user-visible reset was not loss of the saved JSON state.
-- the current saved portrait configuration contains `camera`, `effects`, `filters`, `lighting`, `selected`, and `useEnvAsBg`; `cameraSave` is currently absent, so `cameraSave` alone is not a valid saved-figure eligibility requirement.
-- current HeroForge `BT.display.lighting.apply(next, previous)` calls `CK.character.refresh()` when previous/new sphere-light states differ. v26 replayed lighting as `apply(captured, null)`.
-- live bridge validation of `BT.display.lighting.apply(savedLighting, savedLighting)` recorded zero calls to `CK.character.refresh()`.
-- current HeroForge exposes `BT.liveEngine`; in the current initialized session it aliases the active maker object. `BT.maker` remains the named fallback.
-- the thin 1:1 Black Canvas edge is not the ordinary frame plane/CSS canvas background/stale renderer size. The live background path uses 1024x1024 `texMaskBg`/`texMaskFrame` mask textures, so an unproven shader/mask rewrite is explicitly out of scope for this stabilization pass.
-
-### Target files
-
-- `tools/Booth.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` (new durable investigation record)
-
-### Decision
-
-Advance Booth to v27.0.0/build `v27`. Decouple saved-character/default detection and Black Canvas display enforcement from the requirement that `BT.maker` already exist; retain the established native engine when it becomes available; remove Witch Dock's explicit broad character refresh from component/startup reconciliation; replay captured lighting with an identical previous-state comparison; clear figure-scoped Booth snapshots when the loaded character generation changes; and broaden responsive Black Canvas layout invalidation without modifying the unresolved mask/shader edge.
-
-### Conflict risks / preservation requirements
-
-- do not modify `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`; the reported projected-decal transform corruption is treated as a Booth regression until proven otherwise;
-- preserve tokenizer disable/re-enable and silent-cycle timing unless live v27 testing proves a separate failure;
-- preserve saved-default storage keys and the distinction between Utilities defaults and Booth-tab session overrides;
-- do not copy figure A's captured materials/effects/lighting into figure B after a same-page figure switch;
-- do not use `BT.maker` existence/enabled state as proof of character-owned saved Booth config;
-- do not add an unvalidated Black Canvas mask/shader patch merely to remove the thin square edge;
-- public `Witch_Scripts`, Spinny, High Res Image Capture, JSON, Utilities behavior, tab infrastructure, and the validated decal runtime remain untouched.
-
-### Validation plan
-
-Before branch movement, compare the candidate tree against v26 and confirm the runtime-source delta is confined to `tools/Booth.js`; verify manifest identity `27.0.0` / `v27`; verify no Stable or decal runtime paths are in the final changed-file set. The Dev repository currently has no GitHub Actions workflow, so live browser validation is required after commit.
-
-Live gate: saved-figure fresh reload, immediate/default Black Canvas, no v26 white-flash storm, effects/lighting preservation, projected decal transform preservation, same-page figure switch, `+ New Figure` exclusion, session overrides, component toggles, and responsive Black Canvas edge behavior.
+Do not promote this module to Stable until the live gate passes. The separate public loader cache-busting repair must also be completed before public release.
 
 **Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
 
 ---
 
-## PFC-2026-09-06-036 — Booth saved-figure startup defaults repair
-
-Date: 2026-09-06
-
-### Confirmed live gaps from v25
-
-- saved Booth Persistence survived refresh but did not actively turn on the Booth-tab `Booth View` session switch on a fresh page load;
-- saved Black Canvas restored its checkbox state after refresh but did not reliably reapply the visible black renderer/background state;
-- same-page figure switching already worked once Booth View had been manually enabled.
-
-### Additional user requirement
-
-Automatic Booth startup must not initialize `+ New Figure` or a figure that has no existing Photo Booth setup. Only a loaded figure with character-owned Booth configuration should be eligible for fresh-load automatic Booth View.
-
-### Source/runtime review
-
-- HeroForge build `heroforge07.1.9.98` Booth source confirms `saveCameraDeliberately()` stores character-owned Booth camera state at `CK.data.custom[BT.currentMode].cameraSave`;
-- the same per-mode custom config carries Booth filter/selection/lighting/effect state;
-- `CharacterFinishedSwitching` reloads saved camera, display, and effects from character config;
-- `BT.maker.enable()` applies `composeDisplayState()` and current mode, making it the named runtime path to restore the saved Booth presentation;
-- `_modeCameraJSON` is also used for runtime camera snapshots and is therefore not sufficient by itself as a saved-figure gate.
-
-### Decision
-
-Advance Booth to v26.0.0/build `v26`. Gate default-driven fresh-load Booth View on meaningful per-mode `CK.data.custom` Booth fields, preserve the existing post-Booth-visit fallback, distinguish default-owned from manual session overrides, and replay the already-working Black Canvas activation/refresh path through the startup settle window. Utilities advances to v1.2.1 for the clarified saved-figure behavior/status text.
-
-### Conflict risks
-
-- do not alter tokenizer disable/re-enable timing, silent-cycle delays, lighting/effect restoration, backdrop capture, or Black Canvas renderer implementation;
-- do not treat `BT.maker` existence, `enabled`, or `_enabledFor` as proof that the loaded figure has saved Booth configuration;
-- manual Booth View/Black Canvas session overrides must remain authoritative for the current session;
-- internal silent-cycle off/on must preserve whether Booth View was default-owned;
-- delayed Black Canvas startup retries must stop if the user overrides Black Canvas OFF;
-- public Stable remains untouched until live Dev validation includes a saved Booth figure and a `+ New Figure`/no-setup figure.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
-
----
-
-## PFC-2026-09-06-035 — Booth cross-session defaults and Utilities categories
-
-Date: 2026-09-06
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility project contract, architecture and active feature inventory;
-- current Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
-- `tools/Booth.js` v24 persistence/Black Canvas state machine and storage keys;
-- `tools/Utilities.js` v1.1.0 category host;
-- `Witch_Dock_DEV.user.js` tab-selection implementation;
-- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` known timing/state constraints.
-
-### Confirmed diagnosis
-
-- `kw.witchDock.booth.consent.v1` already persists the Booth auto-arm preference across sessions, but v24 also uses that preference as a hard gate that disables the Booth View session switch;
-- Black Canvas is already independent of Booth persistence but has no saved cross-session default;
-- existing automatic Booth persistence correctly waits for a real Photo Booth visit before applying;
-- Black Canvas can run from the editor without a Booth visit;
-- Witch Dock tab selection is internally stable but was not exposed as a host API.
-
-### Decision
-
-Preserve the existing Booth state machine/timing. Reinterpret the existing consent key strictly as the saved automatic Booth default, allow Booth View/Black Canvas to remain session overrides, add one saved Black Canvas default, expose a narrow `WitchDock.activateTab(name)` API for internal links, and organize Utilities into `Booth Features`, `Decal Features`, and existing `HeroForge UI Patches` categories.
-
-### Conflict risks
-
-- do not rewrite tokenizer teardown/re-enable timing, lighting/effect restoration, backdrop capture, Black Canvas renderer enforcement, or silent-cycle timing;
-- session toggles must never rewrite the saved Utilities defaults;
-- disabling a saved default must not unexpectedly tear down a deliberate session override;
-- saved Booth persistence must still wait for actual Booth entry before auto-applying;
-- saved Black Canvas must initialize without Booth entry;
-- preserve the existing `kw.witchDock.booth.consent.v1` key for migration compatibility;
-- public Stable remains untouched until live Dev validation.
-
-### Version decision
-
-- `booth-tool`: v25.0.0 / build `v25`;
-- `utilities`: v1.2.0;
-- `witch-dock-dev-loader`: v0.5.0 / userscript `1.0.8.5`.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
-
----
-
-## PFC-2026-09-06-034 — Move bound decal gizmo host to Utilities
-
-Date: 2026-09-06
-
-### Requested behavior
-
-- move the existing corrected bound decal gizmo control surface out of the Decals tab and into Utilities;
-- leave the Decals tab present as a placeholder reading `New decal tools coming shortly!`;
-- preserve the validated corrected-gizmo runtime, persisted enabled state, mode controls, status diagnostics, and enable/disable behavior.
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- HFC `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`;
-- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, and current Dev `manifest.json`;
-- `tools/Decals.js`, `tools/Utilities.js`;
-- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` and its exported `enable`, `disable`, `setMode`, `refresh`, and `getState` service boundary;
-- corrected gizmo delivery/history record.
-
-### Confirmed findings
-
-- the gizmo service owns its persisted preference at `kw.witchDock.decals.boundGizmo.enabled`;
-- the Decals tool is only a presentation host for the corrected-gizmo service;
-- moving that presentation does not require changing the validated gizmo runtime or its storage key;
-- Utilities already hosts optional HeroForge UI controls and is the more coherent domain for this toggle/control block.
-
-### Target files
-
-- `tools/Decals.js`
-- `tools/Utilities.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
-
-### Conflict risks
-
-- do not modify `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` or its source fragments;
-- do not duplicate the control in both Decals and Utilities;
-- preserve the gizmo service-owned enabled state and Move/Rotate/Scale calls;
-- keep the Decals tab registered so future decal tools have a stable host;
-- Dev manifest must load the changed Dev copies of Decals and Utilities rather than the Stable copies during smoke testing.
-
-### Version decision
-
-- `decals-dev`: `1.0.0 -> 1.1.0` (meaningful presentation change / placeholder host);
-- `utilities`: `1.0.0 -> 1.1.0` (adds the bound decal gizmo control surface).
-
-### Decision
-
-Proceed Dev-only and require a small live host smoke before Stable promotion.
-
-**Runtime behavior changed:** yes, Dev presentation/host ownership only. Corrected gizmo runtime behavior is unchanged.
-
----
-
-## PFC-2026-09-06-033 — Developer Mode public-readiness
-
-Date: 2026-09-06
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility project contract, architecture/inventory/compatibility/ownership/testing state;
-- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, current `manifest.json`;
-- `features/core/Witch_Dock_Developer_Mode.js` v0.2.0 behavior;
-- Dev loader manifest ownership;
-- validated tab cleanup and High Res service/UI cleanup;
-- Spinny Developer-Mode Short Test consumer and High Res Developer-Mode recovery consumer.
-
-### Confirmed finding
-
-Developer Mode already satisfies the accepted product shape (About-only, persistent, default OFF), but its module registry URL is hardcoded to `WITCH_DEV_UI`. Shipping that source unchanged would make public users inspect Dev registry versions instead of the manifest actually loaded by their Witch Dock.
-
-### Decision
-
-Make the active loader advertise its manifest URL and make Developer Mode resolve its registry from that host-owned URL, with Stable fallback. Preserve all existing normal-mode behavior and Developer-only consumer contracts. Require live Dev smoke before any Stable promotion.
-
-### Conflict risks
-
-- Developer Mode failure must remain diagnostic-only;
-- default OFF and existing storage key must not change;
-- normal users must not see per-tool rows, Module Versions, Short Test, or provider recovery controls;
-- no dependence on HF-Chat-Bridge or unstable Compatibility runtime heads;
-- module versions must bump with runtime changes.
-
-**Runtime behavior changed:** yes, Dev diagnostics/manifest-source boundary only.
-
----
-
-## PFC-2026-09-06-032 — Record High Res ownership cleanup live validation
-
-Date: 2026-09-06
-
-### Confirmed live results
-
-- compact normal presentation with no duplicate legacy section: PASS;
-- Developer Mode diagnostics: PASS;
-- provider disable -> enable recovery: PASS;
-- direct TRUE 4K / 4096x4096: PASS;
-- direct TRUE 8K / 8192x8192: PASS;
-- Spinny coexistence: PASS;
-- tab cleanup remains correct: PASS.
-
-The v0.8.0 service-only / v0.3.0 UI-only split is validated for Dev promotion consideration. No runtime files change in this checkpoint.
-
-**Runtime behavior changed:** no.
-
----
-
-## PFC-2026-09-06-031 — High Res service/UI ownership cleanup
-
-Date: 2026-09-06
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, `TESTING.md`;
-- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
-- current true-resolution service, compact UI adapter, readiness adapter, Developer Mode integration, and validated public provider boundary.
-
-### Confirmed diagnosis
-
-The Dev capture service still owned the legacy full Booth UI and registered `photo-booth-true-resolution`, while the compact presentation adapter later re-registered the same tool ID. This was the documented temporary migration technique and is no longer acceptable for Stable promotion.
-
-### Target files
-
-- `features/media/Photo_Booth_True_Resolution.js`
-- `features/media/Photo_Booth_True_Resolution_UI.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
-
-### Conflict risks
-
-- preserve validated 4K/8K Effects-source/phase-feed/provider functions byte-for-byte;
-- preserve `BT.maker.takeScreenshot` provider ownership and restore/reconcile sequencing;
-- preserve readiness adapter and compact button selectors;
-- preserve Developer Mode provider recovery controls;
-- do not modify Spinny or public Stable in this stage.
-
-### Decision
-
-Make the capture module service-only and the compact UI adapter the sole Witch Dock presentation owner. Require direct 4K/8K and disable/enable live regression before Stable promotion.
-
-**Runtime behavior changed:** yes, Dev ownership/lifecycle only.
-
----
-
-## PFC-2026-09-06-030 — Record Dev tab cleanup live validation
-
-Date: 2026-09-06
-
-### Confirmed live results
-
-- `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`: PASS.
-- Utilities cog tooltip `Utilities`: PASS.
-- Correct tool opens from every tab: PASS.
-- Persisted active tab restores after refresh: PASS.
-
-The Dev core ordering/presentation change is validated and may be considered for later narrow Stable promotion. No runtime files change in this checkpoint.
-
-**Runtime behavior changed:** no.
-
----
-
-## PFC-2026-09-06-029 — Dev tab order / Utilities icon cleanup
-
-Date: 2026-09-06
-
-### Reviewed
-
-- binding HeroForge.Compatibility project contract and current Witch Dock Dev tracking;
-- `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`;
-- `Witch_Dock_DEV.user.js` tab construction/order code and tab CSS;
-- `manifest.json` load order and module registry;
-- Body Editor / Decals / Utilities registration behavior;
-- active UI follow-up queue and the newly accepted public Developer Mode direction.
-
-### Target behavior
-
-- display tabs as `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`;
-- preserve the existing `Body Editor` internal tab key/persisted preference while displaying `Body`;
-- render Utilities as an SVG cog with tooltip/ARIA label `Utilities`;
-- structurally pin Utilities last even if future tabs register after it;
-- keep unknown future tabs ahead of Utilities;
-- keep this change Dev-only until visual smoke.
-
-### Conflict risks
-
-- do not alter the tool modules themselves or their HeroForge behavior;
-- do not invalidate persisted active-tab values;
-- do not rely only on manifest timing for the final order;
-- do not promote unrelated Developer Mode/High Res Dev work in this tab-only stage.
-
-### Version decision
-
-`witch-dock-dev-loader` advances to v0.3.0 / build `1.0.8.3-tab-order-icon`. No Body, Pose, Decals, Booth, JSON or Utilities module version changes are required because their runtime modules are untouched.
-
-**Runtime behavior changed:** yes, Dev shell presentation/order only.
-
----
-
-## PFC-2026-09-06-028 — Spinny Dev download/UX hardening
-
-Date: 2026-09-06
-
-### Reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, architecture, feature inventory, Spinny feature spec, maintained v0.5.0 source/status;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, manifest registry;
-- `Witch_Dock_DEV.user.js` host/grant boundary;
-- `Spinny_Mini_WebP.js` final mux/download boundary and guard dispatcher;
-- `Spinny_Mini_WebP_UI.js` select/popout/status presentation;
-- user live smoke results from the integrated Dev build.
-
-### Confirmed diagnosis
-
-The Spinny service's capture/mux code reached its completion path, but Witch Dock reused the standalone page-anchor save routine. The standalone source uses the same routine successfully, so the failure is isolated to the final download initiation boundary in the Witch Dock userscript-hosted integration rather than the validated render/mux engine. The Dev loader now owns a privileged Tampermonkey download adapter with explicit completion/error callbacks.
-
-### Target files
-
-- `Witch_Dock_DEV.user.js`
-- `features/media/Spinny_Mini_WebP.js`
-- `features/media/Spinny_Mini_WebP_UI.js`
-- `manifest.json`
-- `MASTER.md`
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-
-### Conflict risks
-
-- Do not alter frame production, TRUE-3K phase-feed math, RIFF mux/parser, timing, rotation restoration, or High Res still-provider ownership.
-- Download completion must not be reported until the host API confirms it.
-- Wheel must remain blocked before HeroForge receives it even though its warning modal is removed.
-- Other guarded actions must retain the existing confirmation behavior.
-- Public Stable must remain untouched.
-
-### Decision
-
-Apply a Dev-only privileged download host plus surgical service/UI corrections. Bump all affected active-module versions in the same commit and require live re-smoke before Stable promotion.
-
-**Runtime behavior changed:** yes, Dev branch only.
-
----
-
-# Pre-Flight Check Log
-
-## PFC-2026-09-06-027 - Isolated Dev installer for Spinny smoke
-
-Date: 2026-09-06
-
-Reviewed current Dev integration, public core loader, manifest URL ownership, module-version contract, and Stable/Dev separation.
-
-Risk: the public-named userscript loads Stable manifest/update URLs. Decision: create a distinct Dev userscript with WITCH_DEV_UI manifest/update/download URLs. No public core edit.
-
----
-
-# Pre-Flight Check Log
-
-## PFC-2026-09-06-026 — Witch Dock Dev Spinny integration
-
-Date: 2026-09-06
-
-### Reviewed
-
-- current `WITCH_DEV_UI` head and manifest/module registry;
-- `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`;
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`;
-- Developer Mode v0.2.0;
-- compact High Res Image Capture UI and 0.7.0 provider service;
-- exact validated HFC Spinny v0.5.0 source and standalone live validation results.
-
-The Witch Dock repository has no separate `ARCHITECTURE.md` / `FEATURE_INVENTORY.md` at this Dev head; `MASTER.md`, module registry, module-version contract and durable HISTORY records are the active repo architecture/inventory sources.
-
-### Target files
-
-- `features/media/Spinny_Mini_WebP.js` (new)
-- `features/media/Spinny_Mini_WebP_UI.js` (new)
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
-
-### Material risks checked
-
-- do not replace/displace High Res still provider ownership of `BT.maker.takeScreenshot`;
-- preserve TRUE-3K phase-feed capture logic and validated timing/state sequencing;
-- one service shared by dock and popout; no duplicate capture engine;
-- popout drag must remain inside Spinny-owned guard surface;
-- Developer Mode controls Short Test visibility only;
-- 4K Spinny remains deferred;
-- public Stable remains untouched.
-
-### Decision
-
-Proceed with Dev-only service/UI integration and require live user smoke before promotion.
-
----
-
-# Pre-Flight Check Log
-
-Use this file before repo updates to record what was checked, what could conflict, and what action is recommended.
-
-## PFC-2026-09-06-025 — Preserve Witch Dock UI / Spinny follow-up queue
-
-Date: 2026-09-06
-
-### Target files
-
-- `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md` (new)
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-
-### Required material reviewed
-
-- current `WITCH_DEV_UI` head `85fe0037cd0ba45644751c19420ea1ef58a6b283`;
-- current Developer Mode v0.2/module-version registry state;
-- current compact High Res Image Capture Dev UI state;
-- current Dev manifest tab ordering;
-- current High Res service/UI migration caveat;
-- current standalone Spinny/WebP decisions, including 3072 as the high-resolution target and 4096 deferral;
-- user reports that the standalone compact High Res UI looked correct, Developer Mode worked, canonical build/version rows were visible, and the About `Module Versions` list was visible;
-- user report that the 3072px Spinny run has finished, with detailed result intake still pending.
-
-### Confirmed findings
-
-- The side-project discussion produced several accepted UX/architecture decisions that must remain visible after work returns to Spinny.
-- Standalone visual smoke for compact High Res UI and Developer Mode/version display is complete.
-- Direct 4K/8K regression through the new compact UI, provider disable/re-enable recovery, and integrated `WITCH_DEV_UI` manifest loading have not been explicitly validated and must not be marked passed.
-- The Dev manifest contains the intended `Booth -> Decals -> JSON` default registration order, but integrated tab-order smoke remains pending.
-- High Res same-ID UI replacement remains a temporary Dev migration technique; explicit service/UI ownership cleanup is still required before Stable promotion.
-- Spinny popout, Pause/Resume, and capture-invalidating interaction guards remain unimplemented.
-- 4096px animated WebP remains explicitly deferred because of the confirmed 4096 still-provider collision; 3072px is the current high-resolution Spinny ceiling.
-- No HF-Chat-Bridge access is required to preserve this queue.
-
-### Recommended action
-
-Record a dedicated durable follow-up document covering the remaining Witch Dock integration, popout, Pause/guard, tab-order, and promotion tasks. Update high-level tracking so the completed 3K execution and Developer Mode/version-display smoke are no longer described as pending. Then return immediately to intake of the completed 3072px Spinny result.
-
-**Runtime behavior changed:** no. Documentation-only checkpoint; no module version bumps required.
-
----
-
-## PFC-2026-09-06-024 — Canonical Witch Dock module version registry
-
-Date: 2026-09-06
-
-- Added canonical `manifest.json.moduleRegistry` coverage for all active runtime modules.
-- Established `MODULE_VERSIONING.md` as the binding version-bump policy.
-- Advanced Developer Mode to v0.2.0 with canonical version display and About module inventory.
-- Local syntax/manifest/registry checks passed; public Stable remained unchanged.
-
-**Runtime behavior changed:** Developer Mode Dev diagnostics only. Existing Stable Witch Dock modules and HeroForge behavior unchanged.
-
----
-
-## PFC-2026-09-05-023 — Modular Witch Dock Developer Mode
-
-Date: 2026-09-05
-
-- Added Developer Mode as a separate hidden module with About toggle and reversible `WitchDock.registerTool` metadata wrapper.
-- Updated High Res Image Capture UI to expose provider recovery/build diagnostics only in Developer Mode.
-- Local syntax checks passed; public Stable remained unchanged.
-
-**Runtime behavior changed:** Dev-only diagnostics/presentation.
-
----
-
-## PFC-2026-09-05-022 — High Res Image Capture UI cleanup and default Decals tab order
-
-Date: 2026-09-05
-
-- Kept Stable 4K/8K capture engine untouched.
-- Added compact High Res UI target and hid provider implementation controls from normal users.
-- Moved Decals before JSON in Dev registration order.
-
-**Runtime behavior changed:** Dev-only presentation/default order.
-
----
-
-## PFC-2026-09-05-021 — Record public Photo Booth smoke acceptance
-
-Date: 2026-09-05
-
-- Public HeroForge/Lob 4096/8192 and direct Witch Dock TRUE 4K/8K passed.
-- Readiness adapter passed without repair-toggle cycling.
-
-**Runtime behavior changed:** no.
-
----
-
-Historical pre-flight records through PFC-2026-09-05-020 remain preserved in Git history at and before public promotion commit `e155f2c2f961463b4a0e26f7c88f21f603ce1b95`.
+Historical pre-flight entries through PFC-2026-09-07-038 remain preserved in Git history at/before Dev commit `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`.
