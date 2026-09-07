@@ -28,12 +28,21 @@ jobs:
           fetch-depth: 0
           path: target
 
-      - name: Tighten helper consent separation patch
+      - name: Correct helper startup/default separation
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('helper/_tools/apply_booth_feature_defaults.py')
           s = p.read_text(encoding='utf-8')
+
+          # Do not globally remove the persisted-consent read: the helper first
+          # inserts the new startup loader, so that broad replacement would erase
+          # the new loader too. Leaving the legacy UI-time read is harmless and
+          # keeps it synchronized with the same saved default.
+          broad = 'booth = booth.replace("    state.consent = !!gmGet(STORE_CONSENT, false);\\n", "")\n'
+          if broad not in s:
+              raise SystemExit('broad consent-removal helper anchor missing')
+          s = s.replace(broad, '', 1)
 
           mount_needle = "booth = booth.replace(\"    consentCb.checked = state.consent;\\n\\n\", \"\")\n"
           mount_replacement = mount_needle + "booth = booth.replace(\"    if (state.consent) startLoop();\\n\\n\", \"\")\n"
@@ -41,8 +50,15 @@ jobs:
               raise SystemExit('helper mount-gate patch anchor missing')
           s = s.replace(mount_needle, mount_replacement, 1)
 
+          # Session-toggle diagnostics no longer need to read the saved default.
+          gate_anchor = "booth = replace_once(booth, old_manual_gate, new_manual_gate, 'Booth session override gate')\n"
+          gate_patch = gate_anchor + "booth = booth.replace(\"try { dbg('ui.boothToggle', { v: !!v, consent: !!state.consent }); } catch {}\", \"try { dbg('ui.boothToggle', { v: !!v }); } catch {}\")\n"
+          if gate_anchor not in s:
+              raise SystemExit('helper session-debug patch anchor missing')
+          s = s.replace(gate_anchor, gate_patch, 1)
+
           audit_needle = '    "defaultBoothPersistence: !!state.consent,",\n)'
-          audit_replacement = '    "defaultBoothPersistence: !!state.consent,",\n    "return state.consent;",\n)'
+          audit_replacement = '    "defaultBoothPersistence: !!state.consent,",\n    "state.consent = !!gmGet(STORE_CONSENT, false);",\n    "return state.consent;",\n)'
           if audit_needle not in s:
               raise SystemExit('helper consent-audit anchor missing')
           s = s.replace(audit_needle, audit_replacement, 1)
