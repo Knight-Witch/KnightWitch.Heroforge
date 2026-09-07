@@ -1,0 +1,50 @@
+name: Apply Booth Startup v26
+
+on:
+  push:
+    branches:
+      - witch-booth-startup-v26-helper
+    paths:
+      - '_tools/apply_booth_startup_v26.py'
+      - '.github/workflows/apply-booth-startup-v26.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper
+        uses: actions/checkout@v4
+        with:
+          ref: witch-booth-startup-v26-helper
+          path: helper
+
+      - name: Checkout WITCH_DEV_UI
+        uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          fetch-depth: 0
+          path: target
+
+      - name: Assert expected Dev parent
+        working-directory: target
+        run: |
+          test "$(git rev-parse HEAD)" = "ea25599216e51d7d8c6be184027b55d4afafa152"
+
+      - name: Apply and validate Booth v26
+        working-directory: target
+        run: python ../helper/_tools/apply_booth_startup_v26.py
+
+      - name: Commit Dev candidate atomically
+        working-directory: target
+        run: |
+          git config user.name 'Knight Witch'
+          git config user.email 'amanda.m.ivans@gmail.com'
+          git status --short
+          git add tools/Booth.js tools/Utilities.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md
+          git diff --cached --check
+          test "$(git diff --cached --name-only | sort | tr '\n' ' ')" = "CHANGELOG.md HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md MASTER.md PRE_FLIGHT_Check.md manifest.json tools/Booth.js tools/Utilities.js "
+          git commit -m 'Repair Booth defaults on fresh figure load'
+          git push origin HEAD:WITCH_DEV_UI
