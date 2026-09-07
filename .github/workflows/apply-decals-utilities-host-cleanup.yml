@@ -1,0 +1,102 @@
+name: Apply Decals Utilities Host Cleanup
+on:
+  push:
+    branches: [witch-decals-utilities-helper]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper
+        uses: actions/checkout@v4
+        with:
+          ref: witch-decals-utilities-helper
+          path: helper
+      - name: Checkout WITCH_DEV_UI
+        uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          path: target
+          fetch-depth: 0
+      - name: Protect validated gizmo runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          sha256sum \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag \
+            > /tmp/gizmo-runtime.sha256
+      - name: Apply host cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          python ../helper/.github/scripts/apply_decals_utilities_host_cleanup.py
+      - name: Static gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          sha256sum -c /tmp/gizmo-runtime.sha256
+          node --check tools/Decals.js
+          node --check tools/Utilities.js
+          python -m json.tool manifest.json >/dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          decals = Path('tools/Decals.js').read_text()
+          utilities = Path('tools/Utilities.js').read_text()
+          manifest = json.loads(Path('manifest.json').read_text())
+
+          assert 'New decal tools coming shortly!' in decals
+          assert 'correctedBoundDecalGizmo' not in decals
+          assert 'Bound Decal Gizmo' in utilities
+          assert 'Correct bound decal gizmo' in utilities
+          assert 'correctedBoundDecalGizmo' in utilities
+          for mode in ['translate', 'rotate', 'scale']:
+              assert mode in utilities
+          assert 'svc.enable()' in utilities
+          assert 'svc.disable()' in utilities
+          assert 'svc.setMode(mode, true)' in utilities
+          assert 'svc.getState()' in utilities
+
+          registry = {x['id']: x for x in manifest['moduleRegistry']}
+          assert registry['decals-dev']['version'] == '1.1.0'
+          assert registry['utilities']['version'] == '1.1.0'
+          assert registry['corrected-bound-decal-gizmo']['version'] == '1.1.0'
+          assert registry['corrected-bound-decal-gizmo']['build'] == '1.1.0-stable-undo-transform-preserve'
+
+          tools = {x['id']: x for x in manifest['tools']}
+          assert '/WITCH_DEV_UI/tools/Decals.js' in tools['decals-dev']['url']
+          assert '/WITCH_DEV_UI/tools/Utilities.js' in tools['utilities']['url']
+          assert '/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js' in tools['corrected-bound-decal-gizmo']['url']
+
+          assert 'PFC-2026-09-06-034' in Path('PRE_FLIGHT_Check.md').read_text()
+          assert 'DOCK-2026-09-06-034' in Path('CHANGELOG.md').read_text()
+          assert 'Dev host relocation candidate' in Path('HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md').read_text()
+          print('Decals/Utilities host cleanup static gate: PASS')
+          PY
+          allowed='CHANGELOG.md HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md MASTER.md PRE_FLIGHT_Check.md manifest.json tools/Decals.js tools/Utilities.js'
+          actual="$(git diff --name-only | sort | tr '\n' ' ' | sed 's/ $//')"
+          expected="$(printf '%s\n' $allowed | sort | tr '\n' ' ' | sed 's/ $//')"
+          test "$actual" = "$expected" || { echo "Unexpected changed files: $actual"; echo "Expected: $expected"; exit 1; }
+          git diff --check
+      - name: Commit Dev candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          git config user.name "Knight Witch"
+          git config user.email "amanda.m.ivans@gmail.com"
+          git add tools/Decals.js tools/Utilities.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md
+          git diff --cached --check
+          git commit -m "Move bound decal gizmo controls to Utilities"
+          git push origin HEAD:WITCH_DEV_UI
