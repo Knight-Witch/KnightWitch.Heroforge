@@ -1,0 +1,44 @@
+name: Apply Booth Feature Defaults
+
+on:
+  push:
+    branches:
+      - witch-booth-features-helper
+    paths:
+      - '_tools/apply_booth_feature_defaults.py'
+      - '.github/workflows/apply-booth-feature-defaults.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper
+        uses: actions/checkout@v4
+        with:
+          ref: witch-booth-features-helper
+          path: helper
+
+      - name: Checkout WITCH_DEV_UI
+        uses: actions/checkout@v4
+        with:
+          ref: WITCH_DEV_UI
+          fetch-depth: 0
+          path: target
+
+      - name: Apply and validate Booth defaults patch
+        working-directory: target
+        run: python ../helper/_tools/apply_booth_feature_defaults.py
+
+      - name: Commit Dev candidate
+        working-directory: target
+        run: |
+          git config user.name 'Knight Witch'
+          git config user.email 'amanda.m.ivans@gmail.com'
+          git status --short
+          git add Witch_Dock_DEV.user.js tools/Booth.js tools/Utilities.js manifest.json MASTER.md PRE_FLIGHT_Check.md CHANGELOG.md HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md
+          git diff --cached --check
+          git commit -m 'Add Booth cross-session defaults in Utilities'
+          git push origin HEAD:WITCH_DEV_UI
