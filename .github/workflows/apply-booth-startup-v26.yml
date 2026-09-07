@@ -33,6 +33,19 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "ea25599216e51d7d8c6be184027b55d4afafa152"
 
+      - name: Fix repeated-heading documentation insertion helper
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('helper/_tools/apply_booth_startup_v26.py')
+          s = p.read_text(encoding='utf-8')
+          old = """def prepend_after(text, anchor, block, label):\n    if block.strip() in text:\n        raise RuntimeError(f'{label}: block already present')\n    return replace_once(text, anchor, anchor + block, label)\n"""
+          new = """def prepend_after(text, anchor, block, label):\n    if block.strip() in text:\n        raise RuntimeError(f'{label}: block already present')\n    idx = text.find(anchor)\n    if idx < 0:\n        raise RuntimeError(f'{label}: anchor not found')\n    cut = idx + len(anchor)\n    return text[:cut] + block + text[cut:]\n"""
+          if old not in s:
+              raise SystemExit('prepend_after helper anchor missing')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Apply and validate Booth v26
         working-directory: target
         run: python ../helper/_tools/apply_booth_startup_v26.py
