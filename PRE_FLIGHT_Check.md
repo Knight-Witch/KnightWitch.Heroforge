@@ -1,5 +1,62 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-037 — Booth v27 startup/state stabilization
+
+Date: 2026-09-06
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
+- current `tools/Booth.js` v26 and directly connected `tools/Utilities.js` v1.2.1;
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` and current Photo Booth/runtime findings;
+- current `WITCH_DEV_UI` head `9b59f624cdb89f3930d6487d3e09eb5b3c460b36`;
+- live HeroForge runtime through the approved private HF-Chat-Bridge Power workbench.
+
+### Confirmed v26 regressions / source findings
+
+- v26 `resolveRuntime()` required `BT.maker`, and both startup-default application and the runtime loop waited for that object. On the observed live session this delayed the supposed startup path until HeroForge later initialized Photo Booth runtime.
+- when the delayed runtime appeared, v26 replayed Black Canvas startup recovery six times. Each recovery called `refreshBTComponentRender()`, which explicitly called `CK.character.refresh()`.
+- saved Booth effects and lighting remained present in `CK.data.custom.portrait`; the user-visible reset was not loss of the saved JSON state.
+- the current saved portrait configuration contains `camera`, `effects`, `filters`, `lighting`, `selected`, and `useEnvAsBg`; `cameraSave` is currently absent, so `cameraSave` alone is not a valid saved-figure eligibility requirement.
+- current HeroForge `BT.display.lighting.apply(next, previous)` calls `CK.character.refresh()` when previous/new sphere-light states differ. v26 replayed lighting as `apply(captured, null)`.
+- live bridge validation of `BT.display.lighting.apply(savedLighting, savedLighting)` recorded zero calls to `CK.character.refresh()`.
+- current HeroForge exposes `BT.liveEngine`; in the current initialized session it aliases the active maker object. `BT.maker` remains the named fallback.
+- the thin 1:1 Black Canvas edge is not the ordinary frame plane/CSS canvas background/stale renderer size. The live background path uses 1024x1024 `texMaskBg`/`texMaskFrame` mask textures, so an unproven shader/mask rewrite is explicitly out of scope for this stabilization pass.
+
+### Target files
+
+- `tools/Booth.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` (new durable investigation record)
+
+### Decision
+
+Advance Booth to v27.0.0/build `v27`. Decouple saved-character/default detection and Black Canvas display enforcement from the requirement that `BT.maker` already exist; retain the established native engine when it becomes available; remove Witch Dock's explicit broad character refresh from component/startup reconciliation; replay captured lighting with an identical previous-state comparison; clear figure-scoped Booth snapshots when the loaded character generation changes; and broaden responsive Black Canvas layout invalidation without modifying the unresolved mask/shader edge.
+
+### Conflict risks / preservation requirements
+
+- do not modify `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`; the reported projected-decal transform corruption is treated as a Booth regression until proven otherwise;
+- preserve tokenizer disable/re-enable and silent-cycle timing unless live v27 testing proves a separate failure;
+- preserve saved-default storage keys and the distinction between Utilities defaults and Booth-tab session overrides;
+- do not copy figure A's captured materials/effects/lighting into figure B after a same-page figure switch;
+- do not use `BT.maker` existence/enabled state as proof of character-owned saved Booth config;
+- do not add an unvalidated Black Canvas mask/shader patch merely to remove the thin square edge;
+- public `Witch_Scripts`, Spinny, High Res Image Capture, JSON, Utilities behavior, tab infrastructure, and the validated decal runtime remain untouched.
+
+### Validation plan
+
+Before branch movement, compare the candidate tree against v26 and confirm the runtime-source delta is confined to `tools/Booth.js`; verify manifest identity `27.0.0` / `v27`; verify no Stable or decal runtime paths are in the final changed-file set. The Dev repository currently has no GitHub Actions workflow, so live browser validation is required after commit.
+
+Live gate: saved-figure fresh reload, immediate/default Black Canvas, no v26 white-flash storm, effects/lighting preservation, projected decal transform preservation, same-page figure switch, `+ New Figure` exclusion, session overrides, component toggles, and responsive Black Canvas edge behavior.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-06-036 — Booth saved-figure startup defaults repair
 
 Date: 2026-09-06

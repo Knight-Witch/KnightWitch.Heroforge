@@ -1,5 +1,50 @@
 # Changelog
 
+## DOCK-2026-09-06-037 — Stabilize Booth v27 startup and state replay
+
+Date: 2026-09-06
+Timestamp: 21:15 PDT
+
+### Confirmed v26 regression
+
+- v26 waited for `BT.maker` before its runtime loop/startup defaults could do useful work, so saved Booth/Black Canvas state could remain visually dormant until HeroForge initialized Photo Booth later in the session.
+- Once that runtime appeared, the saved Black Canvas startup path replayed `refreshBTComponentRender()` six times; that helper explicitly called `CK.character.refresh()` on every replay.
+- HeroForge's native `BT.display.lighting.apply(next, previous)` also calls `CK.character.refresh()` when `previous.sphereLights` differs from `next.sphereLights`. v26's Booth lighting helper passed `null` as `previous`, creating another unnecessary whole-character refresh path.
+- Live bridge inspection confirmed the figure's saved Booth effects and lighting remained present in `CK.data.custom.portrait`; the regression was application/runtime churn rather than deleted saved settings.
+- A live bridge probe calling `BT.display.lighting.apply(savedLighting, savedLighting)` produced zero `CK.character.refresh()` calls.
+
+### Changes
+
+- Booth advances to v27.0.0 / build `v27`.
+- Runtime resolution no longer requires `BT.maker` merely to inspect character-owned Booth config or apply display-only Black Canvas state; the BT facade can exist before the Booth engine, and uses `BT.liveEngine || BT.maker` when an engine is available.
+- Saved Booth config detection scans character-owned portrait/token mode config rather than depending on `cameraSave` or a live maker object; current HeroForge saved figures may legitimately have `camera`, `effects`, `filters`, `lighting`, and `selected` with no `cameraSave` field.
+- Character-owned saved effects/lighting/background selection seed Booth's figure-scoped snapshots before the engine is available.
+- Figure changes are detected from the current `CK.data` object generation plus `CK.character.uuid`; figure-scoped Booth snapshots are cleared so one figure's renderer/effect/lighting references are not replayed onto another figure.
+- Default-owned figure-switch handling gets a short settle grace before deciding that the new figure has no saved Booth config. Manual session overrides remain distinct.
+- Persistent Booth re-enables the named BT engine when it becomes available and Booth View is intended, instead of making all startup logic wait for that engine first.
+- `refreshBTComponentRender()` no longer calls `CK.character.refresh()`.
+- Booth lighting replay now passes the captured lighting state as both `next` and `previous`, matching the live-proven no-character-refresh replay path.
+- Black Canvas startup retries now reassert only Black Canvas/display state; they no longer replay the broad component/character refresh path.
+- Black Canvas layout invalidation now includes canvas/holder geometry, viewport size, and DPR in addition to backing/client dimensions so responsive right-edge strip regressions can trigger HeroForge's native overlay resize/refresh sequence.
+- No mask/shader hack was added for the thin 1:1 square edge; that artifact remains a separate unresolved mask/shader-path issue.
+
+### Preserved boundaries
+
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` is untouched; v27 does not modify the validated decal gizmo/runtime to address the reported projected-decal corruption.
+- Utilities behavior/storage keys remain unchanged at v1.2.1.
+- Spinny, High Res Image Capture, JSON, tab infrastructure, and public Stable are unchanged.
+- Public `Witch_Scripts` remains untouched pending live v27 validation.
+
+### Validation gate
+
+The v27 source was built off-branch and compared against v26 before branch movement; the runtime-code candidate changes only `tools/Booth.js`. Manifest identity is `27.0.0` / `v27`. The repository has no Dev GitHub Actions workflow, so live `WITCH_DEV_UI` smoke remains the decisive gate.
+
+Required live checks: saved-figure fresh reload; Black Canvas without opening Photo Booth; absence of the v26 white-flash storm; saved effects/lighting preserved; projected decal transform unchanged; same-page figure switching; `+ New Figure` exclusion; manual session overrides; component toggles; and responsive Black Canvas edge behavior.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-036 — Repair Booth defaults on fresh figure/page load
 
 Date: 2026-09-06

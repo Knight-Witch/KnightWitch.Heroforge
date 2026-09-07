@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v26';
+  const BUILD_TAG = 'v27';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -32,6 +32,11 @@
     seenBooth: false,
     lastDetectAt: 0,
     lastTickAt: 0,
+    lastRuntimeEnableAt: 0,
+
+    characterDataRef: null,
+    characterRootKey: null,
+    characterChangedAt: 0,
 
     capturedMaterial: null,
     capturedUniformValues: null,
@@ -149,10 +154,11 @@
     try {
       if (UW.TN && UW.TN.tokenizer) return UW.TN;
       const BT = UW.BT;
-      if (!BT || !BT.maker) return null;
+      if (!BT) return null;
       if (!btRuntimeFacade) btRuntimeFacade = { __kwBT: true };
+      const engine = BT.liveEngine || BT.maker || null;
       btRuntimeFacade.source = BT;
-      btRuntimeFacade.tokenizer = BT.maker;
+      btRuntimeFacade.tokenizer = engine && typeof engine === 'object' ? engine : null;
       btRuntimeFacade.lighting = BT.display && BT.display.lighting ? BT.display.lighting : null;
       btRuntimeFacade.shader = BT.display || null;
       btRuntimeFacade.currentMode = BT.currentMode || BT._boothMode || null;
@@ -195,7 +201,7 @@
 
   function applyBTTokenBg(filter, selected) {
     try {
-      const maker = UW.BT && UW.BT.maker;
+      const maker = UW.BT && (UW.BT.liveEngine || UW.BT.maker);
       if (!maker || !filter) return false;
       const next = cloneJson(filter);
       if (!next) return false;
@@ -233,7 +239,7 @@
 
   function restoreBTTokenBg() {
     try {
-      const maker = UW.BT && UW.BT.maker;
+      const maker = UW.BT && (UW.BT.liveEngine || UW.BT.maker);
       if (!maker || !state.editorTokenBg) return false;
       if (state.editorTokenBgSelected !== null && state.editorTokenBgSelected !== undefined && typeof maker._tweakSaved === 'function') {
         try { maker._tweakSaved({ selected: { tokenBg: state.editorTokenBgSelected } }); } catch {}
@@ -273,11 +279,27 @@
 
   function syncBTCanvasLayout(overlays, canvas) {
     try {
+      const q = (value) => Math.round((Number(value) || 0) * 4) / 4;
+      const rect = typeof canvas.getBoundingClientRect === 'function' ? canvas.getBoundingClientRect() : null;
+      const holder = canvas.parentElement || null;
+      const holderRect = holder && typeof holder.getBoundingClientRect === 'function'
+        ? holder.getBoundingClientRect()
+        : null;
       const key = [
         canvas.width,
         canvas.height,
         canvas.clientWidth,
         canvas.clientHeight,
+        rect ? q(rect.left) : 0,
+        rect ? q(rect.top) : 0,
+        rect ? q(rect.width) : 0,
+        rect ? q(rect.height) : 0,
+        holderRect ? q(holderRect.left) : 0,
+        holderRect ? q(holderRect.top) : 0,
+        holderRect ? q(holderRect.width) : 0,
+        holderRect ? q(holderRect.height) : 0,
+        UW.innerWidth || 0,
+        UW.innerHeight || 0,
         UW.devicePixelRatio || 1
       ].join(':');
       if (state.btCanvasLayoutKey === key) return false;
@@ -630,7 +652,7 @@
       const booth = state.userBoothOn ? 'ON' : 'OFF';
       const bg = state.bgOn ? 'ON' : 'OFF';
       ui.status.textContent = `Tokenizer: ${tok} | Booth: ${booth} | Black Canvas: ${bg}`;
-    try { ui.status.textContent += ` | Booth ${BUILD_TAG}`; } catch {}
+      try { ui.status.textContent += ` | Booth ${BUILD_TAG}`; } catch {}
     }
   }
 
@@ -797,13 +819,13 @@
 
       const accessor = t && t.effectState ? t.effectState : null;
       const effects = typeof accessor === 'function' ? accessor.call(t) : accessor;
-      if (!effects) return null;
+      if (!effects) return state.capturedEffectState;
       if (typeof effects.toJson === 'function') {
         state.capturedEffectState = effects.toJson();
       }
       return state.capturedEffectState;
     } catch {
-      return null;
+      return state.capturedEffectState;
     }
   }
 
@@ -891,7 +913,7 @@
   function captureBTLightingState() {
     try {
       const BT = UW.BT;
-      const maker = BT && BT.maker;
+      const maker = BT && (BT.liveEngine || BT.maker);
       if (!maker || typeof maker.composeDisplayState !== 'function') return false;
       const composed = maker.composeDisplayState();
       if (!composed || !composed.lighting) return false;
@@ -912,10 +934,13 @@
       const lighting = BT && BT.display ? BT.display.lighting : null;
       if (!lighting || typeof lighting.apply !== 'function') return false;
 
-      // reset() restores editor lighting while composeDisplayState() continues to
-      // report the saved Booth values. Passing that identical composed state as
-      // the previous value makes Hero Forge skip its full lighting refresh.
-      lighting.apply(copyBTLighting(captured), null);
+      // Hero Forge refreshes the entire character when sphere-light state differs
+      // from the previous value passed to lighting.apply(). This is a replay of an
+      // already-captured state, so pass that same state as the comparison value.
+      // Live bridge validation confirmed this restores the state without invoking
+      // CK.character.refresh().
+      const next = copyBTLighting(captured);
+      lighting.apply(next, copyBTLighting(captured));
       return true;
     } catch {
       return false;
@@ -954,7 +979,6 @@
   function refreshBTComponentRender() {
     try {
       const BT = UW.BT;
-      const CK = UW.CK;
       const overlays = BT && BT.display ? BT.display.overlays : null;
 
       if (overlays) {
@@ -965,10 +989,6 @@
 
       applyBTComponentPlanes();
       if (state.bgOn) enforceBTBlackCanvas();
-
-      if (CK && CK.character && typeof CK.character.refresh === 'function') {
-        CK.character.refresh();
-      }
 
       requestAnimationFrame(() => {
         try {
@@ -1012,7 +1032,6 @@
 
     if (kind === 'booth') {
       const prevUser = !!state.userBoothOn;
-      const prevGate = !!state.boothOn;
 
       state.userBoothOn = !!nextVal;
       state.boothOn = state.userBoothOn;
@@ -1030,7 +1049,6 @@
     }
   }
 
-  
   function dbg(tag, data) {
     try {
       const rec = { t: Date.now(), tag, data: data === undefined ? null : data };
@@ -1045,8 +1063,7 @@
 
   try { dbg('init', { build: BUILD_TAG }); } catch {}
 
-
-function waitForRuntime(cb) {
+  function waitForRuntime(cb) {
     const rt = resolveRuntime();
     if (rt) return cb(rt);
     setTimeout(() => waitForRuntime(cb), 50);
@@ -1082,7 +1099,9 @@ function waitForRuntime(cb) {
       const t = TN && TN.tokenizer ? TN.tokenizer : null;
       const m = t && typeof t.currentMode === 'string' ? t.currentMode : null;
       if (m) return m;
-      return TN && typeof TN.currentMode === 'string' ? TN.currentMode : null;
+      if (TN && typeof TN.currentMode === 'string' && TN.currentMode) return TN.currentMode;
+      const BT = UW.BT;
+      return BT && typeof BT.currentMode === 'string' ? BT.currentMode : null;
     } catch {
       return null;
     }
@@ -1109,8 +1128,10 @@ function waitForRuntime(cb) {
       if (isInBooth(tn)) return;
 
       state.boothOn = false;
-      try { dbg('silentCycle.off', {});
-        teardownBoothNow(tn); } catch {}
+      try {
+        dbg('silentCycle.off', {});
+        teardownBoothNow(tn);
+      } catch {}
 
       setTimeout(() => {
         const tn2 = runtimeNow(tn);
@@ -1515,15 +1536,15 @@ function waitForRuntime(cb) {
 
     const original = obj.disable;
     const wrapped = function () {
+      try {
+        let name = '';
         try {
-          let name = '';
-          try {
-            const rt = resolveRuntime();
-            if (rt && rt.tokenizer && obj === rt.tokenizer) name = rt.__kwBT ? 'BT.maker' : 'TN.tokenizer';
-            else if (rt && rt.lighting && obj === rt.lighting) name = rt.__kwBT ? 'BT.display.lighting' : 'TN.lighting';
-          } catch {}
-          dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
+          const rt = resolveRuntime();
+          if (rt && rt.tokenizer && obj === rt.tokenizer) name = rt.__kwBT ? 'BT.maker' : 'TN.tokenizer';
+          else if (rt && rt.lighting && obj === rt.lighting) name = rt.__kwBT ? 'BT.display.lighting' : 'TN.lighting';
         } catch {}
+        dbg('disable.call', { name, boothOn: !!state.boothOn, allowOnce: !!state.allowTokenizerDisableOnce });
+      } catch {}
       try {
         const tn = resolveRuntime();
         const tok = tn && tn.tokenizer;
@@ -1571,14 +1592,14 @@ function waitForRuntime(cb) {
         }
 
         if (state.boothOn) {
-        try {
-          const tn = resolveRuntime();
-          const tok = tn && tn.tokenizer ? tn.tokenizer : null;
-          if (tok && obj === tok && state.userBoothOn && tn && !isInBooth(tn)) {
-            dbg('exit.detect.disable', {});
-            scheduleSilentBackdropCycle(tn);
-          }
-        } catch {}
+          try {
+            const tn2 = resolveRuntime();
+            const tok2 = tn2 && tn2.tokenizer ? tn2.tokenizer : null;
+            if (tok2 && obj === tok2 && state.userBoothOn && tn2 && !isInBooth(tn2)) {
+              dbg('exit.detect.disable', {});
+              scheduleSilentBackdropCycle(tn2);
+            }
+          } catch {}
 
           if (isTokenizer && state.allowTokenizerDisableOnce) {
             return original.apply(this, arguments);
@@ -1640,44 +1661,81 @@ function waitForRuntime(cb) {
     }
   }
 
+  function savedBoothModeCandidates(TN) {
+    const out = [];
+    const add = (value) => {
+      if (typeof value !== 'string' || !value || out.includes(value)) return;
+      out.push(value);
+    };
+    try {
+      const BT = UW.BT;
+      add(BT && BT.currentMode);
+      add(BT && BT._boothMode);
+      add(TN && TN.currentMode);
+      const custom = UW.CK && UW.CK.data ? UW.CK.data.custom : null;
+      if (custom && custom.portrait && custom.portrait.camera) add(custom.portrait.camera.tokenizerMode);
+      if (custom && custom.token && custom.token.camera) add(custom.token.camera.tokenizerMode);
+      if (custom && custom.portrait) add('portrait');
+      if (custom && custom.token) add('token');
+    } catch {}
+    return out;
+  }
+
   function readSavedBoothConfig(TN) {
     try {
-      const t = TN && TN.tokenizer ? TN.tokenizer : null;
-      if (!t) return null;
-
-      if (TN.__kwBT) {
-        const BT = UW.BT;
+      const isBT = !!((TN && TN.__kwBT) || UW.BT);
+      if (isBT) {
         const CK = UW.CK;
-        const mode = (BT && (BT.currentMode || BT._boothMode)) || TN.currentMode || null;
         const custom = CK && CK.data && CK.data.custom;
-        const cfg = custom && mode ? custom[mode] : null;
-        if (!cfg || typeof cfg !== 'object') return null;
+        if (!custom || typeof custom !== 'object') return null;
 
-        // Hero Forge's current Booth source stores deliberate camera state at
-        // CK.data.custom[BT.currentMode].cameraSave and stores the other Booth
-        // presentation selections in the same per-mode custom config. Do not
-        // use BT.maker existence/_enabledFor as evidence: those are runtime
-        // state and can exist for a brand-new figure.
-        const filters = cfg.filters && typeof cfg.filters === 'object' ? cfg.filters : null;
-        const selected = cfg.selected && typeof cfg.selected === 'object' ? cfg.selected : null;
-        const signals = [];
-        if (cfg.cameraSave) signals.push('cameraSave');
-        if (cfg.camera) signals.push('camera');
-        if (cfg.lighting) signals.push('lighting');
-        if (cfg.effects) signals.push('effects');
-        if (filters && filters.tokenBg) signals.push('filters.tokenBg');
-        if (filters && filters.tokenFrame) signals.push('filters.tokenFrame');
-        if (selected && selected.tokenBg !== undefined && selected.tokenBg !== null) signals.push('selected.tokenBg');
-        if (selected && selected.tokenFrame !== undefined && selected.tokenFrame !== null) signals.push('selected.tokenFrame');
-        if (!signals.length) return null;
-        return { mode, signals };
+        const modes = savedBoothModeCandidates(TN);
+        for (let i = 0; i < modes.length; i++) {
+          const mode = modes[i];
+          const cfg = custom[mode];
+          if (!cfg || typeof cfg !== 'object') continue;
+
+          const filters = cfg.filters && typeof cfg.filters === 'object' ? cfg.filters : null;
+          const selected = cfg.selected && typeof cfg.selected === 'object' ? cfg.selected : null;
+          const signals = [];
+          if (cfg.cameraSave) signals.push('cameraSave');
+          if (cfg.camera) signals.push('camera');
+          if (cfg.lighting) signals.push('lighting');
+          if (cfg.effects) signals.push('effects');
+          if (filters && filters.tokenBg) signals.push('filters.tokenBg');
+          if (filters && filters.tokenFrame) signals.push('filters.tokenFrame');
+          if (selected && selected.tokenBg !== undefined && selected.tokenBg !== null) signals.push('selected.tokenBg');
+          if (selected && selected.tokenFrame !== undefined && selected.tokenFrame !== null) signals.push('selected.tokenFrame');
+          if (!signals.length) continue;
+          return { mode, signals, config: cfg };
+        }
+        return null;
       }
 
-      if (t.savedCamera) {
-        return { mode: getTokenizerMode(TN) || 'legacy', signals: ['savedCamera'] };
+      const t = TN && TN.tokenizer ? TN.tokenizer : null;
+      if (t && t.savedCamera) {
+        return { mode: getTokenizerMode(TN) || 'legacy', signals: ['savedCamera'], config: null };
       }
     } catch {}
     return null;
+  }
+
+  function seedCapturedBoothState(saved) {
+    const cfg = saved && saved.config;
+    if (!cfg || typeof cfg !== 'object') return;
+    try {
+      if (!state.capturedEffectState && cfg.effects) {
+        state.capturedEffectState = copyBTLighting(cfg.effects);
+      }
+      if (!state.capturedLightingState && cfg.lighting) {
+        state.capturedLightingState = copyBTLighting(cfg.lighting);
+      }
+      const filters = cfg.filters && typeof cfg.filters === 'object' ? cfg.filters : null;
+      if (!state.capturedTokenBg && filters && filters.tokenBg) {
+        state.capturedTokenBg = cloneJson(filters.tokenBg);
+        state.capturedTokenBgSelected = cfg.selected ? cfg.selected.tokenBg : null;
+      }
+    } catch {}
   }
 
   function hasSavedBoothSetup(TN) {
@@ -1691,6 +1749,75 @@ function waitForRuntime(cb) {
     return !!(t.savedCamera || t.currentCamera);
   }
 
+  function currentCharacterGeneration() {
+    try {
+      const CK = UW.CK;
+      return {
+        data: CK && CK.data ? CK.data : null,
+        rootKey: CK && CK.character && CK.character.uuid ? String(CK.character.uuid) : null
+      };
+    } catch {
+      return { data: null, rootKey: null };
+    }
+  }
+
+  function clearFigureScopedSnapshots() {
+    state.capturedMaterial = null;
+    state.capturedUniformValues = null;
+    state.capturedTextureUniforms = null;
+    state.hookedMesh = null;
+    state.capturedTokenBg = null;
+    state.capturedTokenBgSelected = null;
+    state.editorTokenBg = null;
+    state.editorTokenBgSelected = null;
+    state.originalMaterial = null;
+    state.originalUniformValues = null;
+    state.originalTextureUniforms = null;
+    state.originalMesh = null;
+    state.lastDesiredMaterial = null;
+    state.lastDesiredUniformValues = null;
+    state.lastDesiredTextureUniforms = null;
+    state.editorMaterial = null;
+    state.editorUniformValues = null;
+    state.editorTextureUniforms = null;
+    state.capturedEffectState = null;
+    state.capturedLightingState = null;
+    state.btCanvasLayoutKey = null;
+    state.oneShotBackdropRearmArmed = false;
+    state.prevInBooth = false;
+    state.lastTokenizerMode = null;
+  }
+
+  function observeCharacterGeneration() {
+    const current = currentCharacterGeneration();
+    if (!current.data && !current.rootKey) return false;
+
+    if (!state.characterDataRef && !state.characterRootKey) {
+      state.characterDataRef = current.data;
+      state.characterRootKey = current.rootKey;
+      return false;
+    }
+
+    const dataChanged = !!(current.data && state.characterDataRef && current.data !== state.characterDataRef);
+    const rootChanged = !!(current.rootKey && state.characterRootKey && current.rootKey !== state.characterRootKey);
+    if (!dataChanged && !rootChanged) {
+      if (current.data) state.characterDataRef = current.data;
+      if (current.rootKey) state.characterRootKey = current.rootKey;
+      return false;
+    }
+
+    const previousRootKey = state.characterRootKey;
+    state.characterDataRef = current.data;
+    state.characterRootKey = current.rootKey;
+    state.characterChangedAt = Date.now();
+    state.autoApplied = false;
+    state.seenBooth = false;
+    state.savedBoothMissingTicks = 0;
+    clearFigureScopedSnapshots();
+    dbg('character.changed', { dataChanged, rootChanged, previousRootKey, rootKey: current.rootKey });
+    return true;
+  }
+
   function maybeAutoApply(TN) {
     if (!state.consent) return;
     const now = Date.now();
@@ -1700,6 +1827,7 @@ function waitForRuntime(cb) {
 
     const saved = readSavedBoothConfig(TN);
     if (saved) {
+      seedCapturedBoothState(saved);
       if (!state.userBoothOn) {
         onUserBoothToggle(true, { source: 'default', runtime: TN, reason: 'saved-figure-config' });
       }
@@ -1720,7 +1848,27 @@ function waitForRuntime(cb) {
     dbg('default.booth.autoApply', { reason: 'booth-visit' });
     updateUI();
   }
-  
+
+  function ensureDesiredBTRuntime(TN) {
+    if (!state.userBoothOn) return false;
+    const rt = runtimeNow(TN);
+    if (!rt || !rt.__kwBT) return false;
+    const engine = rt.tokenizer || (UW.BT && (UW.BT.liveEngine || UW.BT.maker)) || null;
+    if (!engine || typeof engine.enable !== 'function') return false;
+    if (engine.enabled) return true;
+
+    const now = Date.now();
+    if (now - state.lastRuntimeEnableAt < 750) return false;
+    state.lastRuntimeEnableAt = now;
+    try {
+      engine.enable();
+      dbg('bt.ensureEnabled', { enabled: !!engine.enabled, mode: UW.BT ? UW.BT.currentMode : null });
+      return !!engine.enabled;
+    } catch {
+      return false;
+    }
+  }
+
   function scheduleSilentBackdropCycle(TN) {
     if (!state.userBoothOn) return;
     if (state.silentCycleInProgress) return;
@@ -1799,12 +1947,16 @@ function waitForRuntime(cb) {
     if (now - state.lastTickAt < 110) return requestAnimationFrame(() => tick(TN));
     state.lastTickAt = now;
 
+    TN = runtimeNow(TN);
+    observeCharacterGeneration();
+
     const tokenizerMode = (() => {
       try {
         const t = TN && TN.tokenizer ? TN.tokenizer : null;
         const m = t && typeof t.currentMode === 'string' ? t.currentMode : null;
         if (m) return m;
-        return typeof TN.currentMode === 'string' ? TN.currentMode : null;
+        if (TN && typeof TN.currentMode === 'string') return TN.currentMode;
+        return UW.BT && typeof UW.BT.currentMode === 'string' ? UW.BT.currentMode : null;
       } catch {
         return null;
       }
@@ -1872,8 +2024,12 @@ function waitForRuntime(cb) {
     }
 
     const savedBoothConfig = readSavedBoothConfig(TN);
+    if (savedBoothConfig) seedCapturedBoothState(savedBoothConfig);
+    const figureSettling = !!state.characterChangedAt && (Date.now() - state.characterChangedAt < 1800);
     if (state.defaultSessionBooth && state.userBoothOn && state.consent && !inBooth) {
       if (savedBoothConfig) {
+        state.savedBoothMissingTicks = 0;
+      } else if (figureSettling) {
         state.savedBoothMissingTicks = 0;
       } else {
         state.savedBoothMissingTicks += 1;
@@ -1890,12 +2046,13 @@ function waitForRuntime(cb) {
     }
 
     maybeAutoApply(TN);
+    ensureDesiredBTRuntime(TN);
 
     const hideFrame = !!state.userBoothOn && !inBooth;
     setBoothFrameHidden(hideFrame);
     setShaderFrameHidden(hideFrame, TN);
 
-    if (state.boothOn) {
+    if (state.boothOn && TN) {
       hookTokenizerDisable(TN);
       if (!TN.__kwBT) enforceLightingPersistence(TN);
       wrapDisable(TN && TN.tokenizer ? TN.tokenizer : null);
@@ -1928,8 +2085,6 @@ function waitForRuntime(cb) {
     requestAnimationFrame(() => tick(TN));
   }
 
-  
-
   function setDefaultBoothPersistence(v) {
     try { dbg('default.boothPersistence', { v: !!v }); } catch {}
     state.consent = !!v;
@@ -1939,7 +2094,9 @@ function waitForRuntime(cb) {
     if (state.consent) {
       startLoop();
       const rt = resolveRuntime();
-      if (rt && hasSavedBoothSetup(rt)) {
+      const saved = readSavedBoothConfig(rt);
+      if (saved) {
+        seedCapturedBoothState(saved);
         onUserBoothToggle(true, { source: 'default', runtime: rt, reason: 'utilities-enable' });
         state.autoApplied = true;
         state.savedBoothMissingTicks = 0;
@@ -1987,7 +2144,10 @@ function waitForRuntime(cb) {
       try {
         const rt = runtimeNow(TN);
         const t = rt && rt.tokenizer ? rt.tokenizer : null;
-        if (t && typeof t.enable === 'function') t.enable();
+        if (t && typeof t.enable === 'function') {
+          state.lastRuntimeEnableAt = Date.now();
+          t.enable();
+        }
       } catch {}
     }
 
@@ -2076,18 +2236,14 @@ function waitForRuntime(cb) {
     const rt = resolveRuntime();
     if (rt) {
       try { onUserBgToggle(true); } catch {}
-      try {
-        state.btCanvasLayoutKey = null;
-        refreshBTComponentRender();
-      } catch {}
       state.startupBlackKicks = Math.max(state.startupBlackKicks, n + 1);
       dbg('default.blackCanvas.startupKick', { attempt: n + 1, runtime: rt.__kwBT ? 'BT' : 'TN' });
     }
 
-    // Hero Forge finishes character/display setup in delayed passes. Replaying
-    // the already-tested Black Canvas activation/refresh path during that short
-    // startup window prevents a late native render from visually overwriting
-    // the restored default. A Booth-tab session override to OFF stops retries.
+    // Hero Forge finishes display setup in delayed passes. Reassert only the
+    // Black Canvas display state during that short startup window. v26 replayed
+    // the broad component-refresh path here, which in turn refreshed the whole
+    // character repeatedly and could reset unrelated figure state.
     const delays = [150, 350, 700, 1400, 2600];
     if (n < delays.length && state.defaultBlackCanvas && state.bgOn) {
       setTimeout(() => {
@@ -2097,16 +2253,14 @@ function waitForRuntime(cb) {
   }
 
   function applyStartupDefaults() {
-    waitForRuntime((TN) => {
-      if (state.defaultBlackCanvas && state.bgOn) kickStartupBlackCanvas(0);
-      if (state.consent) maybeAutoApply(TN);
-    });
+    if (state.defaultBlackCanvas && state.bgOn) kickStartupBlackCanvas(0);
+    if (state.consent) maybeAutoApply(resolveRuntime());
   }
 
   function startLoop() {
     if (!state.loopActive) {
       state.loopActive = true;
-      waitForRuntime((TN) => requestAnimationFrame(() => tick(TN)));
+      requestAnimationFrame(() => tick(resolveRuntime()));
     }
   }
 
@@ -2134,10 +2288,10 @@ function waitForRuntime(cb) {
 
   function boothPublicState() {
     const rt = resolveRuntime();
-    const saved = rt ? readSavedBoothConfig(rt) : null;
+    const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '26.0.0',
+      version: '27.0.0',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2150,14 +2304,17 @@ function waitForRuntime(cb) {
       startupBlackKicks: state.startupBlackKicks,
       seenBooth: !!state.seenBooth,
       autoApplied: !!state.autoApplied,
-      loopActive: !!state.loopActive
+      loopActive: !!state.loopActive,
+      runtimeReady: !!rt,
+      runtimeEngineReady: !!(rt && rt.tokenizer),
+      characterRootKey: state.characterRootKey
     };
   }
 
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '26.0.0',
+      version: '27.0.0',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,
@@ -2204,7 +2361,12 @@ function waitForRuntime(cb) {
           defaultBoothPersistence: !!state.consent,
           defaultBlackCanvas: !!state.defaultBlackCanvas,
           defaultSessionBooth: !!state.defaultSessionBooth,
-          savedBoothSetup: (() => { try { const s = readSavedBoothConfig(rt); return s ? { mode: s.mode, signals: s.signals } : null; } catch { return null; } })(),
+          savedBoothSetup: (() => {
+            try {
+              const s = readSavedBoothConfig(rt);
+              return s ? { mode: s.mode, signals: s.signals } : null;
+            } catch { return null; }
+          })(),
           startupBlackKicks: state.startupBlackKicks,
           components: {
             lighting: !!state.persistLightingOn,
@@ -2216,8 +2378,13 @@ function waitForRuntime(cb) {
           hasCapturedTokenBg: !!state.capturedTokenBg,
           capturedTokenBgSelected: state.capturedTokenBgSelected,
           hasCapturedLighting: !!state.capturedLightingState,
+          hasCapturedEffects: !!state.capturedEffectState,
           canvasLayoutKey: state.btCanvasLayoutKey,
           hasEnvironmentMesh: !!(env && env.mesh),
+          characterRootKey: state.characterRootKey,
+          characterChangedAt: state.characterChangedAt,
+          runtimeReady: !!rt,
+          runtimeEngineReady: !!(rt && rt.tokenizer),
           loopActive: !!state.loopActive
         }, null, 2);
       } catch (e) {
@@ -2227,7 +2394,6 @@ function waitForRuntime(cb) {
     UW.KW_WD_BOOTH_BUILD = BUILD_TAG;
     try { console.log('[Booth] build', BUILD_TAG); } catch {}
   } catch {}
-
 
   loadPersistentDefaults();
   installBoothApi();
