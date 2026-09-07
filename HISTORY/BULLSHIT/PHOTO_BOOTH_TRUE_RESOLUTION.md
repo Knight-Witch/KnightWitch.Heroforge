@@ -1,8 +1,8 @@
 # Photo Booth True Resolution
 
-Feature ID: `media.screenshot-resolution`  
-Public status: **Witch Dock Stable validated** / 2026-09-05  
-Last verified HeroForge build: `heroforge07.1.9.98`  
+Feature ID: `media.screenshot-resolution`
+Public status: **Witch Dock Stable validated** / 2026-09-05
+Last verified HeroForge build: `heroforge07.1.9.98`
 Source baseline: `Knight-Witch/HeroForge.Compatibility` standalone v0.6
 
 ## Purpose
@@ -95,3 +95,7 @@ Revalidate when:
 ## Migration direction
 
 The current public Witch Dock module is the Stable consumer copy of the validated Compatibility feature. When the planned Foundation/shared compatibility repository exists and has versioned stable releases, the capture service should move behind that shared module boundary. Public Witch Dock must depend on a pinned/versioned stable Foundation release rather than an unstable development head.
+
+## 2026-09-06 Witch Dock v1.2.0 presentation ownership promotion
+
+The live-validated v0.8.0 service-only / v0.3.0 compact-UI ownership split is promoted to Stable. The service owns capture/provider behavior; the UI owns the visible Booth presentation. Provider disable/re-enable, direct TRUE 4K, direct TRUE 8K, and Spinny coexistence passed in Dev before promotion. Validated capture/provider math was not intentionally changed.

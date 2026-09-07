@@ -143,3 +143,7 @@ Revalidate Spinny when:
 - the public 4096/8192 provider ownership boundary changes;
 - Pause or interaction-guard lifecycle changes;
 - high-cost resource limits are observed on supported hardware.
+
+## 2026-09-06 Witch Dock v1.2.0 Developer Mode visibility
+
+Spinny service/UI runtime source is unchanged from public v1.1.0. Public Developer Mode v0.3.0 now exposes the existing 16-frame Short Test while enabled; normal mode continues to hide it. The previously discussed 4096 animated-WebP expansion is not an active roadmap item.

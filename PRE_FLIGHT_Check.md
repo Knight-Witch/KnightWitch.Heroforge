@@ -1,5 +1,55 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-023 — Promote validated Witch Dock UI/Developer Mode delta to Stable
+
+Date: 2026-09-06
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
+- HFC `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, `TESTING.md`;
+- public v1.1.0 `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `Witch_Dock.user.js`, `manifest.json`, High Res service, Spinny service/UI;
+- validated `WITCH_DEV_UI` tab cleanup, High Res v0.8.0/v0.3.0 ownership split, Developer Mode v0.3.0, module registry and Dev loader manifest-source boundary.
+
+### Confirmed live findings
+
+- tab cleanup passed order, Utilities cog tooltip, correct tool routing, and persisted active-tab restoration;
+- High Res ownership cleanup passed compact/no-duplicate presentation, developer diagnostics, provider disable/re-enable, TRUE 4K, TRUE 8K, Spinny coexistence, and prior tab behavior;
+- Developer Mode public-readiness build passed the requested live gate by final user report that everything works great;
+- user explicitly approved public rollout;
+- user explicitly removed 4096 animated WebP and Developer Mode hotkey from the active to-do list.
+
+### Target files
+
+- `Witch_Dock.user.js`
+- `manifest.json`
+- `features/core/Witch_Dock_Developer_Mode.js`
+- `features/media/Photo_Booth_True_Resolution.js`
+- `features/media/Photo_Booth_True_Resolution_UI.js`
+- `MODULE_VERSIONING.md`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- relevant HISTORY records
+
+### Conflict risks
+
+- do not merge `WITCH_DEV_UI` wholesale;
+- do not modify public Spinny service/UI runtime source;
+- preserve validated TRUE 4K/8K capture/provider function behavior and readiness adapter;
+- Developer Mode must remain optional, default OFF, About-only, and diagnostic-failure isolated;
+- public diagnostics must read the active public manifest rather than Dev registry state;
+- Utilities-last behavior must be structural rather than manifest-timing-only;
+- no HF-Chat-Bridge or unstable HFC runtime dependency may enter Stable.
+
+### Decision
+
+Build a Stable candidate from current v1.1.0, copy only the validated feature modules, port only the tested tab shell delta, create the public module registry, run syntax/manifest/hash/ownership gates, then fast-forward `Witch_Scripts` only on success.
+
+**Runtime behavior changed:** yes — approved Stable UI/diagnostics promotion.
+
+---
+
 ## PFC-2026-09-06-022 — Promote validated Spinny Mini WebP to public Stable
 
 Date: 2026-09-06

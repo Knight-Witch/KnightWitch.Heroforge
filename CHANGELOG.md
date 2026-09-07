@@ -1,5 +1,47 @@
 # Changelog
 
+## DOCK-2026-09-06-023 — Release Witch Dock v1.2.0 UI/diagnostics cleanup
+
+Date: 2026-09-06
+
+### Summary
+
+Promote the three independently live-tested `WITCH_DEV_UI` deltas approved by the user after the v1.1.0 Spinny release: tab presentation/order cleanup, compact High Res service/UI ownership separation, and public-ready Developer Mode. This is a narrow Stable promotion, not a Dev-branch merge.
+
+### Public runtime changes
+
+- Witch Dock userscript advances to v1.2.0.
+- Visible tab order is structurally enforced as `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`.
+- `Body Editor` displays as `Body` without changing its persisted/internal tab identity.
+- Utilities is an SVG cog with `Utilities` tooltip/ARIA label and is structurally pinned last.
+- High Res service advances to v0.8.0 service-only ownership; compact UI v0.3.0 becomes the sole presentation owner.
+- Developer Mode v0.3.0 becomes a public hidden module, optional/default-OFF and toggled only from About.
+- Public `manifest.json` gains the canonical active-module version registry required by Developer Mode diagnostics.
+- Public shell advertises the manifest it actually loaded so diagnostics report Stable versions rather than Dev versions.
+- Spinny service/UI source remains byte-for-byte untouched by this release; Developer Mode only reveals its existing Short Test control.
+
+### Live validation inherited from Dev
+
+- tab order/cog/correct tool routing/active-tab persistence: PASS;
+- compact High Res UI/no duplicate legacy section: PASS;
+- High Res provider disable -> enable recovery: PASS;
+- direct TRUE 4K and TRUE 8K: PASS;
+- Spinny coexistence: PASS;
+- Developer Mode About toggle, persistence, active-manifest versions, per-tool diagnostics, module inventory, Spinny Short Test visibility, High Res developer controls, and OFF cleanup: PASS by final user acceptance (`everything works great`).
+
+### Removed from active roadmap
+
+- 4096 animated WebP expansion: no further work planned unless explicitly reopened;
+- Developer Mode hotkey: no further work planned; About remains the intended control surface.
+
+### Gate
+
+Static syntax/manifest/ownership/hash checks must pass on the Stable candidate before `Witch_Scripts` advances. One clean public v1.2.0 smoke remains after release.
+
+**Runtime behavior changed:** yes — public UI/diagnostic release; validated media capture math and Spinny runtime remain unchanged.
+
+---
+
 ## DOCK-2026-09-06-022 — Release Witch Dock v1.1.0 with Spinny Mini WebP
 
 Date: 2026-09-06
