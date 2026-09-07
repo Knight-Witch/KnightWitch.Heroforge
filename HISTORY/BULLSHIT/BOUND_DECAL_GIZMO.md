@@ -66,9 +66,9 @@ Bound transform fields currently preserved when finite: `h`, `v`, `d`, `s`, `sy`
 
 ## Delivery
 
-Public Witch Dock loads the corrected gizmo through `manifest.json` as hidden module `corrected-bound-decal-gizmo`, then loads `tools/Decals.js` as the visible `Decals` tab host.
+Public Witch Dock loads the corrected gizmo through `manifest.json` as hidden module `corrected-bound-decal-gizmo`. Its user controls are now hosted by `tools/Utilities.js` under `Bound Decal Gizmo`; `tools/Decals.js` remains the visible Decals-tab host and currently displays `New decal tools coming shortly!`.
 
-`Witch_Dock.user.js` remains v1.0.8. The v1.1.0 gizmo repair is module-only, so installed users receive it on page refresh without a Tampermonkey shell update.
+The host relocation was live-validated in `WITCH_DEV_UI` before Stable promotion. The corrected gizmo runtime, its persisted enable key, Move/Rotate/Scale behavior, undo/redo, and transform-preservation logic were not changed. `Witch_Dock.user.js` remains v1.2.0 for this module-only update, so installed users receive the host change on page refresh without a Tampermonkey shell update.
 
 The current stable loader preserves the accepted source split into fragments and applies the validated source corrections transactionally before execution. Missing or ambiguous replacement anchors fail closed rather than partially initializing the feature.
 

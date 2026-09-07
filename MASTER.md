@@ -72,10 +72,10 @@ Detailed record: `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`.
 
 - Body Editor / Body tab: live.
 - Pose: live.
-- Decals host + corrected bound decal gizmo: live; validated undo/redo and transform-state preservation remain unchanged.
+- Decals tab: live placeholder — `New decal tools coming shortly!`.
 - Booth persistence/Black Canvas: live and unchanged by v1.2.0.
 - JSON: live.
-- Utilities: live; its tab presentation is now the pinned cog.
+- Utilities: live; its pinned cog now hosts the Bound Decal Gizmo controls. The corrected gizmo service/runtime remains unchanged and Stable validated.
 
 ## Active module version contract
 
@@ -90,7 +90,7 @@ Every active runtime module has one canonical numeric version in `manifest.json.
 
 ## Current queue
 
-1. One clean public v1.2.0 smoke after update: tab presentation, Developer Mode toggle/registry, compact High Res presence, and a cheap Spinny/download sanity check.
+1. One clean public v1.2.0 smoke after the latest module refresh: tab presentation, Decals placeholder, Bound Decal Gizmo controls in Utilities, Developer Mode toggle/registry, compact High Res presence, and a cheap Spinny/download sanity check.
 2. Continue unrelated compatibility/reconstruction work only as separately scoped features.
 
 The previously discussed 4096 animated-WebP expansion and Developer Mode hotkey are **not active roadmap items** and require no further work unless explicitly reopened later.

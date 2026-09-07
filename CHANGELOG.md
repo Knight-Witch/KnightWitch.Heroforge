@@ -1,5 +1,38 @@
 # Changelog
 
+## DOCK-2026-09-06-024 — Move Bound Decal Gizmo controls to Utilities
+
+Date: 2026-09-06
+
+### Summary
+
+Promote the user-validated Decals/Utilities host cleanup as a module-only Stable update on Witch Dock v1.2.0.
+
+### Public runtime changes
+
+- `tools/Decals.js` advances to v1.1.0 and now displays `New decal tools coming shortly!`;
+- `tools/Utilities.js` advances to v1.1.0 and now owns the full Bound Decal Gizmo control section;
+- the existing gizmo toggle state remains sourced from the unchanged corrected-gizmo service;
+- Move / Rotate / Scale controls continue to call the same service API;
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` and its source fragments are unchanged;
+- public Witch Dock shell remains v1.2.0 because this is a manifest-delivered module update.
+
+### Live validation inherited from Dev
+
+- Decals placeholder: PASS;
+- gizmo controls appear once in Utilities: PASS;
+- persisted checkbox state: PASS;
+- toggle OFF/ON: PASS;
+- Move / Rotate / Scale selection: PASS.
+
+### Gate
+
+Require JavaScript syntax, manifest/version, exact Dev-host blob, protected corrected-gizmo/media runtime hashes, changed-file whitelist, and `git diff --check` before Stable commit.
+
+**Runtime behavior changed:** UI host/presentation only; validated corrected-gizmo behavior remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-023 — Release Witch Dock v1.2.0 UI/diagnostics cleanup
 
 Date: 2026-09-06

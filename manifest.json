@@ -93,8 +93,8 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.1.0",
+      "versionOrigin": "stable-promoted-host-relocation"
     },
     {
       "id": "booth-tool",
@@ -171,8 +171,8 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.1.0",
+      "versionOrigin": "stable-promoted-host-relocation"
     }
   ],
   "tools": [

@@ -1,5 +1,45 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-024 — Promote validated Decals/Utilities host cleanup to Stable
+
+Date: 2026-09-06
+
+### Scope
+
+Promote the live-validated UI-host relocation that moves the Corrected Bound Decal Gizmo controls from the Decals tab to Utilities and leaves a Decals placeholder for upcoming tools.
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility project contract and current HFC tracking;
+- public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
+- public `tools/Decals.js`, `tools/Utilities.js`;
+- public `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` and all five source fragments;
+- exact Dev candidate commit `40fa227f13a79c5283f989c23b82485a273a2c53`;
+- user live validation that the Decals placeholder, Utilities gizmo controls, persisted checkbox state, and Move/Rotate/Scale controls all work correctly.
+
+### Confirmed findings
+
+- the gizmo service owns its persisted enable state and exposes `enable`, `disable`, `setMode`, `refresh`, and `getState`;
+- moving the UI host does not require runtime/service changes;
+- Dev live smoke passed with one gizmo control block in Utilities and no gizmo controls in Decals;
+- `tools/Decals.js` and `tools/Utilities.js` require canonical version bumps to v1.1.0;
+- `Witch_Dock.user.js` does not require a version change because this is a manifest-delivered module-only update.
+
+### Conflict risks
+
+- do not modify the validated corrected-gizmo runtime or fragment sources;
+- preserve the existing gizmo enable storage key and current state across the host move;
+- do not duplicate controls in Decals and Utilities;
+- do not merge unrelated Dev changes into Stable.
+
+### Decision
+
+Promote only the two validated host modules, their canonical registry bumps, and durable documentation. Require syntax/manifest/protected-runtime/static checks before advancing public Stable.
+
+**Runtime behavior changed:** UI host/presentation only. Corrected gizmo runtime behavior is unchanged.
+
+---
+
 ## PFC-2026-09-06-023 — Promote validated Witch Dock UI/Developer Mode delta to Stable
 
 Date: 2026-09-06
