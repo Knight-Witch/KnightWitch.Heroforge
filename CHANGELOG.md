@@ -1,5 +1,27 @@
 # Changelog
 
+## DOCK-2026-09-06-032 — Validate High Res service/UI ownership cleanup
+
+Date: 2026-09-06
+
+User live smoke passed the Dev ownership cleanup at `b7693f03eb411c9a7d954175e6f181111fac88a4`.
+
+Confirmed PASS:
+
+- one compact `High Res Image Capture` section with no duplicate legacy presentation;
+- Developer Mode provider/build diagnostics;
+- provider disable -> enable recovery;
+- direct TRUE 4096x4096 capture;
+- direct TRUE 8192x8192 capture;
+- Spinny coexistence;
+- previously validated tab cleanup remains intact.
+
+The service-only v0.8.0 / UI-only v0.3.0 ownership boundary is live validated in Dev.
+
+**Runtime behavior changed:** no. Documentation-only validation checkpoint.
+
+---
+
 ## DOCK-2026-09-06-031 — Separate High Res capture service and UI ownership
 
 Date: 2026-09-06

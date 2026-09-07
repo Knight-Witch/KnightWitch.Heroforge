@@ -201,3 +201,7 @@ The next UI stage is compact High Res Image Capture integration with explicit se
 The temporary same-ID UI replacement architecture has been removed in Dev. `Photo_Booth_True_Resolution.js` v0.8.0 is service/provider-only; `Photo_Booth_True_Resolution_UI.js` v0.3.0 is the sole compact Witch Dock presentation owner. The readiness adapter remains unchanged. Static gate verifies the validated capture/provider function bodies are byte-identical to the pre-cleanup service.
 
 Live gate: compact normal presentation, TRUE 4K, TRUE 8K, Developer Mode provider disable -> enable recovery, and coexistence with the Booth/Spinny tools.
+
+## 2026-09-06 High Res ownership cleanup — PASS
+
+User live validation passed the service/UI ownership cleanup at `b7693f03eb411c9a7d954175e6f181111fac88a4`: compact presentation, no duplicate legacy section, Developer Mode provider diagnostics, provider disable -> enable recovery, TRUE 4K, TRUE 8K, Spinny coexistence, and existing tab cleanup all pass. The High Res ownership item is closed for Dev; next stage is Developer Mode public-readiness.

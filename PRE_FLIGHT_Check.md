@@ -1,5 +1,25 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-032 — Record High Res ownership cleanup live validation
+
+Date: 2026-09-06
+
+### Confirmed live results
+
+- compact normal presentation with no duplicate legacy section: PASS;
+- Developer Mode diagnostics: PASS;
+- provider disable -> enable recovery: PASS;
+- direct TRUE 4K / 4096x4096: PASS;
+- direct TRUE 8K / 8192x8192: PASS;
+- Spinny coexistence: PASS;
+- tab cleanup remains correct: PASS.
+
+The v0.8.0 service-only / v0.3.0 UI-only split is validated for Dev promotion consideration. No runtime files change in this checkpoint.
+
+**Runtime behavior changed:** no.
+
+---
+
 ## PFC-2026-09-06-031 — High Res service/UI ownership cleanup
 
 Date: 2026-09-06

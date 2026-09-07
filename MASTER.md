@@ -47,7 +47,7 @@ Normal mode:
 
 Developer Mode adds the provider kill switch and implementation/build diagnostics.
 
-Prior compact visual smoke: **PASS by user report**. Service/UI ownership cleanup is implemented in Dev; direct 4K/8K regression and provider disable/re-enable recovery are the current live gate.
+Service/UI ownership cleanup live smoke: **PASS**. Compact presentation, provider disable/re-enable recovery, direct TRUE 4K, direct TRUE 8K, and Spinny coexistence are validated on the current Dev build.
 
 ### Developer Mode
 
@@ -161,12 +161,10 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 
 ## Current Near-Term Queue
 
-1. Smoke the Dev tab cleanup: `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`, with Utilities pinned last.
-2. Promote the accepted tab cleanup separately after user approval.
-3. Smoke integrated Developer Mode + compact High Res behavior, including provider disable/re-enable and direct 4K/8K regression.
-4. Cleanly separate High Res service/UI ownership before promoting the compact High Res presentation.
-5. Promote Developer Mode as an About-only, default-OFF public diagnostic feature after its integrated smoke.
-6. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
+1. Make Developer Mode public-ready as an About-only, default-OFF troubleshooting feature whose version registry follows the manifest actually loaded by the current Witch Dock host.
+2. Live-smoke Developer Mode persistence, per-tool diagnostics, module inventory, Spinny Short Test visibility, and High Res developer controls.
+3. Prepare a narrow Stable promotion containing the already validated tab cleanup, compact High Res service/UI split, and Developer Mode only after that smoke passes.
+4. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
 
 ## Durable Records
 
