@@ -8,6 +8,7 @@
   const SLOT_URL = RAW_ROOT + "HeroForge_UI/HF_UI_Slot_Bridge.js";
   const GIZMO_SERVICE_ROOT = "KW_HeroForgeUI";
   const GIZMO_SERVICE_KEY = "correctedBoundDecalGizmo";
+  const BOOTH_SERVICE_KEY = "KW_WD_BOOTH";
   const UTILITIES = [
     {
       id: "expanded-ui-scroll-guards",
@@ -46,7 +47,9 @@
       ".kwu .gizmo-status{margin-top:9px;padding:7px 8px;border-radius:6px;background:rgba(0,0,0,.20);font-size:11px;line-height:1.4;word-break:break-word;}" +
       ".kwu .gizmo-status[data-error='1']{border:1px solid rgba(255,120,120,.45);}" +
       ".kwu .gizmo-meta{opacity:.7;margin-top:5px;font-size:10px;font-variant-numeric:tabular-nums;}" +
-      ".kwu .gizmo-note{opacity:.72;margin-top:8px;font-size:11px;}";
+      ".kwu .gizmo-note{opacity:.72;margin-top:8px;font-size:11px;}" +
+      ".kwu .feature-name{font-weight:800;font-size:12px;color:rgba(255,255,255,.92);margin-bottom:7px;}" +
+      ".kwu .booth-defaults{display:flex;flex-direction:column;gap:8px;}";
     document.head.appendChild(style);
   }
 
@@ -101,6 +104,10 @@
     return UW[GIZMO_SERVICE_ROOT] && UW[GIZMO_SERVICE_ROOT][GIZMO_SERVICE_KEY]
       ? UW[GIZMO_SERVICE_ROOT][GIZMO_SERVICE_KEY]
       : null;
+  }
+
+  function boothService() {
+    return UW[BOOTH_SERVICE_KEY] || null;
   }
 
   function setStatus(el, text) {
@@ -201,15 +208,132 @@
     applyUtility(item.id, input.checked, status);
   }
 
+  function renderBoothDefaultRow(body, spec) {
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const main = document.createElement("div");
+    main.className = "main";
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = spec.label;
+
+    const desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = spec.description;
+
+    const status = document.createElement("div");
+    status.className = "status";
+
+    const label = document.createElement("label");
+    label.className = "toggle";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+
+    const labelText = document.createElement("span");
+    labelText.textContent = "Enabled";
+
+    input.addEventListener("change", () => {
+      const svc = boothService();
+      const setter = svc && svc[spec.setter];
+      if (typeof setter !== "function") {
+        input.checked = !input.checked;
+        status.textContent = "Booth service unavailable.";
+        return;
+      }
+      setter(input.checked);
+      status.textContent = input.checked ? spec.onStatus : spec.offStatus;
+    });
+
+    main.append(name, desc, status);
+    label.append(input, labelText);
+    row.append(main, label);
+    body.appendChild(row);
+    return { input, status };
+  }
+
+  function renderBoothSection(root, api) {
+    const section = api.ui.createSection({
+      id: "booth-features",
+      title: "Booth Features",
+      defaultCollapsed: false
+    });
+
+    const list = document.createElement("div");
+    list.className = "booth-defaults";
+    section.body.appendChild(list);
+
+    const boothDefault = renderBoothDefaultRow(list, {
+      label: "Enable Booth Persistence Across Sessions",
+      description: "Automatically restores Booth View for figures that already contain a saved Photo Booth setup. New figures with no Booth setup are left alone until Photo Booth is used. The Booth tab can still override it for the current session.",
+      setter: "setDefaultBoothPersistence",
+      onStatus: "Saved default enabled. Saved Booth figures restore automatically; new figures wait for a Booth setup.",
+      offStatus: "Saved default disabled. Session-only Booth View remains available in Booth."
+    });
+
+    const blackDefault = renderBoothDefaultRow(list, {
+      label: "Enable Black Canvas Across Sessions",
+      description: "Automatically reapplies Black Canvas when Witch Dock loads; no Photo Booth visit is required. The Booth tab can still override it for the current session.",
+      setter: "setDefaultBlackCanvas",
+      onStatus: "Saved default enabled. Black Canvas is also enabled for this session.",
+      offStatus: "Saved default disabled. Session-only Black Canvas remains available in Booth."
+    });
+
+    function update() {
+      if (!list.isConnected) return false;
+      const svc = boothService();
+      if (!svc || typeof svc.getState !== "function") {
+        boothDefault.input.disabled = true;
+        blackDefault.input.disabled = true;
+        boothDefault.status.textContent = "Booth service unavailable.";
+        blackDefault.status.textContent = "Booth service unavailable.";
+        return true;
+      }
+
+      const state = svc.getState() || {};
+      boothDefault.input.disabled = false;
+      blackDefault.input.disabled = false;
+      boothDefault.input.checked = !!state.defaultBoothPersistence;
+      blackDefault.input.checked = !!state.defaultBlackCanvas;
+      boothDefault.status.textContent = state.defaultBoothPersistence
+        ? (state.sessionBoothView && state.defaultSessionBooth
+            ? "Saved default enabled. Booth View is active from this figure's saved Booth setup."
+            : (state.savedBoothSetupDetected
+                ? "Saved default enabled. Saved Booth setup detected; Booth View is currently overridden for this session."
+                : "Saved default enabled. Waiting for a figure with a saved Booth setup or a Photo Booth visit."))
+        : "Saved default disabled. Session-only Booth View remains available in Booth.";
+      blackDefault.status.textContent = state.defaultBlackCanvas
+        ? (state.sessionBlackCanvas
+            ? "Saved default enabled. Black Canvas is active and will reapply on load."
+            : "Saved default enabled. Black Canvas is overridden OFF for this session and will return on reload.")
+        : "Saved default disabled. Session-only Black Canvas remains available in Booth.";
+      return true;
+    }
+
+    update();
+    const timer = window.setInterval(() => {
+      if (!update()) window.clearInterval(timer);
+    }, 500);
+
+    root.appendChild(section.root);
+  }
+
   function renderGizmoSection(root, api) {
     const section = api.ui.createSection({
       id: "bound-decal-gizmo",
-      title: "Bound Decal Gizmo",
+      title: "Decal Features",
       defaultCollapsed: false
     });
 
     const body = section.body;
     const controls = document.createElement("div");
+
+    const featureName = document.createElement("div");
+    featureName.className = "feature-name";
+    featureName.textContent = "Bound Decal Gizmo";
+    controls.appendChild(featureName);
 
     const top = document.createElement("div");
     top.className = "gizmo-row";
@@ -307,6 +431,7 @@
     root.className = "kwu";
     container.appendChild(root);
 
+    renderBoothSection(root, api);
     renderGizmoSection(root, api);
 
     const section = api.ui.createSection({ id: "heroforge-ui", title: "HeroForge UI Patches", defaultCollapsed: false });

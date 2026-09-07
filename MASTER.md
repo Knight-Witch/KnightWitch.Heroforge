@@ -7,26 +7,45 @@ This is the canonical high-level source for current public Witch Dock state. His
 - Repository: `Knight-Witch/KnightWitch.Heroforge`
 - Production branch: `Witch_Scripts`
 - Public userscript: `Witch_Dock.user.js`
-- Current public version: **1.2.0**
-- HeroForge validation target for the promoted media/tooling work: `heroforge07.1.9.98`
-- Runtime dependencies on HeroForge.Compatibility unstable head or HF-Chat-Bridge: **none**
+- Current public shell version: **1.2.0**
+- HeroForge validation target: `heroforge07.1.9.98`
+- Runtime dependency on HeroForge.Compatibility unstable head or HF-Chat-Bridge: **none**
 
-Witch Dock v1.2.0 remains the public shell. The Black Canvas display replay is a manifest-delivered hidden compatibility module and does not require a userscript-shell version bump.
+The public shell remains v1.2.0. Booth v27 and Utilities v1.2.1 are manifest-delivered module promotions; no userscript-shell bump is required.
 
-## Black Canvas display replay
+## Booth / Black Canvas
 
-Feature ID: `booth.black-canvas-display-replay`.
+Public Booth: `tools/Booth.js` v27.0.0 / build `v27`.
 
-- Public module: v0.1.1 / build `0.1.1-stable-v24-state-fallback`.
-- Dev replay behavior was live validated on `heroforge07.1.9.98`; the formerly reliable white flash no longer reproduced and Amanda reported the fix worked perfectly.
-- HeroForge's native `CK.character.display.update()` remains untouched and always executes; the compatibility wrapper reasserts Black Canvas state immediately afterward.
-- The real main-scene background is discovered semantically through named `environment` -> `background`, not diagnostic child indexes.
-- Public Stable Booth remains v24. The public module reads v24's existing `KW_WD_BOOTH_DIAG().blackCanvasOn` when the newer Dev `KW_WD_BOOTH.getState().sessionBlackCanvas` API is unavailable.
-- Stable-shaped syntax/lifecycle/fallback mock passed before promotion.
-- No Booth v27 code is promoted by this feature.
-- One clean public flash/background-restoration smoke is required after module refresh.
+Public Black Canvas replay: `features/booth/Black_Canvas_Display_Replay.js` v0.1.1 / build `0.1.1-stable-v24-state-fallback`.
 
-Detailed record: `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`.
+Current public behavior:
+
+- Booth View and Black Canvas in the Booth tab are session controls.
+- `Utilities -> Booth Features` owns the saved cross-session defaults.
+- saved Booth persistence only auto-restores figures with meaningful saved Photo Booth configuration; `+ New Figure` / no-saved-Booth figures are excluded until a Booth setup exists.
+- saved Black Canvas can reapply without requiring a Photo Booth visit.
+- Booth runtime resolution no longer requires `BT.maker` merely to inspect saved figure config or enforce display-only Black Canvas state; named engine resolution uses `BT.liveEngine || BT.maker` when available.
+- v27 removes Witch Dock's broad `CK.character.refresh()` from component/startup reconciliation and replays lighting with identical next/previous values.
+- figure-scoped Booth snapshots are cleared when the loaded character generation changes to avoid cross-figure replay.
+- the hidden Black Canvas replay lets native `CK.character.display.update()` run normally and reasserts black state immediately afterward.
+- the replay semantically discovers the real scene `environment -> background` target; no diagnostic child indexes are shipped.
+- v0.1.1 prefers v27 `KW_WD_BOOTH.getState().sessionBlackCanvas` and retains the v24 diagnostic fallback for compatibility.
+
+Dev validation: with Booth v27 + Utilities v1.2.1 + replay loaded together, the formerly reliable white flash no longer reproduced; Amanda reported the result worked perfectly.
+
+Detailed records:
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+
+## Utilities
+
+Public Utilities: `tools/Utilities.js` v1.2.1.
+
+- `Booth Features`: saved Booth Persistence Across Sessions and Black Canvas Across Sessions defaults.
+- `Decal Features`: Bound Decal Gizmo controls.
+- `HeroForge UI Patches`: existing optional UI utilities.
+- existing storage keys and corrected-gizmo service ownership are preserved.
 
 ## Public tab presentation
 
@@ -35,24 +54,19 @@ Default/structural visible tab order:
 `Body -> Pose -> Decals -> Booth -> JSON -> Utilities(cog)`
 
 - The historical `Body Editor` internal tab key remains compatible while the visible label is `Body`.
-- Utilities is an icon-only cog with tooltip/ARIA label `Utilities`.
-- Utilities is structurally pinned last; future/unknown tabs are inserted before it.
-- Persisted active-tab behavior was live tested in Dev before promotion.
+- Utilities is an icon-only cog with tooltip/ARIA label `Utilities` and is structurally pinned last.
 
 ## Developer Mode
 
-Public Developer Mode: `features/core/Witch_Dock_Developer_Mode.js` v0.3.0 / build `0.3.0-public-ready-manifest-source`.
+Public Developer Mode: v0.3.0 / build `0.3.0-public-ready-manifest-source`.
 
-- optional and OFF by default for users without a saved preference;
-- toggled only from the Witch Dock About section;
-- persists the user's chosen state;
+- optional/default OFF;
+- About-only toggle;
+- persistent user choice;
 - exposes canonical module versions/runtime builds and tool IDs for troubleshooting;
-- About includes a `Module Versions` inventory covering active core, visible, hidden, and conditional modules;
-- Developer-only controls such as Spinny Short Test and High Res provider diagnostics appear only while enabled;
-- registry failure is diagnostic-only and must not disable ordinary Witch Dock behavior;
-- registry source follows the manifest URL advertised by the active Witch Dock host, with public Stable manifest as fallback.
+- reads the active public manifest registry.
 
-`manifest.json.moduleRegistry` is now the canonical public active-module version registry. Versioning policy: `MODULE_VERSIONING.md`.
+`manifest.json.moduleRegistry` is the canonical public active-module version registry.
 
 ## Photo Booth true resolution
 
@@ -61,60 +75,43 @@ Feature ID: `media.screenshot-resolution`.
 - Service: v0.8.0 / build `0.8.0-service-only-provider`.
 - UI: v0.3.0 / build `0.3.0-service-ui-ownership`.
 - Readiness adapter: v1.0.0 / build `1.0.0-public-readiness`.
-- The service exclusively owns validated TRUE 4K/8K capture/provider behavior.
-- The compact UI exclusively owns the visible `High Res Image Capture` Booth section.
-- Normal presentation is `Capture: [4K] [8K]` with compact status.
-- Developer Mode reveals provider enable/recovery and build diagnostics.
-- The service/UI ownership split, provider disable/re-enable recovery, direct TRUE 4K, direct TRUE 8K, and Spinny coexistence all passed live Dev validation before promotion.
-- Validated capture/provider function bodies were preserved across the service/UI ownership cleanup.
-
-Detailed record: `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`.
+- TRUE 4K/8K remains Stable validated and unchanged by the Booth promotion.
 
 ## Spinny Mini WebP
 
 Feature ID: `media.spinny-mini-webp`.
 
-- Service remains public v0.5.1 / build `0.5.1-witch-dock-stable-download-scroll-guard`.
-- UI remains public v0.1.1 / build `0.1.1-stable-download-ux`.
-- This Black Canvas promotion does **not** modify the validated Spinny capture engine or UI source.
-- 1024/2048 native capture and repaired TRUE-3K 3072 remain available.
-- Pause/Resume, cancel, ETA/progress, draggable popout, silent wheel block, other capture-continuity warnings, and privileged downloads remain unchanged.
-- Short Test remains hidden in normal mode and becomes visible when Developer Mode is enabled.
-
-Detailed record: `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`.
+- Service: v0.5.1 / build `0.5.1-witch-dock-stable-download-scroll-guard`.
+- UI: v0.1.1 / build `0.1.1-stable-download-ux`.
+- Capture engine/UI are unchanged by the Booth promotion.
 
 ## Other live tools
 
-- Body Editor / Body tab: live.
+- Body: live.
 - Pose: live.
-- Decals tab: live placeholder — `New decal tools coming shortly!`.
-- Booth persistence/Black Canvas: Booth v24 remains live; hidden display replay v0.1.1 now protects Black Canvas across native display rebuilds.
+- Decals: live placeholder.
 - JSON: live.
-- Utilities: live; its pinned cog hosts the Bound Decal Gizmo controls. The corrected gizmo service/runtime remains unchanged and Stable validated.
-
-## Active module version contract
-
-Every active runtime module has one canonical numeric version in `manifest.json.moduleRegistry`. Runtime/UI/API/storage/compatibility changes require a matching registry bump in the same committed update. Source-local build tags remain supplemental diagnostics.
+- Corrected Bound Decal Gizmo runtime: Stable validated and unchanged.
 
 ## Current integration rules
 
 - `Witch_Scripts` is production; experiments validate separately before promotion.
 - Promote accepted deltas only; do not merge diverged Dev branches wholesale.
-- Preserve validated capture math, timing/state sequencing, lifecycle restoration, capability gates, and failure isolation.
-- Public Stable must not depend on HF-Chat-Bridge or an unstable Compatibility/Foundation development head.
+- Preserve validated timing/state sequencing, lifecycle restoration, capability gates, and failure isolation.
+- Public Stable must not depend on HF-Chat-Bridge or an unstable Compatibility/Foundation head.
 
 ## Current queue
 
-1. Run one clean public Black Canvas replay smoke after Stable module refresh: visibly black viewport, formerly flash-causing update, Black Canvas OFF restoration, and ordinary character-update sanity.
-2. Continue unrelated compatibility/reconstruction work only as separately scoped features.
-
-The previously discussed 4096 animated-WebP expansion and Developer Mode hotkey are **not active roadmap items** and require no further work unless explicitly reopened later.
+1. Clean public smoke after refresh: Developer Mode should report Booth v27.0.0 and Utilities v1.2.1; `Utilities -> Booth Features` should be present; Black Canvas should remain black through the formerly flash-causing action.
+2. Verify Black Canvas OFF restores the ordinary background and ordinary character updates still apply.
+3. Continue unrelated compatibility/reconstruction work only as separately scoped features.
 
 ## Durable records
 
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
 - `MODULE_VERSIONING.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
 - `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
