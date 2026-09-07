@@ -33,6 +33,12 @@ Detailed policy: `MODULE_VERSIONING.md`.
 
 Branch: `WITCH_DEV_UI`.
 
+### Decals / Utilities host cleanup candidate
+
+The corrected Bound Decal Gizmo presentation is moving from the Decals tab to Utilities. The underlying `decals.gizmo.bound-correction` service/runtime remains unchanged and continues to own its persisted enabled state. The Decals tab remains registered as a future feature host and currently displays `New decal tools coming shortly!`.
+
+Dev module versions for this host change: `decals-dev` v1.1.0 and `utilities` v1.1.0. Live host smoke is pending before Stable promotion.
+
 ### High Res Image Capture
 
 `features/media/Photo_Booth_True_Resolution_UI.js` v0.3.0 / build `0.3.0-service-ui-ownership` is the sole compact presentation owner over service-only `Photo_Booth_True_Resolution.js` v0.8.0 / build `0.8.0-service-only-provider`.
@@ -91,9 +97,9 @@ Dev core presentation keeps the existing `Body Editor` tab key for preference co
 | `photo-booth-true-resolution` | 0.7.0 | existing build `0.7.0-witch-dock-dev-provider` |
 | `photo-booth-true-resolution-readiness` | 1.0.0 | existing build `1.0.0-public-readiness` |
 | `photo-booth-true-resolution-ui` | 0.2.0 | existing Dev UI version/build |
-| `decals-dev` | 1.0.0 | new tracking baseline |
+| `decals-dev` | 1.1.0 | Dev host cleanup: placeholder-only Decals tab |
 | `json-tool` | 1.0.0 | new tracking baseline |
-| `utilities` | 1.0.0 | new tracking baseline |
+| `utilities` | 1.1.0 | Dev host cleanup: adds Bound Decal Gizmo controls |
 
 New `1.0.0` values are tracking anchors only, not reconstructed historical release counts.
 
@@ -110,8 +116,8 @@ New `1.0.0` values are tracking anchors only, not reconstructed historical relea
 | Photo Booth true-resolution UI | `photo-booth-true-resolution-ui` | `features/media/Photo_Booth_True_Resolution_UI.js` | **Dev candidate only** | Compact UI/Developer Mode consumer; standalone visual smoke passed. |
 | Photo Booth readiness | `photo-booth-true-resolution-readiness` | `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` | **Live / Stable validated / hidden** | Direct-button readiness sync. |
 | JSON | `json-tool` | `tools/JSON_Tool.js` | Live | Bulk JSON library backup. |
-| Utilities | `utilities` | `tools/Utilities.js` | Live | Optional HF UI controls. |
-| Decals | `decals-dev` | `tools/Decals.js` | Live | Bound decal gizmo host. |
+| Utilities | `utilities` | `tools/Utilities.js` | **Dev v1.1.0 candidate** | Optional HF UI controls plus Bound Decal Gizmo host. |
+| Decals | `decals-dev` | `tools/Decals.js` | **Dev v1.1.0 candidate** | Placeholder host for upcoming decal tools; gizmo controls moved to Utilities. |
 | HF UI | `expanded-ui-scroll-guards` | `HeroForge_UI/Expanded_UI_Scroll_Guards.js` | Live / hidden | Decal UI scroll/layout. |
 | HF UI | `hf-ui-scroll-split-safe` | `HeroForge_UI/HF_UI_Scroll_Split_Safe.js` | Live / hidden | Split-layout safety. |
 | HF UI | `hf-ui-slot-bridge` | `HeroForge_UI/HF_UI_Slot_Bridge.js` | Live / hidden | Conditional slot bridge. |
@@ -126,7 +132,7 @@ Detailed record: `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`.
 
 ## Bound Decal Gizmo
 
-Feature ID: `decals.gizmo.bound-correction`. Current Stable service build: `1.1.0-stable-undo-transform-preserve`. Move/Rotate/Scale, undo/redo, Project-state preservation, artwork-swap preservation, and fresh-slot normalization are validated.
+Feature ID: `decals.gizmo.bound-correction`. Current Stable service build: `1.1.0-stable-undo-transform-preserve`. Move/Rotate/Scale, undo/redo, Project-state preservation, artwork-swap preservation, and fresh-slot normalization are validated. The current Dev candidate changes only the Witch Dock host location: controls move to Utilities while the Decals tab becomes a placeholder for upcoming tools.
 
 Detailed record: `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`.
 

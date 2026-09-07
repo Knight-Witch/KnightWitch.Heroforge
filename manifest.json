@@ -103,8 +103,8 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.1.0",
+      "versionOrigin": "dev-ui-host-cleanup-2026-09-06"
     },
     {
       "id": "booth-tool",
@@ -181,8 +181,8 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.1.0",
+      "versionOrigin": "dev-ui-host-cleanup-2026-09-06"
     }
   ],
   "tools": [
@@ -249,7 +249,7 @@
       "id": "decals-dev",
       "title": "Decals",
       "tab": "Decals",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Decals.js",
       "enabledByDefault": true
     },
     {
@@ -315,7 +315,7 @@
       "id": "utilities",
       "title": "Utilities",
       "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Utilities.js",
       "enabledByDefault": true
     }
   ]

@@ -1,5 +1,31 @@
 # Changelog
 
+## DOCK-2026-09-06-034 — Move bound decal gizmo controls to Utilities
+
+Date: 2026-09-06
+
+### Changes
+
+- `tools/Decals.js` v1.1.0 no longer hosts the corrected bound decal gizmo UI and now displays `New decal tools coming shortly!` as the Decals-tab placeholder.
+- `tools/Utilities.js` v1.1.0 now hosts the existing Bound Decal Gizmo control block, including enable/disable, Move/Rotate/Scale mode buttons, live status, build/mapping/decal diagnostics, and the existing Project-OFF note.
+- The validated `decals.gizmo.bound-correction` runtime and its source fragments are intentionally unchanged.
+- The service-owned preference key `kw.witchDock.decals.boundGizmo.enabled` is unchanged, so the user's existing enabled/disabled state carries across the host move.
+- Dev manifest points the changed Decals and Utilities entries at `WITCH_DEV_UI` for the live smoke.
+
+### Module versions
+
+- `decals-dev`: v1.1.0.
+- `utilities`: v1.1.0.
+- `corrected-bound-decal-gizmo`: remains v1.1.0 / build `1.1.0-stable-undo-transform-preserve`.
+
+### Gate
+
+Static syntax/manifest/diff/runtime-hash checks must pass. Live Dev smoke should confirm: Decals placeholder, one gizmo control block in Utilities, preserved toggle state, and working Move/Rotate/Scale selection.
+
+**Runtime behavior changed:** yes, Dev UI host relocation only; gizmo runtime unchanged.
+
+---
+
 ## DOCK-2026-09-06-033 — Make Developer Mode public-ready in Dev
 
 Date: 2026-09-06

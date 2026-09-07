@@ -74,6 +74,17 @@ The current stable loader preserves the accepted source split into fragments and
 
 The fragment/source-replacement layout remains technical debt retained to minimize risk against the exact tested behavior. Future HeroForge.Foundation migration may consolidate/rehome the source after a separate validation pass.
 
+## Dev host relocation candidate — 2026-09-06
+
+The current `WITCH_DEV_UI` candidate moves the existing gizmo presentation from `tools/Decals.js` into `tools/Utilities.js`. This is a UI-host relocation only:
+
+- `decals.gizmo.bound-correction` runtime source is unchanged;
+- persisted enablement remains service-owned at `kw.witchDock.decals.boundGizmo.enabled`;
+- enable/disable, Move/Rotate/Scale, refresh, status, and diagnostics still call the same service API;
+- the Decals tab remains registered and displays `New decal tools coming shortly!` pending future decal features.
+
+Stable promotion requires a small Dev smoke confirming the relocated host works and is not duplicated.
+
 ## Test-history correction
 
 A duplicate Tampermonkey DEV script was accidentally active during the earlier v0.3.1/v0.3.2 comparison, which initially made materially different builds appear identical.

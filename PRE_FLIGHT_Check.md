@@ -1,5 +1,62 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-034 — Move bound decal gizmo host to Utilities
+
+Date: 2026-09-06
+
+### Requested behavior
+
+- move the existing corrected bound decal gizmo control surface out of the Decals tab and into Utilities;
+- leave the Decals tab present as a placeholder reading `New decal tools coming shortly!`;
+- preserve the validated corrected-gizmo runtime, persisted enabled state, mode controls, status diagnostics, and enable/disable behavior.
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
+- HFC `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`;
+- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, and current Dev `manifest.json`;
+- `tools/Decals.js`, `tools/Utilities.js`;
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` and its exported `enable`, `disable`, `setMode`, `refresh`, and `getState` service boundary;
+- corrected gizmo delivery/history record.
+
+### Confirmed findings
+
+- the gizmo service owns its persisted preference at `kw.witchDock.decals.boundGizmo.enabled`;
+- the Decals tool is only a presentation host for the corrected-gizmo service;
+- moving that presentation does not require changing the validated gizmo runtime or its storage key;
+- Utilities already hosts optional HeroForge UI controls and is the more coherent domain for this toggle/control block.
+
+### Target files
+
+- `tools/Decals.js`
+- `tools/Utilities.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+
+### Conflict risks
+
+- do not modify `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js` or its source fragments;
+- do not duplicate the control in both Decals and Utilities;
+- preserve the gizmo service-owned enabled state and Move/Rotate/Scale calls;
+- keep the Decals tab registered so future decal tools have a stable host;
+- Dev manifest must load the changed Dev copies of Decals and Utilities rather than the Stable copies during smoke testing.
+
+### Version decision
+
+- `decals-dev`: `1.0.0 -> 1.1.0` (meaningful presentation change / placeholder host);
+- `utilities`: `1.0.0 -> 1.1.0` (adds the bound decal gizmo control surface).
+
+### Decision
+
+Proceed Dev-only and require a small live host smoke before Stable promotion.
+
+**Runtime behavior changed:** yes, Dev presentation/host ownership only. Corrected gizmo runtime behavior is unchanged.
+
+---
+
 ## PFC-2026-09-06-033 — Developer Mode public-readiness
 
 Date: 2026-09-06
