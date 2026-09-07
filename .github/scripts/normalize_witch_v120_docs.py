@@ -11,4 +11,5 @@ for rel in [
 ]:
     p = Path(rel)
     if p.exists():
-        p.write_text(p.read_text().rstrip() + '\n')
+        lines = [line.rstrip() for line in p.read_text().splitlines()]
+        p.write_text('\n'.join(lines).rstrip() + '\n')
