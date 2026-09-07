@@ -11,7 +11,22 @@ This is the canonical high-level source for current public Witch Dock state. His
 - HeroForge validation target for the promoted media/tooling work: `heroforge07.1.9.98`
 - Runtime dependencies on HeroForge.Compatibility unstable head or HF-Chat-Bridge: **none**
 
-Witch Dock v1.2.0 is a narrow promotion of three separately live-tested Dev deltas on top of v1.1.0 Spinny Mini WebP. It is not a wholesale merge of `WITCH_DEV_UI`.
+Witch Dock v1.2.0 remains the public shell. The Black Canvas display replay is a manifest-delivered hidden compatibility module and does not require a userscript-shell version bump.
+
+## Black Canvas display replay
+
+Feature ID: `booth.black-canvas-display-replay`.
+
+- Public module: v0.1.1 / build `0.1.1-stable-v24-state-fallback`.
+- Dev replay behavior was live validated on `heroforge07.1.9.98`; the formerly reliable white flash no longer reproduced and Amanda reported the fix worked perfectly.
+- HeroForge's native `CK.character.display.update()` remains untouched and always executes; the compatibility wrapper reasserts Black Canvas state immediately afterward.
+- The real main-scene background is discovered semantically through named `environment` -> `background`, not diagnostic child indexes.
+- Public Stable Booth remains v24. The public module reads v24's existing `KW_WD_BOOTH_DIAG().blackCanvasOn` when the newer Dev `KW_WD_BOOTH.getState().sessionBlackCanvas` API is unavailable.
+- Stable-shaped syntax/lifecycle/fallback mock passed before promotion.
+- No Booth v27 code is promoted by this feature.
+- One clean public flash/background-restoration smoke is required after module refresh.
+
+Detailed record: `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`.
 
 ## Public tab presentation
 
@@ -61,7 +76,7 @@ Feature ID: `media.spinny-mini-webp`.
 
 - Service remains public v0.5.1 / build `0.5.1-witch-dock-stable-download-scroll-guard`.
 - UI remains public v0.1.1 / build `0.1.1-stable-download-ux`.
-- This v1.2.0 promotion does **not** modify the validated Spinny capture engine or UI source.
+- This Black Canvas promotion does **not** modify the validated Spinny capture engine or UI source.
 - 1024/2048 native capture and repaired TRUE-3K 3072 remain available.
 - Pause/Resume, cancel, ETA/progress, draggable popout, silent wheel block, other capture-continuity warnings, and privileged downloads remain unchanged.
 - Short Test remains hidden in normal mode and becomes visible when Developer Mode is enabled.
@@ -73,9 +88,9 @@ Detailed record: `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`.
 - Body Editor / Body tab: live.
 - Pose: live.
 - Decals tab: live placeholder — `New decal tools coming shortly!`.
-- Booth persistence/Black Canvas: live and unchanged by v1.2.0.
+- Booth persistence/Black Canvas: Booth v24 remains live; hidden display replay v0.1.1 now protects Black Canvas across native display rebuilds.
 - JSON: live.
-- Utilities: live; its pinned cog now hosts the Bound Decal Gizmo controls. The corrected gizmo service/runtime remains unchanged and Stable validated.
+- Utilities: live; its pinned cog hosts the Bound Decal Gizmo controls. The corrected gizmo service/runtime remains unchanged and Stable validated.
 
 ## Active module version contract
 
@@ -90,7 +105,7 @@ Every active runtime module has one canonical numeric version in `manifest.json.
 
 ## Current queue
 
-1. One clean public v1.2.0 smoke after the latest module refresh: tab presentation, Decals placeholder, Bound Decal Gizmo controls in Utilities, Developer Mode toggle/registry, compact High Res presence, and a cheap Spinny/download sanity check.
+1. Run one clean public Black Canvas replay smoke after Stable module refresh: visibly black viewport, formerly flash-causing update, Black Canvas OFF restoration, and ordinary character-update sanity.
 2. Continue unrelated compatibility/reconstruction work only as separately scoped features.
 
 The previously discussed 4096 animated-WebP expansion and Developer Mode hotkey are **not active roadmap items** and require no further work unless explicitly reopened later.
@@ -100,6 +115,7 @@ The previously discussed 4096 animated-WebP expansion and Developer Mode hotkey 
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
 - `MODULE_VERSIONING.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
 - `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`

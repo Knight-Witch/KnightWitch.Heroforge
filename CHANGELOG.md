@@ -1,5 +1,51 @@
 # Changelog
 
+## DOCK-2026-09-07-025 — Add Stable Black Canvas display replay
+
+Date: 2026-09-07
+
+### Summary
+
+Promote the Dev-validated Black Canvas post-display replay as a narrow hidden Stable compatibility module. Public Witch Dock shell remains v1.2.0; Booth remains v24.
+
+### Dev validation
+
+- Dev replay v0.1.0 was committed at `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`;
+- after refresh with Black Canvas visibly active, the previously reliable flash-causing update no longer produced the white frame;
+- Amanda reported the result worked perfectly;
+- HeroForge's native `display.update()` remained active; the fix is post-update state replay, not rebuild suppression.
+
+### Public compatibility adaptation
+
+- new hidden `features/booth/Black_Canvas_Display_Replay.js` v0.1.1 / build `0.1.1-stable-v24-state-fallback`;
+- prefers Dev/newer `KW_WD_BOOTH.getState().sessionBlackCanvas` when available;
+- falls back to existing Stable Booth v24 `KW_WD_BOOTH_DIAG().blackCanvasOn`;
+- all Dev-validated replay, semantic-background discovery, wrapper ownership, and dispose/restore behavior is preserved;
+- public `tools/Booth.js` remains byte-unchanged at v24;
+- public `Witch_Dock.user.js` remains v1.2.0 because this is a manifest-delivered module-only update.
+
+### Static Stable gate
+
+- JavaScript syntax: PASS;
+- Stable-v24-shaped diagnostic fallback: PASS;
+- native display-update passthrough: PASS;
+- post-update replay: PASS;
+- semantic background hide/restore: PASS;
+- manifest JSON/module registry: candidate validated before commit;
+- no Booth v27, Dev loader, HF-Chat-Bridge, or unrelated Dev runtime is promoted.
+
+### Preserved boundaries
+
+Corrected Bound Decal Gizmo, Spinny Mini WebP, High Res Image Capture, JSON, Utilities, Developer Mode, Decals host, and tab behavior remain unchanged.
+
+### Public gate
+
+One clean public smoke remains after Stable module refresh: verify visibly black viewport, the formerly flash-causing update, Black Canvas OFF restoration, and ordinary character-update behavior.
+
+**Runtime behavior changed:** yes — hidden Stable Black Canvas compatibility module only.
+
+---
+
 ## DOCK-2026-09-06-024 — Move Bound Decal Gizmo controls to Utilities
 
 Date: 2026-09-06

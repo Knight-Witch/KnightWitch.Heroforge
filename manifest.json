@@ -107,6 +107,16 @@
       "versionOrigin": "normalized-existing"
     },
     {
+      "id": "booth-black-canvas-display-replay",
+      "title": "Booth Black Canvas Display Replay",
+      "path": "features/booth/Black_Canvas_Display_Replay.js",
+      "kind": "compatibility-feature",
+      "load": "manifest",
+      "version": "0.1.1",
+      "build": "0.1.1-stable-v24-state-fallback",
+      "versionOrigin": "stable-promoted-dev-validated"
+    },
+    {
       "id": "photo-booth-true-resolution",
       "title": "High Res Image Capture Service",
       "path": "features/media/Photo_Booth_True_Resolution.js",
@@ -248,6 +258,15 @@
       "tab": "Booth",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
       "enabledByDefault": true
+    },
+    {
+      "id": "booth-black-canvas-display-replay",
+      "title": "Booth Black Canvas Display Replay",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
     },
     {
       "id": "photo-booth-true-resolution",

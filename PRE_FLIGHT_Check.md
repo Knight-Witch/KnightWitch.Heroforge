@@ -1,5 +1,70 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-025 — Promote validated Black Canvas display replay to Stable
+
+Date: 2026-09-07
+
+### Scope
+
+Promote only the Dev-validated Black Canvas post-display replay as a hidden manifest-delivered Stable compatibility module. Do not promote Booth v27 or merge `WITCH_DEV_UI` wholesale.
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
+- public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, and public `tools/Booth.js` v24;
+- Dev replay commit `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1` and its durable investigation record;
+- user live validation that the formerly reliable white flash no longer reproduced and the fix worked perfectly;
+- current HeroForge target `heroforge07.1.9.98`;
+- public Stable head `9fa5c52fdbe2de220457a961be05e633d4b89349`.
+
+### Confirmed compatibility findings
+
+- the validated replay behavior wraps only the current primary `CK.character.display.update()` instance, always calls the native update, and reasserts Black Canvas state in `finally`;
+- public Booth v24 does not expose Dev v27's `KW_WD_BOOTH.getState()` API;
+- public Booth v24 does expose existing `KW_WD_BOOTH_DIAG()` JSON with `blackCanvasOn`;
+- therefore Stable v0.1.1 adds only a state-source compatibility fallback: prefer `KW_WD_BOOTH.getState().sessionBlackCanvas`, otherwise read `KW_WD_BOOTH_DIAG().blackCanvasOn`;
+- no Booth v27 source is required or promoted;
+- the semantic main-scene background discovery remains named `environment` -> `background` and uses no diagnostic child indexes.
+
+### Target files
+
+- `features/booth/Black_Canvas_Display_Replay.js` (new Stable module)
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md` (new Stable record)
+
+### Conflict risks / preservation requirements
+
+- public `tools/Booth.js` must remain byte-unchanged at v24;
+- public Witch Dock shell remains v1.2.0 because this is a manifest-delivered module-only update;
+- no display update/refresh/change/resource-load call may be suppressed;
+- do not force Booth Background component visibility from the replay module;
+- wrapper/background state must be restored on dispose;
+- no HF-Chat-Bridge or unstable Compatibility runtime dependency may enter Stable;
+- Corrected Bound Decal Gizmo, Spinny, High Res, JSON, Utilities, Developer Mode, Decals host, and tab behavior remain unchanged.
+
+### Static gate
+
+Exact public v0.1.1 candidate before branch movement:
+
+- JavaScript syntax: PASS;
+- v24-shaped `KW_WD_BOOTH_DIAG().blackCanvasOn` fallback with no newer API present: PASS;
+- native display-update passthrough: PASS;
+- post-update Black Canvas replay: PASS;
+- semantic background hide/restore: PASS;
+- public manifest remains valid JSON with one hidden module/registry entry;
+- final changed-file whitelist must contain only the six target files above.
+
+### Decision
+
+Advance only the hidden replay module and its registry/docs to public Stable, then require one clean public smoke: visibly black viewport, formerly flash-causing action, Black Canvas OFF restoration, and ordinary character-update sanity.
+
+**Runtime behavior changed:** yes — narrow Stable Black Canvas compatibility module only.
+
+---
+
 ## PFC-2026-09-06-024 — Promote validated Decals/Utilities host cleanup to Stable
 
 Date: 2026-09-06
