@@ -28,17 +28,26 @@ jobs:
           fetch-depth: 0
           path: target
 
-      - name: Remove redundant legacy consent mount gate from helper patch
+      - name: Tighten helper consent separation patch
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('helper/_tools/apply_booth_feature_defaults.py')
           s = p.read_text(encoding='utf-8')
-          needle = "booth = booth.replace(\"    consentCb.checked = state.consent;\\n\\n\", \"\")\n"
-          replacement = needle + "booth = booth.replace(\"    if (state.consent) startLoop();\\n\\n\", \"\")\n"
-          if needle not in s:
-              raise SystemExit('helper patch anchor missing')
-          p.write_text(s.replace(needle, replacement, 1), encoding='utf-8')
+
+          mount_needle = "booth = booth.replace(\"    consentCb.checked = state.consent;\\n\\n\", \"\")\n"
+          mount_replacement = mount_needle + "booth = booth.replace(\"    if (state.consent) startLoop();\\n\\n\", \"\")\n"
+          if mount_needle not in s:
+              raise SystemExit('helper mount-gate patch anchor missing')
+          s = s.replace(mount_needle, mount_replacement, 1)
+
+          audit_needle = '    "defaultBoothPersistence: !!state.consent,",\n)'
+          audit_replacement = '    "defaultBoothPersistence: !!state.consent,",\n    "return state.consent;",\n)'
+          if audit_needle not in s:
+              raise SystemExit('helper consent-audit anchor missing')
+          s = s.replace(audit_needle, audit_replacement, 1)
+
+          p.write_text(s, encoding='utf-8')
           PY
 
       - name: Apply and validate Booth defaults patch
