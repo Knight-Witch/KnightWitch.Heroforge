@@ -1,0 +1,46 @@
+name: Promote Decals Utilities Stable
+
+on:
+  push:
+    branches:
+      - witch-public-decals-utilities-promotion-helper
+    paths:
+      - '.github/workflows/promote-decals-utilities-stable.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper
+        uses: actions/checkout@v4
+        with:
+          ref: witch-public-decals-utilities-promotion-helper
+          path: helper
+          fetch-depth: 0
+
+      - name: Checkout public Stable
+        uses: actions/checkout@v4
+        with:
+          ref: Witch_Scripts
+          path: repo
+          fetch-depth: 0
+
+      - name: Fetch validated Dev source
+        working-directory: repo
+        run: git fetch origin WITCH_DEV_UI
+
+      - name: Apply and validate promotion
+        working-directory: repo
+        run: python ../helper/.github/scripts/promote_decals_utilities_host.py
+
+      - name: Commit and push Stable update
+        working-directory: repo
+        run: |
+          git config user.name "Knight Witch"
+          git config user.email "amanda.m.ivans@gmail.com"
+          git add CHANGELOG.md HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md MASTER.md PRE_FLIGHT_Check.md manifest.json tools/Decals.js tools/Utilities.js
+          git commit -m "Move bound decal gizmo controls to Utilities in Stable"
+          git push origin HEAD:Witch_Scripts
