@@ -1,5 +1,64 @@
 # Changelog
 
+## DOCK-2026-09-07-038 — Add Dev Black Canvas post-display replay
+
+Date: 2026-09-07
+
+### Summary
+
+Added a separate hidden Dev compatibility module to address the remaining one-frame white flash while Black Canvas is active without suppressing HeroForge's native character rebuild. Public Stable is unchanged.
+
+### Confirmed diagnosis
+
+- live isolation established `CK.character.refresh()` -> `display.change()` -> resource load -> `display.update()` as the common rebuild path;
+- suppressing only `display.update()` produced a clean **no flash** result while the earlier native stages still occurred, so the flash is inside that update/rebuild boundary;
+- suppressing HeroForge's native update is not acceptable maintained behavior;
+- the flash also occurs in Booth, so a Kitbash-only production fix is rejected;
+- renderer clear/resize/backing-store paths, loading state, Booth overlay/environment churn, lighting, ground, custom update hooks, deferred FX, Kitbash mirror/parenting, and Kitbash mesh replacement were ruled out as sufficient causes;
+- the actual main-scene background is a separate missing Black Canvas target and is semantically discoverable from the Booth scene root through named `environment` -> `background`.
+
+### Changes
+
+- added hidden `booth-black-canvas-display-replay` v0.1.0 / build `0.1.0-dev-post-display-update-replay` at `features/booth/Black_Canvas_Display_Replay.js`;
+- the module wraps only the current primary `CK.character.display` instance's named `update()` method;
+- HeroForge's native update always runs untouched; the wrapper reasserts Black Canvas state synchronously in `finally` only when the existing Booth API reports `sessionBlackCanvas` ON;
+- display replacement is detected and the owned wrapper is moved/restored rather than stacked;
+- the real scene background is found by semantic names, its previous visibility is captured, it is hidden while Black Canvas is active, and it is restored on Black Canvas OFF/dispose;
+- diagnostic child indexes are not used in maintained source;
+- replay hides frame/shadow/mask, reasserts named environment visibility OFF, and blackens canvas/holder CSS;
+- replay deliberately does not force `overlays.backgroundPlane.visible`, preserving the existing Booth Background component choice;
+- replay deliberately does not request another render refresh;
+- `tools/Booth.js` remains unchanged at v27.0.0/build `v27`.
+
+### Module version
+
+- new `booth-black-canvas-display-replay`: v0.1.0.
+- `booth-tool`: unchanged v27.0.0.
+
+### Preserved boundaries
+
+- public `Witch_Scripts` unchanged;
+- Corrected Bound Decal Gizmo unchanged;
+- Spinny Mini WebP unchanged;
+- High Res Image Capture unchanged;
+- JSON, Utilities, Developer Mode, Decals host, and tab infrastructure unchanged;
+- HF-Chat-Bridge remains development-only and is not a runtime dependency.
+
+### Test status
+
+- Node syntax check: PASS.
+- Mock lifecycle test: PASS for native-update passthrough, post-update replay, semantic-background hide/restore, Black Canvas OFF restoration, and wrapper disposal.
+- Live browser flash validation: **pending**. This commit does not claim the visible flash is fixed until Amanda runs the Dev smoke.
+- No Dev GitHub Actions workflow exists; no CI claim is made.
+
+### Rollback
+
+Disable/remove the hidden manifest entry or revert this single Dev commit. `tools/Booth.js` v27 is not modified by this experiment.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-037 — Stabilize Booth v27 startup and state replay
 
 Date: 2026-09-06

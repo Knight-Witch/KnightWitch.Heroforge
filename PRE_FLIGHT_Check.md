@@ -1,5 +1,81 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-038 — Booth Black Canvas post-display replay
+
+Date: 2026-09-07
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, and `manifest.json`;
+- current `tools/Booth.js` v27 plus its exported `KW_WD_BOOTH.getState()` boundary;
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` and `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;
+- current `WITCH_DEV_UI` head `a4c6e1bdd9f0cebd1c343f9d4c246c2ad8a10483` / tree `f58dbde8456e73243bb583a923cd903f2817375a`;
+- live HeroForge `heroforge07.1.9.98` diagnostics through the private HF-Chat-Bridge, including the full Black Canvas white-flash isolation sequence.
+
+### Confirmed findings
+
+- the common native sequence is `CK.character.refresh()` -> `display.change()` -> resource load -> `display.update()`;
+- a clean test that suppressed only `display.update()` produced no white flash while `refresh()`, `display.change()`, resource loading, and visible Black Canvas remained present, proving the flash lies inside the native update/rebuild boundary;
+- production must not suppress `display.update()` because that would block normal HeroForge model application;
+- the same flash class occurs in Booth, so the recent Kitbash-specific line-by-line chase is rejected as the production direction;
+- renderer clear-color/auto-clear state, renderer resize/backing-store changes, loading state, Booth overlay resize/refresh, environment setter repetition, lighting, ground, custom update hooks, deferred FX, Kitbash mirror state, Kitbash parenting, and Kitbash mesh replacement were ruled out as sufficient causes;
+- an observation trace showed the flash-causing Kitbash action removed/re-attached only the `label` text mesh, not the Kitbash mesh itself;
+- v27 Black Canvas misses the real main-scene background object. Live inspection identified it semantically from `BT.display.overlays.backgroundPlane.parent` through named `environment` -> `background`; hiding that object restores the actual black viewport;
+- the diagnostic child-index path is not acceptable production architecture.
+
+### Decision
+
+Add a separate hidden Dev compatibility module, `booth.black-canvas-display-replay` v0.1.0/build `0.1.0-dev-post-display-update-replay`, rather than broadening `tools/Booth.js` again tonight.
+
+The module:
+
+- wraps only the current primary `CK.character.display` instance's named `update()` method;
+- always calls HeroForge's native update untouched;
+- synchronously reasserts Black Canvas state in `finally` only when `KW_WD_BOOTH.getState().sessionBlackCanvas` is true;
+- rediscovers and re-wraps if HeroForge replaces the primary display instance;
+- semantically discovers/captures/hides/restores the real main-scene background without child indexes;
+- leaves `overlays.backgroundPlane.visible` under the existing Booth Background component owner's control;
+- does not request an extra render refresh;
+- owns a narrow `dispose()` path that restores its wrapper and semantic-background visibility.
+
+### Target files
+
+- `features/booth/Black_Canvas_Display_Replay.js` (new)
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md` (new)
+
+### Conflict risks / preservation requirements
+
+- `tools/Booth.js` remains byte-unchanged at v27.0.0/build `v27`;
+- do not wrap the display prototype or child displays; only the current primary display instance is owned;
+- do not stack wrappers after display replacement or duplicate module loading;
+- Black Canvas OFF must perform no post-update black mutation and must restore the module-owned semantic background state;
+- failure to resolve `CK.character.display.update`, `KW_WD_BOOTH`, or the semantic background must degrade without blocking HeroForge or unrelated Witch Dock tools;
+- do not force the Booth Background component ON/OFF from the compatibility module;
+- no child-index scene paths in maintained source;
+- public `Witch_Scripts`, Corrected Bound Decal Gizmo, Spinny, High Res Image Capture, JSON, Utilities, Developer Mode, and tab infrastructure remain untouched.
+
+### Static validation
+
+- Node syntax check for the new module: PASS.
+- Mock lifecycle test: PASS. Native update executed; wrapper replay hid semantic background/frame/shadow/mask and blackened canvas/holder; Black Canvas OFF restored semantic background; dispose restored the original update method.
+- Manifest/module version is v0.1.0 in the same candidate commit.
+- No GitHub Actions workflow exists for this Dev branch; no CI claim is made.
+
+### Live gate
+
+Refresh the Dev userscript/page, confirm Black Canvas is visibly black, trigger one action that reliably produced the white frame (including native Booth), then report `no flash` or `still flashes`. Also verify Black Canvas OFF restores the normal background and ordinary character changes still apply.
+
+Do not promote to Stable until this live smoke passes.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-06-037 — Booth v27 startup/state stabilization
 
 Date: 2026-09-06
@@ -129,7 +205,7 @@ Preserve the existing Booth state machine/timing. Reinterpret the existing conse
 - saved Booth persistence must still wait for actual Booth entry before auto-applying;
 - saved Black Canvas must initialize without Booth entry;
 - preserve the existing `kw.witchDock.booth.consent.v1` key for migration compatibility;
-- public Stable remains untouched until Dev live validation.
+- public Stable remains untouched until live Dev validation.
 
 ### Version decision
 

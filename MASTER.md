@@ -1,5 +1,22 @@
 # Witch Dock Master
 
+## Active Black Canvas Display Replay Experiment
+
+`booth.black-canvas-display-replay` v0.1.0 / build `0.1.0-dev-post-display-update-replay` is now the current `WITCH_DEV_UI` experiment for the remaining one-frame Black Canvas white flash on HeroForge `heroforge07.1.9.98`.
+
+- live isolation proved the common causal boundary is HeroForge's native `CK.character.display.update()` rebuild: suppressing only that update removed the flash while `refresh()`, `display.change()`, and resource loading still occurred;
+- the same flash class occurs in Booth, so the investigation is no longer treated as a Kitbash-only failure;
+- renderer clear color/resize, Booth overlay refresh/resize, loading state, lighting, ground, custom update hooks, deferred FX, Kitbash mirror/parenting, and Kitbash mesh replacement were individually ruled out as sufficient causes;
+- the hidden Dev module lets native `display.update()` run untouched, then synchronously reasserts Black Canvas state in `finally` before the native scheduled render opportunity;
+- the wrapper is instance-scoped, detects/re-wraps a replacement primary display, and restores its owned wrapper on dispose;
+- the module also fixes the separately confirmed missing Black Canvas target by semantically discovering the named main-scene `environment -> background` object, capturing its previous visibility, hiding it while Black Canvas is ON, and restoring it when Black Canvas is OFF/disposed;
+- production code uses semantic names only; the child-index path used during diagnosis is not shipped;
+- `tools/Booth.js` remains v27.0.0/build `v27` and is unchanged by this experiment;
+- public `Witch_Scripts`, Spinny, High Res, Utilities, JSON, Developer Mode, tabs, and the validated decal gizmo remain untouched;
+- Node syntax and a mocked wrapper/background lifecycle passed; the actual flash fix remains **live Dev validation required** and must not be called fixed until the browser smoke passes.
+
+Detailed record: `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`.
+
 ## Active Booth v27 Stabilization Candidate
 
 Booth v27 / Utilities v1.2.1 is the current `WITCH_DEV_UI` Booth candidate. It stabilizes the v26 fresh-load/default work without changing Utilities storage or the validated decal gizmo runtime.
@@ -113,6 +130,7 @@ Dev core presentation keeps the existing `Body Editor` tab key for preference co
 | `body-editor` | 4.0.0 | normalized from existing `v4` identity |
 | `pose-tool` | 1.0.0 | new tracking baseline |
 | `booth-tool` | 27.0.0 | Dev build `v27`; startup/state stabilization candidate |
+| `booth-black-canvas-display-replay` | 0.1.0 | new Dev compatibility experiment; build `0.1.0-dev-post-display-update-replay` |
 | `photo-booth-true-resolution` | 0.7.0 | existing build `0.7.0-witch-dock-dev-provider` |
 | `photo-booth-true-resolution-readiness` | 1.0.0 | existing build `1.0.0-public-readiness` |
 | `photo-booth-true-resolution-ui` | 0.2.0 | existing Dev UI version/build |
@@ -131,6 +149,7 @@ New `1.0.0` values are tracking anchors only, not reconstructed historical relea
 | Body | `body-editor` | `tools/Body_Editor.js` | Live | Body editing/symmetry. |
 | Pose | `pose-tool` | `tools/Pose.js` | Live | Main/Extra swap. |
 | Booth | `booth-tool` | `tools/Booth.js` | **Dev v27 candidate / Stable v24 live** | Persistent Booth/Black Canvas stabilization pending live Dev smoke. |
+| Booth compatibility | `booth-black-canvas-display-replay` | `features/booth/Black_Canvas_Display_Replay.js` | **Dev experiment only** | Post-native-display-update Black Canvas replay + semantic main-scene background hide/restore; live flash validation pending. |
 | Photo Booth true resolution | `photo-booth-true-resolution` | `features/media/Photo_Booth_True_Resolution.js` | **Live / Stable validated** | TRUE 4K/8K service. |
 | Photo Booth true-resolution UI | `photo-booth-true-resolution-ui` | `features/media/Photo_Booth_True_Resolution_UI.js` | **Dev candidate only** | Compact UI/Developer Mode consumer; standalone visual smoke passed. |
 | Photo Booth readiness | `photo-booth-true-resolution-readiness` | `HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js` | **Live / Stable validated / hidden** | Direct-button readiness sync. |
@@ -186,16 +205,18 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 
 ## Current Near-Term Queue
 
-1. Live-smoke Booth v27 on the saved figure and `+ New Figure`: startup defaults, Black Canvas, effects/lighting, projected decal transform preservation, session overrides, figure switching, and responsive edge behavior.
-2. Live-smoke Developer Mode v0.3.0: default OFF, About persistence, correct active-manifest versions, per-tool diagnostics, Module Versions inventory, Spinny Short Test visibility, and High Res developer controls.
-3. If validated candidates pass, prepare narrow Stable promotions rather than merging the Dev branch wholesale.
-4. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
+1. Live-smoke the Black Canvas display replay on the saved figure: refresh Dev, confirm black, trigger one known flash-causing update in Booth/editor, then verify Black Canvas OFF restores the normal background.
+2. Continue the broader Booth v27 gate only if the replay passes: saved-figure startup, effects/lighting, projected decal transform preservation, figure switching, `+ New Figure` exclusion, session overrides, component toggles, and responsive edge behavior.
+3. Live-smoke Developer Mode v0.3.0: default OFF, About persistence, correct active-manifest versions, per-tool diagnostics, Module Versions inventory, Spinny Short Test visibility, and High Res developer controls.
+4. If validated candidates pass, prepare narrow Stable promotions rather than merging the Dev branch wholesale.
+5. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
 
 ## Durable Records
 
 - `PRE_FLIGHT_Check.md`
 - `CHANGELOG.md`
 - `MODULE_VERSIONING.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
 - `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
