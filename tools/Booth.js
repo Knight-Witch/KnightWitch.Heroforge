@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v25';
+  const BUILD_TAG = 'v26';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -20,6 +20,9 @@
     userBoothOn: false,
     bgOn: false,
     defaultBlackCanvas: false,
+    defaultSessionBooth: false,
+    savedBoothMissingTicks: 0,
+    startupBlackKicks: 0,
     persistLightingOn: true,
     persistEffectsOn: true,
     persistOverlaysOn: true,
@@ -1637,6 +1640,50 @@ function waitForRuntime(cb) {
     }
   }
 
+  function readSavedBoothConfig(TN) {
+    try {
+      const t = TN && TN.tokenizer ? TN.tokenizer : null;
+      if (!t) return null;
+
+      if (TN.__kwBT) {
+        const BT = UW.BT;
+        const CK = UW.CK;
+        const mode = (BT && (BT.currentMode || BT._boothMode)) || TN.currentMode || null;
+        const custom = CK && CK.data && CK.data.custom;
+        const cfg = custom && mode ? custom[mode] : null;
+        if (!cfg || typeof cfg !== 'object') return null;
+
+        // Hero Forge's current Booth source stores deliberate camera state at
+        // CK.data.custom[BT.currentMode].cameraSave and stores the other Booth
+        // presentation selections in the same per-mode custom config. Do not
+        // use BT.maker existence/_enabledFor as evidence: those are runtime
+        // state and can exist for a brand-new figure.
+        const filters = cfg.filters && typeof cfg.filters === 'object' ? cfg.filters : null;
+        const selected = cfg.selected && typeof cfg.selected === 'object' ? cfg.selected : null;
+        const signals = [];
+        if (cfg.cameraSave) signals.push('cameraSave');
+        if (cfg.camera) signals.push('camera');
+        if (cfg.lighting) signals.push('lighting');
+        if (cfg.effects) signals.push('effects');
+        if (filters && filters.tokenBg) signals.push('filters.tokenBg');
+        if (filters && filters.tokenFrame) signals.push('filters.tokenFrame');
+        if (selected && selected.tokenBg !== undefined && selected.tokenBg !== null) signals.push('selected.tokenBg');
+        if (selected && selected.tokenFrame !== undefined && selected.tokenFrame !== null) signals.push('selected.tokenFrame');
+        if (!signals.length) return null;
+        return { mode, signals };
+      }
+
+      if (t.savedCamera) {
+        return { mode: getTokenizerMode(TN) || 'legacy', signals: ['savedCamera'] };
+      }
+    } catch {}
+    return null;
+  }
+
+  function hasSavedBoothSetup(TN) {
+    return !!readSavedBoothConfig(TN);
+  }
+
   function detectExistingBooth(TN) {
     const t = TN && TN.tokenizer;
     if (!t) return false;
@@ -1650,19 +1697,27 @@ function waitForRuntime(cb) {
     if (now - state.lastDetectAt < 350) return;
     state.lastDetectAt = now;
     if (state.autoApplied) return;
-    if (!state.seenBooth) return;
 
-    const hasBooth = detectExistingBooth(TN);
-
-    if (!hasBooth) return;
-
-    state.autoApplied = true;
-
-    if (hasBooth) {
-      state.userBoothOn = true;
-      state.boothOn = true;
+    const saved = readSavedBoothConfig(TN);
+    if (saved) {
+      if (!state.userBoothOn) {
+        onUserBoothToggle(true, { source: 'default', runtime: TN, reason: 'saved-figure-config' });
+      }
+      state.autoApplied = true;
+      state.savedBoothMissingTicks = 0;
+      dbg('default.booth.autoApply', { reason: 'saved-figure-config', mode: saved.mode, signals: saved.signals });
+      updateUI();
+      return;
     }
 
+    // Preserve the established first-use behavior for a figure that did not
+    // already contain a saved Booth setup: after the user actually enters the
+    // Photo Booth, persistence may arm from the live Booth runtime.
+    if (!state.seenBooth || !detectExistingBooth(TN)) return;
+    onUserBoothToggle(true, { source: 'default', runtime: TN, reason: 'booth-visit' });
+    state.autoApplied = true;
+    state.savedBoothMissingTicks = 0;
+    dbg('default.booth.autoApply', { reason: 'booth-visit' });
     updateUI();
   }
   
@@ -1691,10 +1746,10 @@ function waitForRuntime(cb) {
       // Keep the visible switch frozen while the internal one-shot teardown runs.
       // v16 also clicked the checkbox after dispatching change, which inverted the
       // requested value a second time and left persistence in the wrong state.
-      try { onUserBoothToggle(false); } catch {}
+      try { onUserBoothToggle(false, { source: 'internal', preserveSource: true }); } catch {}
 
       setTimeout(() => {
-        try { onUserBoothToggle(true); } catch {}
+        try { onUserBoothToggle(true, { source: 'internal', preserveSource: true }); } catch {}
 
         setTimeout(() => {
           try {
@@ -1816,6 +1871,24 @@ function waitForRuntime(cb) {
       state.oneShotBackdropRearmArmed = false;
     }
 
+    const savedBoothConfig = readSavedBoothConfig(TN);
+    if (state.defaultSessionBooth && state.userBoothOn && state.consent && !inBooth) {
+      if (savedBoothConfig) {
+        state.savedBoothMissingTicks = 0;
+      } else {
+        state.savedBoothMissingTicks += 1;
+        if (state.savedBoothMissingTicks >= 10) {
+          dbg('default.booth.savedConfigMissing', { action: 'disable-default-session' });
+          onUserBoothToggle(false, { source: 'default', runtime: TN, reason: 'saved-config-missing' });
+          state.autoApplied = false;
+          state.seenBooth = false;
+          state.savedBoothMissingTicks = 0;
+        }
+      }
+    } else if (savedBoothConfig || inBooth) {
+      state.savedBoothMissingTicks = 0;
+    }
+
     maybeAutoApply(TN);
 
     const hideFrame = !!state.userBoothOn && !inBooth;
@@ -1864,14 +1937,21 @@ function waitForRuntime(cb) {
     gmSet(STORE_CONSENT, !!state.consent);
 
     if (state.consent) {
-      // Preserve the established consent behavior: the automatic default arms
-      // only after the next real Photo Booth visit rather than forcing Booth
-      // state immediately in the editor.
-      state.seenBooth = false;
       startLoop();
+      const rt = resolveRuntime();
+      if (rt && hasSavedBoothSetup(rt)) {
+        onUserBoothToggle(true, { source: 'default', runtime: rt, reason: 'utilities-enable' });
+        state.autoApplied = true;
+        state.savedBoothMissingTicks = 0;
+      } else if (rt && isInBooth(rt)) {
+        state.seenBooth = true;
+      }
     } else {
-      // Disabling the saved default must not stomp a deliberate session-only
-      // Booth View override. The Booth tab owns that current-session switch.
+      // Turning off the saved default does not stomp the current Booth View
+      // session. It merely converts any default-owned active session into a
+      // normal session override until reload/user action.
+      state.defaultSessionBooth = false;
+      state.savedBoothMissingTicks = 0;
       reconcileLoop();
     }
 
@@ -1879,10 +1959,21 @@ function waitForRuntime(cb) {
     return state.consent;
   }
 
-  function onUserBoothToggle(v) {
-    try { dbg('ui.boothToggle', { v: !!v }); } catch {}
-    const TN = resolveRuntime();
+  function onUserBoothToggle(v, options) {
+    const opts = options && typeof options === 'object' ? options : {};
+    const previousDefaultSource = !!state.defaultSessionBooth;
+    try { dbg('ui.boothToggle', { v: !!v, source: opts.source || 'manual', reason: opts.reason || null }); } catch {}
+    const TN = opts.runtime || resolveRuntime();
     state.userBoothOn = !!v;
+
+    if (opts.preserveSource) {
+      state.defaultSessionBooth = previousDefaultSource;
+    } else if (opts.source === 'default') {
+      state.defaultSessionBooth = !!v;
+    } else {
+      state.defaultSessionBooth = false;
+    }
+    if (!state.userBoothOn) state.savedBoothMissingTicks = 0;
 
     const prev = !!state.boothOn;
     state.boothOn = state.userBoothOn;
@@ -1979,6 +2070,39 @@ function waitForRuntime(cb) {
     return state.defaultBlackCanvas;
   }
 
+  function kickStartupBlackCanvas(attempt) {
+    if (!state.defaultBlackCanvas || !state.bgOn) return;
+    const n = Number(attempt) || 0;
+    const rt = resolveRuntime();
+    if (rt) {
+      try { onUserBgToggle(true); } catch {}
+      try {
+        state.btCanvasLayoutKey = null;
+        refreshBTComponentRender();
+      } catch {}
+      state.startupBlackKicks = Math.max(state.startupBlackKicks, n + 1);
+      dbg('default.blackCanvas.startupKick', { attempt: n + 1, runtime: rt.__kwBT ? 'BT' : 'TN' });
+    }
+
+    // Hero Forge finishes character/display setup in delayed passes. Replaying
+    // the already-tested Black Canvas activation/refresh path during that short
+    // startup window prevents a late native render from visually overwriting
+    // the restored default. A Booth-tab session override to OFF stops retries.
+    const delays = [150, 350, 700, 1400, 2600];
+    if (n < delays.length && state.defaultBlackCanvas && state.bgOn) {
+      setTimeout(() => {
+        if (state.defaultBlackCanvas && state.bgOn) kickStartupBlackCanvas(n + 1);
+      }, delays[n]);
+    }
+  }
+
+  function applyStartupDefaults() {
+    waitForRuntime((TN) => {
+      if (state.defaultBlackCanvas && state.bgOn) kickStartupBlackCanvas(0);
+      if (state.consent) maybeAutoApply(TN);
+    });
+  }
+
   function startLoop() {
     if (!state.loopActive) {
       state.loopActive = true;
@@ -2009,14 +2133,21 @@ function waitForRuntime(cb) {
   }
 
   function boothPublicState() {
+    const rt = resolveRuntime();
+    const saved = rt ? readSavedBoothConfig(rt) : null;
     return {
       featureId: 'booth.persistence',
-      version: '25.0.0',
+      version: '26.0.0',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
       sessionBoothView: !!state.userBoothOn,
       sessionBlackCanvas: !!state.bgOn,
+      defaultSessionBooth: !!state.defaultSessionBooth,
+      savedBoothSetupDetected: !!saved,
+      savedBoothMode: saved ? saved.mode : null,
+      savedBoothSignals: saved ? saved.signals.slice() : [],
+      startupBlackKicks: state.startupBlackKicks,
       seenBooth: !!state.seenBooth,
       autoApplied: !!state.autoApplied,
       loopActive: !!state.loopActive
@@ -2026,7 +2157,7 @@ function waitForRuntime(cb) {
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '25.0.0',
+      version: '26.0.0',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,
@@ -2072,6 +2203,9 @@ function waitForRuntime(cb) {
           blackCanvasOn: !!state.bgOn,
           defaultBoothPersistence: !!state.consent,
           defaultBlackCanvas: !!state.defaultBlackCanvas,
+          defaultSessionBooth: !!state.defaultSessionBooth,
+          savedBoothSetup: (() => { try { const s = readSavedBoothConfig(rt); return s ? { mode: s.mode, signals: s.signals } : null; } catch { return null; } })(),
+          startupBlackKicks: state.startupBlackKicks,
           components: {
             lighting: !!state.persistLightingOn,
             effects: !!state.persistEffectsOn,
@@ -2098,5 +2232,6 @@ function waitForRuntime(cb) {
   loadPersistentDefaults();
   installBoothApi();
   startLoop();
+  applyStartupDefaults();
   boot();
 })();

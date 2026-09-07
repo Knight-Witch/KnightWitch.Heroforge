@@ -267,15 +267,15 @@
 
     const boothDefault = renderBoothDefaultRow(list, {
       label: "Enable Booth Persistence Across Sessions",
-      description: "Automatically arms Booth View after the next Photo Booth visit. The Booth tab can still override it for the current session.",
+      description: "Automatically restores Booth View for figures that already contain a saved Photo Booth setup. New figures with no Booth setup are left alone until Photo Booth is used. The Booth tab can still override it for the current session.",
       setter: "setDefaultBoothPersistence",
-      onStatus: "Saved default enabled. It will arm after the next Photo Booth visit.",
+      onStatus: "Saved default enabled. Saved Booth figures restore automatically; new figures wait for a Booth setup.",
       offStatus: "Saved default disabled. Session-only Booth View remains available in Booth."
     });
 
     const blackDefault = renderBoothDefaultRow(list, {
       label: "Enable Black Canvas Across Sessions",
-      description: "Automatically enables Black Canvas when Witch Dock loads; no Photo Booth visit is required. The Booth tab can still override it for the current session.",
+      description: "Automatically reapplies Black Canvas when Witch Dock loads; no Photo Booth visit is required. The Booth tab can still override it for the current session.",
       setter: "setDefaultBlackCanvas",
       onStatus: "Saved default enabled. Black Canvas is also enabled for this session.",
       offStatus: "Saved default disabled. Session-only Black Canvas remains available in Booth."
@@ -298,10 +298,16 @@
       boothDefault.input.checked = !!state.defaultBoothPersistence;
       blackDefault.input.checked = !!state.defaultBlackCanvas;
       boothDefault.status.textContent = state.defaultBoothPersistence
-        ? "Saved default enabled. It will arm after the next Photo Booth visit."
+        ? (state.sessionBoothView && state.defaultSessionBooth
+            ? "Saved default enabled. Booth View is active from this figure's saved Booth setup."
+            : (state.savedBoothSetupDetected
+                ? "Saved default enabled. Saved Booth setup detected; Booth View is currently overridden for this session."
+                : "Saved default enabled. Waiting for a figure with a saved Booth setup or a Photo Booth visit."))
         : "Saved default disabled. Session-only Booth View remains available in Booth.";
       blackDefault.status.textContent = state.defaultBlackCanvas
-        ? "Saved default enabled. Black Canvas will start automatically on load."
+        ? (state.sessionBlackCanvas
+            ? "Saved default enabled. Black Canvas is active and will reapply on load."
+            : "Saved default enabled. Black Canvas is overridden OFF for this session and will return on reload.")
         : "Saved default disabled. Session-only Black Canvas remains available in Booth.";
       return true;
     }

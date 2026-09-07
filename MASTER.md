@@ -2,15 +2,15 @@
 
 ## Active Booth Defaults / Utilities Dev Candidate
 
-Booth v25 / Utilities v1.2.0 separate automatic cross-session defaults from per-session Booth controls without changing the validated Booth renderer/tokenizer persistence engine.
+Booth v26 / Utilities v1.2.1 repair fresh-load application of the cross-session defaults while preserving the validated Booth renderer/tokenizer persistence engine.
 
 - `Utilities -> Booth Features`: saved Booth Persistence Across Sessions and Black Canvas Across Sessions defaults;
-- `Booth`: Booth View and Black Canvas remain session-only overrides;
-- saved Booth persistence still waits for a real Photo Booth visit before auto-applying;
-- saved Black Canvas initializes directly on load;
-- `Utilities -> Decal Features`: Bound Decal Gizmo controls are nested under the broader category;
-- Booth contains a direct Utilities link backed by new Dev host API `WitchDock.activateTab(name)`;
-- existing Booth consent storage key is preserved for compatibility; new Black Canvas default uses its own key;
+- `Booth`: Booth View and Black Canvas remain session-only overrides and never rewrite those saved defaults;
+- saved Booth persistence now auto-enables the Booth View session only when the loaded figure has character-owned Photo Booth config under `CK.data.custom[BT.currentMode]`;
+- `+ New Figure` / figures without a saved Booth setup are intentionally not auto-initialized; after a real Booth visit, the established first-use persistence path remains available;
+- default-owned Booth View sessions are dropped after a sustained saved-config miss on figure switch, while manual Booth View overrides are left alone;
+- saved Black Canvas replays the working activation/render-refresh path during HeroForge's startup settle window so the visual state, not only the checkbox, returns after refresh;
+- `Utilities -> Decal Features`: Bound Decal Gizmo controls remain nested under the broader category;
 - public Stable remains unchanged pending live Dev validation.
 
 This is the canonical high-level source for current public Witch Dock state. Detailed historical master content remains available in Git history; this file tracks the active live architecture and current feature boundaries.

@@ -14,6 +14,34 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 
 ## Findings
 
+### v26 Gates Automatic Startup to Character-Owned Booth Config
+
+Context:
+- v25 successfully separated saved defaults from session switches, but a fresh page load restored flags without fully replaying the working Booth/Black Canvas activation paths.
+- Automatic Booth startup must never leak a previous Booth view onto `+ New Figure` or a figure with no Booth setup.
+
+Confirmed current-HeroForge source behavior (`heroforge07.1.9.98`):
+- `saveCameraDeliberately()` writes Booth camera state to `CK.data.custom[BT.currentMode].cameraSave`;
+- per-mode `CK.data.custom` also carries Booth filters/selections/lighting/effects;
+- `CharacterFinishedSwitching` reloads saved camera/display/effect config;
+- `BT.maker.enable()` applies `composeDisplayState()` and current Booth mode;
+- `_modeCameraJSON` is a runtime mode-camera snapshot and is not, by itself, proof of a character-owned Booth save.
+
+Dev direction:
+- when the cross-session Booth default is ON, auto-enable Booth View only if meaningful saved Booth fields exist in the loaded figure's per-mode custom config;
+- if no saved setup exists, leave the figure alone until a real Booth visit establishes the normal first-use persistence path;
+- if a default-owned persistent Booth is active and a figure switch settles with no saved Booth config, disable only that default-owned session;
+- preserve manual Booth View overrides;
+- replay the existing Black Canvas activation and native render-refresh path during startup settling so its saved default restores the visible state as well as the checkbox.
+
+Status:
+- Dev v26 candidate; requires saved-figure and `+ New Figure` live validation before Stable promotion.
+
+Affected tools:
+- `tools/Booth.js`
+- `tools/Utilities.js`
+
+
 ### v25 Separates Automatic Defaults From Session Overrides
 
 Context:

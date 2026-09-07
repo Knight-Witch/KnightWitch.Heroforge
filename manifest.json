@@ -112,9 +112,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "25.0.0",
-      "build": "v25",
-      "versionOrigin": "dev-booth-defaults-2026-09-06"
+      "version": "26.0.0",
+      "build": "v26",
+      "versionOrigin": "dev-booth-startup-defaults-2026-09-06"
     },
     {
       "id": "photo-booth-true-resolution",
@@ -181,8 +181,8 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.0",
-      "versionOrigin": "dev-booth-defaults-2026-09-06"
+      "version": "1.2.1",
+      "versionOrigin": "dev-booth-startup-defaults-2026-09-06"
     }
   ],
   "tools": [

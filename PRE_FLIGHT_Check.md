@@ -1,5 +1,44 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-036 — Booth saved-figure startup defaults repair
+
+Date: 2026-09-06
+
+### Confirmed live gaps from v25
+
+- saved Booth Persistence survived refresh but did not actively turn on the Booth-tab `Booth View` session switch on a fresh page load;
+- saved Black Canvas restored its checkbox state after refresh but did not reliably reapply the visible black renderer/background state;
+- same-page figure switching already worked once Booth View had been manually enabled.
+
+### Additional user requirement
+
+Automatic Booth startup must not initialize `+ New Figure` or a figure that has no existing Photo Booth setup. Only a loaded figure with character-owned Booth configuration should be eligible for fresh-load automatic Booth View.
+
+### Source/runtime review
+
+- HeroForge build `heroforge07.1.9.98` Booth source confirms `saveCameraDeliberately()` stores character-owned Booth camera state at `CK.data.custom[BT.currentMode].cameraSave`;
+- the same per-mode custom config carries Booth filter/selection/lighting/effect state;
+- `CharacterFinishedSwitching` reloads saved camera, display, and effects from character config;
+- `BT.maker.enable()` applies `composeDisplayState()` and current mode, making it the named runtime path to restore the saved Booth presentation;
+- `_modeCameraJSON` is also used for runtime camera snapshots and is therefore not sufficient by itself as a saved-figure gate.
+
+### Decision
+
+Advance Booth to v26.0.0/build `v26`. Gate default-driven fresh-load Booth View on meaningful per-mode `CK.data.custom` Booth fields, preserve the existing post-Booth-visit fallback, distinguish default-owned from manual session overrides, and replay the already-working Black Canvas activation/refresh path through the startup settle window. Utilities advances to v1.2.1 for the clarified saved-figure behavior/status text.
+
+### Conflict risks
+
+- do not alter tokenizer disable/re-enable timing, silent-cycle delays, lighting/effect restoration, backdrop capture, or Black Canvas renderer implementation;
+- do not treat `BT.maker` existence, `enabled`, or `_enabledFor` as proof that the loaded figure has saved Booth configuration;
+- manual Booth View/Black Canvas session overrides must remain authoritative for the current session;
+- internal silent-cycle off/on must preserve whether Booth View was default-owned;
+- delayed Black Canvas startup retries must stop if the user overrides Black Canvas OFF;
+- public Stable remains untouched until live Dev validation includes a saved Booth figure and a `+ New Figure`/no-setup figure.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-06-035 — Booth cross-session defaults and Utilities categories
 
 Date: 2026-09-06

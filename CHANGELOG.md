@@ -1,5 +1,33 @@
 # Changelog
 
+## DOCK-2026-09-06-036 — Repair Booth defaults on fresh figure/page load
+
+Date: 2026-09-06
+Timestamp: 18:45 PDT
+
+### Changes
+
+- Booth advances to v26.0.0/build `v26`.
+- Saved Booth Persistence now actively enables the Booth View session on fresh load when the loaded figure contains meaningful Photo Booth configuration in `CK.data.custom[BT.currentMode]`.
+- Fresh `+ New Figure` / no-Booth-config figures are intentionally excluded from automatic startup; the established real-Booth-visit fallback remains.
+- Default-owned Booth sessions track sustained loss of saved Booth config on figure switch and disable themselves without affecting manual Booth View overrides.
+- Internal silent-cycle off/on preserves default/manual session ownership.
+- Saved Black Canvas now replays the existing activation plus native display refresh during HeroForge's delayed startup settling, while respecting a session override to OFF.
+- Booth diagnostics expose saved-config detection, default-owned session state, and startup Black Canvas kick count.
+- Utilities advances to v1.2.1 and explains the saved-figure gate/override status.
+
+### Source evidence
+
+HeroForge build `heroforge07.1.9.98` source confirms deliberate Booth camera state is written to `CK.data.custom[BT.currentMode].cameraSave`, and figure switching reloads saved camera/display/effect config. Runtime-only `_modeCameraJSON` is not used as the eligibility gate.
+
+### Gate
+
+Static syntax/manifest/semantic assertions pass before commit. Live Dev validation is required for: saved-figure fresh-load restore, `+ New Figure` exclusion, same-page saved -> new behavior, Black Canvas visual startup, and both session-only overrides.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-035 — Add Booth cross-session defaults in Utilities
 
 Date: 2026-09-06
