@@ -1,5 +1,26 @@
 # Changelog
 
+## DOCK-2026-09-06-033 — Make Developer Mode public-ready in Dev
+
+Date: 2026-09-06
+
+### Changes
+
+- Developer Mode advances to v0.3.0 / build `0.3.0-public-ready-manifest-source`.
+- Product surface remains About-only, persistent, optional, and OFF by default.
+- Developer Mode no longer hardcodes the `WITCH_DEV_UI` manifest. It resolves the module registry from the manifest URL advertised by the active Witch Dock host, with public `Witch_Scripts/manifest.json` only as a fallback.
+- Dev loader now advertises its actual manifest URL through `KWWitchDockManifestURL` and advances to v0.4.0 / build `1.0.8.4-devmode-manifest-source` (`@version` 1.0.8.4).
+- Troubleshooting UI continues to expose per-tool IDs/version/build rows, About `Module Versions`, Spinny Short Test visibility, and High Res recovery diagnostics only while Developer Mode is enabled.
+- No hotkey or non-About activation surface is added.
+
+### Gate
+
+Static syntax/manifest/source assertions pass before commit. Live Dev smoke is required for default-off behavior, About toggle persistence, correct Dev registry versions, per-tool rows, module inventory, Spinny Short Test gating, High Res developer controls, and normal-mode cleanup.
+
+**Runtime behavior changed:** yes, Dev diagnostics/host metadata only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-032 — Validate High Res service/UI ownership cleanup
 
 Date: 2026-09-06

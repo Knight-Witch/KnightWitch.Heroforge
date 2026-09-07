@@ -1,5 +1,38 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-033 — Developer Mode public-readiness
+
+Date: 2026-09-06
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility project contract, architecture/inventory/compatibility/ownership/testing state;
+- Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, current `manifest.json`;
+- `features/core/Witch_Dock_Developer_Mode.js` v0.2.0 behavior;
+- Dev loader manifest ownership;
+- validated tab cleanup and High Res service/UI cleanup;
+- Spinny Developer-Mode Short Test consumer and High Res Developer-Mode recovery consumer.
+
+### Confirmed finding
+
+Developer Mode already satisfies the accepted product shape (About-only, persistent, default OFF), but its module registry URL is hardcoded to `WITCH_DEV_UI`. Shipping that source unchanged would make public users inspect Dev registry versions instead of the manifest actually loaded by their Witch Dock.
+
+### Decision
+
+Make the active loader advertise its manifest URL and make Developer Mode resolve its registry from that host-owned URL, with Stable fallback. Preserve all existing normal-mode behavior and Developer-only consumer contracts. Require live Dev smoke before any Stable promotion.
+
+### Conflict risks
+
+- Developer Mode failure must remain diagnostic-only;
+- default OFF and existing storage key must not change;
+- normal users must not see per-tool rows, Module Versions, Short Test, or provider recovery controls;
+- no dependence on HF-Chat-Bridge or unstable Compatibility runtime heads;
+- module versions must bump with runtime changes.
+
+**Runtime behavior changed:** yes, Dev diagnostics/manifest-source boundary only.
+
+---
+
 ## PFC-2026-09-06-032 — Record High Res ownership cleanup live validation
 
 Date: 2026-09-06

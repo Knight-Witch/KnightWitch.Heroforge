@@ -205,3 +205,7 @@ Live gate: compact normal presentation, TRUE 4K, TRUE 8K, Developer Mode provide
 ## 2026-09-06 High Res ownership cleanup — PASS
 
 User live validation passed the service/UI ownership cleanup at `b7693f03eb411c9a7d954175e6f181111fac88a4`: compact presentation, no duplicate legacy section, Developer Mode provider diagnostics, provider disable -> enable recovery, TRUE 4K, TRUE 8K, Spinny coexistence, and existing tab cleanup all pass. The High Res ownership item is closed for Dev; next stage is Developer Mode public-readiness.
+
+## 2026-09-06 Developer Mode public-readiness — Dev candidate
+
+Developer Mode v0.3.0 keeps the accepted About-only/default-OFF product shape but removes its Dev-branch registry dependency. The active Witch Dock loader advertises its own manifest URL; Developer Mode reads canonical module versions from that URL and uses public Stable only as a fallback. Live gate: persistence, correct active-manifest versions, tool rows, Module Versions inventory, Spinny Short Test visibility, High Res diagnostics/recovery visibility, and complete cleanup when switched OFF.

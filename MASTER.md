@@ -51,12 +51,12 @@ Service/UI ownership cleanup live smoke: **PASS**. Compact presentation, provide
 
 ### Developer Mode
 
-`features/core/Witch_Dock_Developer_Mode.js` build `0.2.0-dev-module-version-registry` is the current Dev candidate.
+`features/core/Witch_Dock_Developer_Mode.js` v0.3.0 / build `0.3.0-public-ready-manifest-source` is the current public-readiness Dev candidate.
 
 - default off;
 - persistent About-menu toggle;
 - reversible `WitchDock.registerTool` wrapper;
-- canonical module-version registry read from `manifest.json`;
+- canonical module-version registry resolved from the manifest URL advertised by the active Witch Dock host, with public Stable fallback;
 - per-visible-tool canonical version/runtime build display;
 - Developer-only About `Module Versions` inventory covering core, visible, hidden, and conditional active modules;
 - registry failure is diagnostic-only;
@@ -161,10 +161,9 @@ The standalone 3072px Spinny run has completed; detailed user result intake is n
 
 ## Current Near-Term Queue
 
-1. Make Developer Mode public-ready as an About-only, default-OFF troubleshooting feature whose version registry follows the manifest actually loaded by the current Witch Dock host.
-2. Live-smoke Developer Mode persistence, per-tool diagnostics, module inventory, Spinny Short Test visibility, and High Res developer controls.
-3. Prepare a narrow Stable promotion containing the already validated tab cleanup, compact High Res service/UI split, and Developer Mode only after that smoke passes.
-4. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
+1. Live-smoke Developer Mode v0.3.0: default OFF, About persistence, correct active-manifest versions, per-tool diagnostics, Module Versions inventory, Spinny Short Test visibility, and High Res developer controls.
+2. If that passes, prepare a narrow Stable promotion containing the validated tab cleanup, compact High Res service/UI split, and Developer Mode.
+3. Keep 4096 animated WebP deferred until a clean frame-source ownership seam exists.
 
 ## Durable Records
 

@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Witch Dock DEV - Developer Mode
+// @name         Witch Dock - Developer Mode
 // @namespace    KnightWitch
-// @version      0.2.0
-// @description  Shared Witch Dock developer-mode toggle, canonical module version registry, and developer-only diagnostics host.
+// @version      0.3.0
+// @description  Optional Witch Dock troubleshooting mode with module versions, runtime builds, and recovery diagnostics.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        none
@@ -14,12 +14,12 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const GLOBAL = 'KWDeveloperMode';
-  const BUILD = '0.2.0-dev-module-version-registry';
+  const BUILD = '0.3.0-public-ready-manifest-source';
   const STORE_KEY = 'kw.witchDock.developerMode.v1';
   const STYLE_ID = 'kwWDDeveloperModeStyle';
   const ABOUT_ROW_ID = 'kwWDDeveloperModeRow';
   const EVENT_NAME = 'kw:witchdock-developer-mode';
-  const REGISTRY_URL = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/manifest.json';
+  const STABLE_REGISTRY_URL = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json';
 
   let enabled = false;
   let timer = null;
@@ -117,6 +117,16 @@
     };
   }
 
+  function getRegistryUrl() {
+    try {
+      const runtimeUrl = UW && typeof UW.KWWitchDockManifestURL === 'string'
+        ? UW.KWWitchDockManifestURL.trim()
+        : '';
+      if (runtimeUrl) return runtimeUrl;
+    } catch (_) {}
+    return STABLE_REGISTRY_URL;
+  }
+
   function registerToolMeta(def) {
     const meta = normalizeToolMeta(def);
     if (!meta) return false;
@@ -134,7 +144,8 @@
   async function loadModuleRegistry() {
     registryError = null;
     try {
-      const response = await fetch(REGISTRY_URL, { cache: 'no-store' });
+      const sourceUrl = getRegistryUrl();
+      const response = await fetch(sourceUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const manifest = await response.json();
       const entries = Array.isArray(manifest && manifest.moduleRegistry) ? manifest.moduleRegistry : [];
@@ -255,7 +266,7 @@
 
       const hint = document.createElement('div');
       hint.className = 'kwWDDevModeHint';
-      hint.textContent = 'Shows canonical module versions, tool IDs/builds, and troubleshooting controls intended for development or recovery.';
+      hint.textContent = 'Shows module versions, runtime builds, and troubleshooting controls. Developer Mode is optional and off by default.';
 
       const details = document.createElement('details');
       details.className = 'kwWDDevModuleVersions';
@@ -396,7 +407,7 @@
 
   UW[GLOBAL] = {
     build: BUILD,
-    version: '0.2.0',
+    version: '0.3.0',
     setEnabled,
     toggle,
     onChange,
@@ -405,6 +416,7 @@
     registrySnapshot,
     moduleRegistrySnapshot,
     reloadModuleRegistry: loadModuleRegistry,
+    getRegistryUrl,
     initialize,
     dispose,
     get enabled() { return enabled; },
