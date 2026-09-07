@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Spinny Integration
 // @namespace    KnightWitch
-// @version      1.0.8.4
+// @version      1.0.8.5
 // @description  DEV test loader for Witch Dock WITCH_DEV_UI modules. Do not use as public Stable.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -2821,6 +2821,11 @@ function buildUI() {
   UW.WitchDock.registerTool = registerTool;
   UW.WitchDock.ensureDock = buildUI;
   UW.WitchDock.downloadBlob = kwDownloadBlob;
+  UW.WitchDock.activateTab = (name) => {
+    if (!state.tabs.has(name)) return false;
+    setActiveTab(name);
+    return true;
+  };
 
   buildUI();
     installDockHotkey();

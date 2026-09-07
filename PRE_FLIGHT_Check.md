@@ -1,5 +1,50 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-06-035 — Booth cross-session defaults and Utilities categories
+
+Date: 2026-09-06
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility project contract, architecture and active feature inventory;
+- current Witch Dock `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
+- `tools/Booth.js` v24 persistence/Black Canvas state machine and storage keys;
+- `tools/Utilities.js` v1.1.0 category host;
+- `Witch_Dock_DEV.user.js` tab-selection implementation;
+- `HISTORY/BULLSHIT/BOOTH_RENDERS_EXPORTS.md` known timing/state constraints.
+
+### Confirmed diagnosis
+
+- `kw.witchDock.booth.consent.v1` already persists the Booth auto-arm preference across sessions, but v24 also uses that preference as a hard gate that disables the Booth View session switch;
+- Black Canvas is already independent of Booth persistence but has no saved cross-session default;
+- existing automatic Booth persistence correctly waits for a real Photo Booth visit before applying;
+- Black Canvas can run from the editor without a Booth visit;
+- Witch Dock tab selection is internally stable but was not exposed as a host API.
+
+### Decision
+
+Preserve the existing Booth state machine/timing. Reinterpret the existing consent key strictly as the saved automatic Booth default, allow Booth View/Black Canvas to remain session overrides, add one saved Black Canvas default, expose a narrow `WitchDock.activateTab(name)` API for internal links, and organize Utilities into `Booth Features`, `Decal Features`, and existing `HeroForge UI Patches` categories.
+
+### Conflict risks
+
+- do not rewrite tokenizer teardown/re-enable timing, lighting/effect restoration, backdrop capture, Black Canvas renderer enforcement, or silent-cycle timing;
+- session toggles must never rewrite the saved Utilities defaults;
+- disabling a saved default must not unexpectedly tear down a deliberate session override;
+- saved Booth persistence must still wait for actual Booth entry before auto-applying;
+- saved Black Canvas must initialize without Booth entry;
+- preserve the existing `kw.witchDock.booth.consent.v1` key for migration compatibility;
+- public Stable remains untouched until Dev live validation.
+
+### Version decision
+
+- `booth-tool`: v25.0.0 / build `v25`;
+- `utilities`: v1.2.0;
+- `witch-dock-dev-loader`: v0.5.0 / userscript `1.0.8.5`.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-06-034 — Move bound decal gizmo host to Utilities
 
 Date: 2026-09-06

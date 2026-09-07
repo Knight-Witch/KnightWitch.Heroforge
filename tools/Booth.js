@@ -4,11 +4,13 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v24';
+  const BUILD_TAG = 'v25';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
   const STORE_COMPONENTS = 'kw.witchDock.booth.components.v1';
+  const STORE_BLACK_DEFAULT = 'kw.witchDock.booth.blackCanvasDefault.v1';
+  const BOOTH_API_KEY = 'KW_WD_BOOTH';
 
   const state = {
     consent: false,
@@ -17,6 +19,7 @@
     boothOn: false,
     userBoothOn: false,
     bgOn: false,
+    defaultBlackCanvas: false,
     persistLightingOn: true,
     persistEffectsOn: true,
     persistOverlaysOn: true,
@@ -91,7 +94,6 @@
 
     ui: {
       root: null,
-      consent: null,
       boothToggle: null,
       lightingToggle: null,
       effectsToggle: null,
@@ -130,6 +132,12 @@
     try {
       localStorage.setItem(key, JSON.stringify(val));
     } catch {}
+  }
+
+  function loadPersistentDefaults() {
+    state.consent = !!gmGet(STORE_CONSENT, false);
+    state.defaultBlackCanvas = !!gmGet(STORE_BLACK_DEFAULT, false);
+    state.bgOn = !!state.defaultBlackCanvas;
   }
 
   let btRuntimeFacade = null;
@@ -383,6 +391,9 @@
       .kwBoothBtn:active{transform:translateY(1px);}
       .kwBoothDirText{white-space:pre-line;font-size:12px;line-height:1.35;opacity:0.95;}
       .kwBoothStatus{font-size:11px;opacity:0.85;padding-top:2px;}
+      .kwBoothPersistNote{font-size:11px;line-height:1.35;opacity:.78;padding:0 2px;}
+      .kwBoothPersistLink{border:0;padding:0;margin:0;background:none;color:#d9b8ff;font:inherit;font-weight:750;text-decoration:underline;cursor:pointer;}
+      .kwBoothPersistLink:hover{color:#ead8ff;}
     `;
     document.head.appendChild(st);
   }
@@ -397,19 +408,26 @@
     root.className = 'kwBoothTool';
     sec.body.appendChild(root);
 
-    const consentRow = document.createElement('div');
-    consentRow.className = 'kwBoothConsent';
+    const persistenceNote = document.createElement('div');
+    persistenceNote.className = 'kwBoothPersistNote';
+    persistenceNote.appendChild(document.createTextNode('To enable automatic persistence across sessions, see '));
 
-    const consentCb = document.createElement('input');
-    consentCb.type = 'checkbox';
+    const utilitiesLink = document.createElement('button');
+    utilitiesLink.type = 'button';
+    utilitiesLink.className = 'kwBoothPersistLink';
+    utilitiesLink.textContent = 'Utilities';
+    utilitiesLink.title = 'Open Utilities';
+    utilitiesLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const dock = UW.WitchDock;
+      if (dock && typeof dock.activateTab === 'function' && dock.activateTab('Utilities')) return;
+      const fallback = document.querySelector('.kwWDTab[data-tab-name="Utilities"]');
+      if (fallback && typeof fallback.click === 'function') fallback.click();
+    });
 
-    const consentLabel = document.createElement('span');
-    consentLabel.textContent = 'Enable Booth Persistence';
-    consentLabel.title = 'Check this box to enable the Booth to automatically detect & turn on persistent booth view once you enter the photo booth for the first time.';
-
-    consentRow.appendChild(consentCb);
-    consentRow.appendChild(consentLabel);
-    root.appendChild(consentRow);
+    persistenceNote.appendChild(utilitiesLink);
+    persistenceNote.appendChild(document.createTextNode('.'));
+    root.appendChild(persistenceNote);
 
     const togglesBox = document.createElement('div');
     togglesBox.className = 'kwBoothBox';
@@ -488,13 +506,13 @@
     const ol = document.createElement('ol');
     ol.className = 'kwBoothOl';
     const li1 = document.createElement('li');
-    li1.textContent = 'Enable Booth Persistence';
+    li1.textContent = 'Open photo booth';
     const li2 = document.createElement('li');
-    li2.textContent = 'Open photo booth';
+    li2.textContent = 'Edit your scene, or if you have already done so, it will capture that automatically.';
     const li3 = document.createElement('li');
-    li3.textContent = 'Edit your scene, or if you have already done so, it will capture that automatically.';
+    li3.textContent = 'Exit the booth';
     const li4 = document.createElement('li');
-    li4.textContent = 'Exit the booth';
+    li4.textContent = 'Use Booth View and Black Canvas above for session-only overrides. Automatic defaults live in Utilities.';
     ol.appendChild(li1);
     ol.appendChild(li2);
     ol.appendChild(li3);
@@ -528,7 +546,6 @@
     root.appendChild(status);
 
     state.ui.root = root;
-    state.ui.consent = consentCb;
     state.ui.boothToggle = boothT.input;
     state.ui.lightingToggle = lightingT.input;
     state.ui.effectsToggle = effectsT.input;
@@ -550,7 +567,6 @@
       state.persistBackgroundOn = components.background !== false;
     }
 
-    consentCb.addEventListener('change', () => onConsentToggle(!!consentCb.checked));
     boothT.input.addEventListener('change', () => onUserBoothToggle(!!boothT.input.checked));
     lightingT.input.addEventListener('change', () => onComponentToggle('lighting', !!lightingT.input.checked));
     effectsT.input.addEventListener('change', () => onComponentToggle('effects', !!effectsT.input.checked));
@@ -565,10 +581,6 @@
       updateUI();
     });
 
-    consentCb.checked = state.consent;
-
-    if (state.consent) startLoop();
-
     updateUI();
   }
 
@@ -579,14 +591,12 @@
 
     const suppress = !!state._suppressUI;
 
-    if (!suppress && ui.consent) ui.consent.checked = !!state.consent;
-
     if (!suppress && ui.boothToggle) {
-      ui.boothToggle.disabled = !state.consent;
+      ui.boothToggle.disabled = false;
       ui.boothToggle.checked = !!state.userBoothOn;
     }
 
-    const componentsDisabled = !state.consent || !state.userBoothOn;
+    const componentsDisabled = !state.userBoothOn;
     if (!suppress && ui.lightingToggle) {
       ui.lightingToggle.disabled = componentsDisabled;
       ui.lightingToggle.checked = !!state.persistLightingOn;
@@ -1519,7 +1529,7 @@ function waitForRuntime(cb) {
         // Hero Forge's new Booth runtime exposes BT.maker instead of TN.tokenizer.
         // Its real disable() call is the booth-exit signal. Allow that teardown
         // exactly once, then re-enable after the new display state has committed.
-        if (tn && tn.__kwBT && isTokenizer && state.boothOn && state.consent && state.userBoothOn) {
+        if (tn && tn.__kwBT && isTokenizer && state.boothOn && state.userBoothOn) {
           if (state.oneShotBackdropRearmArmed) return true;
           state.oneShotBackdropRearmArmed = true;
           captureEffectState(tn);
@@ -1534,7 +1544,7 @@ function waitForRuntime(cb) {
             try {
               const rt2 = resolveRuntime();
               const maker = rt2 && rt2.tokenizer;
-              if (!maker || !state.consent || !state.userBoothOn) return;
+              if (!maker || !state.userBoothOn) return;
               if (typeof maker.enable === 'function') maker.enable();
               applyBTComponentEffectState(rt2);
               restoreBTLightingState();
@@ -1545,7 +1555,7 @@ function waitForRuntime(cb) {
           setTimeout(() => {
             try {
               const rt3 = resolveRuntime();
-              if (rt3 && state.consent && state.userBoothOn) {
+              if (rt3 && state.userBoothOn) {
                 if (rt3.tokenizer && typeof rt3.tokenizer.enable === 'function') rt3.tokenizer.enable();
                 applyBTComponentEffectState(rt3);
                 restoreBTLightingState();
@@ -1561,7 +1571,7 @@ function waitForRuntime(cb) {
         try {
           const tn = resolveRuntime();
           const tok = tn && tn.tokenizer ? tn.tokenizer : null;
-          if (tok && obj === tok && state.consent && state.userBoothOn && tn && !isInBooth(tn)) {
+          if (tok && obj === tok && state.userBoothOn && tn && !isInBooth(tn)) {
             dbg('exit.detect.disable', {});
             scheduleSilentBackdropCycle(tn);
           }
@@ -1657,7 +1667,7 @@ function waitForRuntime(cb) {
   }
   
   function scheduleSilentBackdropCycle(TN) {
-    if (!state.consent || !state.userBoothOn) return;
+    if (!state.userBoothOn) return;
     if (state.silentCycleInProgress) return;
     if (state.silentCycleTimer) return;
 
@@ -1667,7 +1677,7 @@ function waitForRuntime(cb) {
       const tn = runtimeNow(TN);
       if (!tn) return;
       if (isInBooth(tn)) return;
-      if (!state.consent || !state.userBoothOn) return;
+      if (!state.userBoothOn) return;
 
       state.silentCycleInProgress = true;
       state._suppressUI = true;
@@ -1766,7 +1776,7 @@ function waitForRuntime(cb) {
       state.seenBooth = true;
       state.btCanvasLayoutKey = null;
 
-      if (TN && TN.__kwBT && state.consent && state.userBoothOn) {
+      if (TN && TN.__kwBT && state.userBoothOn) {
         try { captureBTLightingState(); } catch {}
         try { captureEffectState(TN); } catch {}
       }
@@ -1808,7 +1818,7 @@ function waitForRuntime(cb) {
 
     maybeAutoApply(TN);
 
-    const hideFrame = !!state.consent && !!state.userBoothOn && !inBooth;
+    const hideFrame = !!state.userBoothOn && !inBooth;
     setBoothFrameHidden(hideFrame);
     setShaderFrameHidden(hideFrame, TN);
 
@@ -1847,32 +1857,32 @@ function waitForRuntime(cb) {
 
   
 
-  function onConsentToggle(v) {
-    try { dbg('ui.consent', { v: !!v }); } catch {}
+  function setDefaultBoothPersistence(v) {
+    try { dbg('default.boothPersistence', { v: !!v }); } catch {}
     state.consent = !!v;
+    state.autoApplied = false;
     gmSet(STORE_CONSENT, !!state.consent);
 
     if (state.consent) {
+      // Preserve the established consent behavior: the automatic default arms
+      // only after the next real Photo Booth visit rather than forcing Booth
+      // state immediately in the editor.
       state.seenBooth = false;
       startLoop();
     } else {
-      teardownBoothOnly();
+      // Disabling the saved default must not stomp a deliberate session-only
+      // Booth View override. The Booth tab owns that current-session switch.
       reconcileLoop();
     }
 
     updateUI();
+    return state.consent;
   }
 
   function onUserBoothToggle(v) {
-    try { dbg('ui.boothToggle', { v: !!v, consent: !!state.consent }); } catch {}
+    try { dbg('ui.boothToggle', { v: !!v }); } catch {}
     const TN = resolveRuntime();
     state.userBoothOn = !!v;
-    if (!state.consent) {
-      state.userBoothOn = false;
-      state.boothOn = false;
-      updateUI();
-      return;
-    }
 
     const prev = !!state.boothOn;
     state.boothOn = state.userBoothOn;
@@ -1890,6 +1900,7 @@ function waitForRuntime(cb) {
       } catch {}
     }
 
+    reconcileLoop();
     updateUI();
   }
 
@@ -1958,6 +1969,16 @@ function waitForRuntime(cb) {
     updateUI();
   }
 
+  function setDefaultBlackCanvas(v) {
+    state.defaultBlackCanvas = !!v;
+    gmSet(STORE_BLACK_DEFAULT, !!state.defaultBlackCanvas);
+    // A Utilities default change is immediately reflected in the current
+    // session; the Booth-tab Black Canvas switch can override it afterward
+    // without rewriting the saved default.
+    onUserBgToggle(state.defaultBlackCanvas);
+    return state.defaultBlackCanvas;
+  }
+
   function startLoop() {
     if (!state.loopActive) {
       state.loopActive = true;
@@ -1970,7 +1991,7 @@ function waitForRuntime(cb) {
   }
 
   function reconcileLoop() {
-    const need = !!state.consent || !!state.bgOn;
+    const need = !!state.consent || !!state.userBoothOn || !!state.bgOn;
     if (need) startLoop();
     else stopLoop();
   }
@@ -1985,6 +2006,34 @@ function waitForRuntime(cb) {
     try { setBoothFrameHidden(false); } catch {}
     try { teardownBoothNow(resolveRuntime()); } catch {}
     updateUI();
+  }
+
+  function boothPublicState() {
+    return {
+      featureId: 'booth.persistence',
+      version: '25.0.0',
+      build: BUILD_TAG,
+      defaultBoothPersistence: !!state.consent,
+      defaultBlackCanvas: !!state.defaultBlackCanvas,
+      sessionBoothView: !!state.userBoothOn,
+      sessionBlackCanvas: !!state.bgOn,
+      seenBooth: !!state.seenBooth,
+      autoApplied: !!state.autoApplied,
+      loopActive: !!state.loopActive
+    };
+  }
+
+  function installBoothApi() {
+    UW[BOOTH_API_KEY] = {
+      featureId: 'booth.persistence',
+      version: '25.0.0',
+      build: BUILD_TAG,
+      getState: boothPublicState,
+      setDefaultBoothPersistence,
+      setDefaultBlackCanvas,
+      setSessionBooth: onUserBoothToggle,
+      setSessionBlackCanvas: onUserBgToggle
+    };
   }
 
   function registerTool() {
@@ -2021,6 +2070,8 @@ function waitForRuntime(cb) {
           boothOn: !!state.boothOn,
           userBoothOn: !!state.userBoothOn,
           blackCanvasOn: !!state.bgOn,
+          defaultBoothPersistence: !!state.consent,
+          defaultBlackCanvas: !!state.defaultBlackCanvas,
           components: {
             lighting: !!state.persistLightingOn,
             effects: !!state.persistEffectsOn,
@@ -2044,6 +2095,8 @@ function waitForRuntime(cb) {
   } catch {}
 
 
+  loadPersistentDefaults();
+  installBoothApi();
   startLoop();
   boot();
 })();

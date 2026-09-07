@@ -1,5 +1,29 @@
 # Changelog
 
+## DOCK-2026-09-06-035 — Add Booth cross-session defaults in Utilities
+
+Date: 2026-09-06
+
+### Changes
+
+- Booth v25 separates saved automatic defaults from Booth-tab session overrides while preserving the existing persistence/Black Canvas engine.
+- Existing `kw.witchDock.booth.consent.v1` is retained as the saved Booth-persistence default for migration compatibility.
+- New `kw.witchDock.booth.blackCanvasDefault.v1` stores the automatic Black Canvas default.
+- Saved Booth persistence still waits for a real Photo Booth visit before auto-arming; saved Black Canvas initializes directly in the editor without requiring Booth entry.
+- Booth View and Black Canvas remain available in the Booth tab as session-only overrides and do not rewrite saved defaults.
+- The old `Enable Booth Persistence` checkbox moves out of Booth; Booth gains a clickable `Utilities` note for automatic defaults.
+- Utilities v1.2.0 adds a `Booth Features` category with the two saved defaults.
+- Utilities renames the former `Bound Decal Gizmo` top-level section to `Decal Features` and nests the unchanged gizmo controls beneath it.
+- Dev shell adds `WitchDock.activateTab(name)` for first-class internal cross-tab navigation and advances to dev-loader v0.5.0 / userscript 1.0.8.5.
+
+### Gate
+
+Static syntax/manifest/version assertions pass before commit. Live Dev validation is required for saved-default reload behavior, session-only overrides, immediate Black Canvas startup, Booth-entry auto-arm, and Booth-to-Utilities navigation before any Stable promotion.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-06-034 — Move bound decal gizmo controls to Utilities
 
 Date: 2026-09-06

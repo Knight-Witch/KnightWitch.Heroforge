@@ -14,6 +14,33 @@ HeroForge photo booth, render, screenshot, export, and media workflow discoverie
 
 ## Findings
 
+### v25 Separates Automatic Defaults From Session Overrides
+
+Context:
+- Users need Booth Persistence and Black Canvas to be optionally automatic across page/figure sessions while retaining quick session-only switches in the Booth tab.
+
+Confirmed source behavior before v25:
+- `kw.witchDock.booth.consent.v1` already persisted the automatic Booth preference but also hard-disabled the Booth View session switch when false.
+- automatic Booth persistence already waited for a real Booth visit (`seenBooth`) before applying;
+- Black Canvas already ran independently from Booth persistence but had no saved default.
+
+Dev direction:
+- retain `kw.witchDock.booth.consent.v1` as the saved automatic Booth default;
+- add `kw.witchDock.booth.blackCanvasDefault.v1` for saved automatic Black Canvas;
+- keep Booth View and Black Canvas as session overrides that do not rewrite either saved default;
+- disabling a saved Booth default does not tear down an already chosen session-only Booth View state;
+- automatic Booth default still waits for Booth entry; automatic Black Canvas starts without Booth entry;
+- host the saved settings under `Utilities -> Booth Features` and link there from Booth;
+- preserve tokenizer teardown/re-enable, lighting/effect restore, silent-cycle, backdrop and renderer timing unchanged.
+
+Status:
+- Dev implementation built; live validation required before Stable promotion.
+
+Affected tools:
+- `tools/Booth.js`
+- `tools/Utilities.js`
+- Witch Dock host tab API
+
 ### Booth Tool Uses Build Tag `v21`
 
 Context:

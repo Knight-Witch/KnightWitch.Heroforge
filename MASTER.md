@@ -1,5 +1,18 @@
 # Witch Dock Master
 
+## Active Booth Defaults / Utilities Dev Candidate
+
+Booth v25 / Utilities v1.2.0 separate automatic cross-session defaults from per-session Booth controls without changing the validated Booth renderer/tokenizer persistence engine.
+
+- `Utilities -> Booth Features`: saved Booth Persistence Across Sessions and Black Canvas Across Sessions defaults;
+- `Booth`: Booth View and Black Canvas remain session-only overrides;
+- saved Booth persistence still waits for a real Photo Booth visit before auto-applying;
+- saved Black Canvas initializes directly on load;
+- `Utilities -> Decal Features`: Bound Decal Gizmo controls are nested under the broader category;
+- Booth contains a direct Utilities link backed by new Dev host API `WitchDock.activateTab(name)`;
+- existing Booth consent storage key is preserved for compatibility; new Black Canvas default uses its own key;
+- public Stable remains unchanged pending live Dev validation.
+
 This is the canonical high-level source for current public Witch Dock state. Detailed historical master content remains available in Git history; this file tracks the active live architecture and current feature boundaries.
 
 ## Current Architecture
