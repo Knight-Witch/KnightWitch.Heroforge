@@ -26,6 +26,11 @@ jobs:
           set -euo pipefail
           cd target
           python ../helper/.github/scripts/record_highres_cleanup_pass.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md')
+          p.write_text(p.read_text().rstrip() + '\n')
+          PY
           git diff --check
           git config user.name "Knight Witch"
           git config user.email "amanda.m.ivans@gmail.com"
@@ -38,6 +43,11 @@ jobs:
           set -euo pipefail
           cd target
           python ../helper/.github/scripts/prepare_developer_mode_public.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('HISTORY/BULLSHIT/WITCH_DOCK_UI_FOLLOWUPS.md')
+          p.write_text(p.read_text().rstrip() + '\n')
+          PY
       - name: Static gate
         shell: bash
         run: |
