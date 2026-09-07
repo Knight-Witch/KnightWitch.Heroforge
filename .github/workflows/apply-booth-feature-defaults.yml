@@ -28,6 +28,19 @@ jobs:
           fetch-depth: 0
           path: target
 
+      - name: Remove redundant legacy consent mount gate from helper patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('helper/_tools/apply_booth_feature_defaults.py')
+          s = p.read_text(encoding='utf-8')
+          needle = "booth = booth.replace(\"    consentCb.checked = state.consent;\\n\\n\", \"\")\n"
+          replacement = needle + "booth = booth.replace(\"    if (state.consent) startLoop();\\n\\n\", \"\")\n"
+          if needle not in s:
+              raise SystemExit('helper patch anchor missing')
+          p.write_text(s.replace(needle, replacement, 1), encoding='utf-8')
+          PY
+
       - name: Apply and validate Booth defaults patch
         working-directory: target
         run: python ../helper/_tools/apply_booth_feature_defaults.py
