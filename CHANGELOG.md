@@ -1,5 +1,36 @@
 # Changelog
 
+## DOCK-2026-09-08-046 — Repair fresh-slot Project-OFF decal normalization
+
+Date: 2026-09-08
+
+### Live report
+
+A brand-new untouched projected decal currently shows Move `0 / 1.56 / 0` and Scale `1.82 / 1.82 / 2`; toggling Project OFF leaves those values unchanged instead of running the previously validated fresh-slot normalization.
+
+### Diagnosis
+
+- Public/Dev gizmo source still contains the v0.4.2 fresh-bind normalizer.
+- Its bad-initializer detector is keyed to the previously observed raw profile `v≈1.50394`, `s≈sy≈1.76859` with ±0.035 tolerance.
+- The current UI-observed initializer `v≈1.56`, `s≈sy≈1.82` lies outside that old detector envelope. Exact current raw floats remain unconfirmed because HF-Chat-Bridge request #752 did not return during this edit; the UI shift is therefore treated as supported inference pending live Dev validation.
+
+### Dev change
+
+- Corrected Bound Decal Gizmo `1.1.0 -> 1.1.1` / build `1.1.1-dev-fresh-slot-normalization`.
+- Preserve the old confirmed initializer profile and add the current UI-observed profile with a tight ±0.025 matcher.
+- Only a first-ever Project-OFF `freshBind` that matches a recognized untouched initializer is normalized.
+- Fresh normalization now sets `h=0`, `v=0`, `s=-1.5`, `sy=-1.5`; depth/rotation/`sz` and unrelated fields remain untouched.
+- Move/Rotate/Scale drag math, undo/redo, existing bound-transform preservation, artwork-swap preservation, and Project ON/OFF restoration are unchanged.
+- Dev manifest now loads this gizmo from `WITCH_DEV_UI` rather than accidentally reusing the Stable gizmo URL.
+
+### Gate
+
+Dev only. Test a new untouched decal slot, then regression-check an already edited Project-OFF decal plus Project ON/OFF/artwork preservation before any Stable promotion.
+
+**Runtime behavior changed:** yes — Dev corrected-gizmo fresh-slot normalization only. Public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-07-045 — Repair Booth editor-environment ownership after v27.0.3 live failure
 
 Date: 2026-09-07

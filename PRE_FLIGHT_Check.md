@@ -1,5 +1,63 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-08-046 — Fresh-slot bound decal normalization repair
+
+Date: 2026-09-08
+
+### Reviewed
+
+- binding HeroForge.Compatibility contract, MASTER, PRE_FLIGHT, CHANGELOG, ARCHITECTURE, FEATURE_INVENTORY, COMPATIBILITY, OWNERSHIP, and TESTING;
+- current Witch Dock Dev MASTER/PRE_FLIGHT/CHANGELOG/MODULE_VERSIONING/manifest;
+- Public and Dev `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`;
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md` and its validated v0.4.2 fresh-slot behavior;
+- Amanda's before/after screenshots of a new untouched projected slot.
+
+### Confirmed
+
+- the v0.4.2 normalizer remains present in both Public and Dev source;
+- it normalizes only `freshBind` records matching a hard-coded bad initializer;
+- the old detector targets `v≈1.50394`, `s≈sy≈1.76859` with ±0.035 tolerance;
+- current UI shows approximately `v=1.56`, `s=sy=1.82` before and after first Project OFF, so the intended normalization is not taking effect;
+- Dev manifest currently points the corrected-gizmo tool URL at `Witch_Scripts`, so Dev cannot validate a Dev-only gizmo source change without correcting that entry.
+
+### Supported inference
+
+The current HeroForge raw initializer shifted consistently with the visible 1.56/1.82 values and therefore falls outside the old raw detector. Bridge request #752 remained unanswered during preflight, so exact current raw floats are not promoted to confirmed evidence.
+
+### Decision
+
+Patch only the fresh-slot initializer matcher/output. Retain the old signature, add the current observed profile with tight tolerance, and normalize first untouched bind to `h=0`, `v=0`, `s=-1.5`, `sy=-1.5`. Do not change drag transforms, history sequencing, existing transform caches, Project restoration, artwork-swap preservation, or fragment source.
+
+### Target files
+
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+
+### Conflict risks
+
+- false-positive normalization of a user-edited projected decal near the initializer values;
+- regression to validated Move/Rotate/Scale undo/redo;
+- overwriting an existing known Project-OFF transform;
+- Dev accidentally loading Stable source instead of the candidate.
+
+The `freshBind` gate, neutral H/D/rotation gate, recognized-profile matcher, exact changed-file whitelist, and Dev-only URL/version identity constrain those risks.
+
+### Live gate
+
+1. New untouched decal: Project OFF -> H/V `0/0`, S/SY `-1.5/-1.5`.
+2. Existing edited Project-OFF decal retains its transform.
+3. Project ON/OFF round-trip still retains established bound transform.
+4. Artwork swap while Project OFF still retains transform.
+5. Move/Rotate/Scale undo/redo remain unchanged if exercised.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+
+---
+
 ## PFC-2026-09-07-045 — Repair Booth editor-environment ownership after v27.0.3 live failure
 
 Date: 2026-09-07

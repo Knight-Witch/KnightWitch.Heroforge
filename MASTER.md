@@ -11,6 +11,14 @@ This file tracks the current active state. Detailed historical state remains pre
 - Target HeroForge build: `heroforge07.1.9.98`
 - HF-Chat-Bridge: private development diagnostics only; never a public runtime dependency.
 
+## Corrected Bound Decal Gizmo fresh-slot repair — 2026-09-08
+
+Feature ID: `decals.gizmo.bound-correction`.
+
+Dev candidate v1.1.1 changes only first-ever untouched Project-OFF normalization. The previous v0.4.2 detector still exists but no longer recognizes the currently visible HeroForge initializer (`Move 0/1.56/0`, `Scale 1.82/1.82/2`). The candidate retains the old confirmed profile, adds the current UI-observed profile with a tight matcher, and normalizes a matching `freshBind` to H/V `0/0` and S/SY `-1.5/-1.5`.
+
+Move/Rotate/Scale behavior, undo/redo, known bound-state restoration, artwork-swap preservation, and fragments are unchanged. Dev now loads the gizmo from `WITCH_DEV_UI` for this gate instead of reusing the Stable URL. Exact current raw initializer floats remain unconfirmed because bridge request #752 did not return during the edit; live Dev acceptance is therefore required before Stable promotion.
+
 ## Dev Loader Cache Repair
 
 Dev loader v0.5.1 / userscript header 1.0.8.6 gives every page a unique manifest request key and every module a deterministic request key derived from the matching `moduleRegistry` ID/version/build/path plus raw URL. Existing module URL query parameters are preserved.

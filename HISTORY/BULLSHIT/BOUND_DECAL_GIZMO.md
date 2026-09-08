@@ -100,3 +100,11 @@ Later WITCH_DEV v0.4.0 established working undo/redo and transform preservation 
 - Unequal Project-OFF visual scale remains deferred.
 - Current H/V/D conversion and observed bad-initializer values are current-build behavior and must remain compatibility-tested after HeroForge updates.
 - Do not run the old standalone corrected-gizmo test or DEV add-on simultaneously with the public module.
+
+## 2026-09-08 fresh-slot initializer drift follow-up
+
+A new untouched projected decal was observed at Move `0 / 1.56 / 0` and Scale `1.82 / 1.82 / 2`; first Project OFF retained those values. The maintained v1.1.0 source still contained the validated v0.4.2 fresh-slot normalizer, but its detector remained keyed to the earlier `v≈1.50394`, `s≈sy≈1.76859` profile. The current visible values fall outside that old ±0.035 envelope.
+
+Dev v1.1.1 retains the earlier confirmed signature and adds the current UI-observed `1.56 / 1.82 / 1.82` profile with ±0.025 tolerance. Only `freshBind` plus the existing neutral H/D/rotation gate may normalize. The new sane first-bind output is `h=0`, `v=0`, `s=-1.5`, `sy=-1.5`; depth, rotation, blue scale/depth-scale (`sz`), and unrelated fields are not reset.
+
+Exact current raw floats were not available because HF-Chat-Bridge request #752 did not return during the edit, so the second signature remains a supported inference until the Dev human gate. Do not promote this patch merely from static tests.
