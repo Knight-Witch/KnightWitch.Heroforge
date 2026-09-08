@@ -36,6 +36,21 @@ jobs:
               if s.count(old) != 1:
                   raise SystemExit(f'Expected one helper token {old!r}, got {s.count(old)}')
               s = s.replace(old, new, 1)
+
+          gate_start = s.index('old_gate = """## Current Gate')
+          gate_end = s.index('new_gate = """', gate_start)
+          actual_gate = '''## Current Gate
+
+1. Enable the Dev loader and disable public Stable for a clean test.
+2. Verify Black Canvas Across Sessions ON can restore a fresh ordinary editor page to black without enabling Booth View.
+3. Load a figure that already has saved Photo Booth configuration with Booth Persistence Across Sessions ON and refresh without opening native Photo Booth.
+4. Expected: saved Booth View activates; if Black Canvas default is also ON, viewport is black.
+5. Verify the known flash-causing action still does not flash.
+6. Toggle Black Canvas OFF and confirm the ordinary HeroForge background returns.
+7. Verify a fresh `+ New Figure` with no saved Booth configuration does not auto-bootstrap Booth.
+8. Only after this combined Dev smoke passes should the bootstrap, replay v0.1.2, and loader cache repair be narrowly promoted to Public Stable.
+'''
+          s = s[:gate_start] + 'old_gate = ' + repr(actual_gate) + '\n' + s[gate_end:]
           p.write_text(s, encoding='utf-8', newline='\n')
           PY
 
