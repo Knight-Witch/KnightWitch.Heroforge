@@ -32,6 +32,7 @@ jobs:
           # Promote the exact human-validated Dev runtime blob.
           git show origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js > HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
           python3 /tmp/tmp_stable_gizmo_patch.py
+          python3 -c "from pathlib import Path; p=Path('HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md'); p.write_text(p.read_text(encoding='utf-8').rstrip()+'\n', encoding='utf-8')"
 
           node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
           python3 -m json.tool manifest.json >/dev/null
