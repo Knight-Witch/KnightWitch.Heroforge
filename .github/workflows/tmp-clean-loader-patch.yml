@@ -1,4 +1,4 @@
-name: Temporary Booth environment ownership candidate builder
+name: Temporary public Stable Booth/cache promotion builder
 
 on:
   push:
@@ -17,44 +17,61 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build and validate isolated Booth environment candidate
+      - name: Build and validate narrow public Stable candidate
         shell: bash
         run: |
           set -euo pipefail
-          cp .github/tmp_booth_env_patch.py /tmp/tmp_booth_env_patch.py
-          cp .github/tmp_booth_env_validate.js /tmp/tmp_booth_env_validate.js
-          python3 .github/tmp_fix_booth_env_master_eof.py /tmp/tmp_booth_env_patch.py
+          cp .github/tmp_public_stable_promotion_patch.py /tmp/tmp_public_stable_promotion_patch.py
+          cp .github/tmp_public_stable_promotion_validate.js /tmp/tmp_public_stable_promotion_validate.js
 
-          python3 -m py_compile /tmp/tmp_booth_env_patch.py
-          node --check /tmp/tmp_booth_env_validate.js
-          git fetch origin WITCH_DEV_UI
-          test "$(git rev-parse origin/WITCH_DEV_UI)" = "ca27025e137049640e50b68d98d9cdca70ed59a8"
-          git checkout -B WITCH_DEV_BOOTH_ENV_OWNERSHIP_CANDIDATE_20260907 origin/WITCH_DEV_UI
+          python3 -m py_compile /tmp/tmp_public_stable_promotion_patch.py
+          node --check /tmp/tmp_public_stable_promotion_validate.js
 
-          python3 /tmp/tmp_booth_env_patch.py
+          git fetch origin Witch_Scripts WITCH_DEV_UI
+          test "$(git rev-parse origin/Witch_Scripts)" = "f218244b2a6010e4d299ca5641a8d4f6f56f38f9"
+          test "$(git rev-parse origin/WITCH_DEV_UI)" = "cecfa43f3ca0096562bb3e9f472c39cbb1823f40"
+          git checkout -B WITCH_STABLE_BOOTH_CACHE_CANDIDATE_20260907 origin/Witch_Scripts
+
+          mkdir -p features/booth HISTORY/BULLSHIT
+          git show origin/WITCH_DEV_UI:tools/Booth.js > tools/Booth.js
+          git show origin/WITCH_DEV_UI:features/booth/Black_Canvas_Display_Replay.js > features/booth/Black_Canvas_Display_Replay.js
+          git show origin/WITCH_DEV_UI:features/booth/Booth_Runtime_Bootstrap.js > features/booth/Booth_Runtime_Bootstrap.js
+          git show origin/WITCH_DEV_UI:HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md > HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md
+
+          python3 /tmp/tmp_public_stable_promotion_patch.py
+
+          node --check Witch_Dock.user.js
           node --check tools/Booth.js
           node --check features/booth/Black_Canvas_Display_Replay.js
+          node --check features/booth/Booth_Runtime_Bootstrap.js
           python3 -m json.tool manifest.json >/dev/null
-          node /tmp/tmp_booth_env_validate.js
+          node /tmp/tmp_public_stable_promotion_validate.js
           git diff --check
 
           expected="$(printf '%s\n' \
             CHANGELOG.md \
             HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
-            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
+            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
+            HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md \
+            HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md \
             MASTER.md \
             PRE_FLIGHT_Check.md \
+            Witch_Dock.user.js \
             features/booth/Black_Canvas_Display_Replay.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
             manifest.json \
             tools/Booth.js | sort)"
           actual="$(git diff --name-only | sort)"
           printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
           test "$actual" = "$expected"
 
+          read shell_add shell_del shell_path <<<"$(git diff --numstat origin/Witch_Scripts -- Witch_Dock.user.js)"
+          test "$shell_add" -le 120
+          test "$shell_del" -le 30
+          echo "public shell delta: +${shell_add}/-${shell_del}"
+
           for path in \
-            features/booth/Booth_Runtime_Bootstrap.js \
             tools/Utilities.js \
-            Witch_Dock_DEV.user.js \
             HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
             features/media/Spinny_Mini_WebP.js \
             features/media/Spinny_Mini_WebP_UI.js \
@@ -63,35 +80,46 @@ jobs:
             HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js \
             tools/JSON_Tool.js \
             features/core/Witch_Dock_Developer_Mode.js \
-            tools/Decals.js; do
-            test "$(git hash-object "$path")" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git hash-object "$path")" = "$(git rev-parse origin/Witch_Scripts:$path)"
           done
           echo 'protected working-tree blobs: PASS'
 
-          git config user.name "Knight Witch Dev Automation"
+          test "$(git hash-object tools/Booth.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Booth.js)"
+          test "$(git hash-object features/booth/Black_Canvas_Display_Replay.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Black_Canvas_Display_Replay.js)"
+          test "$(git hash-object features/booth/Booth_Runtime_Bootstrap.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Booth_Runtime_Bootstrap.js)"
+          echo 'validated Dev runtime blob parity: PASS'
+
+          git config user.name "Knight Witch Stable Automation"
           git config user.email "actions@users.noreply.github.com"
           git add \
             CHANGELOG.md \
             PRE_FLIGHT_Check.md \
             MASTER.md \
             manifest.json \
+            Witch_Dock.user.js \
             tools/Booth.js \
             features/booth/Black_Canvas_Display_Replay.js \
-            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
-            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md
-          git commit -m "Repair Dev Booth environment ownership"
+            features/booth/Booth_Runtime_Bootstrap.js \
+            HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md \
+            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
+            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
+            HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md
+          git commit -m "Promote Booth lifecycle and cache-keyed loader"
 
+          node --check Witch_Dock.user.js
           node --check tools/Booth.js
           node --check features/booth/Black_Canvas_Display_Replay.js
+          node --check features/booth/Booth_Runtime_Bootstrap.js
           python3 -m json.tool manifest.json >/dev/null
-          node /tmp/tmp_booth_env_validate.js
+          node /tmp/tmp_public_stable_promotion_validate.js
           git diff --check HEAD^
           test "$(git diff --name-only HEAD^...HEAD | sort)" = "$expected"
 
           for path in \
-            features/booth/Booth_Runtime_Bootstrap.js \
             tools/Utilities.js \
-            Witch_Dock_DEV.user.js \
             HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
             features/media/Spinny_Mini_WebP.js \
             features/media/Spinny_Mini_WebP_UI.js \
@@ -100,9 +128,16 @@ jobs:
             HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js \
             tools/JSON_Tool.js \
             features/core/Witch_Dock_Developer_Mode.js \
-            tools/Decals.js; do
-            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/Witch_Scripts:$path)"
           done
           echo 'protected committed blobs: PASS'
 
-          git push --force-with-lease origin WITCH_DEV_BOOTH_ENV_OWNERSHIP_CANDIDATE_20260907
+          test "$(git rev-parse HEAD:tools/Booth.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Booth.js)"
+          test "$(git rev-parse HEAD:features/booth/Black_Canvas_Display_Replay.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Black_Canvas_Display_Replay.js)"
+          test "$(git rev-parse HEAD:features/booth/Booth_Runtime_Bootstrap.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Booth_Runtime_Bootstrap.js)"
+          echo 'validated committed Dev runtime blob parity: PASS'
+
+          git push --force-with-lease origin WITCH_STABLE_BOOTH_CACHE_CANDIDATE_20260907
