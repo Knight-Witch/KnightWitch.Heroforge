@@ -1,4 +1,4 @@
-name: Temporary final loader patch
+name: Temporary Black Canvas startup candidate
 
 on:
   push:
@@ -17,65 +17,111 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build final candidate from current Dev
+      - name: Build Black Canvas startup candidate from current Dev
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin WITCH_DEV_UI
-          git checkout -B WITCH_DEV_CACHE_FINAL_20260907 origin/WITCH_DEV_UI
+          git checkout -B WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907 origin/WITCH_DEV_UI
           python3 - <<'PY'
           from pathlib import Path
 
-          shell = Path('Witch_Dock_DEV.user.js')
-          text = shell.read_text(encoding='utf-8')
-
+          replay = Path('features/booth/Black_Canvas_Display_Replay.js')
+          r = replay.read_text(encoding='utf-8')
           replacements = [
-              ('// @version      1.0.8.5', '// @version      1.0.8.6'),
+              ("  const VERSION = '0.1.0';", "  const VERSION = '0.2.0';"),
+              ("  const BUILD = '0.1.0-dev-post-display-update-replay';", "  const BUILD = '0.2.0-dev-pre-bt-main-background-fallback';"),
               (
-                  'const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\n\nfunction gmGetText(url) {',
-                  '''const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\nconst LOADER_CACHE_SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;\n\nfunction kwStableHash(input) {\n  const text = String(input == null ? "" : input);\n  let hash = 2166136261;\n  for (let i = 0; i < text.length; i += 1) {\n    hash ^= text.charCodeAt(i);\n    hash = Math.imul(hash, 16777619);\n  }\n  return (hash >>> 0).toString(36);\n}\n\nfunction kwWithCacheKey(url, key) {\n  try {\n    const u = new URL(String(url));\n    u.searchParams.set("kwcache", String(key));\n    return u.toString();\n  } catch {\n    const raw = String(url || "");\n    const join = raw.includes("?") ? "&" : "?";\n    return `${raw}${join}kwcache=${encodeURIComponent(String(key))}`;\n  }\n}\n\nfunction kwManifestRequestUrl() {\n  return kwWithCacheKey(MANIFEST_URL, `session-${LOADER_CACHE_SESSION}`);\n}\n\nfunction kwModuleRequestUrl(tool, registryEntry) {\n  const url = tool && typeof tool.url === "string" ? tool.url : "";\n  const registry = registryEntry && typeof registryEntry === "object" ? registryEntry : null;\n  const identity = [\n    tool && tool.id,\n    registry && registry.version,\n    registry && registry.build,\n    registry && registry.path,\n    url\n  ].map((v) => String(v == null ? "" : v)).join("|");\n  return kwWithCacheKey(url, `module-${kwStableHash(identity)}`);\n}\n\nfunction gmGetText(url) {'''
-              ),
-              (
-                  '    const raw = await gmGetText(MANIFEST_URL);',
-                  '    const raw = await gmGetText(kwManifestRequestUrl());'
-              ),
-              (
-                  '  if (!manifest || typeof manifest !== "object") return;\n  const tools = Array.isArray(manifest.tools) ? manifest.tools : [];',
-                  '''  if (!manifest || typeof manifest !== "object") return;\n  const registryEntries = Array.isArray(manifest.moduleRegistry) ? manifest.moduleRegistry : [];\n  const registryById = new Map();\n  for (const entry of registryEntries) {\n    if (!entry || typeof entry !== "object" || typeof entry.id !== "string" || !entry.id) continue;\n    if (!registryById.has(entry.id)) registryById.set(entry.id, entry);\n  }\n  const tools = Array.isArray(manifest.tools) ? manifest.tools : [];'''
-              ),
-              (
-                  '    const enabledByDefault = !!t.enabledByDefault;\n    if (!id || !url) continue;',
-                  '    const enabledByDefault = !!t.enabledByDefault;\n    const registryEntry = registryById.get(id) || null;\n    if (!id || !url) continue;'
-              ),
-              (
-                  '      const code = await gmGetText(url);',
-                  '      const code = await gmGetText(kwModuleRequestUrl(t, registryEntry));'
+'''  function discoverSemanticBackground() {
+    try {
+      const BT = UW.BT;
+      const overlays = BT && BT.display ? BT.display.overlays : null;
+      const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
+      if (!scene) return null;
+
+      const environmentRoot = namedChild(scene, 'environment');
+      if (!environmentRoot) return null;
+      return namedChild(environmentRoot, 'background');
+    } catch (error) {
+      recordError('discoverSemanticBackground', error);
+      return null;
+    }
+  }
+''',
+'''  function discoverCKEnvironmentBackground() {
+    try {
+      const CK = UW.CK;
+      const background = CK && CK.environment ? CK.environment.background : null;
+      const mesh = background && background.mesh ? background.mesh : null;
+      return mesh && 'visible' in mesh ? mesh : null;
+    } catch (error) {
+      recordError('discoverCKEnvironmentBackground', error);
+      return null;
+    }
+  }
+
+  function discoverSemanticBackground() {
+    try {
+      const directBackground = discoverCKEnvironmentBackground();
+
+      // If the pre-BT fallback already owns the live CK environment mesh, keep
+      // using that same object instead of switching ownership merely because
+      // HeroForge later creates BT. This avoids a restore/hide handoff on the
+      // same startup path. Existing BT-first behavior is unchanged when BT is
+      // present before this module first acquires a background target.
+      if (directBackground && state.semanticBackground === directBackground) return directBackground;
+
+      const BT = UW.BT;
+      const overlays = BT && BT.display ? BT.display.overlays : null;
+      const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
+      if (scene) {
+        const environmentRoot = namedChild(scene, 'environment');
+        if (environmentRoot) {
+          const namedBackground = namedChild(environmentRoot, 'background');
+          if (namedBackground) return namedBackground;
+        }
+      }
+
+      // Fresh editor startup can have CK.environment before the gated Booth
+      // runtime exists. The main display's own applyLighting path uses this
+      // background manager and its render mesh, so hide only the render mesh as
+      // the conservative no-BT fallback. If the shape is unavailable, do
+      // nothing and retry on the normal poll.
+      return directBackground;
+    } catch (error) {
+      recordError('discoverSemanticBackground', error);
+      return null;
+    }
+  }
+'''
               )
           ]
-
           for old, new in replacements:
-              count = text.count(old)
+              count = r.count(old)
               if count != 1:
-                  raise SystemExit(f'Expected exactly one shell match, got {count}: {old[:100]!r}')
-              text = text.replace(old, new, 1)
-
-          shell.write_text(text, encoding='utf-8', newline='\n')
+                  raise SystemExit(f'Expected exactly one replay match, got {count}: {old[:100]!r}')
+              r = r.replace(old, new, 1)
+          replay.write_text(r, encoding='utf-8', newline='\n')
 
           manifest = Path('manifest.json')
           m = manifest.read_text(encoding='utf-8')
-          old = '''      "id": "witch-dock-dev-loader",\n      "title": "Witch Dock Dev Loader",\n      "path": "Witch_Dock_DEV.user.js",\n      "kind": "core",\n      "load": "userscript-dev",\n      "version": "0.5.0",\n      "build": "1.0.8.5-tab-activation-api",\n      "versionOrigin": "new-dev-harness"'''
-          new = '''      "id": "witch-dock-dev-loader",\n      "title": "Witch Dock Dev Loader",\n      "path": "Witch_Dock_DEV.user.js",\n      "kind": "core",\n      "load": "userscript-dev",\n      "version": "0.5.1",\n      "build": "1.0.8.6-cache-keyed-loader",\n      "versionOrigin": "dev-loader-cache-repair-2026-09-07"'''
-          count = m.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected exactly one manifest loader match, got {count}')
-          manifest.write_text(m.replace(old, new, 1), encoding='utf-8', newline='\n')
+          old = '''      "id": "booth-black-canvas-display-replay",\n      "title": "Booth Black Canvas Display Replay",\n      "path": "features/booth/Black_Canvas_Display_Replay.js",\n      "kind": "compatibility-feature",\n      "load": "manifest",\n      "version": "0.1.0",\n      "build": "0.1.0-dev-post-display-update-replay",\n      "versionOrigin": "new-dev-module"'''
+          new = '''      "id": "booth-black-canvas-display-replay",\n      "title": "Booth Black Canvas Display Replay",\n      "path": "features/booth/Black_Canvas_Display_Replay.js",\n      "kind": "compatibility-feature",\n      "load": "manifest",\n      "version": "0.2.0",\n      "build": "0.2.0-dev-pre-bt-main-background-fallback",\n      "versionOrigin": "dev-black-canvas-pre-bt-fallback-2026-09-07"'''
+          if m.count(old) != 1:
+              raise SystemExit('Unexpected replay registry entry')
+          m = m.replace(old, new, 1)
+          old_url = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.0-dev-post-display-update-replay'
+          new_url = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.2.0-dev-pre-bt-main-background-fallback'
+          if m.count(old_url) != 1:
+              raise SystemExit('Unexpected replay tools URL')
+          manifest.write_text(m.replace(old_url, new_url, 1), encoding='utf-8', newline='\n')
 
           changelog = Path('CHANGELOG.md')
           c = changelog.read_text(encoding='utf-8')
           marker = '# Changelog\n\n'
           if not c.startswith(marker):
               raise SystemExit('Unexpected CHANGELOG header')
-          entry = '''## DOCK-2026-09-07-040 — Add Dev loader cache keys\n\nDate: 2026-09-07\n\n### Summary\n\nRepaired the Dev Witch Dock loader so branch-based raw GitHub delivery no longer relies on `Cache-Control: no-cache` alone. The manifest now receives a per-page cache-busting key, while each module request receives a deterministic key derived from the matching manifest registry identity.\n\n### Confirmed diagnosis\n\n- the public v1.2.0 loader fetched branch-based raw GitHub manifest/module URLs without durable query keys;\n- a live Stable page demonstrably remained on an intermediate manifest snapshot until a hard refresh;\n- the Dev loader used the same vulnerable `gmGetText(MANIFEST_URL)` / `gmGetText(url)` pattern;\n- `moduleRegistry` already provides stable module IDs plus version/build/path metadata, so module cache identity can be derived without changing module runtime behavior.\n\n### Changes\n\n- bumped Dev userscript loader header `1.0.8.5` -> `1.0.8.6`;\n- bumped manifest registry identity `witch-dock-dev-loader` to v0.5.1 / build `1.0.8.6-cache-keyed-loader`;\n- manifest fetches now append a unique per-page `kwcache=session-...` query key;\n- module fetches now append deterministic `kwcache=module-...` keys derived from module ID + registry version + registry build + registry path + raw URL;\n- existing module query parameters such as explicit `?v=` keys are preserved;\n- `Cache-Control: no-cache` remains as an additional request hint rather than the sole invalidation mechanism.\n\n### Preserved boundaries\n\n- `tools/Booth.js` remains byte-identical v27.0.0/build `v27`;\n- `tools/Utilities.js` remains byte-identical v1.2.1;\n- `features/booth/Black_Canvas_Display_Replay.js` remains byte-identical;\n- Booth runtime bootstrap, corrected decal gizmo, Spinny Mini WebP, High Res Image Capture, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;\n- public `Witch_Scripts` is unchanged;\n- HF-Chat-Bridge remains development-only and is not a runtime dependency.\n\n### Validation\n\n- Dev userscript JavaScript syntax: PASS (`node --check`).\n- Manifest JSON parse: PASS.\n- Manifest tool IDs map to registry identities: PASS.\n- Cache-key unit checks: PASS — existing query parameters survive, identical registry identity is deterministic, and changing registry build changes the module request URL.\n- `git diff --check`: PASS.\n- Protected Booth/Utilities/replay blob checks: PASS.\n- Live Dev delivery/startup smoke: pending.\n\n### Rollback\n\nRevert this Dev commit. No module runtime files need rollback because the change is confined to the Dev loader, manifest loader identity, and tracking documentation.\n\n**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.\n'''
+          entry = '''## DOCK-2026-09-07-041 — Add Dev Black Canvas pre-BT fallback\n\nDate: 2026-09-07\n\n### Summary\n\nExtended the already-validated Black Canvas display replay so the editor can hide HeroForge's main environment background before the gated Booth runtime (`BT`) exists. The validated post-`display.update()` wrapper and BT semantic named-background path remain intact and preferred.\n\n### Confirmed evidence\n\n- prior HF-Chat-Bridge runtime reads confirmed `CK.environment.background` exists on the regular main display path;\n- `CK.character.display.applyLighting()` directly calls `CK.environment.background.updateValues(...)`;\n- the background manager's own `updateValues()` source operates on `this.mesh.material`, confirming it owns a render mesh independent of BT;\n- Booth v27 already exposes the saved Black Canvas default through `KW_WD_BOOTH.getState().sessionBlackCanvas` before BT exists;\n- renderer canvas/holder black CSS replay already works without BT.\n\n### Supported inference / live gate\n\n`CK.environment.background.mesh` is the conservative regular-scene render target for pre-BT visibility suppression. The candidate changes only that mesh's `visible` flag when the validated BT scene path is unavailable. The exact fresh-start visual result remains a live Dev validation item; failure degrades to retry/no-op rather than enabling Booth.\n\n### Changes\n\n- bumped Dev replay to v0.2.0 / build `0.2.0-dev-pre-bt-main-background-fallback`;\n- added `CK.environment.background.mesh` discovery as a no-BT fallback;\n- existing BT semantic `environment -> background` discovery remains first choice when BT exists before ownership is acquired;\n- if the direct CK mesh was already acquired pre-BT, the module retains that same owned object when BT later appears, avoiding an unnecessary restore/hide ownership handoff;\n- no Booth bootstrap is triggered by Black Canvas alone.\n\n### Preserved boundaries\n\n- native `CK.character.display.update()` always runs;\n- the validated white-flash replay sequencing is unchanged;\n- Booth v27, Utilities v1.2.1, Booth runtime bootstrap, Dev loader v0.5.1, Spinny, High Res, corrected decal gizmo, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;\n- public Stable replay v0.1.1 remains unchanged.\n\n### Validation\n\n- JavaScript syntax: PASS.\n- No-BT mock: PASS — direct CK background mesh hidden, canvas/holder black, native display update still executes, Black Canvas OFF restores owned visibility.\n- BT-present regression mock: PASS — existing named `environment -> background` target remains preferred and restores correctly.\n- Manifest JSON parse: PASS.\n- `git diff --check`: PASS.\n- protected Booth/Utilities/bootstrap/loader blobs unchanged.\n- live fresh-start visual validation: pending.\n\n**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.\n'''
           changelog.write_text(marker + entry + '\n---\n\n' + c[len(marker):], encoding='utf-8', newline='\n')
 
           preflight = Path('PRE_FLIGHT_Check.md')
@@ -83,80 +129,108 @@ jobs:
           marker = '# Pre-Flight Check Log\n\n'
           if not p.startswith(marker):
               raise SystemExit('Unexpected PRE_FLIGHT header')
-          entry = '''## PFC-2026-09-07-040 — Dev loader cache repair\n\nDate: 2026-09-07\n\n### Required material reviewed\n\n- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing documents;\n- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, and `Witch_Dock_DEV.user.js`;\n- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;\n- current Dev baseline `2f3500e301e6f76367faa587e9728da3b29ae467`;\n- live public stale-manifest evidence and the subsequent hard-refresh confirmation that the repository itself already contained Booth v27 / Utilities v1.2.1.\n\n### Confirmed findings\n\n- branch-based raw GitHub URLs can return a stale manifest/module snapshot despite the loader sending `Cache-Control: no-cache`;\n- the fixed branch URL therefore needs a changing request identity for the manifest;\n- module requests need a deterministic identity that changes when the manifest declares a new module version/build;\n- `manifest.moduleRegistry` is the maintained source of module ID/version/build/path identity and can be indexed by each `tools[]` entry ID.\n\n### Decision\n\nRepair the Dev loader only. Use one per-page cache token for the manifest and deterministic module cache keys derived from `moduleRegistry`; preserve existing request flow, tool enablement, execution order, and module runtime code.\n\n### Target files\n\n- `Witch_Dock_DEV.user.js`\n- `manifest.json`\n- `MASTER.md`\n- `PRE_FLIGHT_Check.md`\n- `CHANGELOG.md`\n- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`\n\n### Conflict risks / preservation requirements\n\n- do not change Booth v27, Utilities v1.2.1, or the validated Black Canvas display replay;\n- do not change manifest tool order or enabled/default semantics;\n- preserve pre-existing query parameters on module URLs;\n- do not use a random per-module token that would defeat deterministic module identity;\n- public `Witch_Scripts` must remain untouched until Dev validation.\n\n### Static validation\n\n- `node --check Witch_Dock_DEV.user.js`: PASS.\n- `python3 -m json.tool manifest.json`: PASS.\n- every current `tools[]` ID resolves to a `moduleRegistry[]` identity: PASS.\n- deterministic module-key test, build-change invalidation test, and existing-query preservation test: PASS.\n- `git diff --check`: PASS.\n- protected blob checks for Booth v27, Utilities v1.2.1, and Dev Black Canvas replay: PASS.\n\n### Live gate\n\nUse the Dev userscript. Confirm a normal page load obtains current Dev modules without requiring `Ctrl+Shift+R`, then perform the already-pending Booth persistence/Black Canvas startup smoke. Stable loader v1.2.1 promotion remains blocked until this Dev gate passes.\n\n**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.\n'''
+          entry = '''## PFC-2026-09-07-041 — Black Canvas pre-BT main-background fallback\n\nDate: 2026-09-07\n\n### Required material reviewed\n\n- binding HeroForge.Compatibility preflight/architecture/testing requirements;\n- current Dev Booth v27, Utilities v1.2.1, Booth runtime bootstrap, Black Canvas display replay, manifest, and loader;\n- Black Canvas white-flash investigation/history;\n- prior bridge evidence for `CK.environment.background`, `CK.environment.background.updateValues`, and `CK.character.display.applyLighting`;\n- current Dev baseline after loader repair `6cf10845e394676344ebb8699c654009267c6c61`.\n\n### Confirmed findings\n\n- Black Canvas saved state is available from the Booth API before BT exists;\n- regular HeroForge display lighting uses `CK.environment.background`;\n- that background manager owns a render `mesh`;\n- current replay can blacken renderer CSS without BT but its semantic background discovery is BT-only.\n\n### Decision\n\nAdd one conservative fallback to the existing replay: when the validated BT semantic scene target is unavailable, use only `CK.environment.background.mesh` if it exposes a `visible` capability. Do not bootstrap Booth for Black Canvas alone and do not rewrite the validated display-update wrapper.\n\n### Target files\n\n- `features/booth/Black_Canvas_Display_Replay.js`\n- `manifest.json`\n- `MASTER.md`\n- `PRE_FLIGHT_Check.md`\n- `CHANGELOG.md`\n- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`\n\n### Conflict risks / preservation requirements\n\n- BT semantic named-background discovery remains preferred for already-BT sessions;\n- native display update must always execute;\n- direct CK fallback may only own/restore the visibility value it changed;\n- Black Canvas default must not enable Booth View or load gated Booth core by itself;\n- failure to find the CK mesh must be a no-op/retry, not partial initialization;\n- public Stable remains untouched pending Dev validation.\n\n### Static validation\n\n- replay syntax: PASS.\n- no-BT lifecycle mock: PASS.\n- BT-present semantic-path regression mock: PASS.\n- manifest JSON parse and diff check: PASS.\n- protected blob checks: PASS.\n\n### Live gate\n\nWith Black Canvas Across Sessions ON, verify a fresh ordinary editor page becomes black without Black Canvas forcing Booth View ON. Separately verify saved-Booth persistence still bootstraps Booth when its own persistence default is ON, the known white-flash action remains flash-free, Black Canvas OFF restores the ordinary background, and `+ New Figure` remains untouched.\n\n**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.\n'''
           preflight.write_text(marker + entry + '\n---\n\n' + p[len(marker):], encoding='utf-8', newline='\n')
 
           master = Path('MASTER.md')
           ms = master.read_text(encoding='utf-8')
-          ms = ms.replace('- Dev parent before this change: `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`', '- Dev baseline before loader cache repair: `2f3500e301e6f76367faa587e9728da3b29ae467`', 1)
-          anchor = '## Active Booth Runtime Bootstrap Candidate\n'
-          section = '''## Dev Loader Cache Repair\n\nDev loader v0.5.1 / userscript header 1.0.8.6 now gives every page a unique manifest request key and every module a deterministic request key derived from the matching `moduleRegistry` ID/version/build/path plus raw URL. Existing module URL query parameters are preserved.\n\nThis repairs the stale branch-based raw GitHub delivery path in Dev without changing module execution order, enablement, or feature runtime code. Public Stable still uses shell v1.2.0 and remains unchanged until Dev live validation.\n\nStatic syntax/JSON/cache-identity/blob-preservation gates pass. Live delivery smoke remains required.\n\n'''
-          if anchor not in ms:
-              raise SystemExit('MASTER insertion anchor missing')
-          ms = ms.replace(anchor, section + anchor, 1)
-          old = 'A public shell cache-busting repair is still required before the current Booth bootstrap candidate can be promoted. Do not confuse this delivery issue with Booth runtime persistence.'
-          new = 'The corresponding repair is now implemented in Dev only. Public shell v1.2.0 still requires a separate narrow v1.2.1 promotion after Dev live validation. Do not confuse this delivery issue with Booth runtime persistence.'
+          old = '''- Dev v0.1.0 was live validated: the formerly reliable white flash no longer reproduced and the user reported it worked perfectly.\n- Public Stable contains replay v0.1.1 with the Stable-v24 state fallback; its rendering/replay behavior is unchanged from the validated Dev fix.\n- HeroForge native `CK.character.display.update()` remains untouched and always runs; replay occurs immediately after the update.\n- the real main-scene background is discovered semantically through named `environment -> background`.'''
+          new = '''- Dev v0.2.0 keeps the live-validated white-flash replay unchanged and adds a pre-BT regular-scene fallback through `CK.environment.background.mesh`.\n- Public Stable contains replay v0.1.1 and remains unchanged pending Dev validation.\n- HeroForge native `CK.character.display.update()` remains untouched and always runs; replay occurs immediately after the update.\n- when BT already exists, the validated semantic named `environment -> background` path remains preferred; before BT exists, only the regular CK background render mesh is visibility-suppressed.\n- Black Canvas alone does not bootstrap or enable Booth View.\n- pre-BT visual startup behavior is pending the final Dev smoke.'''
           if old not in ms:
-              raise SystemExit('MASTER public-loader sentence missing')
-          ms = ms.replace(old, new, 1)
-          master.write_text(ms, encoding='utf-8', newline='\n')
+              raise SystemExit('MASTER Black Canvas block missing')
+          master.write_text(ms.replace(old, new, 1), encoding='utf-8', newline='\n')
 
-          history = Path('HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md')
-          h = history.read_text(encoding='utf-8')
-          anchor = '## Entry Template\n'
-          finding = '''### Branch Raw GitHub Cache Requires Request Identity\n\nContext:\n- The public and Dev loaders request branch-based `raw.githubusercontent.com` manifest/module URLs.\n\nObserved behavior:\n- A live public page remained on an intermediate Stable manifest snapshot after the branch had already advanced.\n- Sending `Cache-Control: no-cache` from `GM_xmlhttpRequest` did not reliably prevent that stale response.\n- A hard refresh caused the same branch URL to resolve to the current Booth v27 / Utilities v1.2.1 manifest, confirming the repository promotion itself was correct.\n\nWorking approach:\n- Give the manifest request a per-page `kwcache` token so each page session resolves the current branch snapshot.\n- Give each module request a deterministic `kwcache` key derived from the matching manifest `moduleRegistry` ID/version/build/path plus its raw URL.\n- Preserve any existing query parameters and keep `Cache-Control: no-cache` only as an additional hint.\n- Validate the Dev loader before applying the same design narrowly to public shell v1.2.1.\n\nAffected tools:\n- `Witch_Dock_DEV.user.js`\n- `Witch_Dock.user.js` (public promotion pending)\n- `manifest.json`\n- all manifest-loaded modules\n\n'''
-          if anchor not in h:
-              raise SystemExit('Manifest history insertion anchor missing')
-          history.write_text(h.replace(anchor, finding + anchor, 1), encoding='utf-8', newline='\n')
+          history = Path('HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md')
+          h = history.read_text(encoding='utf-8').rstrip()
+          addition = '''\n\n## 2026-09-07 pre-BT startup extension\n\nAfter the flash replay was live validated, startup testing exposed a separate persistence boundary: Black Canvas can be saved ON while HeroForge has not yet loaded the gated Booth runtime. The replay already knows the saved Black Canvas state through `KW_WD_BOOTH` and can blacken the renderer canvas/holder without BT, but its semantic main-background lookup originally started from `BT.display.overlays.backgroundPlane.parent`.\n\nPrior bridge evidence confirms the regular main display has `CK.environment.background`; `CK.character.display.applyLighting()` calls its `updateValues()`, and that method operates on `this.mesh.material`. Dev v0.2.0 therefore keeps the validated BT named-background discovery unchanged and adds only `CK.environment.background.mesh` as a fallback when no BT semantic target is available. The fallback is capability-checked for a `visible` property, owns/restores only that visibility value, and does not load or enable Booth.\n\nThis is a supported runtime-shape inference with static lifecycle coverage; the fresh-start visual result remains gated on live Dev validation. Public Stable remains on v0.1.1 until that gate passes.\n'''
+          history.write_text(h + addition, encoding='utf-8', newline='\n')
           PY
 
-          node --check Witch_Dock_DEV.user.js
+          node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          m = json.loads(Path('manifest.json').read_text(encoding='utf-8'))
-          registry = {e.get('id'): e for e in m.get('moduleRegistry', []) if isinstance(e, dict) and e.get('id')}
-          missing = [t.get('id') for t in m.get('tools', []) if isinstance(t, dict) and t.get('id') not in registry]
-          if missing:
-              raise SystemExit(f'Tool IDs missing moduleRegistry identity: {missing}')
-          PY
 
           node <<'NODE'
           const fs = require('fs');
-          const src = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
-          const start = src.indexOf('const LOADER_CACHE_SESSION');
-          const end = src.indexOf('function gmGetText');
-          if (start < 0 || end <= start) throw new Error('Could not isolate loader cache helpers');
-          const block = src.slice(start, end);
-          const get = new Function('MANIFEST_URL', `${block}; return {kwManifestRequestUrl, kwModuleRequestUrl};`);
-          const {kwManifestRequestUrl, kwModuleRequestUrl} = get('https://raw.githubusercontent.com/example/repo/branch/manifest.json');
-          const manifestUrl = kwManifestRequestUrl();
-          if (!new URL(manifestUrl).searchParams.get('kwcache')?.startsWith('session-')) throw new Error('Manifest cache token missing');
-          const tool = {id:'x', url:'https://raw.githubusercontent.com/example/repo/branch/x.js?v=legacy'};
-          const regA = {id:'x', version:'1.0.0', build:'a', path:'x.js'};
-          const regB = {...regA, build:'b'};
-          const a1 = kwModuleRequestUrl(tool, regA);
-          const a2 = kwModuleRequestUrl(tool, regA);
-          const b = kwModuleRequestUrl(tool, regB);
-          if (a1 !== a2) throw new Error('Module cache key is not deterministic');
-          if (a1 === b) throw new Error('Module cache key did not change with registry build');
-          if (new URL(a1).searchParams.get('v') !== 'legacy') throw new Error('Existing query parameter was not preserved');
+          const vm = require('vm');
+          const source = fs.readFileSync('features/booth/Black_Canvas_Display_Replay.js', 'utf8');
+
+          function runCase(withBT) {
+            let blackOn = true;
+            let nativeUpdates = 0;
+            let scheduled = null;
+            const direct = { visible: true };
+            const named = { name: 'background', visible: true, children: [] };
+            const envRoot = { name: 'environment', visible: true, children: [named] };
+            const scene = { children: [envRoot], getObjectByName(name) { return name === 'environment' ? envRoot : name === 'background' ? named : null; } };
+            const backgroundPlane = { visible: true, parent: scene };
+            const framePlane = { visible: true };
+            const shadowPlane = { visible: true };
+            const mask = { visible: true };
+            const canvas = { style: { backgroundColor: '' }, parentElement: { style: { backgroundColor: '' } } };
+            const display = { update() { nativeUpdates += 1; return 'native'; } };
+            const UW = {
+              KW_WD_BOOTH: { getState: () => ({ sessionBlackCanvas: blackOn }) },
+              CK: {
+                character: { display },
+                environment: { background: { mesh: direct } },
+                renderManager: { renderer: { domElement: canvas } }
+              }
+            };
+            if (withBT) {
+              UW.BT = {
+                display: {
+                  environment: { setDefaultEnvironmentVisibility() {} },
+                  overlays: { backgroundPlane, framePlane, shadowPlane, mask }
+                }
+              };
+            }
+            const context = {
+              unsafeWindow: UW,
+              window: UW,
+              console: { log() {}, error() {} },
+              setTimeout(fn) { scheduled = fn; return 1; },
+              clearTimeout() {}
+            };
+            vm.createContext(context);
+            vm.runInContext(source, context);
+            const api = UW.KW_WD_BOOTH_BLACK_REPLAY;
+            if (!api) throw new Error('Replay API missing');
+            if (withBT) {
+              if (named.visible !== false) throw new Error('BT named background was not hidden');
+              if (direct.visible !== true) throw new Error('Direct fallback incorrectly replaced BT-first path');
+            } else {
+              if (direct.visible !== false) throw new Error('No-BT CK background mesh was not hidden');
+            }
+            if (canvas.style.backgroundColor !== '#000000' || canvas.parentElement.style.backgroundColor !== '#000000') throw new Error('Canvas black replay failed');
+            const result = display.update();
+            if (result !== 'native' || nativeUpdates !== 1) throw new Error('Native display update was not preserved');
+            blackOn = false;
+            if (typeof scheduled !== 'function') throw new Error('Poll was not scheduled');
+            scheduled();
+            if (withBT) {
+              if (named.visible !== true) throw new Error('BT named background did not restore');
+            } else if (direct.visible !== true) {
+              throw new Error('No-BT CK background mesh did not restore');
+            }
+            api.dispose();
+          }
+
+          runCase(false);
+          runCase(true);
           NODE
 
           git diff --check
 
           test "$(git hash-object tools/Booth.js)" = "434b5382c9e8b01e9f9e8bf53d772e72eaf53090"
           test "$(git hash-object tools/Utilities.js)" = "036fca4d7f68a1dee0f7d160777d453ac53274af"
-          test "$(git hash-object features/booth/Black_Canvas_Display_Replay.js)" = "e5ce0ab4bd6291a3446af86a9e252657644ca79e"
+          test "$(git hash-object features/booth/Booth_Runtime_Bootstrap.js)" = "3aaa110b4f09ab74df524e64056406b571357474"
 
-          expected=$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md MASTER.md PRE_FLIGHT_Check.md Witch_Dock_DEV.user.js manifest.json | sort)
+          expected=$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)
           actual=$(git diff --name-only origin/WITCH_DEV_UI | sort)
           test "$actual" = "$expected"
 
           git config user.name "Knight Witch Dev Automation"
           git config user.email "actions@users.noreply.github.com"
-          git add CHANGELOG.md HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md MASTER.md PRE_FLIGHT_Check.md Witch_Dock_DEV.user.js manifest.json
-          git commit -m "Add Dev loader cache keys"
-          git push --force-with-lease origin WITCH_DEV_CACHE_FINAL_20260907
+          git add CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json
+          git commit -m "Add Dev Black Canvas pre-BT fallback"
+          git push --force-with-lease origin WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
