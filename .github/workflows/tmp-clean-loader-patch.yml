@@ -61,7 +61,12 @@ jobs:
             features/booth/Booth_Runtime_Bootstrap.js \
             manifest.json \
             tools/Booth.js | sort)"
-          actual="$(git diff --name-only | sort)"
+          actual="$(
+            {
+              git diff --name-only
+              git ls-files --others --exclude-standard
+            } | sort
+          )"
           printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
           test "$actual" = "$expected"
 
