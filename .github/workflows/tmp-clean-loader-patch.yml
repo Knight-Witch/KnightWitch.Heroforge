@@ -64,7 +64,7 @@ jobs:
             features/booth/Black_Canvas_Display_Replay.js \
             manifest.json \
             tools/Booth.js | sort)"
-          actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
+          actual="$(git diff --name-only | sort)"
           printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
           test "$actual" = "$expected"
 
