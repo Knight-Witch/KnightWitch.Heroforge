@@ -1,0 +1,114 @@
+name: Temporary fresh-slot gizmo candidate builder
+
+on:
+  push:
+    branches:
+      - WITCH_DEV_GIZMO_HELPER_20260908
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and validate gizmo candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/tmp_gizmo_fresh_slot_patch.py /tmp/tmp_gizmo_fresh_slot_patch.py
+          cp .github/tmp_gizmo_fresh_slot_validate.js /tmp/tmp_gizmo_fresh_slot_validate.js
+          python3 -m py_compile /tmp/tmp_gizmo_fresh_slot_patch.py
+          node --check /tmp/tmp_gizmo_fresh_slot_validate.js
+
+          git fetch origin WITCH_DEV_UI
+          test "$(git rev-parse origin/WITCH_DEV_UI)" = "cecfa43f3ca0096562bb3e9f472c39cbb1823f40"
+          git checkout -B WITCH_DEV_GIZMO_FRESH_CANDIDATE_20260908 origin/WITCH_DEV_UI
+
+          python3 /tmp/tmp_gizmo_fresh_slot_patch.py
+
+          node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
+          python3 -m json.tool manifest.json >/dev/null
+          node /tmp/tmp_gizmo_fresh_slot_validate.js
+          git diff --check
+
+          expected="$(printf '%s\n' \
+            CHANGELOG.md \
+            HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md \
+            MASTER.md \
+            PRE_FLIGHT_Check.md \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            manifest.json | sort)"
+          actual="$(git diff --name-only | sort)"
+          printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
+          test "$actual" = "$expected"
+
+          for path in \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag \
+            tools/Booth.js \
+            features/booth/Black_Canvas_Display_Replay.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            tools/Utilities.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Spinny_Mini_WebP_UI.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            features/media/Photo_Booth_True_Resolution_UI.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js \
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git hash-object "$path")" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+          done
+          echo 'protected working-tree blobs: PASS'
+
+          git config user.name "Knight Witch Dev Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            CHANGELOG.md \
+            PRE_FLIGHT_Check.md \
+            MASTER.md \
+            manifest.json \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md
+          git commit -m "Repair fresh-slot bound decal defaults"
+
+          node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
+          python3 -m json.tool manifest.json >/dev/null
+          node /tmp/tmp_gizmo_fresh_slot_validate.js
+          git diff --check HEAD^
+          test "$(git diff --name-only HEAD^...HEAD | sort)" = "$expected"
+
+          for path in \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag \
+            tools/Booth.js \
+            features/booth/Black_Canvas_Display_Replay.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            tools/Utilities.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Spinny_Mini_WebP_UI.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            features/media/Photo_Booth_True_Resolution_UI.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js \
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+          done
+          echo 'protected committed blobs: PASS'
+
+          git push --force-with-lease origin WITCH_DEV_GIZMO_FRESH_CANDIDATE_20260908
