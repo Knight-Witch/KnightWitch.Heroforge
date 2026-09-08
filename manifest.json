@@ -132,9 +132,9 @@
       "path": "features/booth/Black_Canvas_Display_Replay.js",
       "kind": "compatibility-feature",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-post-display-update-replay",
-      "versionOrigin": "new-dev-module"
+      "version": "0.1.2",
+      "build": "0.1.2-dev-stable-state-plus-pre-bt-background",
+      "versionOrigin": "dev-black-canvas-pre-bt-fallback-2026-09-07"
     },
     {
       "id": "photo-booth-true-resolution",
@@ -292,7 +292,7 @@
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.0-dev-post-display-update-replay",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.2-dev-stable-state-plus-pre-bt-background",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
