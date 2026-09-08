@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.4';
-  const BUILD = '0.1.4-dev-component-aware-booth-reassert';
+  const VERSION = '0.1.5';
+  const BUILD = '0.1.5-dev-restore-before-booth-handoff';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -212,9 +212,21 @@
     }
   }
 
-  function relinquishSemanticBackgroundOwnership() {
-    state.semanticBackground = null;
-    state.semanticBackgroundVisible = null;
+  function reassertThroughBoothApiWithHandoff() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (!api || typeof api.reassertBlackCanvasPresentation !== 'function') return false;
+
+      // If the pre-BT fallback directly hid the ordinary environment mesh,
+      // restore the visibility value replay owns before Booth becomes the
+      // presentation owner. v0.1.4 simply dropped this snapshot, which could
+      // leave the fantasy backdrop hidden for the rest of the page session.
+      if (state.semanticBackground) restoreSemanticBackground();
+      return api.reassertBlackCanvasPresentation() === true;
+    } catch (error) {
+      recordError('reassertThroughBoothApiWithHandoff', error);
+      return false;
+    }
   }
 
   function replayBlackCanvas(reason) {
@@ -222,11 +234,10 @@
 
     let applied = false;
     try {
-      const delegated = reassertThroughBoothApi();
+      const delegated = reassertThroughBoothApiWithHandoff();
       if (delegated) {
-        // Booth now owns component-aware BT presentation, including the
-        // Background-OFF fantasy fallback. Do not re-hide that background here.
-        relinquishSemanticBackgroundOwnership();
+        // Booth owns component-aware BT presentation after any replay-owned
+        // pre-BT background visibility has been restored. Do not re-hide it here.
         applied = true;
       } else {
         const BT = UW.BT;
@@ -326,10 +337,9 @@
       if (blackOn) {
         if (!state.lastBlackCanvasOn) {
           replayBlackCanvas('black-canvas-enabled');
-        } else if (reassertThroughBoothApi()) {
-          // If Booth became available after the pre-BT fallback acquired the
-          // background, release replay ownership without mutating Booth's state.
-          relinquishSemanticBackgroundOwnership();
+        } else if (reassertThroughBoothApiWithHandoff()) {
+          // Booth now owns the final presentation after replay restored any
+          // pre-BT background visibility it had temporarily owned.
         } else {
           // Legacy/pre-BT path: keep the semantic scene background hidden if
           // HeroForge replaced it without replacing the primary display.

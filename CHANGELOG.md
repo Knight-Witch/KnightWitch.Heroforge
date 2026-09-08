@@ -1,5 +1,53 @@
 # Changelog
 
+## DOCK-2026-09-07-045 — Repair Booth editor-environment ownership after v27.0.3 live failure
+
+Date: 2026-09-07
+
+### Live result entering this repair
+
+Amanda's v27.0.3 Dev smoke rejected the component-aware DOM matte and exposed a deeper environment-ownership conflict:
+
+- Black Canvas ON + Booth Background OFF still showed checkerboard instead of the fantasy environment;
+- the v27.0.3 matte covered almost the entire renderer and left only a tiny square around the figure, proving `BT.maker.getTokenViewOffset()` is not the visible editor 1:1 crop contract;
+- Black Canvas ON -> OFF could temporarily restore the pedestal/editor environment, but toggling Lighting, Effects, Overlays, or Background could hide it again even while Black Canvas remained OFF;
+- the fantasy backdrop image itself could stay missing even when the pedestal/ground returned.
+
+### Confirmed diagnosis
+
+- every Booth sub-toggle shares `refreshBTComponentRender()`, which was still invoking the broad native `overlays.resize()`, `overlays.refresh()`, and `overlays.applyVisibility()` sequence before reasserting Witch Dock state;
+- current environment state can disagree between `CK.environment.background.visible` and `CK.environment.background.mesh.visible`; prior bridge reads observed both directions of mismatch, so wrapper-only restoration gating is insufficient;
+- replay v0.1.4 can acquire the regular background mesh before BT exists, hide it for Black Canvas, then later drop the ownership snapshot when Booth delegation becomes available without restoring that mesh first;
+- this can leave the fantasy background render node hidden while the Booth environment setter separately restores ground/pedestal visibility;
+- v27.0.3's `getTokenViewOffset()` DOM matte is rejected by live visual evidence and is removed in this repair.
+
+### Changes
+
+- Booth -> v27.0.4 / build `v27.0.4`;
+- Black Canvas replay -> v0.1.5 / build `0.1.5-dev-restore-before-booth-handoff`;
+- remove the v27.0.3 DOM matte and all `getTokenViewOffset()` crop ownership from Booth;
+- editor-environment restoration now considers the actual background mesh, ground group, `hideGround`, and summon-circle state in addition to the background wrapper flag;
+- when the editor fallback is explicitly required, the actual regular background mesh is re-shown after the named native environment setter so wrapper/mesh disagreement cannot strand the fantasy backdrop;
+- component toggles no longer run the broad native overlay resize/refresh/applyVisibility sequence merely to redraw; they reassert their already-applied component state and request a render refresh instead;
+- replay restores any background visibility it owned before handing full BT presentation to Booth, rather than dropping the snapshot while leaving the mesh hidden;
+- the validated synchronous post-`CK.character.display.update()` replay location is unchanged.
+
+### Deliberate temporary limitation
+
+This repair prioritizes stable environment/component ownership. With Booth View + Black Canvas ON + Background OFF, the fantasy environment may extend outside the intended 1:1 crop until a correct frame-derived matte seam is separately validated. The rejected `getTokenViewOffset()` matte is not retained as a partial fix.
+
+### Preserved boundaries
+
+Booth bootstrap v0.1.0, Utilities v1.2.1, Dev loader v0.5.1, silent-cycle timing, native `display.update()` execution, corrected decal gizmo, Spinny, High Res, JSON, Developer Mode, Decals host, tabs, and Public Stable are unchanged.
+
+### Validation gate
+
+Booth/replay syntax, manifest identity/cache keys, wrapper-vs-mesh environment mock, narrow component-refresh mock, pre-BT replay handoff mock, native update passthrough, exact eight-file whitelist, protected blob equality, and committed-byte rerun must pass before Dev moves. Live validation then focuses on fantasy-background recovery and component-toggle stability before any new outer-matte work.
+
+**Runtime behavior changed:** yes, Dev Booth/Black Canvas environment ownership only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-044 — Make Black Canvas component-aware when Booth Background is off
 
 Date: 2026-09-07

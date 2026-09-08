@@ -222,3 +222,15 @@ Component-aware Black Canvas behavior is now:
 - native Photo Booth: no editor DOM matte.
 
 A narrow `reassertBlackCanvasPresentation()` Booth API lets the separate display replay synchronously request this exact policy after native `CK.character.display.update()` without duplicating component decisions.
+
+## 2026-09-07 v27.0.3 live rejection / environment ownership repair — v27.0.4
+
+Amanda's v27.0.3 visual smoke disproved the `BT.maker.getTokenViewOffset()` matte assumption. The four-bar DOM matte left only a tiny square around the figure while the real Booth 1:1 viewport was much larger. `getTokenViewOffset()` is therefore a token/render crop contract, not the editor presentation crop, and the DOM matte is removed rather than tuned.
+
+The same smoke exposed a separate environment lifecycle defect. Black Canvas ON -> OFF could restore the pedestal/ground, but changing any of Lighting, Effects, Overlays, or Background could hide that environment again even though Black Canvas remained OFF. Source review shows every component toggle ends in `refreshBTComponentRender()`, whose broad native `overlays.resize()/refresh()/applyVisibility()` sequence is the common operation across all of those failures.
+
+v27.0.4 keeps the component-specific operations but narrows redraw to direct component reassertion plus `CK.GameLoop.requestRenderRefresh()` when available. It no longer invokes the broad native overlay visibility sequence merely because a component checkbox changed.
+
+Editor environment restoration also no longer trusts `CK.environment.background.visible` alone. Live bridge evidence has shown wrapper/mesh disagreement in both directions. The helper now treats a hidden regular background mesh, hidden ground, `hideGround`, or hidden summon circle as restoration signals and explicitly re-shows the regular background render mesh after the named native environment setter when editor fallthrough is required.
+
+The outer-black matte is intentionally unresolved again. Current frame-plane UV/resize evidence remains the correct next investigation basis, but no replacement matte is part of v27.0.4.

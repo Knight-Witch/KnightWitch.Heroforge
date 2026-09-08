@@ -165,3 +165,11 @@ When the current Booth API exposes `reassertBlackCanvasPresentation()`, replay n
 If Booth/BT is unavailable or the API cannot handle presentation, the old behavior remains: named environment/frame/shadow/mask reassertion, semantic background hide, and canvas/holder black. This preserves the pre-BT Black Canvas startup path and diagnostic fallback.
 
 Polling follows the same split: current Booth API reassertion when available; semantic-background maintenance only on the legacy path. Black Canvas OFF/dispose restoration behavior remains unchanged.
+
+## 2026-09-07 pre-BT ownership handoff repair — v0.1.5
+
+v0.1.4 introduced Booth delegation but relinquished replay's semantic-background pointer by simply clearing it. That is unsafe when replay acquired `CK.environment.background.mesh` before BT existed: Black Canvas may have changed the mesh from visible to hidden, and clearing the snapshot does not restore the visibility value replay owns.
+
+This matches the later live symptom where the native environment setter could restore pedestal/ground state while the fantasy background image remained absent. v0.1.5 keeps the same post-`CK.character.display.update()` wrapper and timing, but before successful Booth delegation it restores any semantic-background visibility currently owned by replay. Booth then applies the final BT presentation policy.
+
+The legacy/pre-BT path remains unchanged when Booth cannot own presentation. Black Canvas OFF/dispose still restores replay-owned visibility, and native `display.update()` always executes.

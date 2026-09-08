@@ -1,5 +1,63 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-045 — Repair Booth editor-environment ownership after v27.0.3 live failure
+
+Date: 2026-09-07
+
+### Reviewed
+
+- binding HeroForge.Compatibility project contract, master, pre-flight, changelog, architecture, feature inventory, compatibility, ownership, and testing state;
+- current Witch Dock Dev master/pre-flight/changelog/manifest;
+- Booth v27.0.3, replay v0.1.4, bootstrap v0.1.0, and Booth/replay histories;
+- Amanda's v27.0.3 screenshots and state-sequence report;
+- prior bridge evidence for `setDefaultEnvironmentVisibility`, wrapper/mesh visibility mismatch, frame UV/resize geometry, and rejected WebGL matte probes;
+- current Dev head `ca27025e137049640e50b68d98d9cdca70ed59a8`.
+
+### Confirmed findings
+
+- `BT.maker.getTokenViewOffset()` does not describe the visible editor 1:1 Booth viewport; the v27.0.3 DOM matte is visually wrong and rejected;
+- all Booth sub-toggles share the broad native overlay refresh sequence, matching the user's observation that any of Lighting/Effects/Overlays/Background can knock the editor environment back out;
+- regular environment wrapper visibility and actual background mesh visibility can disagree;
+- replay v0.1.4 drops its pre-BT semantic-background ownership without restoring the owned mesh before Booth delegation;
+- Black Canvas ON -> OFF restoring pedestal/ground but not the fantasy backdrop is consistent with those separate ownership paths.
+
+### Decision
+
+First restore deterministic environment ownership. Remove the bad matte, narrow component redraw behavior, gate editor restoration on actual render/environment state, and restore replay-owned visibility before Booth handoff. Do not solve the outer-black crop in this candidate; return to that only after environment/component behavior is live stable.
+
+### Target files
+
+- `tools/Booth.js`
+- `features/booth/Black_Canvas_Display_Replay.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+
+### Conflict risks / preservation requirements
+
+- remove all v27.0.3 DOM matte state/DOM nodes and `getTokenViewOffset()` usage;
+- preserve named native environment setter and existing component state application;
+- do not call broad overlay resize/refresh/applyVisibility from component-toggle redraw;
+- preserve layout/timing behavior elsewhere unless directly required by this repair;
+- preserve native `CK.character.display.update()` and synchronous replay timing;
+- replay must restore only visibility it previously owned before Booth handoff;
+- do not touch bootstrap, Utilities, loader, Spinny, High Res, gizmo, JSON, Developer Mode, Decals, or Public Stable.
+
+### Static gate
+
+Booth/replay JavaScript syntax, manifest JSON/version/cache identity, absence of DOM matte/getTokenViewOffset path, wrapper-true/mesh-false editor restoration mock, no broad overlay calls in component refresh, replay pre-BT-to-BT ownership handoff, native update passthrough, exact eight-file changed whitelist, protected blob equality, committed-byte rerun.
+
+### Live gate
+
+Dev only: confirm Black Canvas OFF restores the full fantasy backdrop, all Booth component toggles can be changed without losing that editor environment, Background OFF fallthrough no longer checkerboards because of a stranded replay-owned mesh, `+ New` and white-flash behavior remain correct. Outer-black 1:1 matte remains a separate pending presentation gate.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+
+---
+
 ## PFC-2026-09-07-044 — Component-aware Black Canvas / Background fallthrough
 
 Date: 2026-09-07
