@@ -1,5 +1,50 @@
 # Changelog
 
+## DOCK-2026-09-07-042 — Repair Dev Booth figure lifecycle and editor background restore
+
+Date: 2026-09-07
+
+### Live result that triggered this repair
+
+The integrated Dev smoke confirmed that saved Booth View and Black Canvas now restore automatically on page refresh and the validated white-flash fix remains effective. It also exposed two lifecycle regressions:
+
+- creating a fresh `+ New Figure` after a saved Booth figure left default-owned Booth View active and showed the empty checkerboard Booth backdrop;
+- with Booth View and Black Canvas both OFF, the ordinary HeroForge fantasy editor background did not return and the viewport remained white.
+
+All Booth component toggles continued to work.
+
+### Confirmed source diagnosis
+
+- Booth v27 `readSavedBoothConfig()` still counted plain `cfg.camera` as a saved-Booth signal even though the runtime bootstrap correctly rejects bare camera data. Fresh figures may have ordinary camera data, so an already-loaded BT runtime let v27 falsely classify the new figure as having saved Booth setup.
+- `restoreBTCanvasVisualState()` already contains the semantic environment restoration used by the older working behavior, but a real `onUserBoothToggle(false)` did not reassert it after Booth teardown when Black Canvas was already OFF.
+- the Black Canvas replay captured the named main-scene background's current visibility. While Booth was active that value could correctly be `false`; later restoring that stale `false` after Booth itself was OFF could re-hide the fantasy editor background.
+
+### Changes
+
+- Booth -> v27.0.1 / build `v27.0.1`;
+- bare `cfg.camera` no longer qualifies as saved Booth configuration; all previously accepted stronger Booth signals remain;
+- non-internal Booth shutdown reasserts the existing `restoreBTCanvasVisualState()` path when Black Canvas is already OFF; internal silent-cycle behavior is unchanged;
+- Black Canvas replay -> v0.1.3 / build `0.1.3-dev-editor-background-restore`;
+- replay still restores the captured background visibility while Booth remains active, but when BT exists and Booth View is OFF it restores the default environment and makes the owned main-scene background visible instead of replaying a stale hidden value;
+- no timing windows, tokenizer retry/rearm behavior, `display.update()` replay sequencing, or Booth bootstrap timings were changed.
+
+### Preserved boundaries
+
+Booth runtime bootstrap v0.1.0, Dev loader v0.5.1, Utilities v1.2.1, corrected decal gizmo, Spinny, High Res, JSON, Developer Mode, Decals host, tab infrastructure, and Public Stable are unchanged.
+
+### Validation
+
+- exact source replacement counts: PASS;
+- Booth/replay JavaScript syntax: PASS;
+- manifest JSON parse and version/cache identity assertions: PASS;
+- replay lifecycle mocks: PASS for no-BT Black Canvas, BT+Booth active restoration, BT+Booth OFF editor restoration, diagnostic state fallback, and native `display.update()` passthrough;
+- Booth source invariant: PASS — bare `camera` is not a saved signal, stronger signals remain, and internal silent-cycle shutdown is excluded from editor-background restoration;
+- live Dev regression smoke: pending.
+
+**Runtime behavior changed:** yes, Dev Booth lifecycle/restoration only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-041 — Add Dev Black Canvas pre-BT fallback
 
 Date: 2026-09-07

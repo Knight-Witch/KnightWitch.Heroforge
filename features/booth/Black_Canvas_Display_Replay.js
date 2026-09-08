@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.2';
-  const BUILD = '0.1.2-dev-stable-state-plus-pre-bt-background';
+  const VERSION = '0.1.3';
+  const BUILD = '0.1.3-dev-editor-background-restore';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -52,6 +52,31 @@
       return !!(s && s.blackCanvasOn);
     } catch (error) {
       recordError('isBlackCanvasOn.diag', error);
+      return false;
+    }
+  }
+
+  function isBoothViewOn() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (api && typeof api.getState === 'function') {
+        const s = api.getState();
+        if (s && Object.prototype.hasOwnProperty.call(s, 'sessionBoothView')) {
+          return !!s.sessionBoothView;
+        }
+      }
+    } catch (error) {
+      recordError('isBoothViewOn.api', error);
+    }
+
+    try {
+      const diag = UW.KW_WD_BOOTH_DIAG;
+      if (typeof diag !== 'function') return false;
+      const raw = diag();
+      const s = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return !!(s && (s.userBoothOn || s.boothOn));
+    } catch (error) {
+      recordError('isBoothViewOn.diag', error);
       return false;
     }
   }
@@ -130,7 +155,22 @@
     const node = state.semanticBackground;
     if (!node) return false;
     try {
-      if (state.semanticBackgroundVisible !== null) node.visible = !!state.semanticBackgroundVisible;
+      const BT = UW.BT;
+      const boothOn = isBoothViewOn();
+
+      if (BT && !boothOn) {
+        // A background captured while Booth was active may legitimately have
+        // been invisible. Once Booth itself is OFF, restoring that stale false
+        // would leave the ordinary HeroForge editor on a blank white canvas.
+        const env = BT.display && BT.display.environment;
+        if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
+          env.setDefaultEnvironmentVisibility(true);
+        }
+        if ('visible' in node) node.visible = true;
+      } else if (state.semanticBackgroundVisible !== null) {
+        node.visible = !!state.semanticBackgroundVisible;
+      }
+
       state.semanticBackground = null;
       state.semanticBackgroundVisible = null;
       return true;

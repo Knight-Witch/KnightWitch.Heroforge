@@ -140,3 +140,9 @@ With Dev loader only:
 7. A fresh `+ New Figure` with no saved Booth setup must not auto-bootstrap Booth.
 
 Do not promote this module to Stable until the live gate passes and the separate public loader cache-busting defect is repaired.
+
+## 2026-09-07 integrated Dev result
+
+Live integrated Dev validation confirmed the bootstrap's primary job works: refreshing a figure with saved Booth setup while Booth Persistence and Black Canvas defaults were enabled automatically created/activated the native Booth runtime and restored Booth/Black Canvas without manually opening Photo Booth.
+
+The subsequent `+ New Figure` failure was not a bootstrap eligibility failure. BT was already present from the first figure, so control returned to Booth v27's own saved-config detector, which still accepted bare `cfg.camera`. That consumer-side mismatch is corrected in Booth v27.0.1; bootstrap v0.1.0 itself remains unchanged.

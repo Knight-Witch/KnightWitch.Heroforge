@@ -158,3 +158,13 @@ Before Stable consideration, live `WITCH_DEV_UI` must verify:
 10. responsive wide right-edge Black Canvas strip is gone or narrowed to the separately unresolved thin mask edge.
 
 The thin 1:1 mask edge is not a v27 acceptance blocker unless behavior worsens; it remains a separate investigation requiring a proven mask/shader seam.
+
+## 2026-09-07 integrated lifecycle follow-up — v27.0.1
+
+The first combined Dev startup smoke proved the new runtime bootstrap works: a previously saved Booth figure restored Booth View and Black Canvas automatically on refresh, and the white-flash fix remained effective. The same smoke exposed a downstream v27 detector mismatch on `+ New Figure`.
+
+`readSavedBoothConfig()` still counted plain `cfg.camera` as a saved-Booth signal. That contradicts the bootstrap's established strong-signal rule and the v27 acceptance requirement that a fresh/no-saved-Booth figure not receive default-owned Booth View. Because BT was already loaded from the previous saved figure, the new figure's ordinary camera data was enough for v27 to keep Booth alive.
+
+v27.0.1 removes bare `camera` from the qualifying signal set while preserving `cameraSave`, lighting, effects, token-background/frame filters, and selected token background/frame signals. The existing 1.8 s figure-settle window and missing-config tick threshold are unchanged.
+
+The same live smoke reproduced the historical blank-white editor restoration class. v27.0.1 reuses the already-existing `restoreBTCanvasVisualState()` semantic restoration path after a real/manual/default Booth shutdown when Black Canvas is already OFF. Internal silent-cycle teardown is explicitly excluded so its validated timing/rearm behavior is unchanged.

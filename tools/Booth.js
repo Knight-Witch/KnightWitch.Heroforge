@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27';
+  const BUILD_TAG = 'v27.0.1';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -1699,7 +1699,8 @@
           const selected = cfg.selected && typeof cfg.selected === 'object' ? cfg.selected : null;
           const signals = [];
           if (cfg.cameraSave) signals.push('cameraSave');
-          if (cfg.camera) signals.push('camera');
+          // Bare camera state is not a saved Booth signal. Fresh/new figures
+          // can carry ordinary camera data without ever having a Booth setup.
           if (cfg.lighting) signals.push('lighting');
           if (cfg.effects) signals.push('effects');
           if (filters && filters.tokenBg) signals.push('filters.tokenBg');
@@ -2138,6 +2139,13 @@
     if (!state.userBoothOn && prev) {
       state.boothPendingTeardown = true;
       try { teardownBoothNow(TN); } catch {}
+
+      // A real/manual/default Booth shutdown must restore the ordinary editor
+      // environment when Black Canvas is already OFF. Internal silent cycles
+      // intentionally skip this so their validated rearm sequencing is unchanged.
+      if (!state.bgOn && opts.source !== 'internal') {
+        try { restoreBTCanvasVisualState(); } catch {}
+      }
     }
 
     if (state.userBoothOn && !prev) {
@@ -2291,7 +2299,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.0',
+      version: '27.0.1',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2314,7 +2322,7 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.0',
+      version: '27.0.1',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,

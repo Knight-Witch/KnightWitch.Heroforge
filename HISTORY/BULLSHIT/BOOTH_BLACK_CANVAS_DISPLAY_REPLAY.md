@@ -3,7 +3,7 @@
 Date: 2026-09-07
 Status: Dev candidate; live validation required
 Feature: `booth.black-canvas-display-replay`
-Dev candidate: v0.1.2 / `0.1.2-dev-stable-state-plus-pre-bt-background`
+Dev candidate: v0.1.3 / `0.1.3-dev-editor-background-restore`
 Public Stable: v0.1.1 / `0.1.1-stable-v24-state-fallback`
 Target HeroForge build: `heroforge07.1.9.98`
 
@@ -147,3 +147,11 @@ Pending live Dev validation:
 - fresh `+ New Figure` does not auto-bootstrap Booth.
 
 Do not promote v0.1.2 to Stable until this combined Dev gate passes.
+
+## 2026-09-07 editor-background restoration follow-up — v0.1.3
+
+The integrated startup smoke kept the white-flash regression closed but reproduced a different historical failure: after Booth View and Black Canvas were both switched OFF, HeroForge's normal fantasy editor background could remain hidden and the viewport appeared white.
+
+The replay's owned background snapshot explains the ordering hazard. While Booth is active, the real main-scene background can legitimately already be invisible; v0.1.2 captured that `false` and later restored it literally. If Booth itself was OFF by then, replaying the stale hidden value counteracted the editor-environment restoration.
+
+v0.1.3 preserves the validated post-`display.update()` replay and all Black Canvas enforcement. When Booth is still active, it restores the captured visibility exactly as before. When BT exists but Booth View is now OFF, it instead reasserts the named default-environment visibility and makes the owned main-scene background visible. The no-BT Black Canvas path still restores its captured CK mesh visibility normally.

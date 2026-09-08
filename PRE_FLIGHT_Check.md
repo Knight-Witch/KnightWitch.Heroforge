@@ -1,5 +1,65 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-042 — Integrated Booth lifecycle regression repair
+
+Date: 2026-09-07
+
+### Reviewed
+
+- binding HeroForge.Compatibility contract, master, pre-flight, changelog, architecture, feature inventory, compatibility, ownership, and testing state;
+- current Witch Dock Dev master/pre-flight/changelog/module versioning;
+- Booth v27 source and `BOOTH_V27_STABILIZATION.md`;
+- Booth runtime bootstrap v0.1.0 and its investigation record;
+- Black Canvas replay v0.1.2 and its investigation record;
+- Amanda's integrated Dev smoke result after Dev head `a28d83c56264bf5e153415705c0043f792c13f2c`.
+
+### Confirmed findings
+
+- saved Booth + Black Canvas fresh-page startup: PASS;
+- white-flash regression: PASS;
+- Booth sub-toggle behavior: PASS;
+- `+ New Figure`: FAIL because v27 accepts bare `cfg.camera` as saved Booth despite the established strong-signal rule;
+- ordinary editor background restoration with Booth + Black Canvas OFF: FAIL;
+- replay can retain a legitimate Booth-hidden background visibility snapshot and replay it after Booth is no longer active.
+
+### Decision
+
+Surgically align Booth v27 saved-config detection with the already-validated bootstrap rule and repair shutdown/restoration ownership. Preserve all established Booth timing/retry/silent-cycle behavior.
+
+### Target files
+
+- `tools/Booth.js`
+- `features/booth/Black_Canvas_Display_Replay.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
+- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+
+### Conflict risks / preservation requirements
+
+- do not alter Booth bootstrap timing, same-origin native Booth load, or `BT.setBoothMode` activation;
+- do not alter the validated `CK.character.display.update()` white-flash replay sequencing;
+- do not alter internal silent-cycle teardown/rearm timing;
+- Black Canvas remains independent from Booth Persistence;
+- a fresh figure may keep Black Canvas ON if its separate Utilities default is ON, but default-owned Booth View must fall OFF when no strong saved Booth setup exists;
+- manual current-session switches remain session overrides;
+- Public Stable stays untouched.
+
+### Static gate
+
+Exact source patching, syntax, manifest identity, replay lifecycle mocks, and protected-file equality must pass before Dev moves.
+
+### Live gate
+
+Re-test saved-figure refresh, `+ New Figure`, both toggle-off orders, fantasy editor background restoration, white-flash behavior, and Booth component toggles. Public migration remains blocked until these pass.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+
+---
+
 ## PFC-2026-09-07-041 — Black Canvas pre-BT fallback
 
 Date: 2026-09-07

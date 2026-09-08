@@ -68,9 +68,25 @@ Feature ID: `booth.black-canvas-display-replay`.
 - Black Canvas OFF/dispose restores only replay-owned background visibility.
 - Public Stable remains on replay v0.1.1 pending the final Dev smoke.
 
+## Integrated Booth Lifecycle Smoke — 2026-09-07
+
+The first combined startup smoke closed two gates and exposed two downstream lifecycle bugs.
+
+Confirmed PASS:
+- saved Booth figure refresh automatically bootstraps/restores Booth View;
+- saved Black Canvas restores;
+- the validated white-flash fix remains effective;
+- Booth lighting/effects/overlay/background component toggles still work.
+
+Confirmed FAIL before this repair:
+- `+ New Figure` remained in default-owned Booth because Booth v27 still treated bare camera data as saved Booth;
+- with Booth and Black Canvas OFF, the ordinary fantasy editor background could remain hidden, leaving white.
+
+Dev v27.0.1 / replay v0.1.3 are the surgical candidate fixes. Black Canvas remains a separate persistent default: if Black Canvas Across Sessions is ON, a fresh figure may remain black, but it must not remain in Booth View or show the checkerboard Booth backdrop.
+
 ## Booth / Utilities
 
-- Dev Booth: v27.0.0 / build `v27`.
+- Dev Booth: v27.0.1 / build `v27.0.1`.
 - Dev Utilities: v1.2.1.
 - The Booth runtime bootstrap and Black Canvas replay remain separate hidden compatibility features.
 - Utilities continues to own saved defaults under `Booth Features`; Booth tab switches remain session overrides.
@@ -97,13 +113,12 @@ The following remain outside this Dev change:
 
 ## Current Gate
 
-1. Enable the Dev loader and disable public Stable for a clean test.
-2. Verify Black Canvas Across Sessions ON can restore a fresh ordinary editor page to black without enabling Booth View.
-3. Load a figure that already has saved Photo Booth configuration with Booth Persistence Across Sessions ON and refresh without opening native Photo Booth.
-4. Expected: saved Booth View activates; if Black Canvas default is also ON, viewport is black.
-5. Verify the known flash-causing action still does not flash.
-6. Toggle Black Canvas OFF and confirm the ordinary HeroForge background returns.
-7. Verify a fresh `+ New Figure` with no saved Booth configuration does not auto-bootstrap Booth.
-8. Only after this combined Dev smoke passes should the bootstrap, replay v0.1.2, and loader cache repair be narrowly promoted to Public Stable.
+1. Update/reload the Dev loader with Public Stable disabled.
+2. Saved Booth figure + Booth Persistence ON: refresh without opening Photo Booth manually; Booth must restore automatically.
+3. `+ New Figure`: after the existing figure-settle window, default-owned Booth View must turn OFF because bare camera data is not a saved Booth setup. If the independent Black Canvas default is ON, the editor may remain black but must not show the Booth checkerboard.
+4. Test both shutdown orders: Black Canvas OFF then Booth OFF, and Booth OFF then Black Canvas OFF. With both OFF, the ordinary HeroForge fantasy background must return.
+5. Verify the known flash-causing action remains flash-free.
+6. Verify Booth lighting/effects/overlays/background sub-toggles still work.
+7. Only after this passes should the bootstrap/replay/loader repair be promoted narrowly to Public Stable.
 
 Historical state through the loader cache repair remains preserved at Dev commit `6cf10845e394676344ebb8699c654009267c6c61`.
