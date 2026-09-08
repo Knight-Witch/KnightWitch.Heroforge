@@ -1,4 +1,4 @@
-name: Temporary Black Canvas finalization
+name: Temporary Black Canvas validator
 
 on:
   push:
@@ -6,46 +6,146 @@ on:
       - WITCH_DEV_CACHE_CANDIDATE_20260907
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  finalize:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout exact candidate
         uses: actions/checkout@v4
         with:
+          ref: WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
           fetch-depth: 0
 
-      - name: Document and validate candidate
+      - name: Validate candidate
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin WITCH_DEV_UI WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
-          git checkout -B WITCH_DEV_BLACK_STARTUP_FINAL_20260907 origin/WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
-          python3 -c "from pathlib import Path; import base64; p=Path('CHANGELOG.md'); s=p.read_text(); h='# Changelog\\n\\n'; a=base64.b64decode('IyMgRE9DSy0yMDI2LTA5LTA3LTA0MSDigJQgQWRkIERldiBCbGFjayBDYW52YXMgcHJlLUJUIGZhbGxiYWNrCgpEYXRlOiAyMDI2LTA5LTA3CgojIyMgU3VtbWFyeQoKQnVtcGVkIGBib290aC5ibGFjay1jYW52YXMtZGlzcGxheS1yZXBsYXlgIHRvIHYwLjEuMi4gVGhlIERldiBtb2R1bGUgbm93IGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlIHYwLjEuMSdzIGRpYWdub3N0aWMgc3RhdGUgZmFsbGJhY2sgYW5kLCBvbmx5IHdoZW4gQlQgaXMgYWJzZW50LCBtYXkgaGlkZSBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYCBzbyBCbGFjayBDYW52YXMgY2FuIHJlc3RvcmUgd2l0aG91dCBlbmFibGluZyBCb290aC4KCiMjIyBFdmlkZW5jZSAvIGJvdW5kYXJ5CgpDb25maXJtZWQgYnJpZGdlIGV2aWRlbmNlIHNob3dzIHRoZSByZWd1bGFyIGRpc3BsYXkgdXNlcyBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZGAsIHdob3NlIGB1cGRhdGVWYWx1ZXMoKWAgb3BlcmF0ZXMgb24gYHRoaXMubWVzaC5tYXRlcmlhbGAuIFRyZWF0aW5nIHRoYXQgbWVzaCBhcyB0aGUgcHJlLUJUIHJlbmRlciB0YXJnZXQgaXMgYSBzdXBwb3J0ZWQgaW5mZXJlbmNlIHBlbmRpbmcgdmlzdWFsIERldiB2YWxpZGF0aW9uLiBUaGUgdmFsaWRhdGVkIEJUIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkIHdoZW5ldmVyIEJUIGV4aXN0czsgbmF0aXZlIGBDSy5jaGFyYWN0ZXIuZGlzcGxheS51cGRhdGUoKWAgc3RpbGwgYWx3YXlzIHJ1bnMuCgojIyMgVmFsaWRhdGlvbgoKLSBzeW50YXg6IFBBU1M7Ci0gbG9jYWwgbm8tQlQgQVBJLXN0YXRlIGxpZmVjeWNsZSBtb2NrOiBQQVNTOwotIGxvY2FsIFN0YWJsZSBkaWFnbm9zdGljLXN0YXRlIGZhbGxiYWNrIG1vY2s6IFBBU1M7Ci0gbG9jYWwgQlQtcHJlc2VudCByZWdyZXNzaW9uIG1vY2s6IFBBU1M7Ci0gbWFuaWZlc3QgcGFyc2UgLyBkaWZmIC8gcHJvdGVjdGVkLWJsb2IgZ2F0ZXM6IFBBU1M7Ci0gbGl2ZSBmcmVzaC1zdGFydCB2aXN1YWwgdmFsaWRhdGlvbjogcGVuZGluZy4KCkJvb3RoIHYyNywgVXRpbGl0aWVzIHYxLjIuMSwgQm9vdGggYm9vdHN0cmFwLCBsb2FkZXIgdjAuNS4xLCBTcGlubnksIEhpZ2ggUmVzLCBkZWNhbCBnaXptbywgSlNPTiwgRGV2ZWxvcGVyIE1vZGUsIGFuZCBQdWJsaWMgU3RhYmxlIGFyZSB1bmNoYW5nZWQuCgoqKlJ1bnRpbWUgYmVoYXZpb3IgY2hhbmdlZDoqKiB5ZXMsIERldiBCbGFjayBDYW52YXMgc3RhcnR1cCBvbmx5Lgo=').decode(); assert s.startswith(h); p.write_text(h+a+'\\n---\\n\\n'+s[len(h):], encoding='utf-8', newline='\\n')"
-          python3 -c "from pathlib import Path; import base64; p=Path('PRE_FLIGHT_Check.md'); s=p.read_text(); h='# Pre-Flight Check Log\\n\\n'; a=base64.b64decode('IyMgUEZDLTIwMjYtMDktMDctMDQxIOKAlCBCbGFjayBDYW52YXMgcHJlLUJUIGZhbGxiYWNrCgpEYXRlOiAyMDI2LTA5LTA3CgojIyMgUmV2aWV3ZWQKCi0gYmluZGluZyBDb21wYXRpYmlsaXR5IHByZWZsaWdodC9hcmNoaXRlY3R1cmUvdGVzdGluZyBtYXRlcmlhbCBhbHJlYWR5IHJldmlld2VkIGZvciB0aGlzIHN0YWdlOwotIERldiBCb290aCB2MjcsIFV0aWxpdGllcyB2MS4yLjEsIEJvb3RoIGJvb3RzdHJhcCwgcmVwbGF5LCBtYW5pZmVzdCwgbG9hZGVyLCBhbmQgbW9kdWxlLXZlcnNpb25pbmcgY29udHJhY3Q7Ci0gUHVibGljIFN0YWJsZSByZXBsYXkgdjAuMS4xOwotIEJsYWNrIENhbnZhcyBoaXN0b3J5IGFuZCBwcmlvciBicmlkZ2UgcmVhZHMgZm9yIGBDSy5lbnZpcm9ubWVudC5iYWNrZ3JvdW5kYCAvIGBhcHBseUxpZ2h0aW5nKClgLgoKIyMjIERlY2lzaW9uCgpCdWlsZCByZXBsYXkgdjAuMS4yIGFzIHRoZSB1bmlvbiBvZiBTdGFibGUgdjAuMS4xIHN0YXRlIGRldGVjdGlvbiBwbHVzIG9uZSBjb25zZXJ2YXRpdmUgbm8tQlQgY2FwYWJpbGl0eSBmYWxsYmFjazogYENLLmVudmlyb25tZW50LmJhY2tncm91bmQubWVzaC52aXNpYmxlYC4gS2VlcCB0aGUgdmFsaWRhdGVkIEJUIG5hbWVkLWJhY2tncm91bmQgcGF0aCBmaXJzdCB3aGVuZXZlciBCVCBleGlzdHMuIERvIG5vdCBib290c3RyYXAgQm9vdGggZm9yIEJsYWNrIENhbnZhcyBhbG9uZTsgZmFpbHVyZSB0byBmaW5kIHRoZSBtZXNoIGlzIGEgbm8tb3AvcmV0cnkuCgojIyMgUmlza3MgLyBnYXRlcwoKVGhlIENLIG1lc2ggbWFwcGluZyBpcyBzdXBwb3J0ZWQgaW5mZXJlbmNlLCBub3QgbGl2ZS1wcm92ZW4gb2JqZWN0IGlkZW50aXR5LiBTdGF0aWMgc3ludGF4IGFuZCBBUEkvZGlhZ25vc3RpYy9CVCBsaWZlY3ljbGUgbW9ja3MgcGFzcy4gUHJvdGVjdGVkIEJvb3RoLCBVdGlsaXRpZXMsIGJvb3RzdHJhcCwgbG9hZGVyLCBTcGlubnksIGFuZCBnaXptbyBibG9icyBtdXN0IHJlbWFpbiB1bmNoYW5nZWQuIExpdmUgRGV2IG11c3QgdmVyaWZ5IEJsYWNrIENhbnZhcy1vbmx5IGZyZXNoIHN0YXJ0dXAsIE9GRiByZXN0b3JhdGlvbiwgc2F2ZWQtQm9vdGggYm9vdHN0cmFwLCBubyB3aGl0ZS1mbGFzaCByZWdyZXNzaW9uLCBhbmQgdW50b3VjaGVkIGArIE5ldyBGaWd1cmVgLgoKKipSdW50aW1lIGJlaGF2aW9yIGNoYW5nZWQ6KiogeWVzLCBEZXYgb25seS4gUHVibGljIFN0YWJsZSB1bmNoYW5nZWQuCg==').decode(); assert s.startswith(h); p.write_text(h+a+'\\n---\\n\\n'+s[len(h):], encoding='utf-8', newline='\\n')"
-          python3 -c "from pathlib import Path; import base64; p=Path('MASTER.md'); s=p.read_text(); old=base64.b64decode('LSBEZXYgdjAuMS4wIHdhcyBsaXZlIHZhbGlkYXRlZDogdGhlIGZvcm1lcmx5IHJlbGlhYmxlIHdoaXRlIGZsYXNoIG5vIGxvbmdlciByZXByb2R1Y2VkIGFuZCB0aGUgdXNlciByZXBvcnRlZCBpdCB3b3JrZWQgcGVyZmVjdGx5LgotIFB1YmxpYyBTdGFibGUgY29udGFpbnMgcmVwbGF5IHYwLjEuMSB3aXRoIHRoZSBTdGFibGUtdjI0IHN0YXRlIGZhbGxiYWNrOyBpdHMgcmVuZGVyaW5nL3JlcGxheSBiZWhhdmlvciBpcyB1bmNoYW5nZWQgZnJvbSB0aGUgdmFsaWRhdGVkIERldiBmaXguCi0gSGVyb0ZvcmdlIG5hdGl2ZSBgQ0suY2hhcmFjdGVyLmRpc3BsYXkudXBkYXRlKClgIHJlbWFpbnMgdW50b3VjaGVkIGFuZCBhbHdheXMgcnVuczsgcmVwbGF5IG9jY3VycyBpbW1lZGlhdGVseSBhZnRlciB0aGUgdXBkYXRlLgotIHRoZSByZWFsIG1haW4tc2NlbmUgYmFja2dyb3VuZCBpcyBkaXNjb3ZlcmVkIHNlbWFudGljYWxseSB0aHJvdWdoIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYC4=').decode(); new=base64.b64decode('LSBEZXYgdjAuMS4yIGtlZXBzIHRoZSBsaXZlLXZhbGlkYXRlZCB3aGl0ZS1mbGFzaCByZXBsYXkgc2VxdWVuY2luZyB1bmNoYW5nZWQsIGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlJ3MgdjAuMS4xIGRpYWdub3N0aWMgc3RhdGUgZmFsbGJhY2ssIGFuZCBhZGRzIGEgcHJlLUJUIHJlZ3VsYXItc2NlbmUgZmFsbGJhY2sgdGhyb3VnaCBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYC4KLSBQdWJsaWMgU3RhYmxlIHJlbWFpbnMgb24gcmVwbGF5IHYwLjEuMSBwZW5kaW5nIHRoZSBmaW5hbCBEZXYgc21va2UuCi0gSGVyb0ZvcmdlIG5hdGl2ZSBgQ0suY2hhcmFjdGVyLmRpc3BsYXkudXBkYXRlKClgIHJlbWFpbnMgdW50b3VjaGVkIGFuZCBhbHdheXMgcnVuczsgcmVwbGF5IG9jY3VycyBpbW1lZGlhdGVseSBhZnRlciB0aGUgdXBkYXRlLgotIHdoZW4gQlQgZXhpc3RzLCB0aGUgdmFsaWRhdGVkIHNlbWFudGljIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkOyBiZWZvcmUgQlQgZXhpc3RzLCBvbmx5IHRoZSByZWd1bGFyIENLIGJhY2tncm91bmQgcmVuZGVyIG1lc2ggaXMgdmlzaWJpbGl0eS1zdXBwcmVzc2VkLgotIEJsYWNrIENhbnZhcyBhbG9uZSBkb2VzIG5vdCBib290c3RyYXAgb3IgZW5hYmxlIEJvb3RoIFZpZXcuCi0gdGhlIGBDSy5lbnZpcm9ubWVudC5iYWNrZ3JvdW5kLm1lc2hgIHZpc3VhbCBtYXBwaW5nIGlzIGEgc3VwcG9ydGVkIGluZmVyZW5jZSBwZW5kaW5nIGZyZXNoLXN0YXJ0IGxpdmUgdmFsaWRhdGlvbi4=').decode(); assert s.count(old)==1; p.write_text(s.replace(old,new,1), encoding='utf-8', newline='\\n')"
-          python3 -c "from pathlib import Path; import base64; p=Path('HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md'); s=p.read_text().rstrip(); a=base64.b64decode('CiMjIDIwMjYtMDktMDcgcHJlLUJUIHN0YXJ0dXAgZXh0ZW5zaW9uCgpEZXYgdjAuMS4yIGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlIHYwLjEuMSdzIGRpYWdub3N0aWMgQmxhY2sgQ2FudmFzIHN0YXRlIGZhbGxiYWNrIGFuZCBhZGRzIG9uZSBuby1CVCB2aXNpYmlsaXR5IGZhbGxiYWNrOiBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYC4gUHJpb3IgYnJpZGdlIGV2aWRlbmNlIGNvbmZpcm1zIHRoZSByZWd1bGFyIGRpc3BsYXkgdXNlcyBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZGAgYW5kIHRoYXQgaXRzIGB1cGRhdGVWYWx1ZXMoKWAgd29ya3MgdGhyb3VnaCBgdGhpcy5tZXNoLm1hdGVyaWFsYDsgdGhlIGV4YWN0IGZyZXNoLXN0YXJ0IHZpc3VhbCBtYXBwaW5nIHJlbWFpbnMgYSBzdXBwb3J0ZWQgaW5mZXJlbmNlIHVudGlsIGxpdmUgRGV2IHZhbGlkYXRpb24uCgpXaGVuIEJUIGV4aXN0cywgdGhlIGFscmVhZHktdmFsaWRhdGVkIHNlbWFudGljIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkLiBUaGUgZmFsbGJhY2sgb3ducy9yZXN0b3JlcyBvbmx5IHRoZSBtZXNoIGB2aXNpYmxlYCB2YWx1ZSBhbmQgbmV2ZXIgbG9hZHMgb3IgZW5hYmxlcyBCb290aC4gVGhlIHZhbGlkYXRlZCBwb3N0LWBkaXNwbGF5LnVwZGF0ZSgpYCByZXBsYXkgc2VxdWVuY2luZyBpcyB1bmNoYW5nZWQuIFB1YmxpYyBTdGFibGUgcmVtYWlucyB2MC4xLjEgcGVuZGluZyB0aGUgRGV2IGdhdGUuCg==').decode(); p.write_text(s+'\\n'+a, encoding='utf-8', newline='\\n')"
+          git fetch origin WITCH_DEV_UI
 
           node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-          python3 -c "import json; m=json.load(open('manifest.json')); r={x['id']:x for x in m['moduleRegistry']}['booth-black-canvas-display-replay']; assert r['version']=='0.1.2'; assert r['build']=='0.1.2-dev-stable-state-plus-pre-bt-background'; t={x['id']:x for x in m['tools']}['booth-black-canvas-display-replay']; assert 'v=0.1.2-dev-stable-state-plus-pre-bt-background' in t['url']"
-          git diff --check
+          git diff --check origin/WITCH_DEV_UI...HEAD
 
-          test "$(git rev-parse HEAD:tools/Booth.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Booth.js)"
-          test "$(git rev-parse HEAD:tools/Utilities.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Utilities.js)"
-          test "$(git rev-parse HEAD:features/booth/Booth_Runtime_Bootstrap.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Booth_Runtime_Bootstrap.js)"
-          test "$(git rev-parse HEAD:Witch_Dock_DEV.user.js)" = "$(git rev-parse origin/WITCH_DEV_UI:Witch_Dock_DEV.user.js)"
-          test "$(git rev-parse HEAD:features/media/Spinny_Mini_WebP.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/media/Spinny_Mini_WebP.js)"
-          test "$(git rev-parse HEAD:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)" = "$(git rev-parse origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)"
+          python3 - <<'PY'
+          import json
+          with open('manifest.json', encoding='utf-8') as f:
+              m = json.load(f)
+          reg = {x['id']: x for x in m['moduleRegistry']}
+          tools = {x['id']: x for x in m['tools']}
+          r = reg['booth-black-canvas-display-replay']
+          assert r['version'] == '0.1.2'
+          assert r['build'] == '0.1.2-dev-stable-state-plus-pre-bt-background'
+          assert 'v=0.1.2-dev-stable-state-plus-pre-bt-background' in tools['booth-black-canvas-display-replay']['url']
+          PY
 
-          expected="$(printf '%s\\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)"
+          expected="$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)"
           actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
           test "$actual" = "$expected"
 
-          git config user.name "Knight Witch Dev Automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add CHANGELOG.md PRE_FLIGHT_Check.md MASTER.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md
-          git commit -m "Document Dev Black Canvas pre-BT fallback"
-          git push --force-with-lease origin WITCH_DEV_BLACK_STARTUP_FINAL_20260907
+          for path in \
+            tools/Booth.js \
+            tools/Utilities.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            Witch_Dock_DEV.user.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js
+          do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+          done
+
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const source = fs.readFileSync('features/booth/Black_Canvas_Display_Replay.js', 'utf8');
+
+          function runCase({ withBT = false, useDiag = false }) {
+            let blackOn = true;
+            let nativeUpdates = 0;
+            let scheduled = null;
+            const direct = { visible: true };
+            const named = { name: 'background', visible: true, children: [] };
+            const envRoot = { name: 'environment', visible: true, children: [named] };
+            const scene = {
+              children: [envRoot],
+              getObjectByName(name) {
+                if (name === 'environment') return envRoot;
+                if (name === 'background') return named;
+                return null;
+              }
+            };
+            const overlays = {
+              backgroundPlane: { visible: true, parent: scene },
+              framePlane: { visible: true },
+              shadowPlane: { visible: true },
+              mask: { visible: true }
+            };
+            const canvas = { style: { backgroundColor: '' }, parentElement: { style: { backgroundColor: '' } } };
+            const display = { update() { nativeUpdates += 1; return 'native'; } };
+            const UW = {
+              CK: {
+                character: { display },
+                environment: { background: { mesh: direct } },
+                renderManager: { renderer: { domElement: canvas } }
+              },
+              setTimeout(fn) { scheduled = fn; return 1; },
+              clearTimeout() {},
+              console: { log() {} }
+            };
+            if (useDiag) UW.KW_WD_BOOTH_DIAG = () => JSON.stringify({ blackCanvasOn: blackOn });
+            else UW.KW_WD_BOOTH = { getState: () => ({ sessionBlackCanvas: blackOn }) };
+            if (withBT) {
+              UW.BT = {
+                display: {
+                  environment: { setDefaultEnvironmentVisibility() {} },
+                  overlays
+                }
+              };
+            }
+
+            const context = {
+              unsafeWindow: UW,
+              window: UW,
+              setTimeout: UW.setTimeout,
+              clearTimeout: UW.clearTimeout,
+              console: UW.console,
+              JSON,
+              Object,
+              Array,
+              String,
+              Date
+            };
+            vm.createContext(context);
+            vm.runInContext(source, context);
+
+            if (withBT) {
+              if (named.visible !== false) throw new Error('BT semantic background was not hidden');
+              if (direct.visible !== true) throw new Error('Direct CK fallback incorrectly won while BT existed');
+            } else {
+              if (direct.visible !== false) throw new Error('Pre-BT CK background mesh was not hidden');
+            }
+
+            const result = display.update();
+            if (result !== 'native' || nativeUpdates !== 1) throw new Error('Native display.update was not preserved');
+
+            blackOn = false;
+            if (!scheduled) throw new Error('Poll was not scheduled');
+            scheduled();
+            if (withBT && named.visible !== true) throw new Error('BT semantic background did not restore');
+            if (!withBT && direct.visible !== true) throw new Error('Pre-BT CK background did not restore');
+
+            const api = UW.KW_WD_BOOTH_BLACK_REPLAY;
+            if (!api || api.version !== '0.1.2') throw new Error('Replay API/version missing');
+            api.dispose();
+            if (display.update === undefined || display.update() !== 'native') throw new Error('Dispose did not restore native update');
+          }
+
+          runCase({ withBT: false, useDiag: false });
+          runCase({ withBT: false, useDiag: true });
+          runCase({ withBT: true, useDiag: false });
+          console.log('Black Canvas candidate lifecycle mocks: PASS');
+          NODE
