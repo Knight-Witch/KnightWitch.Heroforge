@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-post-display-update-replay';
+  const VERSION = '0.2.0';
+  const BUILD = '0.2.0-dev-pre-bt-main-background-fallback';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -97,11 +97,25 @@
       const BT = UW.BT;
       const overlays = BT && BT.display ? BT.display.overlays : null;
       const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
-      if (!scene) return null;
 
-      const environmentRoot = namedChild(scene, 'environment');
-      if (!environmentRoot) return null;
-      return namedChild(environmentRoot, 'background');
+      if (scene) {
+        const environmentRoot = namedChild(scene, 'environment');
+        const namedBackground = environmentRoot ? namedChild(environmentRoot, 'background') : null;
+        if (namedBackground) return namedBackground;
+      }
+
+      // A fresh editor page can have Black Canvas enabled before HeroForge has
+      // loaded Booth core and created BT. In that case use the regular named
+      // CK.environment.background wrapper's render mesh instead of bootstrapping
+      // Booth solely to obtain a black editor background.
+      if (!BT) {
+        const CK = UW.CK;
+        const background = CK && CK.environment ? CK.environment.background : null;
+        const mesh = background && background.mesh ? background.mesh : null;
+        if (mesh && typeof mesh === 'object' && 'visible' in mesh) return mesh;
+      }
+
+      return null;
     } catch (error) {
       recordError('discoverSemanticBackground', error);
       return null;
