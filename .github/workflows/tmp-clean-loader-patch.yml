@@ -1,4 +1,4 @@
-name: Temporary clean loader patch
+name: Temporary final loader patch
 
 on:
   push:
@@ -17,12 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build clean candidate from current Dev
+      - name: Build final candidate from current Dev
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin WITCH_DEV_UI
-          git checkout -B WITCH_DEV_CACHE_CLEAN_20260907 origin/WITCH_DEV_UI
+          git checkout -B WITCH_DEV_CACHE_FINAL_20260907 origin/WITCH_DEV_UI
           python3 - <<'PY'
           from pathlib import Path
 
@@ -33,22 +33,30 @@ jobs:
               ('// @version      1.0.8.5', '// @version      1.0.8.6'),
               (
                   'const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\n\nfunction gmGetText(url) {',
-                  '''const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\nconst LOADER_CACHE_SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;\n\nfunction kwStableHash(input) {\n  const text = String(input == null ? "" : input);\n  let hash = 2166136261;\n  for (let i = 0; i < text.length; i += 1) {\n    hash ^= text.charCodeAt(i);\n    hash = Math.imul(hash, 16777619);\n  }\n  return (hash >>> 0).toString(36);\n}\n\nfunction kwWithCacheKey(url, key) {\n  try {\n    const u = new URL(String(url));\n    u.searchParams.set("kwcache", String(key));\n    return u.toString();\n  } catch {\n    const raw = String(url || "");\n    const join = raw.includes("?") ? "&" : "?";\n    return `${raw}${join}kwcache=${encodeURIComponent(String(key))}`;\n  }\n}\n\nfunction kwManifestRequestUrl() {\n  return kwWithCacheKey(MANIFEST_URL, `session-${LOADER_CACHE_SESSION}`);\n}\n\nfunction kwModuleRequestUrl(tool) {\n  const url = tool && typeof tool.url === "string" ? tool.url : "";\n  const identity = [\n    tool && tool.id,\n    tool && tool.version,\n    tool && tool.build,\n    url\n  ].map((v) => String(v == null ? "" : v)).join("|");\n  return kwWithCacheKey(url, `module-${kwStableHash(identity)}`);\n}\n\nfunction gmGetText(url) {'''
+                  '''const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\nconst LOADER_CACHE_SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;\n\nfunction kwStableHash(input) {\n  const text = String(input == null ? "" : input);\n  let hash = 2166136261;\n  for (let i = 0; i < text.length; i += 1) {\n    hash ^= text.charCodeAt(i);\n    hash = Math.imul(hash, 16777619);\n  }\n  return (hash >>> 0).toString(36);\n}\n\nfunction kwWithCacheKey(url, key) {\n  try {\n    const u = new URL(String(url));\n    u.searchParams.set("kwcache", String(key));\n    return u.toString();\n  } catch {\n    const raw = String(url || "");\n    const join = raw.includes("?") ? "&" : "?";\n    return `${raw}${join}kwcache=${encodeURIComponent(String(key))}`;\n  }\n}\n\nfunction kwManifestRequestUrl() {\n  return kwWithCacheKey(MANIFEST_URL, `session-${LOADER_CACHE_SESSION}`);\n}\n\nfunction kwModuleRequestUrl(tool, registryEntry) {\n  const url = tool && typeof tool.url === "string" ? tool.url : "";\n  const registry = registryEntry && typeof registryEntry === "object" ? registryEntry : null;\n  const identity = [\n    tool && tool.id,\n    registry && registry.version,\n    registry && registry.build,\n    registry && registry.path,\n    url\n  ].map((v) => String(v == null ? "" : v)).join("|");\n  return kwWithCacheKey(url, `module-${kwStableHash(identity)}`);\n}\n\nfunction gmGetText(url) {'''
               ),
               (
                   '    const raw = await gmGetText(MANIFEST_URL);',
                   '    const raw = await gmGetText(kwManifestRequestUrl());'
               ),
               (
+                  '  if (!manifest || typeof manifest !== "object") return;\n  const tools = Array.isArray(manifest.tools) ? manifest.tools : [];',
+                  '''  if (!manifest || typeof manifest !== "object") return;\n  const registryEntries = Array.isArray(manifest.moduleRegistry) ? manifest.moduleRegistry : [];\n  const registryById = new Map();\n  for (const entry of registryEntries) {\n    if (!entry || typeof entry !== "object" || typeof entry.id !== "string" || !entry.id) continue;\n    if (!registryById.has(entry.id)) registryById.set(entry.id, entry);\n  }\n  const tools = Array.isArray(manifest.tools) ? manifest.tools : [];'''
+              ),
+              (
+                  '    const enabledByDefault = !!t.enabledByDefault;\n    if (!id || !url) continue;',
+                  '    const enabledByDefault = !!t.enabledByDefault;\n    const registryEntry = registryById.get(id) || null;\n    if (!id || !url) continue;'
+              ),
+              (
                   '      const code = await gmGetText(url);',
-                  '      const code = await gmGetText(kwModuleRequestUrl(t));'
+                  '      const code = await gmGetText(kwModuleRequestUrl(t, registryEntry));'
               )
           ]
 
           for old, new in replacements:
               count = text.count(old)
               if count != 1:
-                  raise SystemExit(f'Expected exactly one shell match, got {count}: {old[:80]!r}')
+                  raise SystemExit(f'Expected exactly one shell match, got {count}: {old[:100]!r}')
               text = text.replace(old, new, 1)
 
           shell.write_text(text, encoding='utf-8', newline='\n')
@@ -59,16 +67,96 @@ jobs:
           new = '''      "id": "witch-dock-dev-loader",\n      "title": "Witch Dock Dev Loader",\n      "path": "Witch_Dock_DEV.user.js",\n      "kind": "core",\n      "load": "userscript-dev",\n      "version": "0.5.1",\n      "build": "1.0.8.6-cache-keyed-loader",\n      "versionOrigin": "dev-loader-cache-repair-2026-09-07"'''
           count = m.count(old)
           if count != 1:
-              raise SystemExit(f'Expected exactly one manifest match, got {count}')
+              raise SystemExit(f'Expected exactly one manifest loader match, got {count}')
           manifest.write_text(m.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+          changelog = Path('CHANGELOG.md')
+          c = changelog.read_text(encoding='utf-8')
+          marker = '# Changelog\n\n'
+          if not c.startswith(marker):
+              raise SystemExit('Unexpected CHANGELOG header')
+          entry = '''## DOCK-2026-09-07-040 — Add Dev loader cache keys\n\nDate: 2026-09-07\n\n### Summary\n\nRepaired the Dev Witch Dock loader so branch-based raw GitHub delivery no longer relies on `Cache-Control: no-cache` alone. The manifest now receives a per-page cache-busting key, while each module request receives a deterministic key derived from the matching manifest registry identity.\n\n### Confirmed diagnosis\n\n- the public v1.2.0 loader fetched branch-based raw GitHub manifest/module URLs without durable query keys;\n- a live Stable page demonstrably remained on an intermediate manifest snapshot until a hard refresh;\n- the Dev loader used the same vulnerable `gmGetText(MANIFEST_URL)` / `gmGetText(url)` pattern;\n- `moduleRegistry` already provides stable module IDs plus version/build/path metadata, so module cache identity can be derived without changing module runtime behavior.\n\n### Changes\n\n- bumped Dev userscript loader header `1.0.8.5` -> `1.0.8.6`;\n- bumped manifest registry identity `witch-dock-dev-loader` to v0.5.1 / build `1.0.8.6-cache-keyed-loader`;\n- manifest fetches now append a unique per-page `kwcache=session-...` query key;\n- module fetches now append deterministic `kwcache=module-...` keys derived from module ID + registry version + registry build + registry path + raw URL;\n- existing module query parameters such as explicit `?v=` keys are preserved;\n- `Cache-Control: no-cache` remains as an additional request hint rather than the sole invalidation mechanism.\n\n### Preserved boundaries\n\n- `tools/Booth.js` remains byte-identical v27.0.0/build `v27`;\n- `tools/Utilities.js` remains byte-identical v1.2.1;\n- `features/booth/Black_Canvas_Display_Replay.js` remains byte-identical;\n- Booth runtime bootstrap, corrected decal gizmo, Spinny Mini WebP, High Res Image Capture, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;\n- public `Witch_Scripts` is unchanged;\n- HF-Chat-Bridge remains development-only and is not a runtime dependency.\n\n### Validation\n\n- Dev userscript JavaScript syntax: PASS (`node --check`).\n- Manifest JSON parse: PASS.\n- Manifest tool IDs map to registry identities: PASS.\n- Cache-key unit checks: PASS — existing query parameters survive, identical registry identity is deterministic, and changing registry build changes the module request URL.\n- `git diff --check`: PASS.\n- Protected Booth/Utilities/replay blob checks: PASS.\n- Live Dev delivery/startup smoke: pending.\n\n### Rollback\n\nRevert this Dev commit. No module runtime files need rollback because the change is confined to the Dev loader, manifest loader identity, and tracking documentation.\n\n**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.\n'''
+          changelog.write_text(marker + entry + '\n---\n\n' + c[len(marker):], encoding='utf-8', newline='\n')
+
+          preflight = Path('PRE_FLIGHT_Check.md')
+          p = preflight.read_text(encoding='utf-8')
+          marker = '# Pre-Flight Check Log\n\n'
+          if not p.startswith(marker):
+              raise SystemExit('Unexpected PRE_FLIGHT header')
+          entry = '''## PFC-2026-09-07-040 — Dev loader cache repair\n\nDate: 2026-09-07\n\n### Required material reviewed\n\n- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing documents;\n- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, and `Witch_Dock_DEV.user.js`;\n- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;\n- current Dev baseline `2f3500e301e6f76367faa587e9728da3b29ae467`;\n- live public stale-manifest evidence and the subsequent hard-refresh confirmation that the repository itself already contained Booth v27 / Utilities v1.2.1.\n\n### Confirmed findings\n\n- branch-based raw GitHub URLs can return a stale manifest/module snapshot despite the loader sending `Cache-Control: no-cache`;\n- the fixed branch URL therefore needs a changing request identity for the manifest;\n- module requests need a deterministic identity that changes when the manifest declares a new module version/build;\n- `manifest.moduleRegistry` is the maintained source of module ID/version/build/path identity and can be indexed by each `tools[]` entry ID.\n\n### Decision\n\nRepair the Dev loader only. Use one per-page cache token for the manifest and deterministic module cache keys derived from `moduleRegistry`; preserve existing request flow, tool enablement, execution order, and module runtime code.\n\n### Target files\n\n- `Witch_Dock_DEV.user.js`\n- `manifest.json`\n- `MASTER.md`\n- `PRE_FLIGHT_Check.md`\n- `CHANGELOG.md`\n- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`\n\n### Conflict risks / preservation requirements\n\n- do not change Booth v27, Utilities v1.2.1, or the validated Black Canvas display replay;\n- do not change manifest tool order or enabled/default semantics;\n- preserve pre-existing query parameters on module URLs;\n- do not use a random per-module token that would defeat deterministic module identity;\n- public `Witch_Scripts` must remain untouched until Dev validation.\n\n### Static validation\n\n- `node --check Witch_Dock_DEV.user.js`: PASS.\n- `python3 -m json.tool manifest.json`: PASS.\n- every current `tools[]` ID resolves to a `moduleRegistry[]` identity: PASS.\n- deterministic module-key test, build-change invalidation test, and existing-query preservation test: PASS.\n- `git diff --check`: PASS.\n- protected blob checks for Booth v27, Utilities v1.2.1, and Dev Black Canvas replay: PASS.\n\n### Live gate\n\nUse the Dev userscript. Confirm a normal page load obtains current Dev modules without requiring `Ctrl+Shift+R`, then perform the already-pending Booth persistence/Black Canvas startup smoke. Stable loader v1.2.1 promotion remains blocked until this Dev gate passes.\n\n**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.\n'''
+          preflight.write_text(marker + entry + '\n---\n\n' + p[len(marker):], encoding='utf-8', newline='\n')
+
+          master = Path('MASTER.md')
+          ms = master.read_text(encoding='utf-8')
+          ms = ms.replace('- Dev parent before this change: `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`', '- Dev baseline before loader cache repair: `2f3500e301e6f76367faa587e9728da3b29ae467`', 1)
+          anchor = '## Active Booth Runtime Bootstrap Candidate\n'
+          section = '''## Dev Loader Cache Repair\n\nDev loader v0.5.1 / userscript header 1.0.8.6 now gives every page a unique manifest request key and every module a deterministic request key derived from the matching `moduleRegistry` ID/version/build/path plus raw URL. Existing module URL query parameters are preserved.\n\nThis repairs the stale branch-based raw GitHub delivery path in Dev without changing module execution order, enablement, or feature runtime code. Public Stable still uses shell v1.2.0 and remains unchanged until Dev live validation.\n\nStatic syntax/JSON/cache-identity/blob-preservation gates pass. Live delivery smoke remains required.\n\n'''
+          if anchor not in ms:
+              raise SystemExit('MASTER insertion anchor missing')
+          ms = ms.replace(anchor, section + anchor, 1)
+          old = 'A public shell cache-busting repair is still required before the current Booth bootstrap candidate can be promoted. Do not confuse this delivery issue with Booth runtime persistence.'
+          new = 'The corresponding repair is now implemented in Dev only. Public shell v1.2.0 still requires a separate narrow v1.2.1 promotion after Dev live validation. Do not confuse this delivery issue with Booth runtime persistence.'
+          if old not in ms:
+              raise SystemExit('MASTER public-loader sentence missing')
+          ms = ms.replace(old, new, 1)
+          master.write_text(ms, encoding='utf-8', newline='\n')
+
+          history = Path('HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md')
+          h = history.read_text(encoding='utf-8')
+          anchor = '## Entry Template\n'
+          finding = '''### Branch Raw GitHub Cache Requires Request Identity\n\nContext:\n- The public and Dev loaders request branch-based `raw.githubusercontent.com` manifest/module URLs.\n\nObserved behavior:\n- A live public page remained on an intermediate Stable manifest snapshot after the branch had already advanced.\n- Sending `Cache-Control: no-cache` from `GM_xmlhttpRequest` did not reliably prevent that stale response.\n- A hard refresh caused the same branch URL to resolve to the current Booth v27 / Utilities v1.2.1 manifest, confirming the repository promotion itself was correct.\n\nWorking approach:\n- Give the manifest request a per-page `kwcache` token so each page session resolves the current branch snapshot.\n- Give each module request a deterministic `kwcache` key derived from the matching manifest `moduleRegistry` ID/version/build/path plus its raw URL.\n- Preserve any existing query parameters and keep `Cache-Control: no-cache` only as an additional hint.\n- Validate the Dev loader before applying the same design narrowly to public shell v1.2.1.\n\nAffected tools:\n- `Witch_Dock_DEV.user.js`\n- `Witch_Dock.user.js` (public promotion pending)\n- `manifest.json`\n- all manifest-loaded modules\n\n'''
+          if anchor not in h:
+              raise SystemExit('Manifest history insertion anchor missing')
+          history.write_text(h.replace(anchor, finding + anchor, 1), encoding='utf-8', newline='\n')
           PY
 
           node --check Witch_Dock_DEV.user.js
           python3 -m json.tool manifest.json >/dev/null
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m = json.loads(Path('manifest.json').read_text(encoding='utf-8'))
+          registry = {e.get('id'): e for e in m.get('moduleRegistry', []) if isinstance(e, dict) and e.get('id')}
+          missing = [t.get('id') for t in m.get('tools', []) if isinstance(t, dict) and t.get('id') not in registry]
+          if missing:
+              raise SystemExit(f'Tool IDs missing moduleRegistry identity: {missing}')
+          PY
+
+          node <<'NODE'
+          const fs = require('fs');
+          const src = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
+          const start = src.indexOf('const LOADER_CACHE_SESSION');
+          const end = src.indexOf('function gmGetText');
+          if (start < 0 || end <= start) throw new Error('Could not isolate loader cache helpers');
+          const block = src.slice(start, end);
+          const get = new Function('MANIFEST_URL', `${block}; return {kwManifestRequestUrl, kwModuleRequestUrl};`);
+          const {kwManifestRequestUrl, kwModuleRequestUrl} = get('https://raw.githubusercontent.com/example/repo/branch/manifest.json');
+          const manifestUrl = kwManifestRequestUrl();
+          if (!new URL(manifestUrl).searchParams.get('kwcache')?.startsWith('session-')) throw new Error('Manifest cache token missing');
+          const tool = {id:'x', url:'https://raw.githubusercontent.com/example/repo/branch/x.js?v=legacy'};
+          const regA = {id:'x', version:'1.0.0', build:'a', path:'x.js'};
+          const regB = {...regA, build:'b'};
+          const a1 = kwModuleRequestUrl(tool, regA);
+          const a2 = kwModuleRequestUrl(tool, regA);
+          const b = kwModuleRequestUrl(tool, regB);
+          if (a1 !== a2) throw new Error('Module cache key is not deterministic');
+          if (a1 === b) throw new Error('Module cache key did not change with registry build');
+          if (new URL(a1).searchParams.get('v') !== 'legacy') throw new Error('Existing query parameter was not preserved');
+          NODE
+
           git diff --check
+
+          test "$(git hash-object tools/Booth.js)" = "434b5382c9e8b01e9f9e8bf53d772e72eaf53090"
+          test "$(git hash-object tools/Utilities.js)" = "036fca4d7f68a1dee0f7d160777d453ac53274af"
+          test "$(git hash-object features/booth/Black_Canvas_Display_Replay.js)" = "e5ce0ab4bd6291a3446af86a9e252657644ca79e"
+
+          expected=$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md MASTER.md PRE_FLIGHT_Check.md Witch_Dock_DEV.user.js manifest.json | sort)
+          actual=$(git diff --name-only origin/WITCH_DEV_UI | sort)
+          test "$actual" = "$expected"
 
           git config user.name "Knight Witch Dev Automation"
           git config user.email "actions@users.noreply.github.com"
-          git add Witch_Dock_DEV.user.js manifest.json
-          git commit -m "Candidate: add clean Dev loader cache keys"
-          git push --force-with-lease origin WITCH_DEV_CACHE_CLEAN_20260907
+          git add CHANGELOG.md HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md MASTER.md PRE_FLIGHT_Check.md Witch_Dock_DEV.user.js manifest.json
+          git commit -m "Add Dev loader cache keys"
+          git push --force-with-lease origin WITCH_DEV_CACHE_FINAL_20260907
