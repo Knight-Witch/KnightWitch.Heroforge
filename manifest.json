@@ -54,9 +54,9 @@
       "path": "HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
       "kind": "heroForgeUI",
       "load": "manifest",
-      "version": "1.1.0",
-      "build": "1.1.0-stable-undo-transform-preserve",
-      "versionOrigin": "existing"
+      "version": "1.1.1",
+      "build": "1.1.1-dev-fresh-slot-normalization",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-08"
     },
     {
       "id": "witch-dock-developer-mode",
@@ -236,7 +236,7 @@
       "id": "corrected-bound-decal-gizmo",
       "title": "Corrected Bound Decal Gizmo",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

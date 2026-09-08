@@ -89,3 +89,21 @@ Later WITCH_DEV v0.4.0 established working undo/redo and transform preservation 
 - Unequal Project-OFF visual scale remains deferred.
 - Current H/V/D conversion and observed bad-initializer values are current-build behavior and must remain compatibility-tested after HeroForge updates.
 - Do not run the old standalone corrected-gizmo test or DEV add-on simultaneously with the public module.
+
+## 2026-09-08 fresh-slot initializer drift repair — v1.1.1
+
+HeroForge's untouched first Project-OFF initializer shifted from the earlier validated profile. A live HF-Chat-Bridge read confirmed the current raw record as:
+
+- `h=-2.9802322387695313e-08` (effectively zero);
+- `v=1.5633519738912582`;
+- `s=1.818040788039411`;
+- `sy=1.818040788039411`;
+- `forceProjectedScript=false`.
+
+This explains why v1.1.0 no longer normalized the new-slot case: the old detector was centered on `v≈1.50394`, `s≈sy≈1.76859` with ±0.035 tolerance.
+
+v1.1.1 preserves that earlier profile and adds the current `1.56 / 1.82 / 1.82` profile with ±0.025 tolerance. The normalization remains restricted to a first `freshBind` matching the neutral H/D/rotation gate. The sane first-bound output is now `h=0`, `v=0`, `s=-1.5`, `sy=-1.5`; depth, rotation, `sz`, and unrelated fields remain untouched.
+
+Amanda live-validated v1.1.1 in Dev: the fresh untouched slot normalized correctly, an edited Project-OFF transform survived Project ON/OFF, and artwork swap while Project OFF preserved the transform. Move/Rotate/Scale and their existing undo/redo paths were not changed.
+
+The exact Dev runtime blob was then selected for narrow public Stable promotion. Fragment sources remain unchanged.

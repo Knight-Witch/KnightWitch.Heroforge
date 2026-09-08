@@ -103,7 +103,7 @@ Feature ID: `media.spinny-mini-webp`.
 - Pose: live.
 - Decals: live placeholder.
 - JSON: live.
-- Corrected Bound Decal Gizmo runtime: Stable validated and unchanged.
+- Corrected Bound Decal Gizmo runtime: v1.1.1 / build `1.1.1-dev-fresh-slot-normalization`, Dev validated and promoted to Stable. Fresh untouched first Project-OFF normalizes H/V to `0/0` and S/SY to `-1.5/-1.5`; edited Project state and artwork swaps preserve established bound transforms.
 
 ## Current integration rules
 

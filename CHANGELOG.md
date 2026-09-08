@@ -1,5 +1,43 @@
 # Changelog
 
+## DOCK-2026-09-08-029 — Promote fresh-slot bound decal normalization v1.1.1
+
+Date: 2026-09-08
+
+### Summary
+
+Promote the exact Dev-validated Corrected Bound Decal Gizmo v1.1.1 runtime after live confirmation that HeroForge's untouched first Project-OFF initializer shifted from the previously recorded raw values.
+
+### Confirmed runtime evidence
+
+HF-Chat-Bridge read the untouched slot after first Project OFF as `h=-2.9802322387695313e-08`, `v=1.5633519738912582`, `s=1.818040788039411`, `sy=1.818040788039411`, `forceProjectedScript=false`. Those values fall outside the old v1.1.0 detector but inside the v1.1.1 current-profile matcher.
+
+### Live Dev acceptance
+
+Amanda confirmed all requested v1.1.1 behavior:
+
+- fresh untouched slot -> first Project OFF normalizes H/V to `0/0` and S/SY to `-1.5/-1.5`;
+- an already edited Project-OFF transform survives Project ON -> OFF;
+- artwork swap while Project OFF preserves the bound transform.
+
+Move/Rotate/Scale transform math and existing undo/redo code were not changed by this patch.
+
+### Stable promotion
+
+- `corrected-bound-decal-gizmo` `1.1.0 -> 1.1.1`;
+- promote the exact validated Dev runtime blob;
+- retain both the earlier confirmed bad-initializer profile and the current confirmed profile;
+- preserve the existing `freshBind` + neutral-field gates so user-edited transforms are not broadly normalized;
+- public module URL remains on `Witch_Scripts` with a v1.1.1 cache identity.
+
+### Preserved boundaries
+
+Booth/Black Canvas/bootstrap, Utilities, Spinny, High Res, JSON, Developer Mode, Decals host, Body, Pose, fragment sources, public shell v1.2.1, and all unrelated runtime modules are unchanged.
+
+**Runtime behavior changed:** yes — public Corrected Bound Decal Gizmo fresh-slot normalization only.
+
+---
+
 ## DOCK-2026-09-07-028 — Record final public Stable Booth acceptance
 
 Date: 2026-09-07

@@ -1,5 +1,60 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-08-029 — Promote validated fresh-slot gizmo repair to Stable
+
+Date: 2026-09-08
+
+### Scope
+
+Promote only the validated Corrected Bound Decal Gizmo v1.1.1 fresh-slot initializer repair from `WITCH_DEV_UI` to public `Witch_Scripts`.
+
+### Reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
+- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
+- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, and gizmo history;
+- Dev gizmo v1.1.1 candidate commit `08e776bfb276b281e9b337f3d3ccb866e23e2ca4`;
+- Amanda's live Dev PASS for fresh-slot normalization, edited Project ON/OFF preservation, and Project-OFF artwork-swap preservation;
+- bridge-confirmed current untouched raw initializer values.
+
+### Confirmed findings
+
+- v1.1.0 still matched only the earlier `v≈1.50394`, `s≈sy≈1.76859` profile;
+- current untouched Project-OFF raw state is `v=1.5633519738912582`, `s=sy=1.818040788039411`, with H effectively zero;
+- v1.1.1's `1.56 / 1.82 / 1.82` profile at ±0.025 correctly covers those confirmed raw values;
+- v1.1.1 only normalizes on `freshBind` plus the existing neutral H/D/rotation gate;
+- Move/Rotate/Scale and undo/redo runtime paths are unchanged;
+- exact Dev runtime behavior has passed the human gate.
+
+### Target files
+
+- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+
+### Preservation requirements
+
+- promote exact Dev gizmo blob;
+- do not alter fragment sources;
+- do not alter Booth, replay, bootstrap, Utilities, Spinny, High Res, JSON, Developer Mode, Decals, Body, Pose, or public shell;
+- public URL must remain `Witch_Scripts`, never `WITCH_DEV_UI`;
+- source + canonical manifest version + required tracking docs must land in one atomic Stable commit.
+
+### Gate
+
+JavaScript syntax, manifest JSON, exact Dev gizmo blob parity, exact six-file whitelist, protected unrelated runtime blob equality, `git diff --check`, and one-commit Stable candidate ancestry must pass before moving `Witch_Scripts`.
+
+### Decision
+
+Proceed with the narrow Stable promotion. One quick public fresh-slot smoke is sufficient afterward; no full gizmo regression matrix is required because the same runtime blob already passed Dev.
+
+**Runtime behavior changed:** yes — public gizmo only.
+
+---
+
 ## PFC-2026-09-07-028 — Record public Stable Booth/lifecycle acceptance
 
 Date: 2026-09-07

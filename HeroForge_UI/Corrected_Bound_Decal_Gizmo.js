@@ -25,7 +25,7 @@
     source = replaceExactlyOnce(
       source,
       'const BUILD = "1.0.1-dev-native-transformer-visual";',
-      'const BUILD = "1.1.0-stable-undo-transform-preserve";',
+      'const BUILD = "1.1.1-dev-fresh-slot-normalization";',
       "build marker"
     );
     source = replaceExactlyOnce(
@@ -106,12 +106,19 @@
 
     const selectedInfoAnchor = "  function selectedSplatterInfo(CK) {";
     const transformPreserver = `  const BOUND_TRANSFORM_FIELDS = Object.freeze(['h','v','d','s','sy','a','i','u','sz']);
-  const BOGUS_BOUND_DEFAULT = Object.freeze({
-    v: 1.5039421170949936,
-    s: 1.768586891036554,
-    sy: 1.768586891036554
-  });
-  const BOGUS_BOUND_TOLERANCE = 0.035;
+  const BOGUS_BOUND_DEFAULTS = Object.freeze([
+    Object.freeze({
+      v: 1.5039421170949936,
+      s: 1.768586891036554,
+      sy: 1.768586891036554
+    }),
+    Object.freeze({
+      v: 1.56,
+      s: 1.82,
+      sy: 1.82
+    })
+  ]);
+  const BOGUS_BOUND_TOLERANCE = 0.025;
   const PENDING_BOUND_PRESERVE_MS = 1800;
   const pendingBoundTransforms = new Map();
   const knownBoundTransforms = new Map();
@@ -146,10 +153,11 @@
       const value = record[key];
       return value == null || (Number.isFinite(Number(value)) && Math.abs(Number(value)) <= 0.08);
     });
-    return neutralish &&
-      nearValue(record.v, BOGUS_BOUND_DEFAULT.v) &&
-      nearValue(record.s, BOGUS_BOUND_DEFAULT.s) &&
-      nearValue(record.sy, BOGUS_BOUND_DEFAULT.sy);
+    return neutralish && BOGUS_BOUND_DEFAULTS.some(signature =>
+      nearValue(record.v, signature.v) &&
+      nearValue(record.s, signature.s) &&
+      nearValue(record.sy, signature.sy)
+    );
   }
 
   function onCharacterEnterChange(character, update) {
@@ -235,11 +243,13 @@
               transform: { ...pending.transform }
             });
           } else if (pending.freshBind) {
-            // First-ever Project-OFF state for this slot: projected s/sy are not
-            // a valid baseline. Neutralize only the confirmed bad initializer.
+            // First-ever Project-OFF state for this slot: projected transform values
+            // are not a valid bound baseline. Normalize only recognized untouched
+            // HeroForge initializer profiles to a sane starting position/size.
+            patchRecord.h = 0;
             patchRecord.v = 0;
-            patchRecord.s = 0;
-            patchRecord.sy = 0;
+            patchRecord.s = -1.5;
+            patchRecord.sy = -1.5;
 
             const normalized = {
               ...effective,
@@ -345,9 +355,9 @@
 
       const source = applyAcceptedV042Rules(sources.join(""));
       new Function("unsafeWindow", `${source}\n//# sourceURL=${BASE}Corrected_Bound_Decal_Gizmo.js`)(UW);
-      console.info("[Witch Dock] Corrected bound decal gizmo stable v1.1.0 loaded: undo transaction + bound-state preservation + fresh-slot normalization.");
+      console.info("[Witch Dock] Corrected bound decal gizmo DEV v1.1.1 loaded: undo transaction + bound-state preservation + fresh-slot sane defaults.");
     } catch (error) {
-      console.error("[Witch Dock] Corrected bound decal gizmo stable v1.1.0 failed closed:", error);
+      console.error("[Witch Dock] Corrected bound decal gizmo DEV v1.1.1 failed closed:", error);
     }
   }
 
