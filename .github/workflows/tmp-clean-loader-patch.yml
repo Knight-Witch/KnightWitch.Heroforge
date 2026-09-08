@@ -26,11 +26,17 @@ jobs:
           from pathlib import Path
           p = Path('/tmp/tmp_booth_lifecycle_patch.py')
           s = p.read_text(encoding='utf-8')
-          bad = '      "versionOrigin": "dev-booth-stabilization-2026-09-06"""",'
-          good = '      "versionOrigin": "dev-booth-stabilization-2026-09-06""",'
-          if s.count(bad) != 1:
-              raise SystemExit(f'Expected one malformed helper token, got {s.count(bad)}')
-          p.write_text(s.replace(bad, good, 1), encoding='utf-8', newline='\n')
+          fixes = [
+              ('dev-booth-stabilization-2026-09-06""""', 'dev-booth-stabilization-2026-09-06\\""""'),
+              ('dev-booth-lifecycle-repair-2026-09-07"""")', 'dev-booth-lifecycle-repair-2026-09-07\\"""")'),
+              ('dev-black-canvas-pre-bt-fallback-2026-09-07""",', 'dev-black-canvas-pre-bt-fallback-2026-09-07\\"""",'),
+              ('dev-booth-lifecycle-repair-2026-09-07""")', 'dev-booth-lifecycle-repair-2026-09-07\\"""")'),
+          ]
+          for old, new in fixes:
+              if s.count(old) != 1:
+                  raise SystemExit(f'Expected one helper token {old!r}, got {s.count(old)}')
+              s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8', newline='\n')
           PY
 
           python3 -m py_compile /tmp/tmp_booth_lifecycle_patch.py
