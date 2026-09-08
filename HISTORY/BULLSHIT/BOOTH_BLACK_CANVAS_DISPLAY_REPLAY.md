@@ -97,3 +97,9 @@ After Stable promotion, refresh the public Witch Dock/page and verify:
 4. ordinary character updates still apply.
 
 If any public regression appears, revert the single Stable promotion commit or remove the hidden manifest entry.
+
+## 2026-09-07 Stable promotion to replay v0.1.5
+
+Public replay advances to the exact Dev-tested v0.1.5 blob `3f663f8349830490d17b0d44aa42525b35c97b5f`. The source retains Stable v0.1.1's `KW_WD_BOOTH` state preference plus diagnostic fallback, adds the pre-BT `CK.environment.background.mesh` compatibility path, preserves native `CK.character.display.update()` execution and the validated synchronous post-update replay timing, and restores replay-owned background visibility before handing presentation ownership to Booth.
+
+This handoff repair corresponds to the live state where the environment wrapper reported visible while the actual background mesh remained hidden. The final Dev environment/component smoke passed before promotion.

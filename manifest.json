@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "core",
       "load": "userscript",
-      "version": "1.2.0",
-      "build": "1.2.0-stable-ui-devmode",
-      "versionOrigin": "stable-release"
+      "version": "1.2.1",
+      "build": "1.2.1-stable-cache-keyed-loader",
+      "versionOrigin": "stable-loader-cache-repair-2026-09-07"
     },
     {
       "id": "expanded-ui-scroll-guards",
@@ -97,14 +97,24 @@
       "versionOrigin": "stable-promoted-host-relocation"
     },
     {
+      "id": "booth-runtime-bootstrap",
+      "title": "Booth Runtime Bootstrap",
+      "path": "features/booth/Booth_Runtime_Bootstrap.js",
+      "kind": "compatibility-feature",
+      "load": "manifest",
+      "version": "0.1.0",
+      "build": "0.1.0-dev-native-booth-bootstrap",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-07"
+    },
+    {
       "id": "booth-tool",
       "title": "Booth",
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.0.0",
-      "build": "v27",
-      "versionOrigin": "stable-promoted-2026-09-07"
+      "version": "27.0.4",
+      "build": "v27.0.4",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-07"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -112,9 +122,9 @@
       "path": "features/booth/Black_Canvas_Display_Replay.js",
       "kind": "compatibility-feature",
       "load": "manifest",
-      "version": "0.1.1",
-      "build": "0.1.1-stable-v24-state-fallback",
-      "versionOrigin": "stable-promoted-dev-validated"
+      "version": "0.1.5",
+      "build": "0.1.5-dev-restore-before-booth-handoff",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-07"
     },
     {
       "id": "photo-booth-true-resolution",
@@ -253,17 +263,26 @@
       "enabledByDefault": true
     },
     {
+      "id": "booth-runtime-bootstrap",
+      "title": "Booth Runtime Bootstrap",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.0-dev-native-booth-bootstrap",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js?v=27.0.4-v27.0.4",
       "enabledByDefault": true
     },
     {
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

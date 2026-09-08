@@ -7,36 +7,43 @@ This is the canonical high-level source for current public Witch Dock state. His
 - Repository: `Knight-Witch/KnightWitch.Heroforge`
 - Production branch: `Witch_Scripts`
 - Public userscript: `Witch_Dock.user.js`
-- Current public shell version: **1.2.0**
+- Current public shell version: **1.2.1**
 - HeroForge validation target: `heroforge07.1.9.98`
 - Runtime dependency on HeroForge.Compatibility unstable head or HF-Chat-Bridge: **none**
 
-The public shell remains v1.2.0. Booth v27 and Utilities v1.2.1 are manifest-delivered module promotions; no userscript-shell bump is required.
+Public shell v1.2.1 adds the validated cache-keyed manifest/module loader so branch-based raw GitHub caching cannot strand a page on an older manifest/module body. Module execution order and enablement are otherwise unchanged.
 
 ## Booth / Black Canvas
 
-Public Booth: `tools/Booth.js` v27.0.0 / build `v27`.
+Public Booth: `tools/Booth.js` v27.0.4 / build `v27.0.4`.
 
-Public Black Canvas replay: `features/booth/Black_Canvas_Display_Replay.js` v0.1.1 / build `0.1.1-stable-v24-state-fallback`.
+Public Black Canvas replay: `features/booth/Black_Canvas_Display_Replay.js` v0.1.5 / build `0.1.5-dev-restore-before-booth-handoff`.
 
-Current public behavior:
+Public Booth runtime bootstrap: `features/booth/Booth_Runtime_Bootstrap.js` v0.1.0 / build `0.1.0-dev-native-booth-bootstrap`.
 
-- Booth View and Black Canvas in the Booth tab are session controls.
-- `Utilities -> Booth Features` owns the saved cross-session defaults.
-- saved Booth persistence only auto-restores figures with meaningful saved Photo Booth configuration; `+ New Figure` / no-saved-Booth figures are excluded until a Booth setup exists.
-- saved Black Canvas can reapply without requiring a Photo Booth visit.
-- Booth runtime resolution no longer requires `BT.maker` merely to inspect saved figure config or enforce display-only Black Canvas state; named engine resolution uses `BT.liveEngine || BT.maker` when available.
-- v27 removes Witch Dock's broad `CK.character.refresh()` from component/startup reconciliation and replays lighting with identical next/previous values.
-- figure-scoped Booth snapshots are cleared when the loaded character generation changes to avoid cross-figure replay.
-- the hidden Black Canvas replay lets native `CK.character.display.update()` run normally and reasserts black state immediately afterward.
-- the replay semantically discovers the real scene `environment -> background` target; no diagnostic child indexes are shipped.
-- v0.1.1 prefers v27 `KW_WD_BOOTH.getState().sessionBlackCanvas` and retains the v24 diagnostic fallback for compatibility.
+Validated Stable-target behavior inherited from the final Dev smoke:
 
-Dev validation: with Booth v27 + Utilities v1.2.1 + replay loaded together, the formerly reliable white flash no longer reproduced; Amanda reported the result worked perfectly.
+- saved Booth figures can bootstrap HeroForge's native gated Booth runtime and restore Booth View without first visiting native Photo Booth;
+- bare camera state is not a saved-Booth signal, preserving `+ New Figure` exclusion;
+- Black Canvas persistence remains independent from Booth persistence;
+- the post-`CK.character.display.update()` replay preserves the validated white-flash suppression boundary and always lets native update run;
+- replay restores any pre-BT background visibility it owns before Booth takes presentation ownership;
+- editor environment restoration checks the actual `CK.environment.background.mesh`/ground state instead of trusting the wrapper flag alone;
+- Lighting, Effects, Overlays, and Background component toggles use narrow redraw/reassertion and no longer rerun the broad overlay visibility sequence that stranded the editor environment;
+- Black Canvas ON -> OFF restores the full fantasy backdrop plus pedestal/ground;
+- Black Canvas ON + Booth Background OFF no longer strands the fantasy background mesh hidden.
+
+Final Dev v27.0.4 live state-repair smoke: **PASS** for full fantasy-background restoration, all four component toggles, Black Canvas ON/OFF restoration, and Black Canvas + Background-OFF fallthrough.
+
+### Deferred cosmetic issue — not a release blocker
+
+A thin approximately 1 px checkerboard seam can still appear between the 1:1 Booth viewport and outer canvas, typically top/bottom and sometimes top/bottom/right depending on window geometry/maximization. It may appear after a delay. This is explicitly deferred to a later separately scoped frame/mask geometry investigation. Do not reopen the rejected `getTokenViewOffset()` DOM matte or the closed white-flash investigation as a shortcut.
 
 Detailed records:
 - `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
 - `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
 
 ## Utilities
 
@@ -102,9 +109,9 @@ Feature ID: `media.spinny-mini-webp`.
 
 ## Current queue
 
-1. Clean public smoke after refresh: Developer Mode should report Booth v27.0.0 and Utilities v1.2.1; `Utilities -> Booth Features` should be present; Black Canvas should remain black through the formerly flash-causing action.
-2. Verify Black Canvas OFF restores the ordinary background and ordinary character updates still apply.
-3. Continue unrelated compatibility/reconstruction work only as separately scoped features.
+1. Final public Stable refresh/smoke: confirm shell v1.2.1, Booth v27.0.4, replay v0.1.5, bootstrap v0.1.0, saved Booth/Black Canvas startup restoration, full fantasy-background restoration, and the known flash action remaining flash-free.
+2. The approximately 1 px checkerboard seam at the 1:1 edge is a documented deferred cosmetic issue, not a release blocker; investigate later against the actual frame/mask viewport geometry.
+3. After that public smoke, move on to the next separately scoped project. Do not continue Black Canvas investigation merely because the deferred seam exists.
 
 ## Durable records
 

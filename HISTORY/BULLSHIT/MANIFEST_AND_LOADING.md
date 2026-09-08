@@ -96,4 +96,18 @@ Working approach:
 - 
 
 Affected tools:
-- 
+-
+
+## 2026-09-07 Public cache-keyed loader repair
+
+A live public page remained on an older branch-based raw GitHub manifest/module body even after the repository had advanced; hard refresh then obtained the current files. `Cache-Control: no-cache` on `GM_xmlhttpRequest` was therefore insufficient as the sole delivery strategy.
+
+Public shell v1.2.1 ports the validated Dev cache-key design:
+
+- every page load requests `manifest.json` with a unique `kwcache` session key;
+- each module request receives a deterministic `kwcache` key derived from its manifest registry ID/version/build/path plus raw URL;
+- existing query parameters are preserved;
+- module execution order, enablement, and failure isolation remain unchanged;
+- the manifest registry is now part of delivery identity, so a module version/build change changes its request URL automatically.
+
+This fixes delivery freshness without introducing an external runtime service or changing the `Witch_Scripts` branch contract.

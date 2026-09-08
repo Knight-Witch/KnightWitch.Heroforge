@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-stable-v24-state-fallback';
+  const VERSION = '0.1.5';
+  const BUILD = '0.1.5-dev-restore-before-booth-handoff';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -56,6 +56,31 @@
     }
   }
 
+  function isBoothViewOn() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (api && typeof api.getState === 'function') {
+        const s = api.getState();
+        if (s && Object.prototype.hasOwnProperty.call(s, 'sessionBoothView')) {
+          return !!s.sessionBoothView;
+        }
+      }
+    } catch (error) {
+      recordError('isBoothViewOn.api', error);
+    }
+
+    try {
+      const diag = UW.KW_WD_BOOTH_DIAG;
+      if (typeof diag !== 'function') return false;
+      const raw = diag();
+      const s = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return !!(s && (s.userBoothOn || s.boothOn));
+    } catch (error) {
+      recordError('isBoothViewOn.diag', error);
+      return false;
+    }
+  }
+
   function currentDisplay() {
     try {
       const CK = UW.CK;
@@ -101,11 +126,25 @@
       const BT = UW.BT;
       const overlays = BT && BT.display ? BT.display.overlays : null;
       const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
-      if (!scene) return null;
 
-      const environmentRoot = namedChild(scene, 'environment');
-      if (!environmentRoot) return null;
-      return namedChild(environmentRoot, 'background');
+      if (scene) {
+        const environmentRoot = namedChild(scene, 'environment');
+        const namedBackground = environmentRoot ? namedChild(environmentRoot, 'background') : null;
+        if (namedBackground) return namedBackground;
+      }
+
+      // A fresh editor page can have Black Canvas enabled before HeroForge has
+      // loaded Booth core and created BT. In that case use the regular named
+      // CK.environment.background wrapper's render mesh instead of bootstrapping
+      // Booth solely to obtain a black editor background.
+      if (!BT) {
+        const CK = UW.CK;
+        const background = CK && CK.environment ? CK.environment.background : null;
+        const mesh = background && background.mesh ? background.mesh : null;
+        if (mesh && typeof mesh === 'object' && 'visible' in mesh) return mesh;
+      }
+
+      return null;
     } catch (error) {
       recordError('discoverSemanticBackground', error);
       return null;
@@ -116,7 +155,22 @@
     const node = state.semanticBackground;
     if (!node) return false;
     try {
-      if (state.semanticBackgroundVisible !== null) node.visible = !!state.semanticBackgroundVisible;
+      const BT = UW.BT;
+      const boothOn = isBoothViewOn();
+
+      if (BT && !boothOn) {
+        // A background captured while Booth was active may legitimately have
+        // been invisible. Once Booth itself is OFF, restoring that stale false
+        // would leave the ordinary HeroForge editor on a blank white canvas.
+        const env = BT.display && BT.display.environment;
+        if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
+          env.setDefaultEnvironmentVisibility(true);
+        }
+        if ('visible' in node) node.visible = true;
+      } else if (state.semanticBackgroundVisible !== null) {
+        node.visible = !!state.semanticBackgroundVisible;
+      }
+
       state.semanticBackground = null;
       state.semanticBackgroundVisible = null;
       return true;
@@ -147,30 +201,67 @@
     }
   }
 
+  function reassertThroughBoothApi() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (!api || typeof api.reassertBlackCanvasPresentation !== 'function') return false;
+      return api.reassertBlackCanvasPresentation() === true;
+    } catch (error) {
+      recordError('reassertThroughBoothApi', error);
+      return false;
+    }
+  }
+
+  function reassertThroughBoothApiWithHandoff() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (!api || typeof api.reassertBlackCanvasPresentation !== 'function') return false;
+
+      // If the pre-BT fallback directly hid the ordinary environment mesh,
+      // restore the visibility value replay owns before Booth becomes the
+      // presentation owner. v0.1.4 simply dropped this snapshot, which could
+      // leave the fantasy backdrop hidden for the rest of the page session.
+      if (state.semanticBackground) restoreSemanticBackground();
+      return api.reassertBlackCanvasPresentation() === true;
+    } catch (error) {
+      recordError('reassertThroughBoothApiWithHandoff', error);
+      return false;
+    }
+  }
+
   function replayBlackCanvas(reason) {
     if (!state.enabled || !isBlackCanvasOn()) return false;
 
     let applied = false;
     try {
-      const BT = UW.BT;
-      const display = BT && BT.display ? BT.display : null;
-      const env = display ? display.environment : null;
-      const overlays = display ? display.overlays : null;
-
-      if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
-        env.setDefaultEnvironmentVisibility(false);
+      const delegated = reassertThroughBoothApiWithHandoff();
+      if (delegated) {
+        // Booth owns component-aware BT presentation after any replay-owned
+        // pre-BT background visibility has been restored. Do not re-hide it here.
         applied = true;
-      }
+      } else {
+        const BT = UW.BT;
+        const display = BT && BT.display ? BT.display : null;
+        const env = display ? display.environment : null;
+        const overlays = display ? display.overlays : null;
 
-      if (overlays) {
-        if (overlays.framePlane) overlays.framePlane.visible = false;
-        if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
-        if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
-        applied = true;
-      }
+        if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
+          env.setDefaultEnvironmentVisibility(false);
+          applied = true;
+        }
 
-      // Booth.js remains the owner of overlays.backgroundPlane visibility.
-      if (hideSemanticBackground()) applied = true;
+        if (overlays) {
+          if (overlays.framePlane) overlays.framePlane.visible = false;
+          if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
+          if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
+          applied = true;
+        }
+
+        // Do not force overlays.backgroundPlane here. Booth.js owns the user's
+        // Background component choice. This legacy path remains for pre-BT or
+        // older API shapes that cannot own the full presentation themselves.
+        if (hideSemanticBackground()) applied = true;
+      }
 
       const canvas = rendererCanvas();
       if (canvas) {
@@ -244,8 +335,16 @@
       const blackOn = isBlackCanvasOn();
 
       if (blackOn) {
-        hideSemanticBackground();
-        if (!state.lastBlackCanvasOn) replayBlackCanvas('black-canvas-enabled');
+        if (!state.lastBlackCanvasOn) {
+          replayBlackCanvas('black-canvas-enabled');
+        } else if (reassertThroughBoothApiWithHandoff()) {
+          // Booth now owns the final presentation after replay restored any
+          // pre-BT background visibility it had temporarily owned.
+        } else {
+          // Legacy/pre-BT path: keep the semantic scene background hidden if
+          // HeroForge replaced it without replacing the primary display.
+          hideSemanticBackground();
+        }
       } else if (state.lastBlackCanvasOn || state.semanticBackground) {
         restoreSemanticBackground();
       }

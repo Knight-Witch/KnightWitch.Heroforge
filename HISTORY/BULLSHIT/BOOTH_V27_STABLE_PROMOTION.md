@@ -65,3 +65,11 @@ After Stable refresh:
 2. Utilities must show `Booth Features`.
 3. Black Canvas must remain black through the known flash-causing update.
 4. Black Canvas OFF must restore the ordinary background.
+
+## 2026-09-07 v27.0.4 Stable lifecycle completion
+
+The final Dev state-repair sequence is promoted after live acceptance. `tools/Booth.js` is now the exact Dev-tested v27.0.4 blob `d8e9b2fc4d1bf18d550193ed186168bae515ae91`. It removes the rejected v27.0.3 token-offset DOM matte, narrows component redraw so Lighting/Effects/Overlays/Background no longer replay broad native overlay visibility, and restores the actual regular background mesh when HeroForge's wrapper/mesh visibility disagrees.
+
+Amanda's final Dev v27.0.4 smoke passed full fantasy-background restoration, all four component toggles, Black Canvas ON/OFF restoration, and Black Canvas + Background-OFF fallthrough.
+
+The approximately 1 px checkerboard seam around the 1:1 boundary remains a known cosmetic issue. Its edge count/location changes with responsive geometry (commonly top/bottom, sometimes top/bottom/right after maximizing). It is deliberately deferred and does not block this Stable promotion.

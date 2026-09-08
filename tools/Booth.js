@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27';
+  const BUILD_TAG = 'v27.0.4';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -315,7 +315,20 @@
     }
   }
 
-  function enforceBTBlackCanvas() {
+
+  function isNativePhotoBoothForPresentation() {
+    try {
+      const rt = runtimeNow(null);
+      const tokenizer = rt && rt.tokenizer ? rt.tokenizer : null;
+      const mode = tokenizer && typeof tokenizer.currentMode === 'string'
+        ? tokenizer.currentMode
+        : (rt && typeof rt.currentMode === 'string' ? rt.currentMode : null);
+      if (mode && mode.toLowerCase().includes('booth')) return true;
+    } catch {}
+    return inPhotoBoothUI();
+  }
+
+  function enforceBTBlackCanvas(options) {
     try {
       const BT = UW.BT;
       const CK = UW.CK;
@@ -330,9 +343,22 @@
       captureBTCanvasVisualState();
       syncBTCanvasLayout(overlays, canvas);
 
-      if (typeof env.setDefaultEnvironmentVisibility === 'function') {
+      const allowEditorFallback = options && Object.prototype.hasOwnProperty.call(options, 'allowEditorFallback')
+        ? !!options.allowEditorFallback
+        : !isNativePhotoBoothForPresentation();
+      const wantsEditorFallback = !!(state.userBoothOn && !state.persistBackgroundOn && allowEditorFallback);
+
+      if (wantsEditorFallback) {
+        // v27.0.3 attempted to cover only the outside crop with a DOM matte,
+        // but live validation proved getTokenViewOffset() describes a smaller
+        // token/render crop rather than the visible editor 1:1 viewport.
+        // Until a frame-derived crop seam is validated, prioritize correct
+        // environment ownership and expose the editor environment normally.
+        ensureEditorEnvironmentBehindBooth({ allowBlackCanvas: true });
+      } else if (typeof env.setDefaultEnvironmentVisibility === 'function') {
         env.setDefaultEnvironmentVisibility(false);
       }
+
       if (overlays.backgroundPlane) overlays.backgroundPlane.visible = !!state.persistBackgroundOn;
       if (overlays.framePlane) overlays.framePlane.visible = false;
       if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
@@ -357,15 +383,30 @@
       const canvas = CK && CK.renderManager && CK.renderManager.renderer
         ? CK.renderManager.renderer.domElement
         : null;
+
       if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
         env.setDefaultEnvironmentVisibility(true);
       }
+      try {
+        const background = CK && CK.environment ? CK.environment.background : null;
+        const mesh = background && background.mesh ? background.mesh : null;
+        if (background && 'visible' in background) background.visible = true;
+        if (mesh && 'visible' in mesh) mesh.visible = true;
+      } catch {}
+
       if (snap && overlays) {
         if (overlays.backgroundPlane && snap.backgroundVisible !== null) overlays.backgroundPlane.visible = snap.backgroundVisible;
         if (overlays.framePlane && snap.frameVisible !== null) overlays.framePlane.visible = snap.frameVisible;
         if (overlays.shadowPlane && snap.shadowVisible !== null) overlays.shadowPlane.visible = snap.shadowVisible;
         if (overlays.mask && snap.maskVisible !== null && 'visible' in overlays.mask) overlays.mask.visible = snap.maskVisible;
       }
+
+      // Snapshot restoration must not override the user's current component
+      // choices if those changed while Black Canvas was active.
+      if (overlays && overlays.backgroundPlane) overlays.backgroundPlane.visible = !!state.persistBackgroundOn;
+      if (state.userBoothOn && overlays && overlays.framePlane) overlays.framePlane.visible = false;
+      if (!state.persistOverlaysOn && overlays && overlays.framePlane) overlays.framePlane.visible = false;
+
       if (canvas) {
         canvas.style.backgroundColor = snap ? snap.canvasBackground : '';
         if (canvas.parentElement) canvas.parentElement.style.backgroundColor = snap ? snap.holderBackground : '';
@@ -376,6 +417,45 @@
     } catch {
       state.btCanvasVisualSnapshot = null;
       state.btCanvasLayoutKey = null;
+      return false;
+    }
+  }
+
+  function ensureEditorEnvironmentBehindBooth(options) {
+    try {
+      const allowBlackCanvas = !!(options && options.allowBlackCanvas);
+      if (!state.userBoothOn || (state.bgOn && !allowBlackCanvas)) return false;
+
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const display = BT && BT.display;
+      const env = display && display.environment;
+      const background = CK && CK.environment ? CK.environment.background : null;
+      const mesh = background && background.mesh ? background.mesh : null;
+      const ground = CK && CK.environment ? CK.environment.groundGroup : null;
+      const settings = CK && CK.character ? CK.character.settings : null;
+      const summon = UW.HF && UW.HF.summonCircle ? UW.HF.summonCircle : null;
+
+      if (!env || typeof env.setDefaultEnvironmentVisibility !== 'function') return false;
+
+      const hidden = !!(
+        (background && background.visible === false) ||
+        (mesh && mesh.visible === false) ||
+        (ground && ground.visible === false) ||
+        (settings && settings.hideGround === true) ||
+        (summon && summon.visible === false)
+      );
+      if (!hidden) return false;
+
+      env.setDefaultEnvironmentVisibility(true);
+
+      // Replay's pre-BT fallback can directly own the regular background mesh.
+      // The wrapper flag and mesh visibility can disagree, so make the actual
+      // render node visible when this explicit editor-fallback policy requires it.
+      try { if (background && 'visible' in background) background.visible = true; } catch {}
+      try { if (mesh && 'visible' in mesh) mesh.visible = true; } catch {}
+      return true;
+    } catch {
       return false;
     }
   }
@@ -976,29 +1056,34 @@
     }
   }
 
+  function requestBTComponentRenderRefresh() {
+    try {
+      const CK = UW.CK;
+      if (CK && CK.GameLoop && typeof CK.GameLoop.requestRenderRefresh === 'function') {
+        CK.GameLoop.requestRenderRefresh();
+        return true;
+      }
+    } catch {}
+    return false;
+  }
+
   function refreshBTComponentRender() {
     try {
-      const BT = UW.BT;
-      const overlays = BT && BT.display ? BT.display.overlays : null;
-
-      if (overlays) {
-        if (typeof overlays.resize === 'function') overlays.resize();
-        if (typeof overlays.refresh === 'function') overlays.refresh();
-        if (typeof overlays.applyVisibility === 'function') overlays.applyVisibility();
-      }
-
+      // Component handlers already apply their specific lighting/effect/plane
+      // state. Do not replay HeroForge's broad overlay resize/refresh/visibility
+      // sequence here: live Dev testing showed every sub-toggle could otherwise
+      // knock the ordinary editor environment back into Booth-hidden state.
       applyBTComponentPlanes();
       if (state.bgOn) enforceBTBlackCanvas();
+      else if (state.userBoothOn) ensureEditorEnvironmentBehindBooth();
+      requestBTComponentRenderRefresh();
 
       requestAnimationFrame(() => {
         try {
-          if (overlays) {
-            if (typeof overlays.resize === 'function') overlays.resize();
-            if (typeof overlays.refresh === 'function') overlays.refresh();
-            if (typeof overlays.applyVisibility === 'function') overlays.applyVisibility();
-          }
           applyBTComponentPlanes();
           if (state.bgOn) enforceBTBlackCanvas();
+          else if (state.userBoothOn) ensureEditorEnvironmentBehindBooth();
+          requestBTComponentRenderRefresh();
         } catch {}
       });
       return true;
@@ -1209,7 +1294,9 @@
   function getShaderFramePlane(TN) {
     try {
       if (state.shaderFramePlane) return state.shaderFramePlane;
-      const plane = TN && TN.shader ? TN.shader.framePlane : null;
+      const shader = TN && TN.shader ? TN.shader : null;
+      const overlays = shader && shader.overlays ? shader.overlays : null;
+      const plane = shader ? (shader.framePlane || (overlays && overlays.framePlane)) : null;
       if (!plane || typeof plane !== 'object') return null;
       state.shaderFramePlane = plane;
       return plane;
@@ -1699,7 +1786,8 @@
           const selected = cfg.selected && typeof cfg.selected === 'object' ? cfg.selected : null;
           const signals = [];
           if (cfg.cameraSave) signals.push('cameraSave');
-          if (cfg.camera) signals.push('camera');
+          // Bare camera state is not a saved Booth signal. Fresh/new figures
+          // can carry ordinary camera data without ever having a Booth setup.
           if (cfg.lighting) signals.push('lighting');
           if (cfg.effects) signals.push('effects');
           if (filters && filters.tokenBg) signals.push('filters.tokenBg');
@@ -2065,7 +2153,7 @@
     }
 
     if (state.bgOn && TN && TN.__kwBT) {
-      try { enforceBTBlackCanvas(); } catch {}
+      try { enforceBTBlackCanvas({ allowEditorFallback: !inBooth }); } catch {}
     } else if (state.bgOn) {
       if (!state.capturedMaterial) tryCaptureBackdropFromScene();
       if (!state.originalMaterial) captureOriginalBackdrop();
@@ -2078,6 +2166,9 @@
 
     if (TN && TN.__kwBT && state.boothOn && !inBooth) {
       try { applyBTComponentPlanes(); } catch {}
+      if (!state.bgOn) {
+        try { ensureEditorEnvironmentBehindBooth(); } catch {}
+      }
     }
 
     state.prevInBooth = inBooth;
@@ -2138,6 +2229,13 @@
     if (!state.userBoothOn && prev) {
       state.boothPendingTeardown = true;
       try { teardownBoothNow(TN); } catch {}
+
+      // A real/manual/default Booth shutdown must restore the ordinary editor
+      // environment when Black Canvas is already OFF. Internal silent cycles
+      // intentionally skip this so their validated rearm sequencing is unchanged.
+      if (!state.bgOn && opts.source !== 'internal') {
+        try { restoreBTCanvasVisualState(); } catch {}
+      }
     }
 
     if (state.userBoothOn && !prev) {
@@ -2291,7 +2389,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.0',
+      version: '27.0.4',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2311,16 +2409,28 @@
     };
   }
 
+  function reassertBlackCanvasPresentation() {
+    try {
+      if (!state.bgOn) return false;
+      const rt = resolveRuntime();
+      if (!rt || !rt.__kwBT) return false;
+      return !!enforceBTBlackCanvas();
+    } catch {
+      return false;
+    }
+  }
+
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.0',
+      version: '27.0.4',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,
       setDefaultBlackCanvas,
       setSessionBooth: onUserBoothToggle,
-      setSessionBlackCanvas: onUserBgToggle
+      setSessionBlackCanvas: onUserBgToggle,
+      reassertBlackCanvasPresentation
     };
   }
 
