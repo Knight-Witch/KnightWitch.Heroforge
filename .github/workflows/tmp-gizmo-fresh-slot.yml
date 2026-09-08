@@ -31,6 +31,7 @@ jobs:
           git checkout -B WITCH_DEV_GIZMO_FRESH_CANDIDATE_20260908 origin/WITCH_DEV_UI
 
           python3 /tmp/tmp_gizmo_fresh_slot_patch.py
+          python3 -c "from pathlib import Path; p=Path('HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md'); p.write_text(p.read_text(encoding='utf-8').rstrip()+'\\n', encoding='utf-8')"
 
           node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
           python3 -m json.tool manifest.json >/dev/null
