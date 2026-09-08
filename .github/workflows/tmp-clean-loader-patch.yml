@@ -23,6 +23,7 @@ jobs:
           set -euo pipefail
           cp .github/tmp_booth_env_patch.py /tmp/tmp_booth_env_patch.py
           cp .github/tmp_booth_env_validate.js /tmp/tmp_booth_env_validate.js
+          python3 .github/tmp_fix_booth_env_master_eof.py /tmp/tmp_booth_env_patch.py
 
           python3 -m py_compile /tmp/tmp_booth_env_patch.py
           node --check /tmp/tmp_booth_env_validate.js
