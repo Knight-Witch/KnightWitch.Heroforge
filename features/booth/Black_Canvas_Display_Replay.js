@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.2.0';
-  const BUILD = '0.2.0-dev-pre-bt-main-background-fallback';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-dev-pre-bt-main-background-fallback';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
