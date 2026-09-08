@@ -1,0 +1,124 @@
+name: Temporary Stable gizmo promotion builder
+
+on:
+  push:
+    branches:
+      - WITCH_STABLE_GIZMO_HELPER_20260908
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and validate Stable gizmo candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/tmp_stable_gizmo_patch.py /tmp/tmp_stable_gizmo_patch.py
+          python3 -m py_compile /tmp/tmp_stable_gizmo_patch.py
+
+          git fetch origin Witch_Scripts WITCH_DEV_UI
+          test "$(git rev-parse origin/Witch_Scripts)" = "a65b925a1ccd3bcede86ee5cb233adb2ce65be06"
+          test "$(git rev-parse origin/WITCH_DEV_UI)" = "08e776bfb276b281e9b337f3d3ccb866e23e2ca4"
+          git checkout -B WITCH_STABLE_GIZMO_CANDIDATE_20260908 origin/Witch_Scripts
+
+          # Promote the exact human-validated Dev runtime blob.
+          git show origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js > HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
+          python3 /tmp/tmp_stable_gizmo_patch.py
+
+          node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
+          python3 -m json.tool manifest.json >/dev/null
+          test "$(git hash-object HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)" = "$(git rev-parse origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)"
+          grep -F '"version": "1.1.1"' manifest.json >/dev/null
+          grep -F '"build": "1.1.1-dev-fresh-slot-normalization"' manifest.json >/dev/null
+          grep -F 'Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization' manifest.json >/dev/null
+          if grep -A8 -B3 '"id": "corrected-bound-decal-gizmo"' manifest.json | grep -q 'WITCH_DEV_UI'; then
+            echo 'Stable gizmo registry contains Dev URL' >&2
+            exit 1
+          fi
+          git diff --check
+
+          expected="$(printf '%s\n' \
+            CHANGELOG.md \
+            HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            MASTER.md \
+            PRE_FLIGHT_Check.md \
+            manifest.json | sort)"
+          actual="$(git diff --name-only | sort)"
+          printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
+          test "$actual" = "$expected"
+
+          for path in \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag \
+            Witch_Dock.user.js \
+            tools/Booth.js \
+            features/booth/Black_Canvas_Display_Replay.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            tools/Utilities.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Spinny_Mini_WebP_UI.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            features/media/Photo_Booth_True_Resolution_UI.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js \
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git hash-object "$path")" = "$(git rev-parse origin/Witch_Scripts:$path)"
+          done
+          echo 'protected working-tree blobs: PASS'
+
+          git config user.name "Knight Witch Stable Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            CHANGELOG.md \
+            PRE_FLIGHT_Check.md \
+            MASTER.md \
+            manifest.json \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md
+          git commit -m "Promote fresh-slot bound decal normalization"
+
+          node --check HeroForge_UI/Corrected_Bound_Decal_Gizmo.js
+          python3 -m json.tool manifest.json >/dev/null
+          test "$(git rev-parse HEAD:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)" = "$(git rev-parse origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)"
+          git diff --check HEAD^
+          test "$(git diff --name-only HEAD^...HEAD | sort)" = "$expected"
+
+          for path in \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-00.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-01.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-02.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-03.jsfrag \
+            HeroForge_UI/corrected-bound-decal-gizmo/part-04.jsfrag \
+            Witch_Dock.user.js \
+            tools/Booth.js \
+            features/booth/Black_Canvas_Display_Replay.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            tools/Utilities.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Spinny_Mini_WebP_UI.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            features/media/Photo_Booth_True_Resolution_UI.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js \
+            tools/Decals.js \
+            tools/Body_Editor.js \
+            tools/Pose.js; do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/Witch_Scripts:$path)"
+          done
+          echo 'protected committed blobs: PASS'
+
+          git push --force-with-lease origin WITCH_STABLE_GIZMO_CANDIDATE_20260908
