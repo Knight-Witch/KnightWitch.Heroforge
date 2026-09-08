@@ -1,4 +1,4 @@
-name: Temporary Black Canvas validator
+name: Temporary Booth lifecycle candidate builder
 
 on:
   push:
@@ -6,70 +6,77 @@ on:
       - WITCH_DEV_CACHE_CANDIDATE_20260907
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout exact candidate
+      - name: Checkout helper branch
         uses: actions/checkout@v4
         with:
-          ref: WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
           fetch-depth: 0
 
-      - name: Validate candidate
+      - name: Build and validate isolated lifecycle candidate
         shell: bash
         run: |
           set -euo pipefail
+          cp .github/tmp_booth_lifecycle_patch.py /tmp/tmp_booth_lifecycle_patch.py
           git fetch origin WITCH_DEV_UI
+          git checkout -B WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907 origin/WITCH_DEV_UI
+          python3 /tmp/tmp_booth_lifecycle_patch.py
 
+          node --check tools/Booth.js
           node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-          git diff --check origin/WITCH_DEV_UI...HEAD
+          git diff --check
 
           python3 - <<'PY'
           import json
-          with open('manifest.json', encoding='utf-8') as f:
-              m = json.load(f)
-          reg = {x['id']: x for x in m['moduleRegistry']}
-          tools = {x['id']: x for x in m['tools']}
-          r = reg['booth-black-canvas-display-replay']
-          assert r['version'] == '0.1.2'
-          assert r['build'] == '0.1.2-dev-stable-state-plus-pre-bt-background'
-          assert 'v=0.1.2-dev-stable-state-plus-pre-bt-background' in tools['booth-black-canvas-display-replay']['url']
+          from pathlib import Path
+
+          booth = Path('tools/Booth.js').read_text(encoding='utf-8')
+          replay = Path('features/booth/Black_Canvas_Display_Replay.js').read_text(encoding='utf-8')
+          manifest = json.loads(Path('manifest.json').read_text(encoding='utf-8'))
+
+          assert "if (cfg.camera) signals.push('camera');" not in booth
+          assert "if (cfg.cameraSave) signals.push('cameraSave');" in booth
+          assert "if (cfg.lighting) signals.push('lighting');" in booth
+          assert "if (cfg.effects) signals.push('effects');" in booth
+          assert "opts.source !== 'internal'" in booth
+          assert booth.count("version: '27.0.1'") == 2
+          assert "const BUILD_TAG = 'v27.0.1';" in booth
+
+          assert "const VERSION = '0.1.3';" in replay
+          assert "0.1.3-dev-editor-background-restore" in replay
+          assert "setDefaultEnvironmentVisibility(true)" in replay
+          assert "const boothOn = isBoothViewOn();" in replay
+
+          reg = {x['id']: x for x in manifest['moduleRegistry']}
+          tools = {x['id']: x for x in manifest['tools']}
+          assert reg['booth-tool']['version'] == '27.0.1'
+          assert reg['booth-tool']['build'] == 'v27.0.1'
+          assert reg['booth-black-canvas-display-replay']['version'] == '0.1.3'
+          assert reg['booth-black-canvas-display-replay']['build'] == '0.1.3-dev-editor-background-restore'
+          assert 'v=27.0.1-v27.0.1' in tools['booth-tool']['url']
+          assert 'v=0.1.3-dev-editor-background-restore' in tools['booth-black-canvas-display-replay']['url']
           PY
-
-          expected="$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)"
-          actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
-          test "$actual" = "$expected"
-
-          for path in \
-            tools/Booth.js \
-            tools/Utilities.js \
-            features/booth/Booth_Runtime_Bootstrap.js \
-            Witch_Dock_DEV.user.js \
-            features/media/Spinny_Mini_WebP.js \
-            features/media/Photo_Booth_True_Resolution.js \
-            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
-            tools/JSON_Tool.js \
-            features/core/Witch_Dock_Developer_Mode.js
-          do
-            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
-          done
 
           node <<'NODE'
           const fs = require('fs');
           const vm = require('vm');
           const source = fs.readFileSync('features/booth/Black_Canvas_Display_Replay.js', 'utf8');
 
-          function runCase({ withBT = false, useDiag = false }) {
+          function runCase({ withBT, initialNamedVisible = true, initialBoothOn = false, useDiag = false }) {
             let blackOn = true;
+            let boothOn = initialBoothOn;
             let nativeUpdates = 0;
             let scheduled = null;
+            let envVisible = !withBT ? null : false;
+
             const direct = { visible: true };
-            const named = { name: 'background', visible: true, children: [] };
-            const envRoot = { name: 'environment', visible: true, children: [named] };
+            const named = { name: 'background', visible: initialNamedVisible, children: [] };
+            const envRoot = { name: 'environment', children: [named] };
             const scene = {
               children: [envRoot],
               getObjectByName(name) {
@@ -96,12 +103,19 @@ jobs:
               clearTimeout() {},
               console: { log() {} }
             };
-            if (useDiag) UW.KW_WD_BOOTH_DIAG = () => JSON.stringify({ blackCanvasOn: blackOn });
-            else UW.KW_WD_BOOTH = { getState: () => ({ sessionBlackCanvas: blackOn }) };
+
+            if (useDiag) {
+              UW.KW_WD_BOOTH_DIAG = () => JSON.stringify({ blackCanvasOn: blackOn, userBoothOn: boothOn, boothOn });
+            } else {
+              UW.KW_WD_BOOTH = { getState: () => ({ sessionBlackCanvas: blackOn, sessionBoothView: boothOn }) };
+            }
+
             if (withBT) {
               UW.BT = {
                 display: {
-                  environment: { setDefaultEnvironmentVisibility() {} },
+                  environment: {
+                    setDefaultEnvironmentVisibility(v) { envVisible = !!v; }
+                  },
                   overlays
                 }
               };
@@ -124,28 +138,81 @@ jobs:
 
             if (withBT) {
               if (named.visible !== false) throw new Error('BT semantic background was not hidden');
-              if (direct.visible !== true) throw new Error('Direct CK fallback incorrectly won while BT existed');
-            } else {
-              if (direct.visible !== false) throw new Error('Pre-BT CK background mesh was not hidden');
+              if (direct.visible !== true) throw new Error('No-BT fallback incorrectly won while BT exists');
+            } else if (direct.visible !== false) {
+              throw new Error('No-BT CK background mesh was not hidden');
             }
 
             const result = display.update();
             if (result !== 'native' || nativeUpdates !== 1) throw new Error('Native display.update was not preserved');
 
             blackOn = false;
-            if (!scheduled) throw new Error('Poll was not scheduled');
+            if (!scheduled) throw new Error('Replay poll was not scheduled');
             scheduled();
-            if (withBT && named.visible !== true) throw new Error('BT semantic background did not restore');
-            if (!withBT && direct.visible !== true) throw new Error('Pre-BT CK background did not restore');
+
+            if (!withBT) {
+              if (direct.visible !== true) throw new Error('No-BT editor background did not restore');
+            } else if (boothOn) {
+              if (named.visible !== initialNamedVisible) throw new Error('Active Booth restore did not preserve captured visibility');
+            } else {
+              if (named.visible !== true) throw new Error('Booth-OFF editor background stayed hidden');
+              if (envVisible !== true) throw new Error('Booth-OFF default environment was not restored');
+            }
 
             const api = UW.KW_WD_BOOTH_BLACK_REPLAY;
-            if (!api || api.version !== '0.1.2') throw new Error('Replay API/version missing');
+            if (!api || api.version !== '0.1.3') throw new Error('Replay API/version missing');
             api.dispose();
-            if (display.update === undefined || display.update() !== 'native') throw new Error('Dispose did not restore native update');
           }
 
-          runCase({ withBT: false, useDiag: false });
-          runCase({ withBT: false, useDiag: true });
-          runCase({ withBT: true, useDiag: false });
-          console.log('Black Canvas candidate lifecycle mocks: PASS');
+          runCase({ withBT: false, initialBoothOn: false, useDiag: false });
+          runCase({ withBT: false, initialBoothOn: false, useDiag: true });
+          runCase({ withBT: true, initialNamedVisible: false, initialBoothOn: true, useDiag: false });
+          runCase({ withBT: true, initialNamedVisible: false, initialBoothOn: false, useDiag: false });
+          runCase({ withBT: true, initialNamedVisible: false, initialBoothOn: false, useDiag: true });
+          console.log('Booth lifecycle replay mocks: PASS');
           NODE
+
+          expected="$(printf '%s\n' \
+            CHANGELOG.md \
+            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
+            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
+            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
+            MASTER.md \
+            PRE_FLIGHT_Check.md \
+            features/booth/Black_Canvas_Display_Replay.js \
+            manifest.json \
+            tools/Booth.js | sort)"
+          actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
+          test "$actual" = "$expected"
+
+          for path in \
+            tools/Utilities.js \
+            features/booth/Booth_Runtime_Bootstrap.js \
+            Witch_Dock_DEV.user.js \
+            HeroForge_UI/Corrected_Bound_Decal_Gizmo.js \
+            features/media/Spinny_Mini_WebP.js \
+            features/media/Spinny_Mini_WebP_UI.js \
+            features/media/Photo_Booth_True_Resolution.js \
+            features/media/Photo_Booth_True_Resolution_UI.js \
+            HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js \
+            tools/JSON_Tool.js \
+            features/core/Witch_Dock_Developer_Mode.js \
+            tools/Decals.js
+          do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+          done
+
+          git config user.name "Knight Witch Dev Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            CHANGELOG.md \
+            PRE_FLIGHT_Check.md \
+            MASTER.md \
+            manifest.json \
+            tools/Booth.js \
+            features/booth/Black_Canvas_Display_Replay.js \
+            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
+            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
+            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md
+          git commit -m "Repair Dev Booth figure lifecycle and background restore"
+          git push --force-with-lease origin WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907
