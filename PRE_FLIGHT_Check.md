@@ -1,5 +1,59 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-028 — Record public Stable Booth/lifecycle acceptance
+
+Date: 2026-09-07
+
+### Scope
+
+Record Amanda's final public Stable acceptance of Witch Dock shell v1.2.1, Booth v27.0.4, Black Canvas replay v0.1.5, Booth runtime bootstrap v0.1.0, and the public loader cache-key repair. This checkpoint is documentation-only and makes no runtime changes.
+
+### Reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
+- Compatibility `MASTER.md` and the repository architecture/integration rules already reviewed for the immediately preceding Stable promotion;
+- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`;
+- Stable promotion commit `91a78ebaba6e54ee143dbae0053d782495f252fa`;
+- final public user smoke result: "everything looks great";
+- deferred approximately 1 px checkerboard seam record.
+
+### Confirmed public result
+
+Amanda confirmed the public Stable build looks correct after updating/reloading the `Witch_Scripts` userscript.
+
+The final Stable smoke therefore closes the requested release gate for:
+
+- public shell v1.2.1 and current module delivery;
+- saved Booth / Black Canvas startup restoration;
+- Black Canvas ON/OFF presentation restoration;
+- the previously reliable white-flash regression remaining closed.
+
+The approximately 1 px checkerboard seam remains known, cosmetic, deferred, and explicitly non-blocking.
+
+### Target files
+
+Documentation only:
+
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
+
+### Preservation requirements
+
+- no runtime/module/manifest/userscript changes;
+- no version bumps;
+- no reopening the white-flash investigation;
+- no attempt to fix the deferred checkerboard seam in this closeout.
+
+### Decision
+
+Mark the Booth lifecycle / Black Canvas startup-restoration / loader cache-repair release as **public Stable validated** and move to the next separately scoped project.
+
+**Runtime behavior changed:** no.
+
+---
+
 ## PFC-2026-09-07-027 — Promote validated Booth lifecycle and cache-keyed public loader
 
 Date: 2026-09-07

@@ -1,5 +1,39 @@
 # Changelog
 
+## DOCK-2026-09-07-028 — Record final public Stable Booth acceptance
+
+Date: 2026-09-07
+
+### Summary
+
+Documentation-only closeout recording Amanda's final public Stable acceptance of Witch Dock v1.2.1 with Booth v27.0.4, Black Canvas replay v0.1.5, Booth runtime bootstrap v0.1.0, and the cache-keyed manifest/module loader.
+
+### Final public result
+
+Amanda reported that everything looks great in the public build after the Stable promotion.
+
+This closes the release gate for:
+
+- public shell/module delivery at v1.2.1;
+- saved Booth and Black Canvas startup restoration;
+- Black Canvas ON/OFF restoration;
+- the previously reliable white-flash regression remaining closed.
+
+The approximately 1 px checkerboard seam remains a documented deferred cosmetic issue and is not treated as fixed.
+
+### Runtime impact
+
+**No runtime behavior changed.** No userscript, manifest, module, storage, version, or compatibility logic changed in this checkpoint.
+
+### Touched files
+
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
+
+---
+
 ## DOCK-2026-09-07-027 — Promote validated Booth lifecycle and cache-keyed public loader
 
 Date: 2026-09-07

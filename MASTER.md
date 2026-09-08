@@ -13,6 +13,8 @@ This is the canonical high-level source for current public Witch Dock state. His
 
 Public shell v1.2.1 adds the validated cache-keyed manifest/module loader so branch-based raw GitHub caching cannot strand a page on an older manifest/module body. Module execution order and enablement are otherwise unchanged.
 
+Final public Stable acceptance on 2026-09-07: **PASS**. Amanda confirmed the public v1.2.1 load and final Booth/Black Canvas behavior look correct after the narrow promotion commit `91a78ebaba6e54ee143dbae0053d782495f252fa`.
+
 ## Booth / Black Canvas
 
 Public Booth: `tools/Booth.js` v27.0.4 / build `v27.0.4`.
@@ -21,7 +23,7 @@ Public Black Canvas replay: `features/booth/Black_Canvas_Display_Replay.js` v0.1
 
 Public Booth runtime bootstrap: `features/booth/Booth_Runtime_Bootstrap.js` v0.1.0 / build `0.1.0-dev-native-booth-bootstrap`.
 
-Validated Stable-target behavior inherited from the final Dev smoke:
+Public Stable validated behavior:
 
 - saved Booth figures can bootstrap HeroForge's native gated Booth runtime and restore Booth View without first visiting native Photo Booth;
 - bare camera state is not a saved-Booth signal, preserving `+ New Figure` exclusion;
@@ -33,7 +35,9 @@ Validated Stable-target behavior inherited from the final Dev smoke:
 - Black Canvas ON -> OFF restores the full fantasy backdrop plus pedestal/ground;
 - Black Canvas ON + Booth Background OFF no longer strands the fantasy background mesh hidden.
 
-Final Dev v27.0.4 live state-repair smoke: **PASS** for full fantasy-background restoration, all four component toggles, Black Canvas ON/OFF restoration, and Black Canvas + Background-OFF fallthrough.
+Final Dev v27.0.4 state-repair smoke: **PASS** for full fantasy-background restoration, all four component toggles, Black Canvas ON/OFF restoration, and Black Canvas + Background-OFF fallthrough.
+
+Final public Stable smoke: **PASS**. Public shell/module versions were correct, saved Booth/Black Canvas startup restoration behaved as expected, Black Canvas ON/OFF behaved as expected, and the previously reliable white-flash action remained clean.
 
 ### Deferred cosmetic issue — not a release blocker
 
@@ -44,6 +48,7 @@ Detailed records:
 - `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
 - `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
 - `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
 
 ## Utilities
 
@@ -109,9 +114,9 @@ Feature ID: `media.spinny-mini-webp`.
 
 ## Current queue
 
-1. Final public Stable refresh/smoke: confirm shell v1.2.1, Booth v27.0.4, replay v0.1.5, bootstrap v0.1.0, saved Booth/Black Canvas startup restoration, full fantasy-background restoration, and the known flash action remaining flash-free.
-2. The approximately 1 px checkerboard seam at the 1:1 edge is a documented deferred cosmetic issue, not a release blocker; investigate later against the actual frame/mask viewport geometry.
-3. After that public smoke, move on to the next separately scoped project. Do not continue Black Canvas investigation merely because the deferred seam exists.
+1. Booth/Black Canvas lifecycle + loader cache repair: **closed / public Stable validated** on `heroforge07.1.9.98`.
+2. The approximately 1 px checkerboard seam at the 1:1 edge remains a documented deferred cosmetic issue; investigate later against the actual frame/mask viewport geometry.
+3. Move on to the next separately scoped project. Do not continue the Black Canvas investigation merely because the deferred seam exists.
 
 ## Durable records
 
@@ -119,6 +124,7 @@ Feature ID: `media.spinny-mini-webp`.
 - `CHANGELOG.md`
 - `MODULE_VERSIONING.md`
 - `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
 - `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
