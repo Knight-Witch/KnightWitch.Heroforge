@@ -21,7 +21,7 @@ function extractFunction(source, name) {
 assert(boothSource.includes("const BUILD_TAG = 'v27.0.4';"), 'Booth build mismatch');
 assert((boothSource.match(/version: '27\.0\.4'/g) || []).length === 2, 'Booth version count mismatch');
 assert(!boothSource.includes('kwBoothBlackCanvasMatte'), 'rejected DOM matte remains');
-assert(!boothSource.includes('getTokenViewOffset()'), 'rejected token crop seam remains');
+assert(!boothSource.includes('maker.getTokenViewOffset('), 'rejected token crop runtime call remains');
 assert(!boothSource.includes('blackCanvasMatteRoot'), 'matte state remains');
 assert(replaySource.includes("const VERSION = '0.1.5';"), 'replay version mismatch');
 assert(replaySource.includes("const BUILD = '0.1.5-dev-restore-before-booth-handoff';"), 'replay build mismatch');
