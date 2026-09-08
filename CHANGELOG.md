@@ -1,5 +1,44 @@
 # Changelog
 
+## DOCK-2026-09-07-041 — Add Dev Black Canvas pre-BT fallback
+
+Date: 2026-09-07
+
+### Summary
+
+Bumped `booth.black-canvas-display-replay` to v0.1.2. The Dev module now carries forward Public Stable v0.1.1's diagnostic Black Canvas state fallback and, only when the validated BT scene path is unavailable, may hide `CK.environment.background.mesh` so Black Canvas can restore before the gated Booth runtime exists.
+
+### Evidence / boundary
+
+- prior HF-Chat-Bridge reads confirmed the regular main display uses `CK.environment.background`;
+- `CK.character.display.applyLighting()` calls `CK.environment.background.updateValues(...)`;
+- that background manager's `updateValues()` operates through `this.mesh.material`, supporting `CK.environment.background.mesh` as the conservative pre-BT render target;
+- the exact fresh-start visual object identity remains a supported inference pending live Dev validation;
+- when BT already exists, the previously validated semantic named `environment -> background` scene path remains preferred;
+- Black Canvas alone does not load or enable Booth.
+
+### Preserved behavior
+
+- native `CK.character.display.update()` always executes;
+- the live-validated post-update white-flash replay sequencing is unchanged;
+- Public Stable v0.1.1 diagnostic state fallback is retained;
+- Black Canvas OFF/dispose restores only the visibility value owned by the replay;
+- Booth v27, Utilities v1.2.1, Booth runtime bootstrap, Dev loader v0.5.1, Spinny, High Res, corrected decal gizmo, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;
+- public `Witch_Scripts` remains unchanged.
+
+### Validation
+
+- replay syntax: PASS;
+- no-BT API-state lifecycle mock: PASS — direct CK background mesh hidden, native update still executes, OFF restores visibility, dispose restores original update;
+- Public Stable diagnostic-state fallback mock: PASS;
+- BT-present regression mock: PASS — named semantic background path remains preferred and restores correctly;
+- manifest v0.1.2/build/query identity: PASS;
+- live fresh-start visual validation: pending.
+
+**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-040 — Add Dev loader cache keys
 
 Date: 2026-09-07
