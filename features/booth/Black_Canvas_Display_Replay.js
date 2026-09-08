@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-dev-pre-bt-main-background-fallback';
+  const VERSION = '0.1.2';
+  const BUILD = '0.1.2-dev-stable-state-plus-pre-bt-background';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -31,23 +31,27 @@
     };
   }
 
-  function boothApi() {
-    try {
-      const api = UW.KW_WD_BOOTH;
-      return api && typeof api.getState === 'function' ? api : null;
-    } catch {
-      return null;
-    }
-  }
-
   function isBlackCanvasOn() {
     try {
-      const api = boothApi();
-      if (!api) return false;
-      const s = api.getState();
-      return !!(s && s.sessionBlackCanvas);
+      const api = UW.KW_WD_BOOTH;
+      if (api && typeof api.getState === 'function') {
+        const s = api.getState();
+        if (s && Object.prototype.hasOwnProperty.call(s, 'sessionBlackCanvas')) {
+          return !!s.sessionBlackCanvas;
+        }
+      }
     } catch (error) {
-      recordError('isBlackCanvasOn', error);
+      recordError('isBlackCanvasOn.api', error);
+    }
+
+    try {
+      const diag = UW.KW_WD_BOOTH_DIAG;
+      if (typeof diag !== 'function') return false;
+      const raw = diag();
+      const s = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return !!(s && s.blackCanvasOn);
+    } catch (error) {
+      recordError('isBlackCanvasOn.diag', error);
       return false;
     }
   }
