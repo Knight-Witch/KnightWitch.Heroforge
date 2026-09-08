@@ -82,6 +82,28 @@ Affected tools:
 - `HeroForge_UI/Expanded_Decal_Slots.js`
 - `tools/Utilities.js`
 
+### Branch Raw GitHub Cache Requires Request Identity
+
+Context:
+- The public and Dev loaders request branch-based `raw.githubusercontent.com` manifest/module URLs.
+
+Observed behavior:
+- A live public page remained on an intermediate Stable manifest snapshot after the branch had already advanced.
+- Sending `Cache-Control: no-cache` from `GM_xmlhttpRequest` did not reliably prevent that stale response.
+- A hard refresh caused the same branch URL to resolve to the current Booth v27 / Utilities v1.2.1 manifest, confirming the repository promotion itself was correct.
+
+Working approach:
+- Give the manifest request a per-page `kwcache` token so each page session resolves the current branch snapshot.
+- Give each module request a deterministic `kwcache` key derived from the matching manifest `moduleRegistry` ID/version/build/path plus its raw URL.
+- Preserve any existing query parameters and keep `Cache-Control: no-cache` only as an additional hint.
+- Validate the Dev loader before applying the same design narrowly to public shell v1.2.1.
+
+Affected tools:
+- `Witch_Dock_DEV.user.js`
+- `Witch_Dock.user.js` (public promotion pending)
+- `manifest.json`
+- all manifest-loaded modules
+
 ## Entry Template
 
 ### Finding Title

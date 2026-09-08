@@ -1,5 +1,56 @@
 # Changelog
 
+## DOCK-2026-09-07-040 — Add Dev loader cache keys
+
+Date: 2026-09-07
+
+### Summary
+
+Repaired the Dev Witch Dock loader so branch-based raw GitHub delivery no longer relies on `Cache-Control: no-cache` alone. The manifest now receives a per-page cache-busting key, while each module request receives a deterministic key derived from the matching manifest registry identity.
+
+### Confirmed diagnosis
+
+- the public v1.2.0 loader fetched branch-based raw GitHub manifest/module URLs without durable query keys;
+- a live Stable page demonstrably remained on an intermediate manifest snapshot until a hard refresh;
+- the Dev loader used the same vulnerable `gmGetText(MANIFEST_URL)` / `gmGetText(url)` pattern;
+- `moduleRegistry` already provides stable module IDs plus version/build/path metadata, so module cache identity can be derived without changing module runtime behavior.
+
+### Changes
+
+- bumped Dev userscript loader header `1.0.8.5` -> `1.0.8.6`;
+- bumped manifest registry identity `witch-dock-dev-loader` to v0.5.1 / build `1.0.8.6-cache-keyed-loader`;
+- manifest fetches now append a unique per-page `kwcache=session-...` query key;
+- module fetches now append deterministic `kwcache=module-...` keys derived from module ID + registry version + registry build + registry path + raw URL;
+- existing module query parameters such as explicit `?v=` keys are preserved;
+- `Cache-Control: no-cache` remains as an additional request hint rather than the sole invalidation mechanism.
+
+### Preserved boundaries
+
+- `tools/Booth.js` remains byte-identical v27.0.0/build `v27`;
+- `tools/Utilities.js` remains byte-identical v1.2.1;
+- `features/booth/Black_Canvas_Display_Replay.js` remains byte-identical;
+- Booth runtime bootstrap, corrected decal gizmo, Spinny Mini WebP, High Res Image Capture, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;
+- public `Witch_Scripts` is unchanged;
+- HF-Chat-Bridge remains development-only and is not a runtime dependency.
+
+### Validation
+
+- Dev userscript JavaScript syntax: PASS (`node --check`).
+- Manifest JSON parse: PASS.
+- Manifest tool IDs map to registry identities: PASS.
+- Cache-key unit checks: PASS — existing query parameters survive, identical registry identity is deterministic, and changing registry build changes the module request URL.
+- `git diff --check`: PASS.
+- Protected Booth/Utilities/replay blob checks: PASS.
+- Live Dev delivery/startup smoke: pending.
+
+### Rollback
+
+Revert this Dev commit. No module runtime files need rollback because the change is confined to the Dev loader, manifest loader identity, and tracking documentation.
+
+**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-039 — Add Dev Booth runtime bootstrap
 
 Date: 2026-09-07

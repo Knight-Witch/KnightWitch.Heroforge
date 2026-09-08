@@ -1,5 +1,62 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-040 — Dev loader cache repair
+
+Date: 2026-09-07
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing documents;
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, and `Witch_Dock_DEV.user.js`;
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;
+- current Dev baseline `2f3500e301e6f76367faa587e9728da3b29ae467`;
+- live public stale-manifest evidence and the subsequent hard-refresh confirmation that the repository itself already contained Booth v27 / Utilities v1.2.1.
+
+### Confirmed findings
+
+- branch-based raw GitHub URLs can return a stale manifest/module snapshot despite the loader sending `Cache-Control: no-cache`;
+- the fixed branch URL therefore needs a changing request identity for the manifest;
+- module requests need a deterministic identity that changes when the manifest declares a new module version/build;
+- `manifest.moduleRegistry` is the maintained source of module ID/version/build/path identity and can be indexed by each `tools[]` entry ID.
+
+### Decision
+
+Repair the Dev loader only. Use one per-page cache token for the manifest and deterministic module cache keys derived from `moduleRegistry`; preserve existing request flow, tool enablement, execution order, and module runtime code.
+
+### Target files
+
+- `Witch_Dock_DEV.user.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
+
+### Conflict risks / preservation requirements
+
+- do not change Booth v27, Utilities v1.2.1, or the validated Black Canvas display replay;
+- do not change manifest tool order or enabled/default semantics;
+- preserve pre-existing query parameters on module URLs;
+- do not use a random per-module token that would defeat deterministic module identity;
+- public `Witch_Scripts` must remain untouched until Dev validation.
+
+### Static validation
+
+- `node --check Witch_Dock_DEV.user.js`: PASS.
+- `python3 -m json.tool manifest.json`: PASS.
+- every current `tools[]` ID resolves to a `moduleRegistry[]` identity: PASS.
+- deterministic module-key test, build-change invalidation test, and existing-query preservation test: PASS.
+- `git diff --check`: PASS.
+- protected blob checks for Booth v27, Utilities v1.2.1, and Dev Black Canvas replay: PASS.
+
+### Live gate
+
+Use the Dev userscript. Confirm a normal page load obtains current Dev modules without requiring `Ctrl+Shift+R`, then perform the already-pending Booth persistence/Black Canvas startup smoke. Stable loader v1.2.1 promotion remains blocked until this Dev gate passes.
+
+**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-07-039 — Add Dev Booth runtime bootstrap
 
 Date: 2026-09-07

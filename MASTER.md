@@ -7,9 +7,17 @@ This file tracks the current active state. Detailed historical state remains pre
 - Public Stable: `Witch_Scripts`
 - Current public repository head before this Dev change: `f218244b2a6010e4d299ca5641a8d4f6f56f38f9`
 - Dev integration branch: `WITCH_DEV_UI`
-- Dev parent before this change: `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`
+- Dev baseline before loader cache repair: `2f3500e301e6f76367faa587e9728da3b29ae467`
 - Target HeroForge build: `heroforge07.1.9.98`
 - HF-Chat-Bridge: private development diagnostics only; never a public runtime dependency.
+
+## Dev Loader Cache Repair
+
+Dev loader v0.5.1 / userscript header 1.0.8.6 now gives every page a unique manifest request key and every module a deterministic request key derived from the matching `moduleRegistry` ID/version/build/path plus raw URL. Existing module URL query parameters are preserved.
+
+This repairs the stale branch-based raw GitHub delivery path in Dev without changing module execution order, enablement, or feature runtime code. Public Stable still uses shell v1.2.0 and remains unchanged until Dev live validation.
+
+Static syntax/JSON/cache-identity/blob-preservation gates pass. Live delivery smoke remains required.
 
 ## Active Booth Runtime Bootstrap Candidate
 
@@ -71,7 +79,7 @@ A separate public-delivery defect is confirmed:
 - a live public page remained on an intermediate Stable manifest for more than nine minutes after the branch advanced;
 - hard refresh then loaded Booth v27 correctly, proving repository promotion was valid and the stale state was in the loader/cache path.
 
-A public shell cache-busting repair is still required before the current Booth bootstrap candidate can be promoted. Do not confuse this delivery issue with Booth runtime persistence.
+The corresponding repair is now implemented in Dev only. Public shell v1.2.0 still requires a separate narrow v1.2.1 promotion after Dev live validation. Do not confuse this delivery issue with Booth runtime persistence.
 
 ## Protected Validated Features
 
