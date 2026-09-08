@@ -58,7 +58,7 @@ Detailed record: `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`.
 
 Feature ID: `booth.black-canvas-display-replay`.
 
-- Dev candidate is v0.1.2 / build `0.1.2-dev-stable-state-plus-pre-bt-background`.
+- Dev candidate is v0.1.4 / build `0.1.4-dev-component-aware-booth-reassert`.
 - It preserves the already live-validated post-`CK.character.display.update()` replay that eliminated the reliable white flash.
 - It carries forward Public Stable v0.1.1's diagnostic Black Canvas state fallback, so Dev no longer drops that Stable behavior.
 - When BT already exists, the validated semantic named `environment -> background` scene path remains preferred.
@@ -95,9 +95,19 @@ Remaining presentation-only failures before v27.0.2:
 
 Live bridge probes proved HeroForge's named `BT.display.environment.setDefaultEnvironmentVisibility(true)` restores the ordinary background/ground state without re-enabling the Booth background plane. v27.0.2 uses that seam only when persisted Booth is active outside native Photo Booth, Black Canvas is OFF, and the regular editor background is actually hidden.
 
+## Component-aware Black Canvas / Background Fallthrough — 2026-09-07
+
+v27.0.2 live validation confirmed ordinary fantasy-canvas restoration when Black Canvas turns OFF. The remaining Black-ON/Background-OFF checkerboard is a separate composition problem: the Booth background plane is correctly OFF, but Black Canvas globally hides the regular environment beneath it.
+
+Current HeroForge's gray outside-token overlay is not a usable runtime color seam: its shader literally writes 50% gray at 70% alpha outside UV `[0,1]`. Two reversible custom RawShaderMaterial matte probes both failed with WebGL `INVALID_OPERATION (1282)` and are rejected.
+
+The maintained v27.0.3 approach uses HeroForge's named `BT.maker.getTokenViewOffset()` rectangle instead. Four pointer-inert black DOM bars live under `#character-canvas`, cover only the renderer outside the native crop, and update only when crop/canvas geometry changes. When this matte is available, Background OFF may reveal the fantasy environment inside the 1:1 crop while Black Canvas still owns black outside it. Failure falls back to the prior full-black behavior.
+
+Replay v0.1.4 delegates full BT presentation to Booth through `reassertBlackCanvasPresentation()` after native `display.update()`; its pre-BT compatibility path is retained. The established white-flash timing boundary is unchanged.
+
 ## Booth / Utilities
 
-- Dev Booth: v27.0.2 / build `v27.0.2`.
+- Dev Booth: v27.0.3 / build `v27.0.3`.
 - Dev Utilities: v1.2.1.
 - The Booth runtime bootstrap and Black Canvas replay remain separate hidden compatibility features.
 - Utilities continues to own saved defaults under `Booth Features`; Booth tab switches remain session overrides.
@@ -124,12 +134,13 @@ The following remain outside this Dev change:
 
 ## Current Gate
 
-1. Update/reload Dev with Public Stable disabled.
-2. With Booth View ON and Black Canvas OFF, the ordinary fantasy editor environment must be visible outside the 1:1 area and the gray frame overlay must not be visible.
-3. Toggle Booth Background OFF: the fantasy editor environment must show through inside the 1:1 area instead of checkerboard.
-4. Toggle Booth Background ON again: the saved Booth background must return inside the 1:1 area while the ordinary editor environment remains behind/outside it.
-5. Turn Black Canvas ON: the viewport must remain black and the existing white-flash fix must remain effective.
-6. Re-check `+ New Figure` still drops default-owned Booth, and with Booth + Black Canvas both OFF the ordinary editor background still restores.
-7. Only after this presentation smoke passes should Booth/bootstrap/replay plus the separate loader cache repair be prepared for narrow Public Stable promotion.
+1. Update/reload Dev with Public Stable disabled and confirm Booth v27.0.3 / replay v0.1.4 are loaded.
+2. Black Canvas OFF: ordinary fantasy editor canvas restoration must remain correct and the gray native frame must remain absent.
+3. Booth View ON + Black Canvas ON + Background OFF: fantasy editor environment must be visible inside the native 1:1 crop while the renderer outside it is solid black, with no checkerboard or gray surround.
+4. Toggle Background ON: saved Booth background must return inside the crop while outside remains black; toggle OFF again and verify fantasy fallthrough returns.
+5. Resize the window once: the black matte must continue to align with the native crop.
+6. Re-check the earlier Black-Canvas-OFF Background visual; runtime evidence currently shows the Booth plane is already truly OFF there, so do not add another layer fix unless the visual still disagrees after this composition repair.
+7. Verify `+ New Figure`, both-OFF restoration, and the known flash-causing action remain correct.
+8. Only after this smoke passes should the bootstrap/replay/Booth/loader repair be prepared for narrow Public Stable promotion.
 
 Historical state through the loader cache repair remains preserved at Dev commit `6cf10845e394676344ebb8699c654009267c6c61`.

@@ -203,3 +203,22 @@ v27.0.2 conditionally calls that named setter only when all of the following are
 Once the editor environment is visible the helper is a no-op, so the RAF polling loop does not continuously invoke the setter. Native Photo Booth and Black Canvas ON remain excluded.
 
 The Black Canvas replay module is not changed by this presentation follow-up.
+
+## 2026-09-07 component-aware Black Canvas follow-up — v27.0.3
+
+v27.0.2 closed the ordinary editor-background restoration defect but exposed the distinction between Black Canvas and the Booth Background component. With Black Canvas ON and Background OFF, `backgroundPlane.visible` was correctly false while Black Canvas still hid the regular environment, so checkerboard was inevitable inside the transparent token crop.
+
+The current native frame shader was inspected from `/gated/booth.js?version=heroforge07.1.9.98`. Its gray surround is hard-coded as `vec4(0.5,0.5,0.5,0.7)` whenever frame UV lies outside `[0,1]`; there is no named runtime matte-color uniform. The frame geometry itself spans UV `-3.5..4.5`, confirming the crop purpose, but two bounded custom RawShaderMaterial probes — one on a cloned frame mesh and one on a fresh mesh sharing only geometry/transform — both returned WebGL error 1282. That custom-renderer route is rejected.
+
+HeroForge's named `BT.maker.getTokenViewOffset()` provides a cleaner independent-UI seam. Its source derives `{fullWidth, fullHeight, offsetX, offsetY, width, height}` from current render-manager dimensions, token relative size/aspect, and camera zoom. Live reads confirmed the canvas CSS/render dimensions align and `#character-canvas` is an untransformed absolutely positioned host.
+
+v27.0.3 therefore owns a four-bar DOM matte. It maps the native token rectangle into current canvas CSS dimensions, keys geometry at quarter-pixel precision, and rewrites bar rectangles only when that key changes. The matte is pointer-inert, renderer-scoped, hidden when unused, and removed on Black Canvas restoration or figure-generation reset.
+
+Component-aware Black Canvas behavior is now:
+
+- Booth OFF + Black Canvas ON: preserve prior full-black editor behavior;
+- Booth ON + Background ON + Black Canvas ON: preserve Booth background inside and black outside;
+- Booth ON + Background OFF + Black Canvas ON outside native Photo Booth: if the native token rectangle/matte capability is available, restore the regular fantasy environment and cover only outside the crop with black; if capability is unavailable, fall back to prior full-black behavior;
+- native Photo Booth: no editor DOM matte.
+
+A narrow `reassertBlackCanvasPresentation()` Booth API lets the separate display replay synchronously request this exact policy after native `CK.character.display.update()` without duplicating component decisions.

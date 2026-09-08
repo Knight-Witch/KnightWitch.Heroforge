@@ -1,5 +1,52 @@
 # Changelog
 
+## DOCK-2026-09-07-044 — Make Black Canvas component-aware when Booth Background is off
+
+Date: 2026-09-07
+
+### Live result entering this repair
+
+Dev v27.0.2 fixed the ordinary fantasy canvas restoration when Black Canvas turns OFF. Amanda then confirmed two remaining presentation symptoms:
+
+- with Black Canvas OFF, toggling Booth Background OFF did not visually produce the expected distinction;
+- with Black Canvas ON, Booth Background OFF correctly hid the Booth background but exposed checkerboard rather than the fantasy editor environment inside the 1:1 viewport.
+
+The known white-flash regression remained closed.
+
+### Confirmed diagnosis
+
+Bridge reads proved the Background component itself is not stuck: with Black Canvas OFF + Background OFF, `BT.display.overlays.backgroundPlane.visible` remains false, Booth environment mesh remains false, and the regular `CK.environment` background/ground are visible. No second Booth backdrop layer was found in that state.
+
+For Black Canvas ON + Background OFF, both Booth and replay were still globally hiding the regular environment. That necessarily leaves checkerboard once the Booth background plane is false.
+
+HeroForge's current frame shader was also audited. Its outside-1:1 gray overlay is literal shader code (`vec4(0.5,0.5,0.5,0.7)`) selected by UVs outside `[0,1]`; there is no named color uniform. Two reversible custom WebGL matte probes were rejected after both returned `INVALID_OPERATION (1282)`.
+
+HeroForge does expose a safer named viewport contract: `BT.maker.getTokenViewOffset()` returns full render size plus current crop offsets/size. The live canvas and render-manager dimensions aligned, and `#character-canvas` is an untransformed absolutely positioned renderer container.
+
+### Changes
+
+- Booth -> v27.0.3 / build `v27.0.3`;
+- Black Canvas replay -> v0.1.4 / build `0.1.4-dev-component-aware-booth-reassert`;
+- when Booth View + Black Canvas are ON, Background is OFF, and the page is outside native Photo Booth, Booth keeps the regular fantasy environment visible inside the native token crop;
+- an owned four-bar DOM matte covers only the renderer area outside `BT.maker.getTokenViewOffset()`; layout is keyed and rewritten only when renderer/crop geometry changes;
+- if the matte capability is unavailable, behavior degrades to the previous full-black/checkerboard path rather than partially exposing the canvas;
+- native Photo Booth is excluded from the editor-fallback matte;
+- Black Canvas OFF, figure changes, and restoration remove the owned matte;
+- Booth exposes a narrow `reassertBlackCanvasPresentation()` API so the already-validated post-`CK.character.display.update()` replay can synchronously delegate component-aware BT presentation instead of re-hiding the fantasy environment;
+- pre-BT/editor-only replay behavior remains available as the fallback path.
+
+### Preserved boundaries
+
+Booth bootstrap v0.1.0, Utilities v1.2.1, loader v0.5.1, established Booth timing/silent-cycle behavior, native `display.update()` execution, corrected decal gizmo, Spinny, High Res, JSON, Developer Mode, Decals host, tabs, and Public Stable remain unchanged.
+
+### Validation gate
+
+Booth/replay syntax, manifest identities, matte geometry math, component-aware enforcement, delegation/fallback replay mocks, exact changed-file whitelist, protected blobs, and committed-candidate rerun must pass before Dev moves. Live visual acceptance remains required afterward.
+
+**Runtime behavior changed:** yes, Dev Booth/Black Canvas presentation only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-043 — Repair Dev Booth frame and editor-environment fallthrough
 
 Date: 2026-09-07

@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.black-canvas-display-replay';
-  const VERSION = '0.1.3';
-  const BUILD = '0.1.3-dev-editor-background-restore';
+  const VERSION = '0.1.4';
+  const BUILD = '0.1.4-dev-component-aware-booth-reassert';
   const API_KEY = 'KW_WD_BOOTH_BLACK_REPLAY';
   const POLL_MS = 250;
 
@@ -201,32 +201,56 @@
     }
   }
 
+  function reassertThroughBoothApi() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (!api || typeof api.reassertBlackCanvasPresentation !== 'function') return false;
+      return api.reassertBlackCanvasPresentation() === true;
+    } catch (error) {
+      recordError('reassertThroughBoothApi', error);
+      return false;
+    }
+  }
+
+  function relinquishSemanticBackgroundOwnership() {
+    state.semanticBackground = null;
+    state.semanticBackgroundVisible = null;
+  }
+
   function replayBlackCanvas(reason) {
     if (!state.enabled || !isBlackCanvasOn()) return false;
 
     let applied = false;
     try {
-      const BT = UW.BT;
-      const display = BT && BT.display ? BT.display : null;
-      const env = display ? display.environment : null;
-      const overlays = display ? display.overlays : null;
-
-      if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
-        env.setDefaultEnvironmentVisibility(false);
+      const delegated = reassertThroughBoothApi();
+      if (delegated) {
+        // Booth now owns component-aware BT presentation, including the
+        // Background-OFF fantasy fallback. Do not re-hide that background here.
+        relinquishSemanticBackgroundOwnership();
         applied = true;
-      }
+      } else {
+        const BT = UW.BT;
+        const display = BT && BT.display ? BT.display : null;
+        const env = display ? display.environment : null;
+        const overlays = display ? display.overlays : null;
 
-      if (overlays) {
-        if (overlays.framePlane) overlays.framePlane.visible = false;
-        if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
-        if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
-        applied = true;
-      }
+        if (env && typeof env.setDefaultEnvironmentVisibility === 'function') {
+          env.setDefaultEnvironmentVisibility(false);
+          applied = true;
+        }
 
-      // Do not force overlays.backgroundPlane here. Booth.js owns the user's
-      // Background component choice. This compatibility replay only restores the
-      // Black Canvas invariants that must survive a native character rebuild.
-      if (hideSemanticBackground()) applied = true;
+        if (overlays) {
+          if (overlays.framePlane) overlays.framePlane.visible = false;
+          if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
+          if (overlays.mask && 'visible' in overlays.mask) overlays.mask.visible = false;
+          applied = true;
+        }
+
+        // Do not force overlays.backgroundPlane here. Booth.js owns the user's
+        // Background component choice. This legacy path remains for pre-BT or
+        // older API shapes that cannot own the full presentation themselves.
+        if (hideSemanticBackground()) applied = true;
+      }
 
       const canvas = rendererCanvas();
       if (canvas) {
@@ -300,10 +324,17 @@
       const blackOn = isBlackCanvasOn();
 
       if (blackOn) {
-        // Keep the semantic scene background hidden if HeroForge replaced that
-        // named object without replacing the primary display instance.
-        hideSemanticBackground();
-        if (!state.lastBlackCanvasOn) replayBlackCanvas('black-canvas-enabled');
+        if (!state.lastBlackCanvasOn) {
+          replayBlackCanvas('black-canvas-enabled');
+        } else if (reassertThroughBoothApi()) {
+          // If Booth became available after the pre-BT fallback acquired the
+          // background, release replay ownership without mutating Booth's state.
+          relinquishSemanticBackgroundOwnership();
+        } else {
+          // Legacy/pre-BT path: keep the semantic scene background hidden if
+          // HeroForge replaced it without replacing the primary display.
+          hideSemanticBackground();
+        }
       } else if (state.lastBlackCanvasOn || state.semanticBackground) {
         restoreSemanticBackground();
       }

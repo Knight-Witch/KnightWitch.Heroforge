@@ -1,5 +1,66 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-044 — Component-aware Black Canvas / Background fallthrough
+
+Date: 2026-09-07
+
+### Reviewed
+
+- binding HeroForge.Compatibility contract/master/pre-flight/changelog/architecture/inventory/compatibility/ownership/testing state;
+- current Witch Dock Dev master/pre-flight/changelog/manifest;
+- Booth v27.0.2, replay v0.1.3, bootstrap v0.1.0, and their Booth/Black Canvas histories;
+- Amanda's v27.0.2 visual acceptance/failure report;
+- live bridge issues #725-#748 covering current overlay/environment state, frame shader source, rejected WebGL matte probes, native token-view math, renderer geometry, and stacking context.
+
+### Confirmed findings
+
+- Black Canvas OFF now restores the ordinary fantasy editor canvas correctly;
+- Background OFF is technically preserved (`backgroundPlane.visible=false`) and does not re-enable a hidden Booth environment mesh;
+- Black Canvas ON still globally hides the regular environment, causing checkerboard when Background OFF makes the 1:1 Booth plane transparent;
+- current native gray surround is hard-coded in the frame shader and has no named runtime color uniform;
+- custom WebGL matte attempts using both a cloned frame mesh and a fresh Mesh fail with GL `1282`; that route is rejected;
+- named `BT.maker.getTokenViewOffset()` supplies the current crop rectangle from render-manager dimensions;
+- `#character-canvas` is a suitable owned DOM host above the renderer without requiring a page-global overlay.
+
+### Decision
+
+Use an independent four-bar DOM matte driven by the named native token-view rectangle. Keep component/environment decisions in Booth and let replay delegate full BT reassertion to Booth after native `display.update()`. Retain replay's old pre-BT behavior only when the Booth API cannot own presentation.
+
+### Target files
+
+- `tools/Booth.js`
+- `features/booth/Black_Canvas_Display_Replay.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+
+### Conflict risks / preservation requirements
+
+- do not patch HeroForge's Booth bundle;
+- do not use the failed custom WebGL matte route;
+- do not alter native `CK.character.display.update()` or the synchronous post-update replay position;
+- do not activate the editor matte inside native Photo Booth;
+- do not make Black Canvas imply Booth View;
+- do not call environment setters repeatedly after desired visibility already exists;
+- matte DOM must be pointer-inert, renderer-scoped, geometry-keyed, and fully removable;
+- capability failure must degrade to existing Black Canvas behavior rather than leave outside-crop fantasy content exposed;
+- Public Stable remains untouched.
+
+### Static gate
+
+Booth/replay JavaScript syntax, manifest JSON/version/cache identity, DOM matte geometry mock, component-aware enforcement mock, replay delegation plus legacy/pre-BT fallback mocks, exact eight-file whitelist, protected blob equality, and committed-byte rerun.
+
+### Live gate
+
+Dev only: verify Black Canvas OFF behavior stays fixed; Black Canvas ON + Background OFF gives fantasy environment inside 1:1 and black outside; Background ON restores Booth background with black outside; the matte tracks resize; `+ New`, both-OFF restoration, and white-flash suppression remain correct. Re-check the reported Black-OFF Background visual after this repair before inferring any additional layer.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+
+---
+
 ## PFC-2026-09-07-043 — Booth frame and editor-environment fallthrough repair
 
 Date: 2026-09-07

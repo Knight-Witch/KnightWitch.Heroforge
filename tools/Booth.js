@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.0.2';
+  const BUILD_TAG = 'v27.0.3';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -50,6 +50,11 @@
 
     btCanvasVisualSnapshot: null,
     btCanvasLayoutKey: null,
+
+    blackCanvasMatteRoot: null,
+    blackCanvasMatteBars: null,
+    blackCanvasMatteParent: null,
+    blackCanvasMatteLayoutKey: null,
 
     originalMaterial: null,
     originalUniformValues: null,
@@ -315,7 +320,151 @@
     }
   }
 
-  function enforceBTBlackCanvas() {
+
+  function disposeBlackCanvasMatte() {
+    try {
+      const root = state.blackCanvasMatteRoot;
+      if (root && root.parentElement) root.parentElement.removeChild(root);
+    } catch {}
+    state.blackCanvasMatteRoot = null;
+    state.blackCanvasMatteBars = null;
+    state.blackCanvasMatteParent = null;
+    state.blackCanvasMatteLayoutKey = null;
+    return true;
+  }
+
+  function hideBlackCanvasMatte(remove) {
+    if (remove) return disposeBlackCanvasMatte();
+    try {
+      if (state.blackCanvasMatteRoot) state.blackCanvasMatteRoot.style.display = 'none';
+    } catch {}
+    return true;
+  }
+
+  function setMatteRect(el, left, top, width, height) {
+    if (!el) return;
+    const w = Math.max(0, Number(width) || 0);
+    const h = Math.max(0, Number(height) || 0);
+    if (w <= 0.01 || h <= 0.01) {
+      el.style.display = 'none';
+      return;
+    }
+    el.style.display = 'block';
+    el.style.left = left + 'px';
+    el.style.top = top + 'px';
+    el.style.width = w + 'px';
+    el.style.height = h + 'px';
+  }
+
+  function ensureBlackCanvasMatte() {
+    try {
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const maker = BT && BT.maker;
+      const canvas = CK && CK.renderManager && CK.renderManager.renderer
+        ? CK.renderManager.renderer.domElement
+        : null;
+      const parent = canvas && canvas.parentElement ? canvas.parentElement : null;
+      if (!maker || typeof maker.getTokenViewOffset !== 'function' || !canvas || !parent) return false;
+
+      const view = maker.getTokenViewOffset();
+      if (!view || !(Number(view.fullWidth) > 0) || !(Number(view.fullHeight) > 0)) return false;
+      if (!(Number(view.width) > 0) || !(Number(view.height) > 0)) return false;
+
+      let root = state.blackCanvasMatteRoot;
+      if (!root || state.blackCanvasMatteParent !== parent || !root.isConnected) {
+        disposeBlackCanvasMatte();
+        root = document.createElement('div');
+        root.id = 'kwBoothBlackCanvasMatte';
+        root.setAttribute('aria-hidden', 'true');
+        Object.assign(root.style, {
+          position: 'absolute',
+          pointerEvents: 'none',
+          overflow: 'hidden',
+          background: 'transparent',
+          zIndex: '1',
+          display: 'none'
+        });
+
+        const bars = {};
+        ['top', 'bottom', 'left', 'right'].forEach((name) => {
+          const el = document.createElement('div');
+          el.dataset.kwBoothMatte = name;
+          Object.assign(el.style, {
+            position: 'absolute',
+            pointerEvents: 'none',
+            background: '#000000'
+          });
+          root.appendChild(el);
+          bars[name] = el;
+        });
+
+        parent.appendChild(root);
+        state.blackCanvasMatteRoot = root;
+        state.blackCanvasMatteBars = bars;
+        state.blackCanvasMatteParent = parent;
+        state.blackCanvasMatteLayoutKey = null;
+      }
+
+      const canvasRect = canvas.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      const cssWidth = Number(canvasRect.width) || Number(canvas.clientWidth) || 0;
+      const cssHeight = Number(canvasRect.height) || Number(canvas.clientHeight) || 0;
+      if (!(cssWidth > 0) || !(cssHeight > 0)) return false;
+
+      const scaleX = cssWidth / Number(view.fullWidth);
+      const scaleY = cssHeight / Number(view.fullHeight);
+      const cropLeft = clamp(Number(view.offsetX) * scaleX, 0, cssWidth);
+      const cropTop = clamp(Number(view.offsetY) * scaleY, 0, cssHeight);
+      const cropRight = clamp(cropLeft + Number(view.width) * scaleX, cropLeft, cssWidth);
+      const cropBottom = clamp(cropTop + Number(view.height) * scaleY, cropTop, cssHeight);
+      const localLeft = canvas.offsetParent === parent
+        ? Number(canvas.offsetLeft) || 0
+        : (Number(canvasRect.left) - Number(parentRect.left) - (Number(parent.clientLeft) || 0) + (Number(parent.scrollLeft) || 0));
+      const localTop = canvas.offsetParent === parent
+        ? Number(canvas.offsetTop) || 0
+        : (Number(canvasRect.top) - Number(parentRect.top) - (Number(parent.clientTop) || 0) + (Number(parent.scrollTop) || 0));
+
+      const q = (value) => Math.round((Number(value) || 0) * 4) / 4;
+      const key = [
+        q(localLeft), q(localTop), q(cssWidth), q(cssHeight),
+        q(cropLeft), q(cropTop), q(cropRight), q(cropBottom)
+      ].join(':');
+
+      root.style.left = localLeft + 'px';
+      root.style.top = localTop + 'px';
+      root.style.width = cssWidth + 'px';
+      root.style.height = cssHeight + 'px';
+      root.style.display = 'block';
+
+      if (state.blackCanvasMatteLayoutKey !== key) {
+        const bars = state.blackCanvasMatteBars || {};
+        setMatteRect(bars.top, 0, 0, cssWidth, cropTop);
+        setMatteRect(bars.bottom, 0, cropBottom, cssWidth, cssHeight - cropBottom);
+        setMatteRect(bars.left, 0, cropTop, cropLeft, cropBottom - cropTop);
+        setMatteRect(bars.right, cropRight, cropTop, cssWidth - cropRight, cropBottom - cropTop);
+        state.blackCanvasMatteLayoutKey = key;
+      }
+      return true;
+    } catch {
+      hideBlackCanvasMatte(false);
+      return false;
+    }
+  }
+
+  function isNativePhotoBoothForPresentation() {
+    try {
+      const rt = runtimeNow(null);
+      const tokenizer = rt && rt.tokenizer ? rt.tokenizer : null;
+      const mode = tokenizer && typeof tokenizer.currentMode === 'string'
+        ? tokenizer.currentMode
+        : (rt && typeof rt.currentMode === 'string' ? rt.currentMode : null);
+      if (mode && mode.toLowerCase().includes('booth')) return true;
+    } catch {}
+    return inPhotoBoothUI();
+  }
+
+  function enforceBTBlackCanvas(options) {
     try {
       const BT = UW.BT;
       const CK = UW.CK;
@@ -330,9 +479,21 @@
       captureBTCanvasVisualState();
       syncBTCanvasLayout(overlays, canvas);
 
-      if (typeof env.setDefaultEnvironmentVisibility === 'function') {
-        env.setDefaultEnvironmentVisibility(false);
+      const allowEditorFallback = options && Object.prototype.hasOwnProperty.call(options, 'allowEditorFallback')
+        ? !!options.allowEditorFallback
+        : !isNativePhotoBoothForPresentation();
+      const wantsEditorFallback = !!(state.userBoothOn && !state.persistBackgroundOn && allowEditorFallback);
+      const matteReady = wantsEditorFallback ? ensureBlackCanvasMatte() : false;
+
+      if (matteReady) {
+        ensureEditorEnvironmentBehindBooth({ allowBlackCanvas: true });
+      } else {
+        hideBlackCanvasMatte(false);
+        if (typeof env.setDefaultEnvironmentVisibility === 'function') {
+          env.setDefaultEnvironmentVisibility(false);
+        }
       }
+
       if (overlays.backgroundPlane) overlays.backgroundPlane.visible = !!state.persistBackgroundOn;
       if (overlays.framePlane) overlays.framePlane.visible = false;
       if (overlays.shadowPlane) overlays.shadowPlane.visible = false;
@@ -349,6 +510,7 @@
   function restoreBTCanvasVisualState() {
     const snap = state.btCanvasVisualSnapshot;
     try {
+      disposeBlackCanvasMatte();
       const BT = UW.BT;
       const CK = UW.CK;
       const display = BT && BT.display;
@@ -374,15 +536,17 @@
       state.btCanvasLayoutKey = null;
       return true;
     } catch {
+      disposeBlackCanvasMatte();
       state.btCanvasVisualSnapshot = null;
       state.btCanvasLayoutKey = null;
       return false;
     }
   }
 
-  function ensureEditorEnvironmentBehindBooth() {
+  function ensureEditorEnvironmentBehindBooth(options) {
     try {
-      if (!state.userBoothOn || state.bgOn) return false;
+      const allowBlackCanvas = !!(options && options.allowBlackCanvas);
+      if (!state.userBoothOn || (state.bgOn && !allowBlackCanvas)) return false;
       const BT = UW.BT;
       const CK = UW.CK;
       const display = BT && BT.display;
@@ -1782,6 +1946,7 @@
   }
 
   function clearFigureScopedSnapshots() {
+    try { disposeBlackCanvasMatte(); } catch {}
     state.capturedMaterial = null;
     state.capturedUniformValues = null;
     state.capturedTextureUniforms = null;
@@ -2085,7 +2250,7 @@
     }
 
     if (state.bgOn && TN && TN.__kwBT) {
-      try { enforceBTBlackCanvas(); } catch {}
+      try { enforceBTBlackCanvas({ allowEditorFallback: !inBooth }); } catch {}
     } else if (state.bgOn) {
       if (!state.capturedMaterial) tryCaptureBackdropFromScene();
       if (!state.originalMaterial) captureOriginalBackdrop();
@@ -2321,7 +2486,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.2',
+      version: '27.0.3',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2341,16 +2506,28 @@
     };
   }
 
+  function reassertBlackCanvasPresentation() {
+    try {
+      if (!state.bgOn) return false;
+      const rt = resolveRuntime();
+      if (!rt || !rt.__kwBT) return false;
+      return !!enforceBTBlackCanvas();
+    } catch {
+      return false;
+    }
+  }
+
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.2',
+      version: '27.0.3',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,
       setDefaultBlackCanvas,
       setSessionBooth: onUserBoothToggle,
-      setSessionBlackCanvas: onUserBgToggle
+      setSessionBlackCanvas: onUserBgToggle,
+      reassertBlackCanvasPresentation
     };
   }
 

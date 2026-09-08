@@ -155,3 +155,13 @@ The integrated startup smoke kept the white-flash regression closed but reproduc
 The replay's owned background snapshot explains the ordering hazard. While Booth is active, the real main-scene background can legitimately already be invisible; v0.1.2 captured that `false` and later restored it literally. If Booth itself was OFF by then, replaying the stale hidden value counteracted the editor-environment restoration.
 
 v0.1.3 preserves the validated post-`display.update()` replay and all Black Canvas enforcement. When Booth is still active, it restores the captured visibility exactly as before. When BT exists but Booth View is now OFF, it instead reasserts the named default-environment visibility and makes the owned main-scene background visible. The no-BT Black Canvas path still restores its captured CK mesh visibility normally.
+
+## 2026-09-07 component-aware delegation follow-up — v0.1.4
+
+The Background-OFF checkerboard investigation showed that the replay's previously correct global background hide becomes wrong once Booth itself owns an inner fantasy-environment fallback. v0.1.4 does not change the validated wrapper location: native `CK.character.display.update()` still runs untouched and replay still occurs synchronously in `finally`.
+
+When the current Booth API exposes `reassertBlackCanvasPresentation()`, replay now delegates full BT presentation to that API and relinquishes any legacy semantic-background ownership without restoring/mutating it afterward. This prevents replay from immediately re-hiding the environment that Booth intentionally restored behind a Background-OFF token crop.
+
+If Booth/BT is unavailable or the API cannot handle presentation, the old behavior remains: named environment/frame/shadow/mask reassertion, semantic background hide, and canvas/holder black. This preserves the pre-BT Black Canvas startup path and diagnostic fallback.
+
+Polling follows the same split: current Booth API reassertion when available; semantic-background maintenance only on the legacy path. Black Canvas OFF/dispose restoration behavior remains unchanged.
