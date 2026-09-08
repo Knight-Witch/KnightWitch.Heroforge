@@ -1,0 +1,74 @@
+name: Temporary clean loader patch
+
+on:
+  push:
+    branches:
+      - WITCH_DEV_CACHE_CANDIDATE_20260907
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build clean candidate from current Dev
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin WITCH_DEV_UI
+          git checkout -B WITCH_DEV_CACHE_CLEAN_20260907 origin/WITCH_DEV_UI
+          python3 - <<'PY'
+          from pathlib import Path
+
+          shell = Path('Witch_Dock_DEV.user.js')
+          text = shell.read_text(encoding='utf-8')
+
+          replacements = [
+              ('// @version      1.0.8.5', '// @version      1.0.8.6'),
+              (
+                  'const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\n\nfunction gmGetText(url) {',
+                  '''const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";\nconst LOADER_CACHE_SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;\n\nfunction kwStableHash(input) {\n  const text = String(input == null ? "" : input);\n  let hash = 2166136261;\n  for (let i = 0; i < text.length; i += 1) {\n    hash ^= text.charCodeAt(i);\n    hash = Math.imul(hash, 16777619);\n  }\n  return (hash >>> 0).toString(36);\n}\n\nfunction kwWithCacheKey(url, key) {\n  try {\n    const u = new URL(String(url));\n    u.searchParams.set("kwcache", String(key));\n    return u.toString();\n  } catch {\n    const raw = String(url || "");\n    const join = raw.includes("?") ? "&" : "?";\n    return `${raw}${join}kwcache=${encodeURIComponent(String(key))}`;\n  }\n}\n\nfunction kwManifestRequestUrl() {\n  return kwWithCacheKey(MANIFEST_URL, `session-${LOADER_CACHE_SESSION}`);\n}\n\nfunction kwModuleRequestUrl(tool) {\n  const url = tool && typeof tool.url === "string" ? tool.url : "";\n  const identity = [\n    tool && tool.id,\n    tool && tool.version,\n    tool && tool.build,\n    url\n  ].map((v) => String(v == null ? "" : v)).join("|");\n  return kwWithCacheKey(url, `module-${kwStableHash(identity)}`);\n}\n\nfunction gmGetText(url) {'''
+              ),
+              (
+                  '    const raw = await gmGetText(MANIFEST_URL);',
+                  '    const raw = await gmGetText(kwManifestRequestUrl());'
+              ),
+              (
+                  '      const code = await gmGetText(url);',
+                  '      const code = await gmGetText(kwModuleRequestUrl(t));'
+              )
+          ]
+
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected exactly one shell match, got {count}: {old[:80]!r}')
+              text = text.replace(old, new, 1)
+
+          shell.write_text(text, encoding='utf-8', newline='\n')
+
+          manifest = Path('manifest.json')
+          m = manifest.read_text(encoding='utf-8')
+          old = '''      "id": "witch-dock-dev-loader",\n      "title": "Witch Dock Dev Loader",\n      "path": "Witch_Dock_DEV.user.js",\n      "kind": "core",\n      "load": "userscript-dev",\n      "version": "0.5.0",\n      "build": "1.0.8.5-tab-activation-api",\n      "versionOrigin": "new-dev-harness"'''
+          new = '''      "id": "witch-dock-dev-loader",\n      "title": "Witch Dock Dev Loader",\n      "path": "Witch_Dock_DEV.user.js",\n      "kind": "core",\n      "load": "userscript-dev",\n      "version": "0.5.1",\n      "build": "1.0.8.6-cache-keyed-loader",\n      "versionOrigin": "dev-loader-cache-repair-2026-09-07"'''
+          count = m.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one manifest match, got {count}')
+          manifest.write_text(m.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+
+          node --check Witch_Dock_DEV.user.js
+          python3 -m json.tool manifest.json >/dev/null
+          git diff --check
+
+          git config user.name "Knight Witch Dev Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add Witch_Dock_DEV.user.js manifest.json
+          git commit -m "Candidate: add clean Dev loader cache keys"
+          git push --force-with-lease origin WITCH_DEV_CACHE_CLEAN_20260907
