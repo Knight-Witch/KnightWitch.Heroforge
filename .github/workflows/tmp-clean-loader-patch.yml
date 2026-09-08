@@ -1,15 +1,12 @@
-name: Temporary Booth lifecycle candidate builder
+name: Temporary Booth lifecycle candidate validator
 
 on:
   push:
     branches:
       - WITCH_DEV_CACHE_CANDIDATE_20260907
 
-permissions:
-  contents: write
-
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout helper branch
@@ -17,68 +14,107 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build isolated lifecycle candidate
+      - name: Validate committed lifecycle candidate
         shell: bash
         run: |
           set -euo pipefail
-          cp .github/tmp_booth_lifecycle_patch.py /tmp/tmp_booth_lifecycle_patch.py
-          python3 - <<'PY'
-          from pathlib import Path
-          import base64
-          p = Path('/tmp/tmp_booth_lifecycle_patch.py')
-          s = p.read_text(encoding='utf-8')
-          fixes = [
-              ('dev-booth-stabilization-2026-09-06""""', 'dev-booth-stabilization-2026-09-06\\""""'),
-              ('dev-booth-lifecycle-repair-2026-09-07"""")', 'dev-booth-lifecycle-repair-2026-09-07\\"""")'),
-              ('dev-black-canvas-pre-bt-fallback-2026-09-07""",', 'dev-black-canvas-pre-bt-fallback-2026-09-07\\"""",'),
-              ('dev-booth-lifecycle-repair-2026-09-07""")', 'dev-booth-lifecycle-repair-2026-09-07\\"""")'),
-          ]
-          for old, new in fixes:
-              if s.count(old) != 1:
-                  raise SystemExit(f'Expected one helper token {old!r}, got {s.count(old)}')
-              s = s.replace(old, new, 1)
-          gate_start = s.index('old_gate = """## Current Gate')
-          gate_end = s.index('new_gate = """', gate_start)
-          actual_gate = base64.b64decode('IyMgQ3VycmVudCBHYXRlCgoxLiBFbmFibGUgdGhlIERldiBsb2FkZXIgYW5kIGRpc2FibGUgcHVibGljIFN0YWJsZSBmb3IgYSBjbGVhbiB0ZXN0LgoyLiBWZXJpZnkgQmxhY2sgQ2FudmFzIEFjcm9zcyBTZXNzaW9ucyBPTiBjYW4gcmVzdG9yZSBhIGZyZXNoIG9yZGluYXJ5IGVkaXRvciBwYWdlIHRvIGJsYWNrIHdpdGhvdXQgZW5hYmxpbmcgQm9vdGggVmlldy4KMy4gTG9hZCBhIGZpZ3VyZSB0aGF0IGFscmVhZHkgaGFzIHNhdmVkIFBob3RvIEJvb3RoIGNvbmZpZ3VyYXRpb24gd2l0aCBCb290aCBQZXJzaXN0ZW5jZSBBY3Jvc3MgU2Vzc2lvbnMgT04gYW5kIHJlZnJlc2ggd2l0aG91dCBvcGVuaW5nIG5hdGl2ZSBQaG90byBCb290aC4KNC4gRXhwZWN0ZWQ6IHNhdmVkIEJvb3RoIFZpZXcgYWN0aXZhdGVzOyBpZiBCbGFjayBDYW52YXMgZGVmYXVsdCBpcyBhbHNvIE9OLCB2aWV3cG9ydCBpcyBibGFjay4KNS4gVmVyaWZ5IHRoZSBrbm93biBmbGFzaC1jYXVzaW5nIGFjdGlvbiBzdGlsbCBkb2VzIG5vdCBmbGFzaC4KNi4gVG9nZ2xlIEJsYWNrIENhbnZhcyBPRkYgYW5kIGNvbmZpcm0gdGhlIG9yZGluYXJ5IEhlcm9Gb3JnZSBiYWNrZ3JvdW5kIHJldHVybnMuCjcuIFZlcmlmeSBhIGZyZXNoIGArIE5ldyBGaWd1cmVgIHdpdGggbm8gc2F2ZWQgQm9vdGggY29uZmlndXJhdGlvbiBkb2VzIG5vdCBhdXRvLWJvb3RzdHJhcCBCb290aC4KOC4gT25seSBhZnRlciB0aGlzIGNvbWJpbmVkIERldiBzbW9rZSBwYXNzZXMgc2hvdWxkIHRoZSBib290c3RyYXAsIHJlcGxheSB2MC4xLjIsIGFuZCBsb2FkZXIgY2FjaGUgcmVwYWlyIGJlIG5hcnJvd2x5IHByb21vdGVkIHRvIFB1YmxpYyBTdGFibGUuCg==').decode()
-          s = s[:gate_start] + 'old_gate = ' + repr(actual_gate) + '\n' + s[gate_end:]
-          p.write_text(s, encoding='utf-8', newline='\n')
-          PY
-
-          python3 -m py_compile /tmp/tmp_booth_lifecycle_patch.py
-          git fetch origin WITCH_DEV_UI
-          git checkout -B WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907 origin/WITCH_DEV_UI
-          python3 /tmp/tmp_booth_lifecycle_patch.py
+          git fetch origin WITCH_DEV_UI WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907
+          git checkout --detach origin/WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907
 
           node --check tools/Booth.js
           node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-          git diff --check
+          git diff --check origin/WITCH_DEV_UI...HEAD
 
-          expected="$(printf '%s\n' \
-            CHANGELOG.md \
-            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
-            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
-            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
-            MASTER.md \
-            PRE_FLIGHT_Check.md \
-            features/booth/Black_Canvas_Display_Replay.js \
-            manifest.json \
-            tools/Booth.js | sort)"
-          actual="$(git diff --name-only | sort)"
-          printf 'Expected files:\n%s\nActual files:\n%s\n' "$expected" "$actual"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          booth = Path('tools/Booth.js').read_text(encoding='utf-8')
+          replay = Path('features/booth/Black_Canvas_Display_Replay.js').read_text(encoding='utf-8')
+          manifest = json.loads(Path('manifest.json').read_text(encoding='utf-8'))
+          assert "if (cfg.camera) signals.push('camera');" not in booth
+          assert "if (cfg.cameraSave) signals.push('cameraSave');" in booth
+          assert "if (cfg.lighting) signals.push('lighting');" in booth
+          assert "if (cfg.effects) signals.push('effects');" in booth
+          assert "opts.source !== 'internal'" in booth
+          assert booth.count("version: '27.0.1'") == 2
+          assert "const BUILD_TAG = 'v27.0.1';" in booth
+          assert "const VERSION = '0.1.3';" in replay
+          assert "const BUILD = '0.1.3-dev-editor-background-restore';" in replay
+          reg = {x['id']: x for x in manifest['moduleRegistry']}
+          tools = {x['id']: x for x in manifest['tools']}
+          assert reg['booth-tool']['version'] == '27.0.1'
+          assert reg['booth-tool']['build'] == 'v27.0.1'
+          assert reg['booth-black-canvas-display-replay']['version'] == '0.1.3'
+          assert reg['booth-black-canvas-display-replay']['build'] == '0.1.3-dev-editor-background-restore'
+          assert 'v=27.0.1-v27.0.1' in tools['booth-tool']['url']
+          assert 'v=0.1.3-dev-editor-background-restore' in tools['booth-black-canvas-display-replay']['url']
+          print('source + manifest invariants: PASS')
+          PY
+
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const source = fs.readFileSync('features/booth/Black_Canvas_Display_Replay.js', 'utf8');
+
+          function runCase({ withBT, namedVisible = true, boothOn = false, useDiag = false }) {
+            let blackOn = true;
+            let nativeUpdates = 0;
+            let scheduled = null;
+            let envVisible = withBT ? false : null;
+            const direct = { visible: true };
+            const named = { name: 'background', visible: namedVisible, children: [] };
+            const envRoot = { name: 'environment', children: [named] };
+            const scene = { children: [envRoot], getObjectByName(name) { if (name === 'environment') return envRoot; if (name === 'background') return named; return null; } };
+            const overlays = { backgroundPlane: { visible: true, parent: scene }, framePlane: { visible: true }, shadowPlane: { visible: true }, mask: { visible: true } };
+            const canvas = { style: { backgroundColor: '' }, parentElement: { style: { backgroundColor: '' } } };
+            const display = { update() { nativeUpdates += 1; return 'native'; } };
+            const UW = {
+              CK: { character: { display }, environment: { background: { mesh: direct } }, renderManager: { renderer: { domElement: canvas } } },
+              setTimeout(fn) { scheduled = fn; return 1; }, clearTimeout() {}, console: { log() {} }
+            };
+            if (useDiag) UW.KW_WD_BOOTH_DIAG = () => JSON.stringify({ blackCanvasOn: blackOn, userBoothOn: boothOn, boothOn });
+            else UW.KW_WD_BOOTH = { getState: () => ({ sessionBlackCanvas: blackOn, sessionBoothView: boothOn }) };
+            if (withBT) UW.BT = { display: { environment: { setDefaultEnvironmentVisibility(v) { envVisible = !!v; } }, overlays } };
+            const context = { unsafeWindow: UW, window: UW, setTimeout: UW.setTimeout, clearTimeout: UW.clearTimeout, console: UW.console, JSON, Object, Array, String, Date };
+            vm.createContext(context);
+            vm.runInContext(source, context);
+
+            if (withBT) {
+              if (named.visible !== false) throw new Error('BT named background was not hidden');
+              if (direct.visible !== true) throw new Error('CK fallback won while BT existed');
+            } else if (direct.visible !== false) throw new Error('no-BT CK background was not hidden');
+
+            if (display.update() !== 'native' || nativeUpdates !== 1) throw new Error('native display.update was not preserved');
+            blackOn = false;
+            if (!scheduled) throw new Error('poll not scheduled');
+            scheduled();
+
+            if (!withBT) {
+              if (direct.visible !== true) throw new Error('no-BT background did not restore');
+            } else if (boothOn) {
+              if (named.visible !== namedVisible) throw new Error('active Booth did not restore captured visibility');
+            } else {
+              if (named.visible !== true) throw new Error('Booth-OFF background remained hidden');
+              if (envVisible !== true) throw new Error('Booth-OFF environment was not restored');
+            }
+            if (!UW.KW_WD_BOOTH_BLACK_REPLAY || UW.KW_WD_BOOTH_BLACK_REPLAY.version !== '0.1.3') throw new Error('replay API/version missing');
+            UW.KW_WD_BOOTH_BLACK_REPLAY.dispose();
+          }
+
+          runCase({ withBT: false, boothOn: false, useDiag: false });
+          runCase({ withBT: false, boothOn: false, useDiag: true });
+          runCase({ withBT: true, namedVisible: false, boothOn: true, useDiag: false });
+          runCase({ withBT: true, namedVisible: false, boothOn: false, useDiag: false });
+          runCase({ withBT: true, namedVisible: false, boothOn: false, useDiag: true });
+          console.log('replay lifecycle mocks: PASS');
+          NODE
+
+          expected="$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json tools/Booth.js | sort)"
+          actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
           test "$actual" = "$expected"
 
-          git config user.name "Knight Witch Dev Automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add \
-            CHANGELOG.md \
-            PRE_FLIGHT_Check.md \
-            MASTER.md \
-            manifest.json \
-            tools/Booth.js \
-            features/booth/Black_Canvas_Display_Replay.js \
-            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
-            HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md \
-            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md
-          git commit -m "Repair Dev Booth figure lifecycle and background restore"
-          git push --force-with-lease origin WITCH_DEV_BOOTH_LIFECYCLE_CANDIDATE_20260907
+          for path in tools/Utilities.js features/booth/Booth_Runtime_Bootstrap.js Witch_Dock_DEV.user.js HeroForge_UI/Corrected_Bound_Decal_Gizmo.js features/media/Spinny_Mini_WebP.js features/media/Spinny_Mini_WebP_UI.js features/media/Photo_Booth_True_Resolution.js features/media/Photo_Booth_True_Resolution_UI.js HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js tools/JSON_Tool.js features/core/Witch_Dock_Developer_Mode.js tools/Decals.js; do
+            test "$(git rev-parse HEAD:$path)" = "$(git rev-parse origin/WITCH_DEV_UI:$path)"
+          done
+          echo 'protected blobs: PASS'
