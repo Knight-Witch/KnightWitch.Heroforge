@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.0.1';
+  const BUILD_TAG = 'v27.0.2';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -376,6 +376,23 @@
     } catch {
       state.btCanvasVisualSnapshot = null;
       state.btCanvasLayoutKey = null;
+      return false;
+    }
+  }
+
+  function ensureEditorEnvironmentBehindBooth() {
+    try {
+      if (!state.userBoothOn || state.bgOn) return false;
+      const BT = UW.BT;
+      const CK = UW.CK;
+      const display = BT && BT.display;
+      const env = display && display.environment;
+      const background = CK && CK.environment ? CK.environment.background : null;
+      if (!env || typeof env.setDefaultEnvironmentVisibility !== 'function') return false;
+      if (!background || background.visible !== false) return false;
+      env.setDefaultEnvironmentVisibility(true);
+      return true;
+    } catch {
       return false;
     }
   }
@@ -1209,7 +1226,9 @@
   function getShaderFramePlane(TN) {
     try {
       if (state.shaderFramePlane) return state.shaderFramePlane;
-      const plane = TN && TN.shader ? TN.shader.framePlane : null;
+      const shader = TN && TN.shader ? TN.shader : null;
+      const overlays = shader && shader.overlays ? shader.overlays : null;
+      const plane = shader ? (shader.framePlane || (overlays && overlays.framePlane)) : null;
       if (!plane || typeof plane !== 'object') return null;
       state.shaderFramePlane = plane;
       return plane;
@@ -2079,6 +2098,9 @@
 
     if (TN && TN.__kwBT && state.boothOn && !inBooth) {
       try { applyBTComponentPlanes(); } catch {}
+      if (!state.bgOn) {
+        try { ensureEditorEnvironmentBehindBooth(); } catch {}
+      }
     }
 
     state.prevInBooth = inBooth;
@@ -2299,7 +2321,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.1',
+      version: '27.0.2',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2322,7 +2344,7 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.1',
+      version: '27.0.2',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,

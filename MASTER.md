@@ -84,9 +84,20 @@ Confirmed FAIL before this repair:
 
 Dev v27.0.1 / replay v0.1.3 are the surgical candidate fixes. Black Canvas remains a separate persistent default: if Black Canvas Across Sessions is ON, a fresh figure may remain black, but it must not remain in Booth View or show the checkerboard Booth backdrop.
 
+## Booth Presentation Follow-up — 2026-09-07
+
+The v27.0.1 integrated lifecycle repair is live validated: startup restoration, `+ New Figure`, both shutdown orders, fantasy-background restoration, component toggles, and white-flash suppression all passed.
+
+Remaining presentation-only failures before v27.0.2:
+
+- persisted Booth View with Black Canvas OFF left HeroForge's gray 1:1 frame visible because current BT exposes the plane at `BT.display.overlays.framePlane` while the existing frame helper only checked `BT.display.framePlane`;
+- turning Booth Background OFF could expose checkerboard because the Booth background plane was hidden correctly but the ordinary HeroForge editor environment remained in Booth-hidden state.
+
+Live bridge probes proved HeroForge's named `BT.display.environment.setDefaultEnvironmentVisibility(true)` restores the ordinary background/ground state without re-enabling the Booth background plane. v27.0.2 uses that seam only when persisted Booth is active outside native Photo Booth, Black Canvas is OFF, and the regular editor background is actually hidden.
+
 ## Booth / Utilities
 
-- Dev Booth: v27.0.1 / build `v27.0.1`.
+- Dev Booth: v27.0.2 / build `v27.0.2`.
 - Dev Utilities: v1.2.1.
 - The Booth runtime bootstrap and Black Canvas replay remain separate hidden compatibility features.
 - Utilities continues to own saved defaults under `Booth Features`; Booth tab switches remain session overrides.
@@ -113,12 +124,12 @@ The following remain outside this Dev change:
 
 ## Current Gate
 
-1. Update/reload the Dev loader with Public Stable disabled.
-2. Saved Booth figure + Booth Persistence ON: refresh without opening Photo Booth manually; Booth must restore automatically.
-3. `+ New Figure`: after the existing figure-settle window, default-owned Booth View must turn OFF because bare camera data is not a saved Booth setup. If the independent Black Canvas default is ON, the editor may remain black but must not show the Booth checkerboard.
-4. Test both shutdown orders: Black Canvas OFF then Booth OFF, and Booth OFF then Black Canvas OFF. With both OFF, the ordinary HeroForge fantasy background must return.
-5. Verify the known flash-causing action remains flash-free.
-6. Verify Booth lighting/effects/overlays/background sub-toggles still work.
-7. Only after this passes should the bootstrap/replay/loader repair be promoted narrowly to Public Stable.
+1. Update/reload Dev with Public Stable disabled.
+2. With Booth View ON and Black Canvas OFF, the ordinary fantasy editor environment must be visible outside the 1:1 area and the gray frame overlay must not be visible.
+3. Toggle Booth Background OFF: the fantasy editor environment must show through inside the 1:1 area instead of checkerboard.
+4. Toggle Booth Background ON again: the saved Booth background must return inside the 1:1 area while the ordinary editor environment remains behind/outside it.
+5. Turn Black Canvas ON: the viewport must remain black and the existing white-flash fix must remain effective.
+6. Re-check `+ New Figure` still drops default-owned Booth, and with Booth + Black Canvas both OFF the ordinary editor background still restores.
+7. Only after this presentation smoke passes should Booth/bootstrap/replay plus the separate loader cache repair be prepared for narrow Public Stable promotion.
 
 Historical state through the loader cache repair remains preserved at Dev commit `6cf10845e394676344ebb8699c654009267c6c61`.

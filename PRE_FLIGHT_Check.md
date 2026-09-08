@@ -1,5 +1,70 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-043 — Booth frame and editor-environment fallthrough repair
+
+Date: 2026-09-07
+
+### Reviewed
+
+- binding HeroForge.Compatibility contract/master/pre-flight/changelog/architecture/inventory/compatibility/ownership/testing state;
+- current Witch Dock Dev master/pre-flight/changelog/manifest;
+- Booth v27.0.1 source and `BOOTH_V27_STABILIZATION.md`;
+- Black Canvas replay v0.1.3 and its history;
+- Booth runtime bootstrap v0.1.0 and its history;
+- Amanda's integrated Dev acceptance at head `7b6e37562d5bba0d63d410e418f769a71857a87a`;
+- current screenshots showing the gray 1:1 frame and checkerboard fallthrough;
+- live read-only/reversible HF-Chat-Bridge probes #721-#724.
+
+### Confirmed findings
+
+- lifecycle/startup/new-figure/editor-restoration/white-flash gates from v27.0.1 are live PASS;
+- current BT facade uses `BT.display.overlays.framePlane`; `BT.display.framePlane` does not exist;
+- the existing frame helper therefore misses the actual frame while Black Canvas is OFF;
+- Background OFF correctly hides the Booth background plane, but the ordinary editor environment remains hidden by Booth state, exposing checkerboard;
+- named `BT.display.environment.setDefaultEnvironmentVisibility(true)` restores the full ordinary environment state without changing the Booth background plane and can be reversed cleanly.
+
+### Decision
+
+Repair only Booth presentation ownership. Reuse the existing frame hide lifecycle with the correct current runtime fallback, and conditionally restore the ordinary editor environment behind persisted Booth only when Black Canvas is OFF and the editor background is actually hidden.
+
+### Target files
+
+- `tools/Booth.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
+
+### Conflict risks / preservation requirements
+
+- do not modify Black Canvas replay or its validated post-`display.update()` white-flash sequencing;
+- do not modify Booth bootstrap timing or same-origin native runtime activation;
+- do not modify silent-cycle timing/rearm behavior;
+- do not force editor environment visibility inside native Photo Booth;
+- do not restore editor environment while Black Canvas is ON;
+- do not call the environment setter continuously when the environment is already visible;
+- Booth Background remains an independent overlay-plane toggle;
+- Public Stable remains untouched.
+
+### Static gate
+
+- Booth JavaScript syntax;
+- manifest JSON/identity;
+- frame-path fallback mock;
+- conditional environment-restoration mock including no repeated setter call after visibility is restored;
+- Black Canvas/native-Photo-Booth gating invariants;
+- exact six-file changed whitelist;
+- protected blobs unchanged.
+
+### Live gate
+
+With Dev only: Booth ON + Black Canvas OFF must show the fantasy editor environment outside the 1:1 viewport without the gray frame; Background OFF must reveal fantasy environment inside the square instead of checkerboard; Background ON must still show the Booth background; Black Canvas ON must remain black; `+ New`, both-OFF restoration, and white-flash behavior must remain correct.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+
+---
+
 ## PFC-2026-09-07-042 — Integrated Booth lifecycle regression repair
 
 Date: 2026-09-07

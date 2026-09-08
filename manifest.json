@@ -122,9 +122,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.0.1",
-      "build": "v27.0.1",
-      "versionOrigin": "dev-booth-lifecycle-repair-2026-09-07"
+      "version": "27.0.2",
+      "build": "v27.0.2",
+      "versionOrigin": "dev-booth-presentation-repair-2026-09-07"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -285,7 +285,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js?v=27.0.1-v27.0.1",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js?v=27.0.2-v27.0.2",
       "enabledByDefault": true
     },
     {

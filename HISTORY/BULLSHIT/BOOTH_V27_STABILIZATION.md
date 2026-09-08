@@ -168,3 +168,38 @@ The first combined Dev startup smoke proved the new runtime bootstrap works: a p
 v27.0.1 removes bare `camera` from the qualifying signal set while preserving `cameraSave`, lighting, effects, token-background/frame filters, and selected token background/frame signals. The existing 1.8 s figure-settle window and missing-config tick threshold are unchanged.
 
 The same live smoke reproduced the historical blank-white editor restoration class. v27.0.1 reuses the already-existing `restoreBTCanvasVisualState()` semantic restoration path after a real/manual/default Booth shutdown when Black Canvas is already OFF. Internal silent-cycle teardown is explicitly excluded so its validated timing/rearm behavior is unchanged.
+
+## 2026-09-07 presentation follow-up — v27.0.2
+
+After v27.0.1 passed the integrated startup/lifecycle smoke, two presentation artifacts remained with Witch Dock Booth View active outside native Photo Booth and Black Canvas OFF.
+
+### Gray 1:1 frame
+
+Live bridge issue #721 confirmed `BT.display.framePlane` is absent while `BT.display.overlays.framePlane.visible` is true. The existing `getShaderFramePlane()` looked only at `TN.shader.framePlane`; for the BT facade `TN.shader === BT.display`, so the helper could never acquire the actual current overlay frame. Black Canvas hid the correct `overlays.framePlane`, explaining why the artifact existed only when Black Canvas was OFF.
+
+v27.0.2 preserves the existing frame snapshot/hide/restore lifecycle and adds only the current-shape fallback `TN.shader.overlays.framePlane`.
+
+### Checkerboard when Booth Background is OFF
+
+On the live Witch of the Wilds saved Booth state, bridge issues #722-#723 confirmed:
+
+- Booth background plane: false, as requested by the Background toggle;
+- regular `CK.environment.background.visible`: false;
+- regular ground group: false;
+- `CK.character.settings.hideGround`: true;
+- summon circle: false.
+
+Thus the checkerboard was not the Booth background plane failing to hide; it was the ordinary editor environment remaining in Booth-hidden state underneath the transparent square.
+
+The named native method `BT.display.environment.setDefaultEnvironmentVisibility(e)` directly owns this state. A reversible live probe (#724) called it with `true`, observed background/ground/summon-circle visibility restore and `hideGround` clear while the Booth background plane stayed false, then called it with `false` and verified the original hidden state returned.
+
+v27.0.2 conditionally calls that named setter only when all of the following are true:
+
+- Witch Dock Booth View is active;
+- the page is outside native Photo Booth;
+- Black Canvas is OFF;
+- the regular HeroForge background currently reports `visible === false`.
+
+Once the editor environment is visible the helper is a no-op, so the RAF polling loop does not continuously invoke the setter. Native Photo Booth and Black Canvas ON remain excluded.
+
+The Black Canvas replay module is not changed by this presentation follow-up.

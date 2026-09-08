@@ -1,5 +1,51 @@
 # Changelog
 
+## DOCK-2026-09-07-043 — Repair Dev Booth frame and editor-environment fallthrough
+
+Date: 2026-09-07
+
+### Live acceptance entering this follow-up
+
+Dev head `7b6e37562d5bba0d63d410e418f769a71857a87a` passed the integrated lifecycle smoke:
+
+- saved Booth View + Black Canvas restored automatically on refresh;
+- `+ New Figure` correctly dropped default-owned Booth while preserving the independent Black Canvas default;
+- both Booth/Black Canvas OFF orders restored the fantasy editor background;
+- the white-flash regression remained closed;
+- Booth component toggles continued to work.
+
+Two presentation defects remained while Booth View was active outside native Photo Booth with Black Canvas OFF: the gray 1:1 frame overlay remained visible, and a full saved Booth with Background OFF could expose checkerboard instead of the ordinary fantasy editor environment.
+
+### Confirmed runtime diagnosis
+
+HF-Chat-Bridge issues #721-#724 established the current runtime shape and state:
+
+- `BT.display.framePlane` is absent while `BT.display.overlays.framePlane.visible` is `true`; Booth v27.0.1's frame helper therefore looks one level too high for the current BT facade;
+- with Witch of the Wilds left in Booth View ON / Black Canvas OFF / Background OFF, `BT.display.overlays.backgroundPlane.visible` is correctly `false`, but `CK.environment.background.visible` and `CK.environment.groundGroup.visible` are also `false`, `CK.character.settings.hideGround` is `true`, and the ordinary editor environment is therefore still Booth-hidden;
+- `BT.display.environment.setDefaultEnvironmentVisibility(true)` is a named native method whose source controls the regular environment visibility state;
+- a reversible live probe changed background/ground to visible, `hideGround` to false, and summon-circle visibility to true while leaving the Booth background plane OFF, then cleanly restored the original hidden state.
+
+### Changes
+
+- Booth -> v27.0.2 / build `v27.0.2`;
+- the existing shader/frame discovery now falls back from `TN.shader.framePlane` to `TN.shader.overlays.framePlane`, preserving the existing frame snapshot/hide/restore lifecycle;
+- while Witch Dock Booth View is active outside native Photo Booth and Black Canvas is OFF, Booth conditionally restores HeroForge's ordinary editor environment only when `CK.environment.background.visible === false`;
+- the environment setter is therefore not called every frame once the editor environment is already visible;
+- Booth Background still owns only `BT.display.overlays.backgroundPlane`: Background OFF can now fall through to the fantasy editor environment instead of checkerboard;
+- native Photo Booth and Black Canvas ON keep their existing behavior.
+
+### Preserved boundaries
+
+Black Canvas replay v0.1.3, Booth runtime bootstrap v0.1.0, Utilities v1.2.1, loader v0.5.1, white-flash post-update replay sequencing, silent-cycle timing, corrected decal gizmo, Spinny, High Res, JSON, Developer Mode, Decals host, tabs, and Public Stable are unchanged.
+
+### Validation gate
+
+Static syntax, manifest identity, helper behavior mocks, exact changed-file whitelist, protected-blob equality, and committed-candidate validation must pass before Dev moves. Live validation then checks the gray frame, Background OFF fallthrough, Black Canvas, `+ New`, editor restoration, and white-flash regression.
+
+**Runtime behavior changed:** yes, Dev Booth presentation only. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-07-042 — Repair Dev Booth figure lifecycle and editor background restore
 
 Date: 2026-09-07
