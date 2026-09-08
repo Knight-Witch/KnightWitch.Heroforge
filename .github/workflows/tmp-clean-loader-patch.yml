@@ -1,4 +1,4 @@
-name: Temporary Black Canvas startup candidate
+name: Temporary Black Canvas finalization
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  patch:
+  finalize:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,220 +17,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build Black Canvas startup candidate from current Dev
+      - name: Document and validate candidate
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin WITCH_DEV_UI
-          git checkout -B WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907 origin/WITCH_DEV_UI
-          python3 - <<'PY'
-          from pathlib import Path
-
-          replay = Path('features/booth/Black_Canvas_Display_Replay.js')
-          r = replay.read_text(encoding='utf-8')
-          replacements = [
-              ("  const VERSION = '0.1.0';", "  const VERSION = '0.2.0';"),
-              ("  const BUILD = '0.1.0-dev-post-display-update-replay';", "  const BUILD = '0.2.0-dev-pre-bt-main-background-fallback';"),
-              (
-'''  function discoverSemanticBackground() {
-    try {
-      const BT = UW.BT;
-      const overlays = BT && BT.display ? BT.display.overlays : null;
-      const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
-      if (!scene) return null;
-
-      const environmentRoot = namedChild(scene, 'environment');
-      if (!environmentRoot) return null;
-      return namedChild(environmentRoot, 'background');
-    } catch (error) {
-      recordError('discoverSemanticBackground', error);
-      return null;
-    }
-  }
-''',
-'''  function discoverCKEnvironmentBackground() {
-    try {
-      const CK = UW.CK;
-      const background = CK && CK.environment ? CK.environment.background : null;
-      const mesh = background && background.mesh ? background.mesh : null;
-      return mesh && 'visible' in mesh ? mesh : null;
-    } catch (error) {
-      recordError('discoverCKEnvironmentBackground', error);
-      return null;
-    }
-  }
-
-  function discoverSemanticBackground() {
-    try {
-      const directBackground = discoverCKEnvironmentBackground();
-
-      // If the pre-BT fallback already owns the live CK environment mesh, keep
-      // using that same object instead of switching ownership merely because
-      // HeroForge later creates BT. This avoids a restore/hide handoff on the
-      // same startup path. Existing BT-first behavior is unchanged when BT is
-      // present before this module first acquires a background target.
-      if (directBackground && state.semanticBackground === directBackground) return directBackground;
-
-      const BT = UW.BT;
-      const overlays = BT && BT.display ? BT.display.overlays : null;
-      const scene = overlays && overlays.backgroundPlane ? overlays.backgroundPlane.parent : null;
-      if (scene) {
-        const environmentRoot = namedChild(scene, 'environment');
-        if (environmentRoot) {
-          const namedBackground = namedChild(environmentRoot, 'background');
-          if (namedBackground) return namedBackground;
-        }
-      }
-
-      // Fresh editor startup can have CK.environment before the gated Booth
-      // runtime exists. The main display's own applyLighting path uses this
-      // background manager and its render mesh, so hide only the render mesh as
-      // the conservative no-BT fallback. If the shape is unavailable, do
-      // nothing and retry on the normal poll.
-      return directBackground;
-    } catch (error) {
-      recordError('discoverSemanticBackground', error);
-      return null;
-    }
-  }
-'''
-              )
-          ]
-          for old, new in replacements:
-              count = r.count(old)
-              if count != 1:
-                  raise SystemExit(f'Expected exactly one replay match, got {count}: {old[:100]!r}')
-              r = r.replace(old, new, 1)
-          replay.write_text(r, encoding='utf-8', newline='\n')
-
-          manifest = Path('manifest.json')
-          m = manifest.read_text(encoding='utf-8')
-          old = '''      "id": "booth-black-canvas-display-replay",\n      "title": "Booth Black Canvas Display Replay",\n      "path": "features/booth/Black_Canvas_Display_Replay.js",\n      "kind": "compatibility-feature",\n      "load": "manifest",\n      "version": "0.1.0",\n      "build": "0.1.0-dev-post-display-update-replay",\n      "versionOrigin": "new-dev-module"'''
-          new = '''      "id": "booth-black-canvas-display-replay",\n      "title": "Booth Black Canvas Display Replay",\n      "path": "features/booth/Black_Canvas_Display_Replay.js",\n      "kind": "compatibility-feature",\n      "load": "manifest",\n      "version": "0.2.0",\n      "build": "0.2.0-dev-pre-bt-main-background-fallback",\n      "versionOrigin": "dev-black-canvas-pre-bt-fallback-2026-09-07"'''
-          if m.count(old) != 1:
-              raise SystemExit('Unexpected replay registry entry')
-          m = m.replace(old, new, 1)
-          old_url = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.0-dev-post-display-update-replay'
-          new_url = 'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.2.0-dev-pre-bt-main-background-fallback'
-          if m.count(old_url) != 1:
-              raise SystemExit('Unexpected replay tools URL')
-          manifest.write_text(m.replace(old_url, new_url, 1), encoding='utf-8', newline='\n')
-
-          changelog = Path('CHANGELOG.md')
-          c = changelog.read_text(encoding='utf-8')
-          marker = '# Changelog\n\n'
-          if not c.startswith(marker):
-              raise SystemExit('Unexpected CHANGELOG header')
-          entry = '''## DOCK-2026-09-07-041 — Add Dev Black Canvas pre-BT fallback\n\nDate: 2026-09-07\n\n### Summary\n\nExtended the already-validated Black Canvas display replay so the editor can hide HeroForge's main environment background before the gated Booth runtime (`BT`) exists. The validated post-`display.update()` wrapper and BT semantic named-background path remain intact and preferred.\n\n### Confirmed evidence\n\n- prior HF-Chat-Bridge runtime reads confirmed `CK.environment.background` exists on the regular main display path;\n- `CK.character.display.applyLighting()` directly calls `CK.environment.background.updateValues(...)`;\n- the background manager's own `updateValues()` source operates on `this.mesh.material`, confirming it owns a render mesh independent of BT;\n- Booth v27 already exposes the saved Black Canvas default through `KW_WD_BOOTH.getState().sessionBlackCanvas` before BT exists;\n- renderer canvas/holder black CSS replay already works without BT.\n\n### Supported inference / live gate\n\n`CK.environment.background.mesh` is the conservative regular-scene render target for pre-BT visibility suppression. The candidate changes only that mesh's `visible` flag when the validated BT scene path is unavailable. The exact fresh-start visual result remains a live Dev validation item; failure degrades to retry/no-op rather than enabling Booth.\n\n### Changes\n\n- bumped Dev replay to v0.2.0 / build `0.2.0-dev-pre-bt-main-background-fallback`;\n- added `CK.environment.background.mesh` discovery as a no-BT fallback;\n- existing BT semantic `environment -> background` discovery remains first choice when BT exists before ownership is acquired;\n- if the direct CK mesh was already acquired pre-BT, the module retains that same owned object when BT later appears, avoiding an unnecessary restore/hide ownership handoff;\n- no Booth bootstrap is triggered by Black Canvas alone.\n\n### Preserved boundaries\n\n- native `CK.character.display.update()` always runs;\n- the validated white-flash replay sequencing is unchanged;\n- Booth v27, Utilities v1.2.1, Booth runtime bootstrap, Dev loader v0.5.1, Spinny, High Res, corrected decal gizmo, JSON, Developer Mode, Decals host, and tab infrastructure are unchanged;\n- public Stable replay v0.1.1 remains unchanged.\n\n### Validation\n\n- JavaScript syntax: PASS.\n- No-BT mock: PASS — direct CK background mesh hidden, canvas/holder black, native display update still executes, Black Canvas OFF restores owned visibility.\n- BT-present regression mock: PASS — existing named `environment -> background` target remains preferred and restores correctly.\n- Manifest JSON parse: PASS.\n- `git diff --check`: PASS.\n- protected Booth/Utilities/bootstrap/loader blobs unchanged.\n- live fresh-start visual validation: pending.\n\n**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.\n'''
-          changelog.write_text(marker + entry + '\n---\n\n' + c[len(marker):], encoding='utf-8', newline='\n')
-
-          preflight = Path('PRE_FLIGHT_Check.md')
-          p = preflight.read_text(encoding='utf-8')
-          marker = '# Pre-Flight Check Log\n\n'
-          if not p.startswith(marker):
-              raise SystemExit('Unexpected PRE_FLIGHT header')
-          entry = '''## PFC-2026-09-07-041 — Black Canvas pre-BT main-background fallback\n\nDate: 2026-09-07\n\n### Required material reviewed\n\n- binding HeroForge.Compatibility preflight/architecture/testing requirements;\n- current Dev Booth v27, Utilities v1.2.1, Booth runtime bootstrap, Black Canvas display replay, manifest, and loader;\n- Black Canvas white-flash investigation/history;\n- prior bridge evidence for `CK.environment.background`, `CK.environment.background.updateValues`, and `CK.character.display.applyLighting`;\n- current Dev baseline after loader repair `6cf10845e394676344ebb8699c654009267c6c61`.\n\n### Confirmed findings\n\n- Black Canvas saved state is available from the Booth API before BT exists;\n- regular HeroForge display lighting uses `CK.environment.background`;\n- that background manager owns a render `mesh`;\n- current replay can blacken renderer CSS without BT but its semantic background discovery is BT-only.\n\n### Decision\n\nAdd one conservative fallback to the existing replay: when the validated BT semantic scene target is unavailable, use only `CK.environment.background.mesh` if it exposes a `visible` capability. Do not bootstrap Booth for Black Canvas alone and do not rewrite the validated display-update wrapper.\n\n### Target files\n\n- `features/booth/Black_Canvas_Display_Replay.js`\n- `manifest.json`\n- `MASTER.md`\n- `PRE_FLIGHT_Check.md`\n- `CHANGELOG.md`\n- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`\n\n### Conflict risks / preservation requirements\n\n- BT semantic named-background discovery remains preferred for already-BT sessions;\n- native display update must always execute;\n- direct CK fallback may only own/restore the visibility value it changed;\n- Black Canvas default must not enable Booth View or load gated Booth core by itself;\n- failure to find the CK mesh must be a no-op/retry, not partial initialization;\n- public Stable remains untouched pending Dev validation.\n\n### Static validation\n\n- replay syntax: PASS.\n- no-BT lifecycle mock: PASS.\n- BT-present semantic-path regression mock: PASS.\n- manifest JSON parse and diff check: PASS.\n- protected blob checks: PASS.\n\n### Live gate\n\nWith Black Canvas Across Sessions ON, verify a fresh ordinary editor page becomes black without Black Canvas forcing Booth View ON. Separately verify saved-Booth persistence still bootstraps Booth when its own persistence default is ON, the known white-flash action remains flash-free, Black Canvas OFF restores the ordinary background, and `+ New Figure` remains untouched.\n\n**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.\n'''
-          preflight.write_text(marker + entry + '\n---\n\n' + p[len(marker):], encoding='utf-8', newline='\n')
-
-          master = Path('MASTER.md')
-          ms = master.read_text(encoding='utf-8')
-          old = '''- Dev v0.1.0 was live validated: the formerly reliable white flash no longer reproduced and the user reported it worked perfectly.\n- Public Stable contains replay v0.1.1 with the Stable-v24 state fallback; its rendering/replay behavior is unchanged from the validated Dev fix.\n- HeroForge native `CK.character.display.update()` remains untouched and always runs; replay occurs immediately after the update.\n- the real main-scene background is discovered semantically through named `environment -> background`.'''
-          new = '''- Dev v0.2.0 keeps the live-validated white-flash replay unchanged and adds a pre-BT regular-scene fallback through `CK.environment.background.mesh`.\n- Public Stable contains replay v0.1.1 and remains unchanged pending Dev validation.\n- HeroForge native `CK.character.display.update()` remains untouched and always runs; replay occurs immediately after the update.\n- when BT already exists, the validated semantic named `environment -> background` path remains preferred; before BT exists, only the regular CK background render mesh is visibility-suppressed.\n- Black Canvas alone does not bootstrap or enable Booth View.\n- pre-BT visual startup behavior is pending the final Dev smoke.'''
-          if old not in ms:
-              raise SystemExit('MASTER Black Canvas block missing')
-          master.write_text(ms.replace(old, new, 1), encoding='utf-8', newline='\n')
-
-          history = Path('HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md')
-          h = history.read_text(encoding='utf-8').rstrip()
-          addition = '''\n\n## 2026-09-07 pre-BT startup extension\n\nAfter the flash replay was live validated, startup testing exposed a separate persistence boundary: Black Canvas can be saved ON while HeroForge has not yet loaded the gated Booth runtime. The replay already knows the saved Black Canvas state through `KW_WD_BOOTH` and can blacken the renderer canvas/holder without BT, but its semantic main-background lookup originally started from `BT.display.overlays.backgroundPlane.parent`.\n\nPrior bridge evidence confirms the regular main display has `CK.environment.background`; `CK.character.display.applyLighting()` calls its `updateValues()`, and that method operates on `this.mesh.material`. Dev v0.2.0 therefore keeps the validated BT named-background discovery unchanged and adds only `CK.environment.background.mesh` as a fallback when no BT semantic target is available. The fallback is capability-checked for a `visible` property, owns/restores only that visibility value, and does not load or enable Booth.\n\nThis is a supported runtime-shape inference with static lifecycle coverage; the fresh-start visual result remains gated on live Dev validation. Public Stable remains on v0.1.1 until that gate passes.\n'''
-          history.write_text(h + addition, encoding='utf-8', newline='\n')
-          PY
+          git fetch origin WITCH_DEV_UI WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
+          git checkout -B WITCH_DEV_BLACK_STARTUP_FINAL_20260907 origin/WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
+          python3 -c "from pathlib import Path; import base64; p=Path('CHANGELOG.md'); s=p.read_text(); h='# Changelog\\n\\n'; a=base64.b64decode('IyMgRE9DSy0yMDI2LTA5LTA3LTA0MSDigJQgQWRkIERldiBCbGFjayBDYW52YXMgcHJlLUJUIGZhbGxiYWNrCgpEYXRlOiAyMDI2LTA5LTA3CgojIyMgU3VtbWFyeQoKQnVtcGVkIGBib290aC5ibGFjay1jYW52YXMtZGlzcGxheS1yZXBsYXlgIHRvIHYwLjEuMi4gVGhlIERldiBtb2R1bGUgbm93IGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlIHYwLjEuMSdzIGRpYWdub3N0aWMgc3RhdGUgZmFsbGJhY2sgYW5kLCBvbmx5IHdoZW4gQlQgaXMgYWJzZW50LCBtYXkgaGlkZSBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYCBzbyBCbGFjayBDYW52YXMgY2FuIHJlc3RvcmUgd2l0aG91dCBlbmFibGluZyBCb290aC4KCiMjIyBFdmlkZW5jZSAvIGJvdW5kYXJ5CgpDb25maXJtZWQgYnJpZGdlIGV2aWRlbmNlIHNob3dzIHRoZSByZWd1bGFyIGRpc3BsYXkgdXNlcyBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZGAsIHdob3NlIGB1cGRhdGVWYWx1ZXMoKWAgb3BlcmF0ZXMgb24gYHRoaXMubWVzaC5tYXRlcmlhbGAuIFRyZWF0aW5nIHRoYXQgbWVzaCBhcyB0aGUgcHJlLUJUIHJlbmRlciB0YXJnZXQgaXMgYSBzdXBwb3J0ZWQgaW5mZXJlbmNlIHBlbmRpbmcgdmlzdWFsIERldiB2YWxpZGF0aW9uLiBUaGUgdmFsaWRhdGVkIEJUIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkIHdoZW5ldmVyIEJUIGV4aXN0czsgbmF0aXZlIGBDSy5jaGFyYWN0ZXIuZGlzcGxheS51cGRhdGUoKWAgc3RpbGwgYWx3YXlzIHJ1bnMuCgojIyMgVmFsaWRhdGlvbgoKLSBzeW50YXg6IFBBU1M7Ci0gbG9jYWwgbm8tQlQgQVBJLXN0YXRlIGxpZmVjeWNsZSBtb2NrOiBQQVNTOwotIGxvY2FsIFN0YWJsZSBkaWFnbm9zdGljLXN0YXRlIGZhbGxiYWNrIG1vY2s6IFBBU1M7Ci0gbG9jYWwgQlQtcHJlc2VudCByZWdyZXNzaW9uIG1vY2s6IFBBU1M7Ci0gbWFuaWZlc3QgcGFyc2UgLyBkaWZmIC8gcHJvdGVjdGVkLWJsb2IgZ2F0ZXM6IFBBU1M7Ci0gbGl2ZSBmcmVzaC1zdGFydCB2aXN1YWwgdmFsaWRhdGlvbjogcGVuZGluZy4KCkJvb3RoIHYyNywgVXRpbGl0aWVzIHYxLjIuMSwgQm9vdGggYm9vdHN0cmFwLCBsb2FkZXIgdjAuNS4xLCBTcGlubnksIEhpZ2ggUmVzLCBkZWNhbCBnaXptbywgSlNPTiwgRGV2ZWxvcGVyIE1vZGUsIGFuZCBQdWJsaWMgU3RhYmxlIGFyZSB1bmNoYW5nZWQuCgoqKlJ1bnRpbWUgYmVoYXZpb3IgY2hhbmdlZDoqKiB5ZXMsIERldiBCbGFjayBDYW52YXMgc3RhcnR1cCBvbmx5Lgo=').decode(); assert s.startswith(h); p.write_text(h+a+'\\n---\\n\\n'+s[len(h):], encoding='utf-8', newline='\\n')"
+          python3 -c "from pathlib import Path; import base64; p=Path('PRE_FLIGHT_Check.md'); s=p.read_text(); h='# Pre-Flight Check Log\\n\\n'; a=base64.b64decode('IyMgUEZDLTIwMjYtMDktMDctMDQxIOKAlCBCbGFjayBDYW52YXMgcHJlLUJUIGZhbGxiYWNrCgpEYXRlOiAyMDI2LTA5LTA3CgojIyMgUmV2aWV3ZWQKCi0gYmluZGluZyBDb21wYXRpYmlsaXR5IHByZWZsaWdodC9hcmNoaXRlY3R1cmUvdGVzdGluZyBtYXRlcmlhbCBhbHJlYWR5IHJldmlld2VkIGZvciB0aGlzIHN0YWdlOwotIERldiBCb290aCB2MjcsIFV0aWxpdGllcyB2MS4yLjEsIEJvb3RoIGJvb3RzdHJhcCwgcmVwbGF5LCBtYW5pZmVzdCwgbG9hZGVyLCBhbmQgbW9kdWxlLXZlcnNpb25pbmcgY29udHJhY3Q7Ci0gUHVibGljIFN0YWJsZSByZXBsYXkgdjAuMS4xOwotIEJsYWNrIENhbnZhcyBoaXN0b3J5IGFuZCBwcmlvciBicmlkZ2UgcmVhZHMgZm9yIGBDSy5lbnZpcm9ubWVudC5iYWNrZ3JvdW5kYCAvIGBhcHBseUxpZ2h0aW5nKClgLgoKIyMjIERlY2lzaW9uCgpCdWlsZCByZXBsYXkgdjAuMS4yIGFzIHRoZSB1bmlvbiBvZiBTdGFibGUgdjAuMS4xIHN0YXRlIGRldGVjdGlvbiBwbHVzIG9uZSBjb25zZXJ2YXRpdmUgbm8tQlQgY2FwYWJpbGl0eSBmYWxsYmFjazogYENLLmVudmlyb25tZW50LmJhY2tncm91bmQubWVzaC52aXNpYmxlYC4gS2VlcCB0aGUgdmFsaWRhdGVkIEJUIG5hbWVkLWJhY2tncm91bmQgcGF0aCBmaXJzdCB3aGVuZXZlciBCVCBleGlzdHMuIERvIG5vdCBib290c3RyYXAgQm9vdGggZm9yIEJsYWNrIENhbnZhcyBhbG9uZTsgZmFpbHVyZSB0byBmaW5kIHRoZSBtZXNoIGlzIGEgbm8tb3AvcmV0cnkuCgojIyMgUmlza3MgLyBnYXRlcwoKVGhlIENLIG1lc2ggbWFwcGluZyBpcyBzdXBwb3J0ZWQgaW5mZXJlbmNlLCBub3QgbGl2ZS1wcm92ZW4gb2JqZWN0IGlkZW50aXR5LiBTdGF0aWMgc3ludGF4IGFuZCBBUEkvZGlhZ25vc3RpYy9CVCBsaWZlY3ljbGUgbW9ja3MgcGFzcy4gUHJvdGVjdGVkIEJvb3RoLCBVdGlsaXRpZXMsIGJvb3RzdHJhcCwgbG9hZGVyLCBTcGlubnksIGFuZCBnaXptbyBibG9icyBtdXN0IHJlbWFpbiB1bmNoYW5nZWQuIExpdmUgRGV2IG11c3QgdmVyaWZ5IEJsYWNrIENhbnZhcy1vbmx5IGZyZXNoIHN0YXJ0dXAsIE9GRiByZXN0b3JhdGlvbiwgc2F2ZWQtQm9vdGggYm9vdHN0cmFwLCBubyB3aGl0ZS1mbGFzaCByZWdyZXNzaW9uLCBhbmQgdW50b3VjaGVkIGArIE5ldyBGaWd1cmVgLgoKKipSdW50aW1lIGJlaGF2aW9yIGNoYW5nZWQ6KiogeWVzLCBEZXYgb25seS4gUHVibGljIFN0YWJsZSB1bmNoYW5nZWQuCg==').decode(); assert s.startswith(h); p.write_text(h+a+'\\n---\\n\\n'+s[len(h):], encoding='utf-8', newline='\\n')"
+          python3 -c "from pathlib import Path; import base64; p=Path('MASTER.md'); s=p.read_text(); old=base64.b64decode('LSBEZXYgdjAuMS4wIHdhcyBsaXZlIHZhbGlkYXRlZDogdGhlIGZvcm1lcmx5IHJlbGlhYmxlIHdoaXRlIGZsYXNoIG5vIGxvbmdlciByZXByb2R1Y2VkIGFuZCB0aGUgdXNlciByZXBvcnRlZCBpdCB3b3JrZWQgcGVyZmVjdGx5LgotIFB1YmxpYyBTdGFibGUgY29udGFpbnMgcmVwbGF5IHYwLjEuMSB3aXRoIHRoZSBTdGFibGUtdjI0IHN0YXRlIGZhbGxiYWNrOyBpdHMgcmVuZGVyaW5nL3JlcGxheSBiZWhhdmlvciBpcyB1bmNoYW5nZWQgZnJvbSB0aGUgdmFsaWRhdGVkIERldiBmaXguCi0gSGVyb0ZvcmdlIG5hdGl2ZSBgQ0suY2hhcmFjdGVyLmRpc3BsYXkudXBkYXRlKClgIHJlbWFpbnMgdW50b3VjaGVkIGFuZCBhbHdheXMgcnVuczsgcmVwbGF5IG9jY3VycyBpbW1lZGlhdGVseSBhZnRlciB0aGUgdXBkYXRlLgotIHRoZSByZWFsIG1haW4tc2NlbmUgYmFja2dyb3VuZCBpcyBkaXNjb3ZlcmVkIHNlbWFudGljYWxseSB0aHJvdWdoIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYC4=').decode(); new=base64.b64decode('LSBEZXYgdjAuMS4yIGtlZXBzIHRoZSBsaXZlLXZhbGlkYXRlZCB3aGl0ZS1mbGFzaCByZXBsYXkgc2VxdWVuY2luZyB1bmNoYW5nZWQsIGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlJ3MgdjAuMS4xIGRpYWdub3N0aWMgc3RhdGUgZmFsbGJhY2ssIGFuZCBhZGRzIGEgcHJlLUJUIHJlZ3VsYXItc2NlbmUgZmFsbGJhY2sgdGhyb3VnaCBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYC4KLSBQdWJsaWMgU3RhYmxlIHJlbWFpbnMgb24gcmVwbGF5IHYwLjEuMSBwZW5kaW5nIHRoZSBmaW5hbCBEZXYgc21va2UuCi0gSGVyb0ZvcmdlIG5hdGl2ZSBgQ0suY2hhcmFjdGVyLmRpc3BsYXkudXBkYXRlKClgIHJlbWFpbnMgdW50b3VjaGVkIGFuZCBhbHdheXMgcnVuczsgcmVwbGF5IG9jY3VycyBpbW1lZGlhdGVseSBhZnRlciB0aGUgdXBkYXRlLgotIHdoZW4gQlQgZXhpc3RzLCB0aGUgdmFsaWRhdGVkIHNlbWFudGljIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkOyBiZWZvcmUgQlQgZXhpc3RzLCBvbmx5IHRoZSByZWd1bGFyIENLIGJhY2tncm91bmQgcmVuZGVyIG1lc2ggaXMgdmlzaWJpbGl0eS1zdXBwcmVzc2VkLgotIEJsYWNrIENhbnZhcyBhbG9uZSBkb2VzIG5vdCBib290c3RyYXAgb3IgZW5hYmxlIEJvb3RoIFZpZXcuCi0gdGhlIGBDSy5lbnZpcm9ubWVudC5iYWNrZ3JvdW5kLm1lc2hgIHZpc3VhbCBtYXBwaW5nIGlzIGEgc3VwcG9ydGVkIGluZmVyZW5jZSBwZW5kaW5nIGZyZXNoLXN0YXJ0IGxpdmUgdmFsaWRhdGlvbi4=').decode(); assert s.count(old)==1; p.write_text(s.replace(old,new,1), encoding='utf-8', newline='\\n')"
+          python3 -c "from pathlib import Path; import base64; p=Path('HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md'); s=p.read_text().rstrip(); a=base64.b64decode('CiMjIDIwMjYtMDktMDcgcHJlLUJUIHN0YXJ0dXAgZXh0ZW5zaW9uCgpEZXYgdjAuMS4yIGNhcnJpZXMgZm9yd2FyZCBQdWJsaWMgU3RhYmxlIHYwLjEuMSdzIGRpYWdub3N0aWMgQmxhY2sgQ2FudmFzIHN0YXRlIGZhbGxiYWNrIGFuZCBhZGRzIG9uZSBuby1CVCB2aXNpYmlsaXR5IGZhbGxiYWNrOiBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZC5tZXNoYC4gUHJpb3IgYnJpZGdlIGV2aWRlbmNlIGNvbmZpcm1zIHRoZSByZWd1bGFyIGRpc3BsYXkgdXNlcyBgQ0suZW52aXJvbm1lbnQuYmFja2dyb3VuZGAgYW5kIHRoYXQgaXRzIGB1cGRhdGVWYWx1ZXMoKWAgd29ya3MgdGhyb3VnaCBgdGhpcy5tZXNoLm1hdGVyaWFsYDsgdGhlIGV4YWN0IGZyZXNoLXN0YXJ0IHZpc3VhbCBtYXBwaW5nIHJlbWFpbnMgYSBzdXBwb3J0ZWQgaW5mZXJlbmNlIHVudGlsIGxpdmUgRGV2IHZhbGlkYXRpb24uCgpXaGVuIEJUIGV4aXN0cywgdGhlIGFscmVhZHktdmFsaWRhdGVkIHNlbWFudGljIG5hbWVkIGBlbnZpcm9ubWVudCAtPiBiYWNrZ3JvdW5kYCBwYXRoIHJlbWFpbnMgcHJlZmVycmVkLiBUaGUgZmFsbGJhY2sgb3ducy9yZXN0b3JlcyBvbmx5IHRoZSBtZXNoIGB2aXNpYmxlYCB2YWx1ZSBhbmQgbmV2ZXIgbG9hZHMgb3IgZW5hYmxlcyBCb290aC4gVGhlIHZhbGlkYXRlZCBwb3N0LWBkaXNwbGF5LnVwZGF0ZSgpYCByZXBsYXkgc2VxdWVuY2luZyBpcyB1bmNoYW5nZWQuIFB1YmxpYyBTdGFibGUgcmVtYWlucyB2MC4xLjEgcGVuZGluZyB0aGUgRGV2IGdhdGUuCg==').decode(); p.write_text(s+'\\n'+a, encoding='utf-8', newline='\\n')"
 
           node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-
-          node <<'NODE'
-          const fs = require('fs');
-          const vm = require('vm');
-          const source = fs.readFileSync('features/booth/Black_Canvas_Display_Replay.js', 'utf8');
-
-          function runCase(withBT) {
-            let blackOn = true;
-            let nativeUpdates = 0;
-            let scheduled = null;
-            const direct = { visible: true };
-            const named = { name: 'background', visible: true, children: [] };
-            const envRoot = { name: 'environment', visible: true, children: [named] };
-            const scene = { children: [envRoot], getObjectByName(name) { return name === 'environment' ? envRoot : name === 'background' ? named : null; } };
-            const backgroundPlane = { visible: true, parent: scene };
-            const framePlane = { visible: true };
-            const shadowPlane = { visible: true };
-            const mask = { visible: true };
-            const canvas = { style: { backgroundColor: '' }, parentElement: { style: { backgroundColor: '' } } };
-            const display = { update() { nativeUpdates += 1; return 'native'; } };
-            const UW = {
-              KW_WD_BOOTH: { getState: () => ({ sessionBlackCanvas: blackOn }) },
-              CK: {
-                character: { display },
-                environment: { background: { mesh: direct } },
-                renderManager: { renderer: { domElement: canvas } }
-              }
-            };
-            if (withBT) {
-              UW.BT = {
-                display: {
-                  environment: { setDefaultEnvironmentVisibility() {} },
-                  overlays: { backgroundPlane, framePlane, shadowPlane, mask }
-                }
-              };
-            }
-            const context = {
-              unsafeWindow: UW,
-              window: UW,
-              console: { log() {}, error() {} },
-              setTimeout(fn) { scheduled = fn; return 1; },
-              clearTimeout() {}
-            };
-            vm.createContext(context);
-            vm.runInContext(source, context);
-            const api = UW.KW_WD_BOOTH_BLACK_REPLAY;
-            if (!api) throw new Error('Replay API missing');
-            if (withBT) {
-              if (named.visible !== false) throw new Error('BT named background was not hidden');
-              if (direct.visible !== true) throw new Error('Direct fallback incorrectly replaced BT-first path');
-            } else {
-              if (direct.visible !== false) throw new Error('No-BT CK background mesh was not hidden');
-            }
-            if (canvas.style.backgroundColor !== '#000000' || canvas.parentElement.style.backgroundColor !== '#000000') throw new Error('Canvas black replay failed');
-            const result = display.update();
-            if (result !== 'native' || nativeUpdates !== 1) throw new Error('Native display update was not preserved');
-            blackOn = false;
-            if (typeof scheduled !== 'function') throw new Error('Poll was not scheduled');
-            scheduled();
-            if (withBT) {
-              if (named.visible !== true) throw new Error('BT named background did not restore');
-            } else if (direct.visible !== true) {
-              throw new Error('No-BT CK background mesh did not restore');
-            }
-            api.dispose();
-          }
-
-          runCase(false);
-          runCase(true);
-          NODE
-
+          python3 -c "import json; m=json.load(open('manifest.json')); r={x['id']:x for x in m['moduleRegistry']}['booth-black-canvas-display-replay']; assert r['version']=='0.1.2'; assert r['build']=='0.1.2-dev-stable-state-plus-pre-bt-background'; t={x['id']:x for x in m['tools']}['booth-black-canvas-display-replay']; assert 'v=0.1.2-dev-stable-state-plus-pre-bt-background' in t['url']"
           git diff --check
 
-          test "$(git hash-object tools/Booth.js)" = "434b5382c9e8b01e9f9e8bf53d772e72eaf53090"
-          test "$(git hash-object tools/Utilities.js)" = "036fca4d7f68a1dee0f7d160777d453ac53274af"
-          test "$(git hash-object features/booth/Booth_Runtime_Bootstrap.js)" = "3aaa110b4f09ab74df524e64056406b571357474"
+          test "$(git rev-parse HEAD:tools/Booth.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Booth.js)"
+          test "$(git rev-parse HEAD:tools/Utilities.js)" = "$(git rev-parse origin/WITCH_DEV_UI:tools/Utilities.js)"
+          test "$(git rev-parse HEAD:features/booth/Booth_Runtime_Bootstrap.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/booth/Booth_Runtime_Bootstrap.js)"
+          test "$(git rev-parse HEAD:Witch_Dock_DEV.user.js)" = "$(git rev-parse origin/WITCH_DEV_UI:Witch_Dock_DEV.user.js)"
+          test "$(git rev-parse HEAD:features/media/Spinny_Mini_WebP.js)" = "$(git rev-parse origin/WITCH_DEV_UI:features/media/Spinny_Mini_WebP.js)"
+          test "$(git rev-parse HEAD:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)" = "$(git rev-parse origin/WITCH_DEV_UI:HeroForge_UI/Corrected_Bound_Decal_Gizmo.js)"
 
-          expected=$(printf '%s\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)
-          actual=$(git diff --name-only origin/WITCH_DEV_UI | sort)
+          expected="$(printf '%s\\n' CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json | sort)"
+          actual="$(git diff --name-only origin/WITCH_DEV_UI...HEAD | sort)"
           test "$actual" = "$expected"
 
           git config user.name "Knight Witch Dev Automation"
           git config user.email "actions@users.noreply.github.com"
-          git add CHANGELOG.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md MASTER.md PRE_FLIGHT_Check.md features/booth/Black_Canvas_Display_Replay.js manifest.json
-          git commit -m "Add Dev Black Canvas pre-BT fallback"
-          git push --force-with-lease origin WITCH_DEV_BLACK_STARTUP_CANDIDATE_20260907
+          git add CHANGELOG.md PRE_FLIGHT_Check.md MASTER.md HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md
+          git commit -m "Document Dev Black Canvas pre-BT fallback"
+          git push --force-with-lease origin WITCH_DEV_BLACK_STARTUP_FINAL_20260907
