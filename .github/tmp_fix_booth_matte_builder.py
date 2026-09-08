@@ -38,5 +38,13 @@ replace_count('manifest.json',
               'https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.4-dev-component-aware-booth-reassert')
 """
 
-path.write_text(text[:start] + replacement + text[end:], encoding='utf-8', newline='\n')
-print('temporary matte builder manifest literals repaired')
+fixed = text[:start] + replacement + text[end:]
+old_master_fix = "m = m.replace('- Dev candidate is v0.1.3 / build `0.1.3-dev-editor-background-restore`.', '- Dev candidate is v0.1.4 / build `0.1.4-dev-component-aware-booth-reassert`.')"
+new_master_fix = "m = m.replace('- Dev candidate is v0.1.2 / build `0.1.2-dev-stable-state-plus-pre-bt-background`.', '- Dev candidate is v0.1.4 / build `0.1.4-dev-component-aware-booth-reassert`.')"
+count = fixed.count(old_master_fix)
+if count != 1:
+    raise SystemExit(f'expected one stale MASTER replacement in patch script, got {count}')
+fixed = fixed.replace(old_master_fix, new_master_fix)
+
+path.write_text(fixed, encoding='utf-8', newline='\n')
+print('temporary matte builder literals/doc state repaired')
