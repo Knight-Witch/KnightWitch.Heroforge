@@ -1,5 +1,71 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-07-041 — Black Canvas pre-BT fallback
+
+Date: 2026-09-07
+
+### Required material reviewed
+
+- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing material already reviewed for this stage;
+- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, loader, Booth v27, Utilities v1.2.1, Booth runtime bootstrap, and Black Canvas replay;
+- Public Stable replay v0.1.1;
+- `MODULE_VERSIONING.md`;
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`;
+- prior bridge evidence for `CK.environment.background`, `CK.character.display.applyLighting()`, and the background manager's `updateValues()` implementation;
+- current Dev baseline after loader repair `6cf10845e394676344ebb8699c654009267c6c61`.
+
+### Confirmed findings
+
+- Black Canvas saved state is exposed through the Booth API before BT exists;
+- Public Stable replay v0.1.1 has a diagnostic state fallback that Dev v0.1.0 did not yet carry;
+- the regular HeroForge display lighting path uses `CK.environment.background`;
+- that background manager's `updateValues()` operates on `this.mesh.material`;
+- current replay can blacken renderer canvas/holder without BT but its semantic main-background discovery starts from BT.
+
+### Supported inference
+
+`CK.environment.background.mesh` is the conservative regular-scene render target for pre-BT visibility suppression. This exact fresh-start visual mapping is not yet live-proven; therefore the candidate only uses it when it exposes a `visible` capability and treats absence/failure as no-op/retry.
+
+### Decision
+
+Build replay v0.1.2 as the union of Public Stable v0.1.1 state detection and one conservative no-BT background visibility fallback. Preserve the validated BT named `environment -> background` path whenever BT already exists. Do not bootstrap Booth for Black Canvas alone and do not change the validated post-`display.update()` replay sequencing.
+
+### Target files
+
+- `features/booth/Black_Canvas_Display_Replay.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+
+### Conflict risks / preservation requirements
+
+- native `CK.character.display.update()` must always execute;
+- existing Stable diagnostic state fallback must be retained;
+- BT semantic named-background discovery remains preferred for BT-first sessions;
+- the direct CK fallback may only own/restore the visibility value it changed;
+- Black Canvas default must not enable Booth View or load gated Booth core by itself;
+- failure to find the CK mesh must be a no-op/retry, not partial initialization;
+- Booth v27, Utilities v1.2.1, Booth runtime bootstrap, loader v0.5.1, Spinny, High Res, corrected decal gizmo, JSON, Developer Mode, Decals host, and public Stable remain untouched.
+
+### Static validation
+
+- replay syntax: PASS;
+- no-BT API-state lifecycle mock: PASS;
+- Stable diagnostic-state fallback mock: PASS;
+- BT-present semantic-path regression mock: PASS;
+- manifest v0.1.2/build/query identity: PASS;
+- candidate replay Git blob matches the locally tested source exactly: PASS.
+
+### Live gate
+
+Use the Dev userscript only. Verify Black Canvas Across Sessions ON can restore a fresh ordinary editor page to black without forcing Booth View ON. Separately verify saved-Booth persistence still bootstraps Booth when its own persistence default is ON, the known white-flash action remains flash-free, Black Canvas OFF restores the ordinary background, and `+ New Figure` remains untouched.
+
+**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-07-040 — Dev loader cache repair
 
 Date: 2026-09-07
@@ -89,7 +155,7 @@ The module:
 - reads the existing `kw.witchDock.booth.consent.v1` default;
 - inspects `CK.data.custom` independently of BT for strong saved Booth signals;
 - excludes bare-camera-only figures;
-- requires four consecutive 200 ms observations of the same `CK.data` object, mode, and signal signature;
+- requires four consecutive 200 ms observations of the same `CK.data` object, mode, and strong-signal signature;
 - loads only HeroForge's own same-origin gated `booth.js` when BT is absent;
 - derives the current HeroForge build from loaded script/resource URLs instead of hard-coding a minified bundle identity;
 - requires named `BT.setBoothMode()` and uses the saved mode;
