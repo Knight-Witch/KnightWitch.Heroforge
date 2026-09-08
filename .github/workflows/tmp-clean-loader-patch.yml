@@ -1,4 +1,4 @@
-name: Temporary Booth presentation candidate builder
+name: Temporary Booth matte candidate builder
 
 on:
   push:
@@ -17,29 +17,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build and validate isolated Booth presentation candidate
+      - name: Build and validate isolated Booth matte candidate
         shell: bash
         run: |
           set -euo pipefail
-          cp .github/tmp_booth_presentation_patch.py /tmp/tmp_booth_presentation_patch.py
-          cp .github/tmp_booth_presentation_validate.js /tmp/tmp_booth_presentation_validate.js
+          cp .github/tmp_booth_matte_patch.py /tmp/tmp_booth_matte_patch.py
+          cp .github/tmp_booth_matte_validate.js /tmp/tmp_booth_matte_validate.js
 
-          python3 -m py_compile /tmp/tmp_booth_presentation_patch.py
+          python3 -m py_compile /tmp/tmp_booth_matte_patch.py
+          node --check /tmp/tmp_booth_matte_validate.js
           git fetch origin WITCH_DEV_UI
-          test "$(git rev-parse origin/WITCH_DEV_UI)" = "7b6e37562d5bba0d63d410e418f769a71857a87a"
-          git checkout -B WITCH_DEV_BOOTH_PRESENTATION_CANDIDATE_20260907 origin/WITCH_DEV_UI
+          test "$(git rev-parse origin/WITCH_DEV_UI)" = "a42acf814cc4240becbf0dc02fbcca2fc0ac65c2"
+          git checkout -B WITCH_DEV_BOOTH_MATTE_CANDIDATE_20260907 origin/WITCH_DEV_UI
 
-          python3 /tmp/tmp_booth_presentation_patch.py
+          python3 /tmp/tmp_booth_matte_patch.py
           node --check tools/Booth.js
+          node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-          node /tmp/tmp_booth_presentation_validate.js
+          node /tmp/tmp_booth_matte_validate.js
           git diff --check
 
           expected="$(printf '%s\n' \
             CHANGELOG.md \
+            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md \
             HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
             MASTER.md \
             PRE_FLIGHT_Check.md \
+            features/booth/Black_Canvas_Display_Replay.js \
             manifest.json \
             tools/Booth.js | sort)"
           actual="$(git diff --name-only | sort)"
@@ -47,7 +51,6 @@ jobs:
           test "$actual" = "$expected"
 
           for path in \
-            features/booth/Black_Canvas_Display_Replay.js \
             features/booth/Booth_Runtime_Bootstrap.js \
             tools/Utilities.js \
             Witch_Dock_DEV.user.js \
@@ -72,17 +75,19 @@ jobs:
             MASTER.md \
             manifest.json \
             tools/Booth.js \
-            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md
-          git commit -m "Repair Dev Booth presentation fallthrough"
+            features/booth/Black_Canvas_Display_Replay.js \
+            HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md \
+            HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md
+          git commit -m "Make Dev Black Canvas component-aware"
 
           node --check tools/Booth.js
+          node --check features/booth/Black_Canvas_Display_Replay.js
           python3 -m json.tool manifest.json >/dev/null
-          node /tmp/tmp_booth_presentation_validate.js
+          node /tmp/tmp_booth_matte_validate.js
           git diff --check HEAD^
           test "$(git diff --name-only HEAD^...HEAD | sort)" = "$expected"
 
           for path in \
-            features/booth/Black_Canvas_Display_Replay.js \
             features/booth/Booth_Runtime_Bootstrap.js \
             tools/Utilities.js \
             Witch_Dock_DEV.user.js \
@@ -99,4 +104,4 @@ jobs:
           done
           echo 'protected committed blobs: PASS'
 
-          git push --force-with-lease origin WITCH_DEV_BOOTH_PRESENTATION_CANDIDATE_20260907
+          git push --force-with-lease origin WITCH_DEV_BOOTH_MATTE_CANDIDATE_20260907
