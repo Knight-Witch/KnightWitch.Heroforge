@@ -8,8 +8,47 @@ This file tracks the current active state. Detailed historical state remains pre
 - Current public repository head before this Dev change: `f218244b2a6010e4d299ca5641a8d4f6f56f38f9`
 - Dev integration branch: `WITCH_DEV_UI`
 - Dev baseline before Black Canvas startup candidate: `6cf10845e394676344ebb8699c654009267c6c61`
-- Target HeroForge build: `heroforge07.1.9.98`
+- Live verified HeroForge build on the 2026-09-08 clean Dev reload: `heroforge06.1.9.98`; earlier investigation sessions observed `heroforge07.1.9.98`, so build identity is treated as runtime-discovered rather than hard-coded.
 - HF-Chat-Bridge: private development diagnostics only; never a public runtime dependency.
+
+## Booth duplicate-runtime / black Spinny repair — 2026-09-08
+
+Feature ID: `booth.runtime-bootstrap`.
+
+A public Witch Dock 1.2.1 session reproduced two apparently separate regressions: Spinny Mini WebP downloads were completely black/empty at both 1024 and 2048, and the previously closed Booth/Kitbash white-flash symptom was visible again.
+
+Live bridge tracing confirmed a single root architectural defect below the WebP encoder:
+
+- `BT.maker.takeScreenshot(1024,1024)` itself returned a fully opaque black image while direct `CK.Effects.renderToCanvas()` of the same Booth camera remained healthy;
+- HeroForge's screenshot compositor rendered the model correctly, then composited a second frame/overlay render over it;
+- that auxiliary render was opaque black because a top-level `TokenBackground` mesh remained visible even though the current Booth runtime hid its own background/frame/shadow set;
+- `CK.scene` contained two complete `TokenBackground / TokenShadow / TokenFrame` trios;
+- the page contained two identical `/gated/booth.js` scripts: Witch Dock bootstrap had manually inserted one, then HeroForge's native lazy loader inserted another later;
+- `window.BT` referred to the second runtime, leaving the first runtime's overlay trio orphaned in the scene.
+
+A reversible live recovery removed only the proven orphan trio. Native screenshots immediately became non-black, confirming the causal chain.
+
+Dev bootstrap v0.1.1 / build `0.1.1-dev-native-loader-coordination` repairs the load boundary instead of patching Spinny or screenshot compositing. It preserves the existing four-stable-observation eligibility gate and named `BT.setBoothMode(savedMode)` activation, but now:
+
+- reuses a matching Booth script already present regardless of whether Witch Dock or HeroForge created it;
+- when it must request Booth itself, uses the native lazy-script contract observed in the live page: relative `/gated/booth.js?...` `src`, BODY ownership, async execution, and `data-status=loading/loaded/error` lifecycle;
+- exposes script topology diagnostics;
+- refuses to mark bootstrap complete if duplicate matching Booth scripts are detected.
+
+Clean Dev validation on the live `heroforge06.1.9.98` page passed:
+
+- bootstrap v0.1.1 loaded and ran exactly once;
+- one Booth script only, with native-compatible relative `src`, BODY parent, and `data-status=loaded`;
+- one `TokenBackground / TokenShadow / TokenFrame` trio only, and its UUIDs exactly matched `BT.display.overlays`;
+- native 1024 screenshot contained normal figure image data;
+- real Spinny 1024 short test: 16/16 rendered, 16/16 encoded, valid 1024x1024 animated WebP, ~979 KB, rotation restored, no download emitted by the bridge smoke;
+- real Spinny 2048 short test: 16/16 rendered, 16/16 encoded, valid 2048x2048 animated WebP, ~2.52 MB, rotation restored, no download emitted by the bridge smoke;
+- after both captures and a native `CK.character.refresh()` rebuild, script count remained one and overlay count remained three;
+- a 120-animation-frame outer-framebuffer probe around the known refresh path recorded zero white/bright spikes and no probe errors.
+
+The final human Booth/Kitbash visual flash check remains required because the automated framebuffer sampler cannot prove every possible central/UI presentation flash. Spinny performance remains a separate optimization investigation: the clean short tests measured about 2.65 s/frame at 1024 and 6.9 s/frame at 2048 on this complex figure, consistent with the user's complaint that the current capture path is too slow even when correct.
+
+Public Stable remains unchanged until the Dev visual gate passes.
 
 ## Corrected Bound Decal Gizmo fresh-slot repair — 2026-09-08
 
@@ -31,34 +70,30 @@ Static syntax/JSON/cache-identity/blob-preservation gates pass. Live delivery sm
 
 Feature ID: `booth.runtime-bootstrap`.
 
-Dev module v0.1.0 / build `0.1.0-dev-native-booth-bootstrap` closes the remaining fresh-page circular dependency in saved Booth persistence without modifying Booth v27.
+Dev module v0.1.1 / build `0.1.1-dev-native-loader-coordination` retains the v0.1.0 saved-Booth fresh-page bootstrap behavior and adds native loader coordination to prevent duplicate Booth runtimes.
 
-Confirmed root cause:
+The original confirmed startup root cause remains:
 
 - a fresh HeroForge page has no `BT` global before HeroForge's gated Booth core is loaded;
 - Booth v27 `readSavedBoothConfig()` still gates `CK.data.custom` inspection behind an existing BT runtime;
 - saved Booth Persistence can therefore be ON while v27 cannot see the saved figure configuration that would justify creating BT.
 
-Dev bootstrap behavior:
+Bootstrap behavior:
 
 - reads only the existing saved Booth Persistence default key;
 - independently inspects character-owned `CK.data.custom` for strong saved Booth signals;
 - bare camera data is explicitly insufficient, preserving `+ New Figure` exclusion;
 - requires four consecutive 200 ms observations of the same `CK.data` object, mode, and strong-signal signature before acting;
-- if BT is absent, loads HeroForge's own same-origin `/gated/booth.js` using the current HeroForge build version discovered from loaded resource URLs;
+- reuses a matching live/native Booth script or live `BT` when available;
+- otherwise requests HeroForge's same-origin `/gated/booth.js` using the current runtime-discovered HeroForge build and the native lazy-script DOM/status contract;
 - requires named `BT.setBoothMode()` and calls the saved mode rather than using minified/runtime-private helpers;
 - verifies the native Booth engine becomes enabled;
 - reconciles the existing v27 Witch Dock API afterward so default-owned Booth View and saved Black Canvas become active;
 - single-flights bootstrap work and exposes diagnostics/dispose through `KW_WD_BOOTH_BOOTSTRAP`;
+- reports matching/duplicate Booth script topology and fails closed on an unexpected duplicate after bootstrap;
 - does not unload or replace HeroForge runtime code on dispose.
 
-Static gates passed:
-
-- JavaScript syntax: PASS;
-- saved-figure mock: PASS (`portrait` native mode bootstrap + Black Canvas reconciliation);
-- fresh-camera-only figure mock: PASS (zero bootstrap attempts).
-
-Live Dev gate remains required before Stable promotion.
+Static v0.1.0 gates remain valid for eligibility/activation. Live v0.1.1 clean-reload topology, native screenshot, 1024 Spinny, 2048 Spinny, and post-refresh duplicate checks all pass. Final human Booth/Kitbash flash confirmation remains pending before Stable promotion.
 
 Detailed record: `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`.
 
@@ -125,6 +160,7 @@ v27.0.4 / replay v0.1.5 repair those ownership paths first. Component redraw is 
 
 - Dev Booth: v27.0.4 / build `v27.0.4`.
 - Dev Utilities: v1.2.1.
+- Dev Booth runtime bootstrap: v0.1.1 / build `0.1.1-dev-native-loader-coordination`.
 - The Booth runtime bootstrap and Black Canvas replay remain separate hidden compatibility features.
 - Utilities continues to own saved defaults under `Booth Features`; Booth tab switches remain session overrides.
 - Black Canvas Across Sessions and Booth Persistence Across Sessions remain conceptually separate: Black Canvas alone must not force Booth activation.
@@ -144,17 +180,13 @@ The corresponding repair is implemented in Dev only. Public shell v1.2.0 still r
 The following remain outside this Dev change:
 
 - `media.screenshot-resolution` — Witch Dock Stable validated TRUE 4K/8K;
-- `media.spinny-mini-webp` — validated public/Dev behavior unchanged;
+- `media.spinny-mini-webp` — service code unchanged by the bootstrap repair; clean 1024/2048 short captures now pass once duplicate Booth runtime creation is prevented;
 - `decals.gizmo.bound-correction` — Stable validated Move/Rotate/Scale + undo/redo/state preservation;
-- JSON, Developer Mode, Decals host, tab ordering, High Res UI/service — unchanged by this Black Canvas startup candidate.
+- JSON, Developer Mode, Decals host, tab ordering, High Res UI/service — unchanged by this Booth bootstrap repair.
 
 ## Current Gate
 
-1. Update/reload Dev and confirm Booth v27.0.4 / replay v0.1.5.
-2. With Black Canvas OFF, confirm the full fantasy editor backdrop (not only pedestal/ground) is visible.
-3. While Booth View remains ON and Black Canvas OFF, toggle Lighting, Effects, Overlays, and Background individually ON/OFF; none may knock the fantasy editor environment back out or leave checkerboard/black behind after the component operation settles.
-4. Exercise Black Canvas ON -> OFF once; OFF must restore the full fantasy backdrop, including the background image mesh.
-5. With Black Canvas ON + Background OFF, confirm the checkerboard caused by a stranded replay-owned background is gone. The outside-of-1:1 matte is intentionally not an acceptance requirement in this state-repair build.
-6. Verify `+ New Figure` still drops default-owned Booth correctly and Black Canvas remains independently persistent.
-7. Verify the known white-flash action remains flash-free.
-8. Only after this state-repair smoke passes should the frame-derived outer-black matte be investigated again; Public Stable promotion remains blocked until the complete Dev presentation is validated.
+1. Human visual check: exercise the Booth menu and Kitbash actions that previously produced the white flash while Dev v0.1.1 is active. The automated 120-frame outer-framebuffer refresh probe passed, but visual confirmation is still required.
+2. Keep the existing v27.0.4 Booth presentation/environment gates separate; this bootstrap repair does not claim to solve the deferred outer-black 1:1 matte problem.
+3. If the visual flash check passes, the duplicate-runtime/black-Spinny defect is Dev validated and the bootstrap+manifest change can be reviewed for narrow Stable promotion.
+4. Spinny performance optimization is a separate investigation; correctness is restored but current per-frame times remain unacceptably high for complex figures.

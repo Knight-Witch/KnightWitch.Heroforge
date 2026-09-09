@@ -1,5 +1,68 @@
 # Changelog
 
+## DOCK-2026-09-08-047 — Prevent duplicate Booth runtime and black Spinny output
+
+Date: 2026-09-08
+
+### Live report
+
+Public Witch Dock 1.2.1 reproduced two regressions during the current Photo Booth/texture session:
+
+- Spinny Mini WebP downloads were completely black/empty at both 1024 and 2048, including short 16-frame tests;
+- the previously closed Booth/Kitbash white-flash symptom was visible again.
+
+### Confirmed diagnosis
+
+HF-Chat-Bridge tracing established that the WebP service was not the source of the black output:
+
+- native `BT.maker.takeScreenshot(1024,1024)` itself returned 100% opaque black pixels;
+- disabling Witch Dock True Resolution and separately disabling Black Canvas did not repair it;
+- direct `CK.Effects.renderToCanvas()` of the current Booth camera and HeroForge's own screenshot-camera clone both rendered the figure correctly;
+- HeroForge's native screenshot compositor had a good model image, then drew an opaque-black auxiliary frame/overlay render over it;
+- a second top-level `TokenBackground` remained visible during that auxiliary render even though the current Booth runtime hid its own presentation objects;
+- `CK.scene` contained two complete `TokenBackground / TokenShadow / TokenFrame` trios;
+- the page contained two identical `/gated/booth.js` tags: one inserted by Witch Dock's persistence bootstrap and one later inserted by HeroForge's native lazy loader;
+- current `BT.display.overlays` owned only the second trio, proving the first trio was an orphan runtime remnant;
+- removing only the proven orphan trio immediately restored healthy native screenshot output.
+
+HeroForge's native lazy script contract was then observed directly: relative Booth `src`, BODY ownership, async execution, and `data-status` lifecycle. The current clean page also confirmed all 35 observed versioned HeroForge resource/script URLs use `heroforge06.1.9.98`; the older `heroforge07.1.9.98` documentation target is stale for this live session.
+
+### Dev change
+
+- `booth.runtime-bootstrap` `0.1.0 -> 0.1.1` / build `0.1.1-dev-native-loader-coordination`;
+- preserve the existing persistence default gate, strong saved-Booth signal detection, four consecutive 200 ms stable observations, named `BT.setBoothMode(savedMode)` activation, engine verification, and Witch Dock default reconciliation;
+- reuse any already-present matching Booth script rather than only recognizing a bootstrap-owned tag;
+- when Witch Dock must request Booth itself, use a relative `/gated/booth.js?...` `src`, append under BODY, set async, and participate in HeroForge's `data-status=loading/loaded/error` convention;
+- expose requested path/URL, loader strategy, matching script count, duplicate count, and compact script topology through bootstrap diagnostics;
+- refuse successful bootstrap completion when more than one matching Booth script is detected;
+- bump Dev manifest registry/raw URL identity to v0.1.1/build `0.1.1-dev-native-loader-coordination`.
+
+No Spinny, True Resolution, Booth v27.0.4, Black Canvas replay v0.1.5, Utilities, gizmo, JSON, Developer Mode, or Public Stable runtime code was changed.
+
+### Live Dev validation
+
+Clean reload with Dev v0.1.1:
+
+- bootstrap loaded/runs exactly once: PASS;
+- one Booth script, zero duplicates: PASS;
+- one TokenBackground/TokenShadow/TokenFrame trio, all UUIDs matching current `BT.display.overlays`: PASS;
+- native 1024 screenshot non-black: PASS;
+- Spinny 1024 short test: 16/16 rendered and encoded, valid 1024x1024 animated WebP, ~978,702 bytes, rotation restored: PASS;
+- Spinny 2048 short test: 16/16 rendered and encoded, valid 2048x2048 animated WebP, ~2,521,512 bytes, rotation restored: PASS;
+- after native `CK.character.refresh()`: still one Booth script and three current overlay meshes: PASS;
+- automated 120-frame outer-framebuffer sampling around the known refresh path: zero white/bright spike frames and no errors: PASS;
+- final human Booth/Kitbash visual flash confirmation: pending.
+
+The correctness smoke also measured about 42.4 seconds for 16 native 1024 frames and 110.4 seconds for 16 native 2048 frames on this complex figure. WebP capture performance optimization is explicitly parked as a separate investigation.
+
+### Tracking repair
+
+The bootstrap source commit `09136b6691bfa34fa4b2b628fb59ed287874f1e9` and manifest bump `efe279fc4718ab067ae6f20e0b4042e5fa3532af` landed before their required tracking update. This entry, the matching pre-flight/master/history updates, and their single multi-file documentation commit repair that gap.
+
+**Runtime behavior changed:** yes in the preceding Dev bootstrap/manifest commits. This documentation commit itself changes no runtime behavior. Public Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-08-046 — Repair fresh-slot Project-OFF decal normalization
 
 Date: 2026-09-08
@@ -120,7 +183,7 @@ Booth bootstrap v0.1.0, Utilities v1.2.1, loader v0.5.1, established Booth timin
 
 ### Validation gate
 
-Booth/replay syntax, manifest identities, matte geometry math, component-aware enforcement, delegation/fallback replay mocks, exact changed-file whitelist, protected blobs, and committed-candidate rerun must pass before Dev moves. Live visual acceptance remains required afterward.
+Booth/replay syntax, manifest identities, matte geometry math, component-aware enforcement, delegation/fallback replay mocks, exact eight-file whitelist, protected blobs, and committed-candidate rerun must pass before Dev moves. Live visual acceptance remains required afterward.
 
 **Runtime behavior changed:** yes, Dev Booth/Black Canvas presentation only. Public Stable remains unchanged.
 
@@ -252,7 +315,7 @@ Bumped `booth.black-canvas-display-replay` to v0.1.2. The Dev module now carries
 - manifest v0.1.2/build/query identity: PASS;
 - live fresh-start visual validation: pending.
 
-**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable remains unchanged.
+**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable unchanged.
 
 ---
 
@@ -266,7 +329,7 @@ Repaired the Dev Witch Dock loader so branch-based raw GitHub delivery no longer
 
 ### Confirmed diagnosis
 
-- the public v1.2.0 loader fetched branch-based raw GitHub manifest/module URLs without durable query keys;
+- the public v1.2.0 loader fetched branch-based raw GitHub manifest/module URLs without durable cache keys;
 - a live Stable page demonstrably remained on an intermediate manifest snapshot until a hard refresh;
 - the Dev loader used the same vulnerable `gmGetText(MANIFEST_URL)` / `gmGetText(url)` pattern;
 - `moduleRegistry` already provides stable module IDs plus version/build/path metadata, so module cache identity can be derived without changing module runtime behavior.
