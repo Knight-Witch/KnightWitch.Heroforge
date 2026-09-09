@@ -2,16 +2,16 @@
 
 Date: 2026-09-07
 Feature ID: `booth.runtime-bootstrap`
-Status: Public Stable (Dev validated before promotion)
-Version: 0.1.0
-Build: `0.1.0-dev-native-booth-bootstrap`
-Target HeroForge build: `heroforge07.1.9.98`
+Status: Public Stable; v0.1.1 Dev validated before promotion, final public smoke pending
+Version: 0.1.1
+Build: `0.1.1-dev-native-loader-coordination`
+Current live-verified HeroForge build: `heroforge06.1.9.98` on 2026-09-08 clean Dev reload; bootstrap derives build dynamically.
 
 ## Purpose
 
-Close the remaining fresh-page startup gap for saved Booth Persistence without broadening the already-large Booth tool or depending on minified HeroForge implementation details.
+Close the fresh-page startup gap for saved Booth Persistence without broadening the already-large Booth tool or depending on minified HeroForge implementation details, while coordinating with HeroForge's own lazy Booth loader so only one native Booth runtime exists.
 
-## Confirmed failure
+## Confirmed original startup failure
 
 Fresh HeroForge startup does not expose `window.BT`. HeroForge loads its gated Booth core later, normally when Photo Booth is needed.
 
@@ -23,7 +23,7 @@ Booth v27 improved runtime handling, but `readSavedBoothConfig()` still checks `
 4. v27 refuses to inspect it until BT exists;
 5. BT does not exist because Booth has not yet been activated.
 
-The user reproduced the result on current public v27 after the stale-manifest issue was cleared: Booth Persistence and Black Canvas defaults were ON but neither restored automatically.
+The user reproduced the result on public v27 after the stale-manifest issue was cleared: Booth Persistence and Black Canvas defaults were ON but neither restored automatically.
 
 ## Prior runtime proof
 
@@ -35,7 +35,7 @@ The standalone bootstrap probe established:
 - the active engine becomes available through named `BT.liveEngine || BT.maker`;
 - the probe successfully restored the saved Booth/Black Canvas path without visiting native Photo Booth first.
 
-This module integrates that already-proved behavior rather than introducing a new speculative seam.
+This module integrates that already-proved behavior rather than introducing a speculative seam.
 
 ## Eligibility
 
@@ -63,18 +63,21 @@ HeroForge can replace `CK.data` while the loaded figure settles. The module ther
 
 Any data generation or eligibility change resets the count.
 
-## Native runtime bootstrap
+## Native runtime bootstrap — v0.1.1
 
 When eligibility is stable:
 
 1. If named `BT.setBoothMode` already exists, reuse it and do not inject another script.
 2. Otherwise discover the current HeroForge build string from existing loaded script/resource `?version=heroforge...` URLs.
-3. Insert one same-origin script element for `/gated/booth.js`, carrying that build version when found.
-4. Wait up to 12 seconds for named `BT.setBoothMode`.
-5. Call `BT.setBoothMode(savedMode)`.
-6. Verify `BT.liveEngine || BT.maker` exists and reports `enabled`.
-7. Wait for the existing Witch Dock `KW_WD_BOOTH` API.
-8. Reconcile the saved defaults through that API: default-owned Booth View ON and Black Canvas ON when their stored defaults require them.
+3. Resolve the exact same-origin `/gated/booth.js?version=<current-build>` path and look for any existing matching script regardless of ownership.
+4. If a matching HeroForge/Witch Dock Booth script already exists, wait for named `BT.setBoothMode` rather than adding another one.
+5. If no matching script exists, request one using HeroForge's observed lazy-script contract: relative `src` attribute, BODY parent, async execution, and `data-status=loading/loaded/error` lifecycle.
+6. Wait up to 12 seconds for named `BT.setBoothMode`.
+7. Call `BT.setBoothMode(savedMode)`.
+8. Verify `BT.liveEngine || BT.maker` exists and reports `enabled`.
+9. Refuse to mark bootstrap complete if more than one matching Booth script is present.
+10. Wait for the existing Witch Dock `KW_WD_BOOTH` API.
+11. Reconcile the saved defaults through that API: default-owned Booth View ON and Black Canvas ON when their stored defaults require them.
 
 No Webpack discovery, compiled-string matching, bundle rewriting, or minified local identifier is used.
 
@@ -89,9 +92,11 @@ Exports:
 
 The module owns only its polling/timers and the script element it may request. It does not monkey-patch HeroForge methods.
 
+`getState()` v0.1.1 additionally exposes the requested Booth script path/URL, loader strategy, matching Booth script count, duplicate count, and compact script topology.
+
 `dispose()` stops module-owned polling and resets observation state. It does not attempt to unload HeroForge's native Booth core once HeroForge has initialized it; reverting that native runtime mid-session is not a safe owned operation. A page refresh is the clean unload boundary.
 
-Failure to load/resolve the native Booth runtime records diagnostics and leaves ordinary HeroForge behavior intact. No dependent Witch Dock feature is intentionally taken down.
+Failure to load/resolve the native Booth runtime or detection of an unexpected duplicate records diagnostics and leaves ordinary HeroForge behavior intact. No dependent Witch Dock feature is intentionally taken down.
 
 ## Static validation
 
@@ -102,8 +107,8 @@ Mock contained a stable `custom.portrait` with cameraSave/lighting/effects/token
 Result:
 
 - four-stable-observation gate: PASS;
-- HeroForge build discovery: `heroforge07.1.9.98`;
-- generated native URL: `/gated/booth.js?version=heroforge07.1.9.98`;
+- HeroForge build discovery: PASS;
+- generated native Booth URL/path: PASS;
 - `BT.setBoothMode('portrait')`: PASS;
 - engine enabled verification: PASS;
 - Black Canvas default reconciliation: PASS;
@@ -119,34 +124,56 @@ Result:
 - script insertions: zero;
 - bootstrap attempts: zero.
 
-## Dev integration
-
-Manifest ID: `booth-runtime-bootstrap`.
-
-Load order is before `booth-tool`, allowing its observation loop to begin while the normal Booth v27 module loads. Booth v27 itself remains byte-unchanged.
-
-Dev manifest URLs for the bootstrap, Booth v27, Black Canvas replay, and Utilities v1.2.1 include explicit version query keys. This prevents stale module-body responses after the current manifest has been obtained, but does not fix the separate fixed-manifest-URL cache issue in the Witch Dock userscript shell.
-
-## Live gate
-
-With Dev loader only:
-
-1. Turn on Utilities `Enable Booth Persistence Across Sessions` and `Enable Black Canvas Across Sessions`.
-2. Load a figure with an existing saved Photo Booth setup.
-3. Refresh HeroForge without manually opening Photo Booth.
-4. Booth View must restore automatically.
-5. Black Canvas must be visibly black.
-6. The known white-flash action must remain flash-free.
-7. A fresh `+ New Figure` with no saved Booth setup must not auto-bootstrap Booth.
-
-Do not promote this module to Stable until the live gate passes and the separate public loader cache-busting defect is repaired.
-
 ## 2026-09-07 integrated Dev result
 
-Live integrated Dev validation confirmed the bootstrap's primary job works: refreshing a figure with saved Booth setup while Booth Persistence and Black Canvas defaults were enabled automatically created/activated the native Booth runtime and restored Booth/Black Canvas without manually opening Photo Booth.
+Live integrated Dev validation confirmed the bootstrap's primary startup job works: refreshing a figure with saved Booth setup while Booth Persistence and Black Canvas defaults were enabled automatically created/activated the native Booth runtime and restored Booth/Black Canvas without manually opening Photo Booth.
 
-The subsequent `+ New Figure` failure was not a bootstrap eligibility failure. BT was already present from the first figure, so control returned to Booth v27's own saved-config detector, which still accepted bare `cfg.camera`. That consumer-side mismatch is corrected in Booth v27.0.1; bootstrap v0.1.0 itself remains unchanged.
+The subsequent `+ New Figure` failure was not a bootstrap eligibility failure. BT was already present from the first figure, so control returned to Booth v27's own saved-config detector, which still accepted bare `cfg.camera`. That consumer-side mismatch was corrected in Booth v27.0.1.
 
 ## 2026-09-07 Stable promotion
 
-The exact validated Dev runtime blob `3aaa110b4f09ab74df524e64056406b571357474` is promoted as hidden public module `booth-runtime-bootstrap`, ordered before `booth-tool`. It remains gated by the saved Booth Persistence default and strong saved Photo Booth signals; bare camera state remains insufficient. The module uses HeroForge's own same-origin `/gated/booth.js` plus named `BT.setBoothMode()` and does not create a public dependency on HF-Chat-Bridge or HeroForge.Compatibility main.
+The exact validated Dev v0.1.0 runtime blob `3aaa110b4f09ab74df524e64056406b571357474` was promoted as hidden public module `booth-runtime-bootstrap`, ordered before `booth-tool`. It remained gated by the saved Booth Persistence default and strong saved Photo Booth signals; bare camera state remained insufficient. The module used HeroForge's own same-origin `/gated/booth.js` plus named `BT.setBoothMode()` and did not create a public dependency on HF-Chat-Bridge or HeroForge.Compatibility main.
+
+## 2026-09-08 duplicate-runtime / black Spinny diagnosis
+
+Public Witch Dock 1.2.1 later reproduced black/empty Spinny downloads and renewed Booth/Kitbash flashing.
+
+HF-Chat-Bridge tracing established:
+
+- native `BT.maker.takeScreenshot(1024,1024)` itself returned fully opaque black frames;
+- disabling Witch Dock True Resolution did not repair it;
+- temporarily disabling Black Canvas did not repair it;
+- direct `CK.Effects.renderToCanvas()` with the current Booth camera and HeroForge's own temporary screenshot camera both produced valid figure renders;
+- the destructive transition occurred inside HeroForge's native Booth compositor after the good model image was already present;
+- `CK.scene` contained two complete `TokenBackground / TokenShadow / TokenFrame` trios;
+- the DOM contained two matching `/gated/booth.js` tags: one inserted by the bootstrap and one later loaded by HeroForge's native lazy loader;
+- current `BT.display.overlays` owned only the second trio, proving the first trio was orphaned;
+- the orphan `TokenBackground` survived HeroForge's screenshot hide sequence and painted opaque black over the capture;
+- removing only the proven orphan trio immediately restored healthy native screenshot output.
+
+HeroForge's own lazy script contract was observed directly: relative Booth `src`, BODY parent, async execution, and `data-status` lifecycle. The clean Dev page also showed current versioned HeroForge resources on `heroforge06.1.9.98`; the bootstrap continues to derive this dynamically.
+
+## v0.1.1 Dev repair and live validation
+
+Dev bootstrap v0.1.1 / build `0.1.1-dev-native-loader-coordination` changes only native loader coordination and diagnostics; the existing persistence behavior/timing remains intact.
+
+Live validation on a clean Dev reload:
+
+- bootstrap loaded/runs exactly once: PASS;
+- one Booth script, zero duplicates: PASS;
+- one `TokenBackground / TokenShadow / TokenFrame` trio, all UUIDs matching current `BT.display.overlays`: PASS;
+- native 1024 screenshot non-black: PASS;
+- automated Spinny 1024 short test: PASS;
+- automated Spinny 2048 short test: PASS;
+- Amanda's all-three-resolution real capture smoke: PASS;
+- native character refresh retained one Booth script/current overlay trio: PASS;
+- automated 120-frame outer-framebuffer white-spike sampler: zero white/bright spike frames: PASS;
+- Amanda visual Booth/Kitbash white-flash check: PASS, flashing gone.
+
+Capture performance remains a separate investigation; this repair is correctness/lifecycle only.
+
+## 2026-09-08 v0.1.1 Stable promotion
+
+Public Stable promotes the exact Dev runtime blob `45f8833f89ec2226a2611c8873a3548fb6008d4c` and updates only the public bootstrap manifest identity/cache key. Booth v27.0.4, Black Canvas replay v0.1.5, Spinny, True Resolution, Utilities, gizmo, JSON, Developer Mode, Body, Pose, Decals, and shell v1.2.1 remain byte-unchanged.
+
+Final public smoke remains required after branch movement; one short capture plus the previously failing Booth/Kitbash transition is sufficient because the exact runtime already passed Dev.

@@ -1,5 +1,46 @@
 # Changelog
 
+## DOCK-2026-09-08-030 — Prevent duplicate Booth runtime and black Spinny capture
+
+Date: 2026-09-08
+
+### Summary
+
+Promote the Dev-validated `booth.runtime-bootstrap` v0.1.1 loader-coordination repair to public Stable after live confirmation that all three exposed Spinny capture resolutions work and the renewed Booth/Kitbash white flashing is gone.
+
+### Confirmed root cause
+
+Public Witch Dock 1.2.1 could load HeroForge's gated `booth.js` twice: once through Witch Dock's saved-Booth bootstrap and again later through HeroForge's own lazy loader. The first runtime left an orphan `TokenBackground / TokenShadow / TokenFrame` trio in `CK.scene`. HeroForge's screenshot path hid only the current runtime's overlay set, so the orphan `TokenBackground` remained visible during the auxiliary capture stage and composited opaque black over otherwise-valid model renders.
+
+This was upstream of the WebP encoder: native `BT.maker.takeScreenshot()` itself returned black frames in the failing public session, while direct `CK.Effects.renderToCanvas()` remained healthy.
+
+### Stable promotion
+
+- `booth.runtime-bootstrap` `0.1.0 -> 0.1.1` / build `0.1.1-dev-native-loader-coordination`;
+- promote the exact Dev runtime blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
+- reuse an already-present matching HeroForge Booth script instead of inserting another;
+- when Witch Dock must request Booth, use HeroForge's observed lazy-script contract: relative `src`, BODY parent, async script, and `data-status=loading/loaded/error` lifecycle;
+- expose Booth-script topology diagnostics and refuse to mark bootstrap complete when a duplicate matching Booth script is detected;
+- public manifest remains on `Witch_Scripts` and advances only the bootstrap module identity/cache key.
+
+### Live Dev validation
+
+- clean reload produced exactly one `/gated/booth.js` script and one current `TokenBackground / TokenShadow / TokenFrame` trio: PASS;
+- native 1024 screenshot returned normal image data: PASS;
+- automated Spinny 1024 and 2048 16-frame captures returned valid non-black animated WebPs: PASS;
+- Amanda then ran all three exposed capture resolutions on Dev and confirmed all three worked: PASS;
+- native character refresh did not recreate duplicate Booth scripts or overlay trios: PASS;
+- automated 120-frame refresh sampling found zero white/bright spike frames: PASS;
+- Amanda visually confirmed the Booth/Kitbash white flashing is gone: PASS.
+
+### Preserved boundaries
+
+Booth v27.0.4, Black Canvas replay v0.1.5, Spinny Mini WebP service/UI, True Resolution service/UI, Utilities, Corrected Bound Decal Gizmo, JSON, Developer Mode, Body, Pose, Decals, and public shell v1.2.1 are byte-unchanged by this promotion.
+
+**Runtime behavior changed:** yes — public Booth runtime bootstrap loader coordination only.
+
+---
+
 ## DOCK-2026-09-08-029 — Promote fresh-slot bound decal normalization v1.1.1
 
 Date: 2026-09-08

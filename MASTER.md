@@ -8,12 +8,30 @@ This is the canonical high-level source for current public Witch Dock state. His
 - Production branch: `Witch_Scripts`
 - Public userscript: `Witch_Dock.user.js`
 - Current public shell version: **1.2.1**
-- HeroForge validation target: `heroforge07.1.9.98`
+- HeroForge validation target: `heroforge06.1.9.98`
 - Runtime dependency on HeroForge.Compatibility unstable head or HF-Chat-Bridge: **none**
 
 Public shell v1.2.1 adds the validated cache-keyed manifest/module loader so branch-based raw GitHub caching cannot strand a page on an older manifest/module body. Module execution order and enablement are otherwise unchanged.
 
-Final public Stable acceptance on 2026-09-07: **PASS**. Amanda confirmed the public v1.2.1 load and final Booth/Black Canvas behavior look correct after the narrow promotion commit `91a78ebaba6e54ee143dbae0053d782495f252fa`.
+## 2026-09-08 Booth duplicate-runtime / capture repair
+
+Feature ID: `booth.runtime-bootstrap`.
+
+Public Stable advances the Booth runtime bootstrap to v0.1.1 / build `0.1.1-dev-native-loader-coordination` after Dev live validation.
+
+Confirmed failure in public 1.2.1 before this repair:
+
+- Witch Dock's saved-Booth bootstrap loaded HeroForge `/gated/booth.js` early;
+- HeroForge's own lazy loader later loaded the same Booth core again;
+- the first runtime left an orphan `TokenBackground / TokenShadow / TokenFrame` trio in `CK.scene`;
+- HeroForge's screenshot compositor hid only the current overlay set, leaving the orphan `TokenBackground` to paint opaque black over otherwise-valid captures;
+- this made native `BT.maker.takeScreenshot()` black before Spinny/WebP encoding and also reintroduced visible Booth/Kitbash flashing.
+
+v0.1.1 preserves the existing persistence eligibility, stable-observation gate, named `BT.setBoothMode(savedMode)` activation, engine verification, and Witch Dock default reconciliation. It changes only native script-loader coordination: reuse an already-present matching Booth script, otherwise request one using HeroForge's observed relative-src/BODY/async/`data-status` lazy-script contract, and refuse successful completion when duplicate matching Booth scripts are detected.
+
+Live Dev validation: one Booth script and one current overlay trio after clean reload; native screenshot PASS; automated 1024/2048 Spinny short captures PASS; Amanda's all-three-resolution capture smoke PASS; character refresh retained one runtime; automated white-spike sampling PASS; Booth/Kitbash visual flashing PASS (gone).
+
+Public shell, Booth v27.0.4, Black Canvas replay v0.1.5, Spinny, True Resolution, Utilities, gizmo, JSON, Developer Mode, Body, Pose, and Decals remain unchanged.
 
 ## Booth / Black Canvas
 
@@ -21,9 +39,9 @@ Public Booth: `tools/Booth.js` v27.0.4 / build `v27.0.4`.
 
 Public Black Canvas replay: `features/booth/Black_Canvas_Display_Replay.js` v0.1.5 / build `0.1.5-dev-restore-before-booth-handoff`.
 
-Public Booth runtime bootstrap: `features/booth/Booth_Runtime_Bootstrap.js` v0.1.0 / build `0.1.0-dev-native-booth-bootstrap`.
+Public Booth runtime bootstrap: `features/booth/Booth_Runtime_Bootstrap.js` v0.1.1 / build `0.1.1-dev-native-loader-coordination`.
 
-Public Stable validated behavior:
+Public Stable validated behavior inherited from the prior Booth lifecycle release:
 
 - saved Booth figures can bootstrap HeroForge's native gated Booth runtime and restore Booth View without first visiting native Photo Booth;
 - bare camera state is not a saved-Booth signal, preserving `+ New Figure` exclusion;
@@ -35,13 +53,11 @@ Public Stable validated behavior:
 - Black Canvas ON -> OFF restores the full fantasy backdrop plus pedestal/ground;
 - Black Canvas ON + Booth Background OFF no longer strands the fantasy background mesh hidden.
 
-Final Dev v27.0.4 state-repair smoke: **PASS** for full fantasy-background restoration, all four component toggles, Black Canvas ON/OFF restoration, and Black Canvas + Background-OFF fallthrough.
-
-Final public Stable smoke: **PASS**. Public shell/module versions were correct, saved Booth/Black Canvas startup restoration behaved as expected, Black Canvas ON/OFF behaved as expected, and the previously reliable white-flash action remained clean.
+The v0.1.1 bootstrap additionally prevents duplicate Booth-core/runtime creation and the resulting black capture/flash regression.
 
 ### Deferred cosmetic issue — not a release blocker
 
-A thin approximately 1 px checkerboard seam can still appear between the 1:1 Booth viewport and outer canvas, typically top/bottom and sometimes top/bottom/right depending on window geometry/maximization. It may appear after a delay. This is explicitly deferred to a later separately scoped frame/mask geometry investigation. Do not reopen the rejected `getTokenViewOffset()` DOM matte or the closed white-flash investigation as a shortcut.
+A thin approximately 1 px checkerboard seam can still appear between the 1:1 Booth viewport and outer canvas, typically top/bottom and sometimes top/bottom/right depending on window geometry/maximization. It may appear after a delay. This is explicitly deferred to a later separately scoped frame/mask geometry investigation. Do not reopen the rejected `getTokenViewOffset()` DOM matte as a shortcut.
 
 Detailed records:
 - `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
@@ -87,7 +103,7 @@ Feature ID: `media.screenshot-resolution`.
 - Service: v0.8.0 / build `0.8.0-service-only-provider`.
 - UI: v0.3.0 / build `0.3.0-service-ui-ownership`.
 - Readiness adapter: v1.0.0 / build `1.0.0-public-readiness`.
-- TRUE 4K/8K remains Stable validated and unchanged by the Booth promotion.
+- TRUE 4K/8K remains Stable validated and unchanged by the Booth bootstrap promotion.
 
 ## Spinny Mini WebP
 
@@ -95,7 +111,7 @@ Feature ID: `media.spinny-mini-webp`.
 
 - Service: v0.5.1 / build `0.5.1-witch-dock-stable-download-scroll-guard`.
 - UI: v0.1.1 / build `0.1.1-stable-download-ux`.
-- Capture engine/UI are unchanged by the Booth promotion.
+- Capture engine/UI are unchanged by the Booth bootstrap promotion; the black-output failure was upstream in duplicated Booth runtime state.
 
 ## Other live tools
 
@@ -114,9 +130,10 @@ Feature ID: `media.spinny-mini-webp`.
 
 ## Current queue
 
-1. Booth/Black Canvas lifecycle + loader cache repair: **closed / public Stable validated** on `heroforge07.1.9.98`.
+1. Booth runtime duplicate-load / black-capture / renewed flash regression: **Dev validated; promoted to public Stable v0.1.1; final public smoke pending** on current `heroforge06.1.9.98`.
 2. The approximately 1 px checkerboard seam at the 1:1 edge remains a documented deferred cosmetic issue; investigate later against the actual frame/mask viewport geometry.
-3. Move on to the next separately scoped project. Do not continue the Black Canvas investigation merely because the deferred seam exists.
+3. WebP capture performance/memory optimization remains a separate investigation and is not part of this correctness repair.
+4. Return to the separate texture-stabilization work after the public smoke closes this release gate.
 
 ## Durable records
 
@@ -126,6 +143,7 @@ Feature ID: `media.spinny-mini-webp`.
 - `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
 - `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
 - `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
+- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
 - `HISTORY/BULLSHIT/WITCH_DOCK_DEVELOPER_MODE.md`
 - `HISTORY/BULLSHIT/PHOTO_BOOTH_TRUE_RESOLUTION.md`
 - `HISTORY/BULLSHIT/SPINNY_MINI_WEBP.md`

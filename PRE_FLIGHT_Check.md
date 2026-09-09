@@ -1,5 +1,75 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-08-030 — Promote Booth runtime loader-coordination repair to Stable
+
+Date: 2026-09-08
+
+### Scope
+
+Promote only the Dev-validated `booth.runtime-bootstrap` v0.1.1 duplicate-runtime prevention repair from `WITCH_DEV_UI` to public `Witch_Scripts` after all three exposed capture resolutions and the Booth/Kitbash flash regression passed live Dev validation.
+
+### Reviewed
+
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
+- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
+- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, Booth runtime bootstrap source/history, Booth v27.0.4, Black Canvas replay v0.1.5, Spinny service/UI, and True Resolution service/UI;
+- Dev bootstrap v0.1.1 source blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
+- Dev bootstrap/manifest commits `09136b6691bfa34fa4b2b628fb59ed287874f1e9` and `efe279fc4718ab067ae6f20e0b4042e5fa3532af`;
+- Dev documentation head `4cd8d15e49aee8e02b01f519ed32af579c94a277`;
+- HF-Chat-Bridge diagnosis of the public black-capture state and clean Dev topology;
+- Amanda's final live Dev confirmation that all three exposed capture resolutions work and the Booth/Kitbash white flashing is gone.
+
+### Confirmed findings
+
+- public Stable bootstrap v0.1.0 could manually inject `/gated/booth.js` using an absolute URL under HEAD and recognize only its own `data-kw-booth-runtime-bootstrap` tag;
+- HeroForge later loaded the same gated Booth core again through its own lazy loader;
+- the failing public page contained two matching `booth.js` tags and two complete `TokenBackground / TokenShadow / TokenFrame` trios;
+- current `BT.display.overlays` owned only the second trio, leaving the first trio orphaned;
+- native `BT.maker.takeScreenshot()` was black before Spinny encoding, while direct `CK.Effects.renderToCanvas()` remained healthy;
+- removing only the orphan overlay trio restored native screenshot output;
+- Dev v0.1.1 coordinates with HeroForge's observed script-loader contract and clean reload produced exactly one Booth script and one current overlay trio;
+- automated Dev 1024/2048 short captures passed, Amanda's all-three-resolution Dev capture smoke passed, and the visible Booth/Kitbash flash regression is gone;
+- current clean Dev resource audit observed `heroforge06.1.9.98`; bootstrap derives this dynamically and does not hard-code the prior `heroforge07.1.9.98` value.
+
+### Target files
+
+- `features/booth/Booth_Runtime_Bootstrap.js`
+- `manifest.json`
+- `MASTER.md`
+- `PRE_FLIGHT_Check.md`
+- `CHANGELOG.md`
+- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
+
+### Preservation requirements
+
+- promote the exact Dev bootstrap runtime blob;
+- public raw URL must remain `Witch_Scripts`, never `WITCH_DEV_UI`;
+- keep public shell v1.2.1 byte-unchanged;
+- keep Booth v27.0.4, Black Canvas replay v0.1.5, Spinny, True Resolution, Utilities, Corrected Bound Decal Gizmo, JSON, Developer Mode, Body, Pose, and Decals byte-unchanged;
+- do not add an HF-Chat-Bridge or HeroForge.Compatibility unstable runtime dependency;
+- preserve bootstrap persistence gate, strong saved-config signals, four consecutive 200 ms observations, `BT.setBoothMode(savedMode)` activation, engine verification, and default reconciliation;
+- source + manifest identity + required tracking files must land in one atomic Stable commit.
+
+### Gate
+
+Before moving `Witch_Scripts`:
+
+- candidate parent equals current Stable head `8754d6c625cd7aba2bb3f1e223dc9549f3c60d66`;
+- bootstrap blob equals validated Dev blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
+- manifest JSON parses and reports bootstrap v0.1.1/build `0.1.1-dev-native-loader-coordination`;
+- public bootstrap tool URL points only to `Witch_Scripts` with the v0.1.1 cache identity;
+- exact changed-file whitelist is limited to the six target files;
+- unrelated runtime blobs remain unchanged;
+- committed candidate diff contains no `WITCH_DEV_UI` runtime URL.
+
+### Decision
+
+Proceed with the narrow Stable promotion. After branch movement, one public refresh plus short capture/flash smoke is sufficient because the exact runtime already passed the full Dev gate.
+
+**Runtime behavior changed:** yes — public Booth runtime bootstrap loader coordination only.
+
+---
+
 ## PFC-2026-09-08-029 — Promote validated fresh-slot gizmo repair to Stable
 
 Date: 2026-09-08
