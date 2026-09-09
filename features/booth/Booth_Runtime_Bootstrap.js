@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.runtime-bootstrap';
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-native-booth-bootstrap';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-dev-native-loader-coordination';
   const API_KEY = 'KW_WD_BOOTH_BOOTSTRAP';
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const POLL_MS = 200;
@@ -26,7 +26,9 @@
     lastMode: null,
     lastSignals: [],
     lastVersion: null,
+    lastScriptPath: null,
     lastScriptUrl: null,
+    loaderStrategy: null,
     lastStartedAt: 0,
     lastCompletedAt: 0,
     lastError: null
@@ -162,13 +164,46 @@
     return null;
   }
 
-  function boothScriptUrl() {
+  function boothScriptPath() {
     const version = deriveHeroForgeVersion();
     state.lastVersion = version;
-    const url = new URL('/gated/booth.js', location.origin);
-    if (version) url.searchParams.set('version', version);
-    state.lastScriptUrl = url.href;
-    return url.href;
+    const path = '/gated/booth.js' + (version ? '?version=' + encodeURIComponent(version) : '');
+    state.lastScriptPath = path;
+    try { state.lastScriptUrl = new URL(path, location.origin).href; }
+    catch { state.lastScriptUrl = path; }
+    return path;
+  }
+
+  function matchingBoothScripts(path) {
+    let wanted = null;
+    try { wanted = new URL(path, location.href).href; } catch {}
+    if (!wanted) return [];
+    try {
+      return Array.from(document.scripts || []).filter((script) => {
+        try {
+          const raw = script.getAttribute('src') || script.src || '';
+          return new URL(raw, location.href).href === wanted;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  function scriptDiagnostics(path) {
+    const scripts = matchingBoothScripts(path || state.lastScriptPath || boothScriptPath());
+    return {
+      count: scripts.length,
+      duplicateCount: Math.max(0, scripts.length - 1),
+      scripts: scripts.map((script) => ({
+        srcAttribute: script.getAttribute('src') || '',
+        status: script.getAttribute('data-status') || null,
+        bootstrapOwned: script.getAttribute('data-kw-booth-runtime-bootstrap') === '1',
+        parent: script.parentElement ? script.parentElement.tagName : null
+      }))
+    };
   }
 
   function waitFor(predicate, timeoutMs, intervalMs) {
@@ -186,30 +221,52 @@
     });
   }
 
+  function waitForNativeBoothCore() {
+    return waitFor(
+      () => UW.BT && typeof UW.BT.setBoothMode === 'function' ? UW.BT : null,
+      RUNTIME_TIMEOUT_MS,
+      50
+    );
+  }
+
   function loadNativeBoothCore() {
     try {
-      if (UW.BT && typeof UW.BT.setBoothMode === 'function') return Promise.resolve(UW.BT);
+      if (UW.BT && typeof UW.BT.setBoothMode === 'function') {
+        state.loaderStrategy = 'reuse-live-bt';
+        return Promise.resolve(UW.BT);
+      }
     } catch {}
 
     return new Promise((resolve, reject) => {
       try {
-        const existing = document.querySelector('script[data-kw-booth-runtime-bootstrap="1"]');
-        if (existing) {
-          waitFor(() => UW.BT && typeof UW.BT.setBoothMode === 'function' ? UW.BT : null, RUNTIME_TIMEOUT_MS, 50)
-            .then(resolve, reject);
+        const path = boothScriptPath();
+        const existing = matchingBoothScripts(path);
+        if (existing.length) {
+          state.loaderStrategy = existing.some((script) => script.getAttribute('data-kw-booth-runtime-bootstrap') === '1')
+            ? 'reuse-bootstrap-script'
+            : 'reuse-heroforge-script';
+          waitForNativeBoothCore().then(resolve, reject);
           return;
         }
 
+        // Match HeroForge's own lazy-script contract exactly enough for its
+        // loader to recognize this request later: relative src attribute,
+        // BODY ownership, async execution, and data-status lifecycle.
         const script = document.createElement('script');
-        script.src = boothScriptUrl();
+        script.setAttribute('src', path);
         script.async = true;
+        script.setAttribute('data-status', 'loading');
         script.dataset.kwBoothRuntimeBootstrap = '1';
+        state.loaderStrategy = 'hero-forge-compatible-script';
         script.onload = () => {
-          waitFor(() => UW.BT && typeof UW.BT.setBoothMode === 'function' ? UW.BT : null, RUNTIME_TIMEOUT_MS, 50)
-            .then(resolve, reject);
+          try { script.setAttribute('data-status', 'loaded'); } catch {}
+          waitForNativeBoothCore().then(resolve, reject);
         };
-        script.onerror = () => reject(new Error('HeroForge native booth.js failed to load.'));
-        (document.head || document.documentElement).appendChild(script);
+        script.onerror = () => {
+          try { script.setAttribute('data-status', 'error'); } catch {}
+          reject(new Error('HeroForge native booth.js failed to load.'));
+        };
+        (document.body || document.head || document.documentElement).appendChild(script);
       } catch (error) {
         reject(error);
       }
@@ -262,6 +319,11 @@
           return null;
         }
       }, RUNTIME_TIMEOUT_MS, 50);
+
+      const topology = scriptDiagnostics(state.lastScriptPath);
+      if (topology.duplicateCount > 0) {
+        throw new Error('Duplicate HeroForge Booth script detected after bootstrap; refusing to mark bootstrap complete.');
+      }
 
       await reconcileWitchDockDefaults();
       state.completedForDataRef = saved.dataRef;
@@ -325,6 +387,7 @@
   }
 
   function getState() {
+    const topology = scriptDiagnostics(state.lastScriptPath || undefined);
     return {
       featureId: FEATURE_ID,
       version: VERSION,
@@ -339,7 +402,12 @@
       lastMode: state.lastMode,
       lastSignals: state.lastSignals.slice(),
       lastHeroForgeVersion: state.lastVersion,
+      lastScriptPath: state.lastScriptPath,
       lastScriptUrl: state.lastScriptUrl,
+      loaderStrategy: state.loaderStrategy,
+      matchingBoothScriptCount: topology.count,
+      duplicateBoothScriptCount: topology.duplicateCount,
+      boothScripts: topology.scripts,
       lastStartedAt: state.lastStartedAt,
       lastCompletedAt: state.lastCompletedAt,
       lastError: state.lastError,
