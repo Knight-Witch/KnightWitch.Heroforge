@@ -112,9 +112,9 @@
       "path": "features/booth/Booth_Runtime_Bootstrap.js",
       "kind": "compatibility-feature",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-native-booth-bootstrap",
-      "versionOrigin": "new-dev-module"
+      "version": "0.1.1",
+      "build": "0.1.1-dev-native-loader-coordination",
+      "versionOrigin": "dev-native-loader-coordination-2026-09-08"
     },
     {
       "id": "booth-tool",
@@ -276,7 +276,7 @@
       "id": "booth-runtime-bootstrap",
       "title": "Booth Runtime Bootstrap",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.0-dev-native-booth-bootstrap",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
