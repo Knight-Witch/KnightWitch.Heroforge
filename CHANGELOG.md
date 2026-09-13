@@ -1,211 +1,59 @@
 # Changelog
 
-## DOCK-2026-09-08-030 — Prevent duplicate Booth runtime and black Spinny capture
+This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
-Date: 2026-09-08
+## DOCK-2026-09-12-031 — Promote validated native Texture Quality to Stable
 
-### Summary
-
-Promote the Dev-validated `booth.runtime-bootstrap` v0.1.1 loader-coordination repair to public Stable after live confirmation that all three exposed Spinny capture resolutions work and the renewed Booth/Kitbash white flashing is gone.
-
-### Confirmed root cause
-
-Public Witch Dock 1.2.1 could load HeroForge's gated `booth.js` twice: once through Witch Dock's saved-Booth bootstrap and again later through HeroForge's own lazy loader. The first runtime left an orphan `TokenBackground / TokenShadow / TokenFrame` trio in `CK.scene`. HeroForge's screenshot path hid only the current runtime's overlay set, so the orphan `TokenBackground` remained visible during the auxiliary capture stage and composited opaque black over otherwise-valid model renders.
-
-This was upstream of the WebP encoder: native `BT.maker.takeScreenshot()` itself returned black frames in the failing public session, while direct `CK.Effects.renderToCanvas()` remained healthy.
-
-### Stable promotion
-
-- `booth.runtime-bootstrap` `0.1.0 -> 0.1.1` / build `0.1.1-dev-native-loader-coordination`;
-- promote the exact Dev runtime blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
-- reuse an already-present matching HeroForge Booth script instead of inserting another;
-- when Witch Dock must request Booth, use HeroForge's observed lazy-script contract: relative `src`, BODY parent, async script, and `data-status=loading/loaded/error` lifecycle;
-- expose Booth-script topology diagnostics and refuse to mark bootstrap complete when a duplicate matching Booth script is detected;
-- public manifest remains on `Witch_Scripts` and advances only the bootstrap module identity/cache key.
-
-### Live Dev validation
-
-- clean reload produced exactly one `/gated/booth.js` script and one current `TokenBackground / TokenShadow / TokenFrame` trio: PASS;
-- native 1024 screenshot returned normal image data: PASS;
-- automated Spinny 1024 and 2048 16-frame captures returned valid non-black animated WebPs: PASS;
-- Amanda then ran all three exposed capture resolutions on Dev and confirmed all three worked: PASS;
-- native character refresh did not recreate duplicate Booth scripts or overlay trios: PASS;
-- automated 120-frame refresh sampling found zero white/bright spike frames: PASS;
-- Amanda visually confirmed the Booth/Kitbash white flashing is gone: PASS.
-
-### Preserved boundaries
-
-Booth v27.0.4, Black Canvas replay v0.1.5, Spinny Mini WebP service/UI, True Resolution service/UI, Utilities, Corrected Bound Decal Gizmo, JSON, Developer Mode, Body, Pose, Decals, and public shell v1.2.1 are byte-unchanged by this promotion.
-
-**Runtime behavior changed:** yes — public Booth runtime bootstrap loader coordination only.
-
----
-
-## DOCK-2026-09-08-029 — Promote fresh-slot bound decal normalization v1.1.1
-
-Date: 2026-09-08
+Date: 2026-09-12
 
 ### Summary
 
-Promote the exact Dev-validated Corrected Bound Decal Gizmo v1.1.1 runtime after live confirmation that HeroForge's untouched first Project-OFF initializer shifted from the previously recorded raw values.
+Promote only the Dev-validated `rendering.texture-quality` native-reconcile service/UI into public `Witch_Scripts`. This is a narrow Stable promotion; unrelated WITCH_DEV_UI work is not merged.
 
-### Confirmed runtime evidence
+### Promoted runtime
 
-HF-Chat-Bridge read the untouched slot after first Project OFF as `h=-2.9802322387695313e-08`, `v=1.5633519738912582`, `s=1.818040788039411`, `sy=1.818040788039411`, `forceProjectedScript=false`. Those values fall outside the old v1.1.0 detector but inside the v1.1.1 current-profile matcher.
+- new `texture-quality-native-reconcile` v0.1.0 / build `0.1.0-dev-hfc-alpha3-port`;
+- new `texture-quality-native-reconcile-ui` v0.1.0 / build `0.1.0-dev-texture-quality-controls`;
+- exact validated Dev service blob `f1891bb266ea1e8f03101d96b43bc9d38de3fa46`;
+- exact validated Dev UI blob `2c781d4c8e0a0ae472187512875d7db369897c7f`;
+- public module URLs point only to `Witch_Scripts` with deterministic v0.1.0 build cache keys;
+- public Witch Dock shell remains v1.2.1 and byte-unchanged.
 
-### Live Dev acceptance
+### Architecture preserved
 
-Amanda confirmed all requested v1.1.1 behavior:
+The public feature keeps the validated native-generation contract:
 
-- fresh untouched slot -> first Project OFF normalizes H/V to `0/0` and S/SY to `-1.5/-1.5`;
-- an already edited Project-OFF transform survives Project ON -> OFF;
-- artwork swap while Project OFF preserves the bound transform.
+- source policy only: `atlasScale=4`, `bakeSize=2048`, `_usedTextureSize=1024` minimum seed;
+- bodyLower/bodyUpper use real exact 1024 masks and verify those exact textures remain actual color-bake inputs;
+- HeroForge owns atlas creation/repack and display generation;
+- expected display/modded generation replacements are adopted;
+- native source/allocation promotion through 2048 is accepted;
+- disable restores/removes only feature-owned source fields and asks HeroForge to rebuild natively;
+- no custom `CK.Atlas`, buildAtlas wrapper, direct atlas assignment, giant-atlas forcing, persistent ownership watcher, HeroForge.Compatibility runtime dependency, or HF-Chat-Bridge runtime dependency.
 
-Move/Rotate/Scale transform math and existing undo/redo code were not changed by this patch.
+### Dev acceptance inherited
 
-### Stable promotion
+D4 passed the body color/glyph gate, lifecycle OFF -> ON repetition, and exact pinned-mask verification. Blood Moon passed the atlas-pressure/accessory-channel gate, including zero broken/fallback resources across 16 Discus, 2 Short Crown Horn, and 3 Celestial Circlet instances. Amanda visually approved both integrated Dev figures. A normal native character refresh remained verified, and the integration topology smoke retained exactly one loaded Booth runtime.
 
-- `corrected-bound-decal-gizmo` `1.1.0 -> 1.1.1`;
-- promote the exact validated Dev runtime blob;
-- retain both the earlier confirmed bad-initializer profile and the current confirmed profile;
-- preserve the existing `freshBind` + neutral-field gates so user-edited transforms are not broadly normalized;
-- public module URL remains on `Witch_Scripts` with a v1.1.1 cache identity.
+Dev acceptance head: `c8f8000d9562dbc315dc867af655358177e18d54`.
+Compatibility release checkpoint: `9bced7c9042133f766bfd47b672bdfcd845fbcd0`.
 
-### Preserved boundaries
+### Stable gate
 
-Booth/Black Canvas/bootstrap, Utilities, Spinny, High Res, JSON, Developer Mode, Decals host, Body, Pose, fragment sources, public shell v1.2.1, and all unrelated runtime modules are unchanged.
+Before moving `Witch_Scripts`, verify:
 
-**Runtime behavior changed:** yes — public Corrected Bound Decal Gizmo fresh-slot normalization only.
+- candidate parent is current Stable head `2d0304dccc241ae5d493563bdca00a036257e362`;
+- exact changed-file whitelist is limited to the two rendering modules, `manifest.json`, `CHANGELOG.md`, `PRE_FLIGHT_Check.md`, and the Texture Quality history file;
+- candidate manifest is valid JSON, unique by module/tool ID, and differs from the current Stable manifest only by the two new module registry entries and two new loader entries;
+- no public runtime URL references `WITCH_DEV_UI`;
+- source blobs match the validated Dev blobs exactly.
 
----
+After branch movement, perform one clean public Stable reload and narrow runtime/visual smoke before final release closeout.
 
-## DOCK-2026-09-07-028 — Record final public Stable Booth acceptance
-
-Date: 2026-09-07
-
-### Summary
-
-Documentation-only closeout recording Amanda's final public Stable acceptance of Witch Dock v1.2.1 with Booth v27.0.4, Black Canvas replay v0.1.5, Booth runtime bootstrap v0.1.0, and the cache-keyed manifest/module loader.
-
-### Final public result
-
-Amanda reported that everything looks great in the public build after the Stable promotion.
-
-This closes the release gate for:
-
-- public shell/module delivery at v1.2.1;
-- saved Booth and Black Canvas startup restoration;
-- Black Canvas ON/OFF restoration;
-- the previously reliable white-flash regression remaining closed.
-
-The approximately 1 px checkerboard seam remains a documented deferred cosmetic issue and is not treated as fixed.
-
-### Runtime impact
-
-**No runtime behavior changed.** No userscript, manifest, module, storage, version, or compatibility logic changed in this checkpoint.
-
-### Touched files
-
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
+**Runtime behavior changed:** yes — public Stable gains the opt-in Texture Quality native-reconcile service/UI. Existing public modules and shell are unchanged.
 
 ---
 
-## DOCK-2026-09-07-027 — Promote validated Booth lifecycle and cache-keyed public loader
+## Prior Stable history
 
-Date: 2026-09-07
-
-### Summary
-
-Promote the final Dev-validated Booth lifecycle/state repair to public Stable and repair the separate raw-GitHub loader caching defect. This is a narrow Stable promotion; it is not a wholesale Dev merge.
-
-### Runtime changes
-
-- public userscript shell `1.2.0 -> 1.2.1`;
-- public loader now uses a unique per-page manifest cache key and deterministic registry-identity module cache keys, preserving existing query parameters and load order;
-- Booth `27.0.0 -> 27.0.4`, exact validated Dev blob `d8e9b2fc4d1bf18d550193ed186168bae515ae91`;
-- Black Canvas replay `0.1.1 -> 0.1.5`, exact validated Dev blob `3f663f8349830490d17b0d44aa42525b35c97b5f`; Stable's diagnostic state fallback is retained in that Dev-tested source;
-- new hidden `booth.runtime-bootstrap` v0.1.0, exact validated Dev blob `3aaa110b4f09ab74df524e64056406b571357474`, loaded before Booth;
-- Utilities remains v1.2.1 and byte-unchanged.
-
-### Final Dev acceptance
-
-Amanda reported PASS for:
-
-1. full fantasy editor environment restoration;
-2. Lighting / Effects / Overlays / Background toggle stability;
-3. Black Canvas ON -> OFF full backdrop restoration;
-4. Black Canvas ON + Background OFF fallthrough without the stranded-background failure.
-
-Earlier integrated Dev validation remains inherited for saved Booth startup bootstrap, `+ New Figure` exclusion, and the established post-update white-flash suppression boundary.
-
-### Deferred known issue
-
-A roughly 1 px checkerboard seam can still appear at the 1:1 Booth edge, usually top/bottom and sometimes also the right edge after responsive resizing/maximization. It is cosmetic, non-blocking, and explicitly deferred to a later frame/mask geometry task.
-
-### Preserved boundaries
-
-- no wholesale Dev merge;
-- Corrected Bound Decal Gizmo unchanged;
-- Spinny Mini WebP unchanged;
-- High Res Image Capture unchanged;
-- JSON unchanged;
-- Developer Mode unchanged;
-- Decals host/tab shell behavior unchanged apart from the loader cache repair;
-- HF-Chat-Bridge remains development-only and is not a public dependency.
-
-**Runtime behavior changed:** yes — public loader cache repair plus validated Booth/replay/bootstrap promotion.
-
----
-
-## DOCK-2026-09-07-026 — Promote Booth v27 and Utilities v1.2.1 to Stable
-
-Date: 2026-09-07
-
-### Summary
-
-Complete the intended public Booth/Utilities promotion after the prior Black Canvas replay release exposed that Stable still loaded Booth v24 and Utilities v1.1.0.
-
-### Public runtime changes
-
-- `tools/Booth.js` advances from v24 to the exact Dev-tested v27 blob `434b5382c9e8b01e9f9e8bf53d772e72eaf53090`;
-- `tools/Utilities.js` advances from v1.1.0 to the exact Dev-tested v1.2.1 blob `036fca4d7f68a1dee0f7d160777d453ac53274af`;
-- Utilities gains `Booth Features` with saved Booth Persistence Across Sessions and Black Canvas Across Sessions defaults;
-- Booth keeps Booth View / Black Canvas as session controls while exposing the v27 saved-default API used by Utilities;
-- v27 saved-config/runtime stabilization, generation clearing, reduced refresh churn, lighting replay discipline, and broader Black Canvas layout invalidation are promoted intact;
-- public Black Canvas replay v0.1.1 remains byte-unchanged and now uses its preferred v27 state API;
-- public Witch Dock shell remains v1.2.0 because these are manifest-delivered module updates.
-
-### Live evidence inherited from Dev
-
-The successful white-flash smoke was run with Booth v27, Utilities v1.2.1, and the replay module loaded together. Black Canvas remained black through the formerly reliable flash-causing update and Amanda reported the result worked perfectly.
-
-### Preserved boundaries
-
-- no wholesale Dev merge;
-- Black Canvas replay runtime unchanged;
-- Corrected Bound Decal Gizmo runtime/fragments unchanged;
-- Spinny Mini WebP unchanged;
-- High Res Image Capture unchanged;
-- JSON unchanged;
-- Developer Mode unchanged;
-- Decals host/tab shell unchanged;
-- HF-Chat-Bridge remains development-only.
-
-### Public gate
-
-After refresh, verify:
-
-1. Developer Mode reports Booth v27.0.0 and Utilities v1.2.1;
-2. `Utilities -> Booth Features` is present;
-3. Black Canvas is visibly black;
-4. the formerly flash-causing action does not flash;
-5. Black Canvas OFF restores the ordinary background.
-
-**Runtime behavior changed:** yes — Booth v27 and Utilities v1.2.1 are now public Stable modules.
-
----
-
-Historical public changelog through DOCK-2026-09-07-025 is preserved in Git history at commit `b0bc170af613fc31615cd4ce78e030db3012b426`.
+`DOCK-2026-09-08-030` and earlier remain preserved verbatim in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and its ancestors.

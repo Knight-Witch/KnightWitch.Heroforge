@@ -1,330 +1,90 @@
 # Pre-Flight Check Log
 
-## PFC-2026-09-08-030 — Promote Booth runtime loader-coordination repair to Stable
+This active Stable pre-flight log is intentionally compact. Detailed prior records through `PFC-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
-Date: 2026-09-08
+## PFC-2026-09-12-031 — Stable native Texture Quality promotion
+
+Date: 2026-09-12
 
 ### Scope
 
-Promote only the Dev-validated `booth.runtime-bootstrap` v0.1.1 duplicate-runtime prevention repair from `WITCH_DEV_UI` to public `Witch_Scripts` after all three exposed capture resolutions and the Booth/Kitbash flash regression passed live Dev validation.
+Promote only the fully Dev-validated Texture Quality native-reconcile service/UI from `WITCH_DEV_UI` into public `Witch_Scripts` after explicit user authorization.
 
 ### Reviewed
 
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, Booth runtime bootstrap source/history, Booth v27.0.4, Black Canvas replay v0.1.5, Spinny service/UI, and True Resolution service/UI;
-- Dev bootstrap v0.1.1 source blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
-- Dev bootstrap/manifest commits `09136b6691bfa34fa4b2b628fb59ed287874f1e9` and `efe279fc4718ab067ae6f20e0b4042e5fa3532af`;
-- Dev documentation head `4cd8d15e49aee8e02b01f519ed32af579c94a277`;
-- HF-Chat-Bridge diagnosis of the public black-capture state and clean Dev topology;
-- Amanda's final live Dev confirmation that all three exposed capture resolutions work and the Booth/Kitbash white flashing is gone.
+- binding HeroForge.Compatibility `PROJECT_CONTRACT.md` and refreshed `ACTIVE_CONTEXT.md`;
+- Compatibility release checkpoint `9bced7c9042133f766bfd47b672bdfcd845fbcd0`;
+- current Stable head `2d0304dccc241ae5d493563bdca00a036257e362`;
+- current Stable `manifest.json`, public shell v1.2.1 loader contract, `MODULE_VERSIONING.md`, `CHANGELOG.md`, and `PRE_FLIGHT_Check.md`;
+- Dev Texture Quality service/UI v0.1.0 exact source blobs;
+- Dev integrated D4 and Blood Moon runtime/visual/lifecycle evidence;
+- Dev refresh/topology smoke;
+- Amanda's explicit “go for it” approval for Stable promotion.
 
-### Confirmed findings
+### Confirmed source identity
 
-- public Stable bootstrap v0.1.0 could manually inject `/gated/booth.js` using an absolute URL under HEAD and recognize only its own `data-kw-booth-runtime-bootstrap` tag;
-- HeroForge later loaded the same gated Booth core again through its own lazy loader;
-- the failing public page contained two matching `booth.js` tags and two complete `TokenBackground / TokenShadow / TokenFrame` trios;
-- current `BT.display.overlays` owned only the second trio, leaving the first trio orphaned;
-- native `BT.maker.takeScreenshot()` was black before Spinny encoding, while direct `CK.Effects.renderToCanvas()` remained healthy;
-- removing only the orphan overlay trio restored native screenshot output;
-- Dev v0.1.1 coordinates with HeroForge's observed script-loader contract and clean reload produced exactly one Booth script and one current overlay trio;
-- automated Dev 1024/2048 short captures passed, Amanda's all-three-resolution Dev capture smoke passed, and the visible Booth/Kitbash flash regression is gone;
-- current clean Dev resource audit observed `heroforge06.1.9.98`; bootstrap derives this dynamically and does not hard-code the prior `heroforge07.1.9.98` value.
+- service blob: `f1891bb266ea1e8f03101d96b43bc9d38de3fa46`;
+- UI blob: `2c781d4c8e0a0ae472187512875d7db369897c7f`;
+- both are the exact Dev-validated runtime blobs; Stable promotion does not rewrite their logic;
+- canonical registry versions remain v0.1.0 because promotion itself does not alter the module behavior.
 
-### Target files
+### Confirmed Stable loader compatibility
 
-- `features/booth/Booth_Runtime_Bootstrap.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
+- public shell is already v1.2.1 / build `1.2.1-stable-cache-keyed-loader`;
+- no public shell change or version bump is required;
+- manifest-loaded hidden service/UI modules are already a supported public pattern;
+- new public raw URLs must use `Witch_Scripts`, never `WITCH_DEV_UI`;
+- cache identity is carried in the explicit v0.1.0 build query strings.
+
+### Candidate manifest proof
+
+The Stable manifest was reconstructed byte-for-byte from the current public file before insertion. Removing the two Texture Quality registry entries and two Texture Quality loader entries from the candidate reproduces the current Stable manifest blob SHA exactly: `53b06b4a447adadd380ac733d819ac8d7bd6c4fe`.
+
+Therefore the intended manifest delta is limited to:
+
+1. `texture-quality-native-reconcile` registry entry;
+2. `texture-quality-native-reconcile-ui` registry entry;
+3. Stable service loader entry;
+4. Stable UI loader entry.
 
 ### Preservation requirements
 
-- promote the exact Dev bootstrap runtime blob;
-- public raw URL must remain `Witch_Scripts`, never `WITCH_DEV_UI`;
-- keep public shell v1.2.1 byte-unchanged;
-- keep Booth v27.0.4, Black Canvas replay v0.1.5, Spinny, True Resolution, Utilities, Corrected Bound Decal Gizmo, JSON, Developer Mode, Body, Pose, and Decals byte-unchanged;
-- do not add an HF-Chat-Bridge or HeroForge.Compatibility unstable runtime dependency;
-- preserve bootstrap persistence gate, strong saved-config signals, four consecutive 200 ms observations, `BT.setBoothMode(savedMode)` activation, engine verification, and default reconciliation;
-- source + manifest identity + required tracking files must land in one atomic Stable commit.
+- no wholesale Dev merge;
+- public shell v1.2.1 byte-unchanged;
+- Booth, Black Canvas replay, Booth runtime bootstrap, Spinny, True Resolution, Corrected Bound Decal Gizmo, JSON, Utilities, Developer Mode, Body, Pose, Decals, and all other runtime blobs unchanged;
+- no custom atlas ownership, buildAtlas wrapping, direct atlas assignment, or watcher reintroduced;
+- no runtime dependency on HeroForge.Compatibility or HF-Chat-Bridge;
+- source + manifest + changelog + preflight + durable history land in one atomic Stable commit.
 
-### Gate
+### Dev validation inherited
+
+D4 integrated validation passed with native 4096 atlas, target allocations/used 2048, exact pinned 1024 masks, correct body color/glyph visuals, clean disable, and repeated OFF -> ON enable.
+
+Blood Moon integrated validation passed with native 4096 atlas, target allocations/used 1024, exact pinned 1024 masks, correct visual accessory/body/decal result, zero broken/fallback resources across the known problem families, successful native character refresh while ON, and no duplicate Booth runtime in the topology smoke.
+
+### Stable candidate gate
 
 Before moving `Witch_Scripts`:
 
-- candidate parent equals current Stable head `8754d6c625cd7aba2bb3f1e223dc9549f3c60d66`;
-- bootstrap blob equals validated Dev blob `45f8833f89ec2226a2611c8873a3548fb6008d4c`;
-- manifest JSON parses and reports bootstrap v0.1.1/build `0.1.1-dev-native-loader-coordination`;
-- public bootstrap tool URL points only to `Witch_Scripts` with the v0.1.1 cache identity;
-- exact changed-file whitelist is limited to the six target files;
-- unrelated runtime blobs remain unchanged;
-- committed candidate diff contains no `WITCH_DEV_UI` runtime URL.
+- candidate parent must equal `2d0304dccc241ae5d493563bdca00a036257e362`;
+- candidate changed-file whitelist must be exactly six files;
+- candidate source blob SHAs must equal the Dev-validated SHAs above;
+- candidate manifest JSON must parse with unique registry/tool IDs;
+- public Texture Quality URLs must contain `Witch_Scripts` and no `WITCH_DEV_UI` reference;
+- no unrelated runtime file may differ.
 
-### Decision
+### Post-promotion gate
 
-Proceed with the narrow Stable promotion. After branch movement, one public refresh plus short capture/flash smoke is sufficient because the exact runtime already passed the full Dev gate.
+After moving public Stable, perform a normal public userscript update/reload with the Dev userscript disabled, verify the Stable service/UI load exactly once and start OFF/inert, then run one controlled enable/readback and human visual check on the currently loaded acceptance figure. If the Stable smoke fails, stop and repair in Dev rather than broadening the public patch.
 
-**Runtime behavior changed:** yes — public Booth runtime bootstrap loader coordination only.
+### Rollback
 
----
+Revert the single Stable promotion commit. Because no existing module is modified, rollback removes the two manifest entries and two new rendering files without migrating stored state.
 
-## PFC-2026-09-08-029 — Promote validated fresh-slot gizmo repair to Stable
-
-Date: 2026-09-08
-
-### Scope
-
-Promote only the validated Corrected Bound Decal Gizmo v1.1.1 fresh-slot initializer repair from `WITCH_DEV_UI` to public `Witch_Scripts`.
-
-### Reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, and gizmo history;
-- Dev gizmo v1.1.1 candidate commit `08e776bfb276b281e9b337f3d3ccb866e23e2ca4`;
-- Amanda's live Dev PASS for fresh-slot normalization, edited Project ON/OFF preservation, and Project-OFF artwork-swap preservation;
-- bridge-confirmed current untouched raw initializer values.
-
-### Confirmed findings
-
-- v1.1.0 still matched only the earlier `v≈1.50394`, `s≈sy≈1.76859` profile;
-- current untouched Project-OFF raw state is `v=1.5633519738912582`, `s=sy=1.818040788039411`, with H effectively zero;
-- v1.1.1's `1.56 / 1.82 / 1.82` profile at ±0.025 correctly covers those confirmed raw values;
-- v1.1.1 only normalizes on `freshBind` plus the existing neutral H/D/rotation gate;
-- Move/Rotate/Scale and undo/redo runtime paths are unchanged;
-- exact Dev runtime behavior has passed the human gate.
-
-### Target files
-
-- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
-
-### Preservation requirements
-
-- promote exact Dev gizmo blob;
-- do not alter fragment sources;
-- do not alter Booth, replay, bootstrap, Utilities, Spinny, High Res, JSON, Developer Mode, Decals, Body, Pose, or public shell;
-- public URL must remain `Witch_Scripts`, never `WITCH_DEV_UI`;
-- source + canonical manifest version + required tracking docs must land in one atomic Stable commit.
-
-### Gate
-
-JavaScript syntax, manifest JSON, exact Dev gizmo blob parity, exact six-file whitelist, protected unrelated runtime blob equality, `git diff --check`, and one-commit Stable candidate ancestry must pass before moving `Witch_Scripts`.
-
-### Decision
-
-Proceed with the narrow Stable promotion. One quick public fresh-slot smoke is sufficient afterward; no full gizmo regression matrix is required because the same runtime blob already passed Dev.
-
-**Runtime behavior changed:** yes — public gizmo only.
+**Runtime behavior changed:** yes — public Stable gains the opt-in Texture Quality service/UI only.
 
 ---
 
-## PFC-2026-09-07-028 — Record public Stable Booth/lifecycle acceptance
+## Prior Stable pre-flight history
 
-Date: 2026-09-07
-
-### Scope
-
-Record Amanda's final public Stable acceptance of Witch Dock shell v1.2.1, Booth v27.0.4, Black Canvas replay v0.1.5, Booth runtime bootstrap v0.1.0, and the public loader cache-key repair. This checkpoint is documentation-only and makes no runtime changes.
-
-### Reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- Compatibility `MASTER.md` and the repository architecture/integration rules already reviewed for the immediately preceding Stable promotion;
-- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`;
-- Stable promotion commit `91a78ebaba6e54ee143dbae0053d782495f252fa`;
-- final public user smoke result: "everything looks great";
-- deferred approximately 1 px checkerboard seam record.
-
-### Confirmed public result
-
-Amanda confirmed the public Stable build looks correct after updating/reloading the `Witch_Scripts` userscript.
-
-The final Stable smoke therefore closes the requested release gate for:
-
-- public shell v1.2.1 and current module delivery;
-- saved Booth / Black Canvas startup restoration;
-- Black Canvas ON/OFF presentation restoration;
-- the previously reliable white-flash regression remaining closed.
-
-The approximately 1 px checkerboard seam remains known, cosmetic, deferred, and explicitly non-blocking.
-
-### Target files
-
-Documentation only:
-
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_ACCEPTANCE.md`
-
-### Preservation requirements
-
-- no runtime/module/manifest/userscript changes;
-- no version bumps;
-- no reopening the white-flash investigation;
-- no attempt to fix the deferred checkerboard seam in this closeout.
-
-### Decision
-
-Mark the Booth lifecycle / Black Canvas startup-restoration / loader cache-repair release as **public Stable validated** and move to the next separately scoped project.
-
-**Runtime behavior changed:** no.
-
----
-
-## PFC-2026-09-07-027 — Promote validated Booth lifecycle and cache-keyed public loader
-
-Date: 2026-09-07
-
-### Scope
-
-Promote the final Dev-validated Booth v27.0.4/replay v0.1.5/runtime-bootstrap v0.1.0 set and port only the validated Dev loader cache-key mechanism into public shell v1.2.1. Record the remaining 1 px checkerboard seam as deferred and non-blocking.
-
-### Reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, `TESTING.md`;
-- current Stable `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`, shell v1.2.0, Booth v27.0.0, replay v0.1.1;
-- Dev `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`, `BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`, `BOOTH_RUNTIME_BOOTSTRAP.md`;
-- validated Dev head `cecfa43f3ca0096562bb3e9f472c39cbb1823f40`;
-- final user live PASS for v27.0.4 environment/component restoration;
-- user observation that the thin responsive checkerboard seam remains and is explicitly deferred.
-
-### Confirmed findings
-
-- Stable replay's v24 diagnostic fallback is present in Dev replay v0.1.5, so exact-blob promotion is monotonic;
-- v27.0.4 live state repair passed all four requested environment/component tests;
-- live bridge evidence showed `CK.environment.background.visible === true` while `CK.environment.background.mesh.visible === false`, confirming the explicit mesh restoration targets the observed failure;
-- the rejected v27.0.3 `getTokenViewOffset()` DOM matte is not part of the promoted source;
-- public fixed branch URLs have a confirmed delivery-cache defect; Dev's cache-keyed loader passed static validation and is ported surgically to the public shell rather than copying the Dev shell.
-
-### Target files
-
-Runtime / delivery:
-- `Witch_Dock.user.js`
-- `manifest.json`
-- `tools/Booth.js`
-- `features/booth/Black_Canvas_Display_Replay.js`
-- `features/booth/Booth_Runtime_Bootstrap.js`
-
-Documentation:
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
-- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
-- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
-
-### Conflict risks / preservation requirements
-
-- candidate parent must be current Stable head `f218244b2a6010e4d299ca5641a8d4f6f56f38f9`;
-- Booth/replay/bootstrap must equal the exact validated Dev blobs;
-- do not modify Utilities, gizmo, Spinny, High Res, JSON, Developer Mode, Decals, or other unrelated modules;
-- public shell must retain the existing emblem/UI bytes outside the cache-key/header delta;
-- bootstrap must load before Booth;
-- public raw URLs must point to `Witch_Scripts`, never `WITCH_DEV_UI`;
-- no HF-Chat-Bridge/Compatibility-main public runtime dependency;
-- deferred checkerboard seam must remain documented rather than silently treated as fixed.
-
-### Gate
-
-Before advancing `Witch_Scripts`:
-
-- JavaScript syntax: shell, Booth, replay, bootstrap PASS;
-- manifest JSON parse PASS;
-- exact Dev blob parity PASS for Booth/replay/bootstrap;
-- public cache helper block equals the validated Dev helper block;
-- manifest/tool registry IDs resolve and bootstrap precedes Booth;
-- public URLs contain no `WITCH_DEV_UI` for the promoted modules;
-- exact changed-file whitelist PASS;
-- protected unrelated runtime blobs PASS;
-- `git diff --check` PASS.
-
-### Decision
-
-Proceed to a narrow Stable promotion candidate. After branch movement, require one final public refresh/smoke; the 1 px seam is not an acceptance blocker.
-
-**Runtime behavior changed:** yes.
-
----
-
-## PFC-2026-09-07-026 — Promote Booth v27 and Utilities v1.2.1 to Stable
-
-Date: 2026-09-07
-
-### Scope
-
-Correct the incomplete public promotion after the Black Canvas replay release. Promote the exact Dev-tested Booth v27 and Utilities v1.2.1 module blobs while preserving the already-public Black Canvas replay. Do not merge `WITCH_DEV_UI` wholesale.
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`;
-- HeroForge.Compatibility `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current public `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `MODULE_VERSIONING.md`, `manifest.json`;
-- public Booth v24 and Utilities v1.1.0;
-- Dev Booth v27 and Utilities v1.2.1;
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`;
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`;
-- public replay commit `b0bc170af613fc31615cd4ce78e030db3012b426`;
-- user screenshot confirming public still exposed Booth v24 / old Utilities;
-- user live validation that the Dev v27 + Utilities v1.2.1 + replay combination eliminated the formerly reliable white flash.
-
-### Confirmed findings
-
-- the public screenshot is not a cache failure: `Witch_Scripts` still contained Booth v24 and Utilities v1.1.0 because the prior promotion intentionally moved only the replay module;
-- exact Dev Booth v27 blob: `434b5382c9e8b01e9f9e8bf53d772e72eaf53090`;
-- exact Dev Utilities v1.2.1 blob: `036fca4d7f68a1dee0f7d160777d453ac53274af`;
-- those exact modules were loaded during the successful Dev replay smoke;
-- replay v0.1.1 already prefers v27 `KW_WD_BOOTH.getState().sessionBlackCanvas`, so no replay runtime edit is required;
-- Booth v27 and Utilities v1.2.1 are manifest-delivered modules; public userscript shell can remain v1.2.0.
-
-### Target files
-
-- `tools/Booth.js`
-- `tools/Utilities.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABLE_PROMOTION.md`
-
-### Conflict risks / preservation requirements
-
-- copy the exact tested Dev Booth/Utilities blobs; do not reconstruct them;
-- keep public Black Canvas replay runtime byte-unchanged;
-- keep Corrected Bound Decal Gizmo runtime/fragments unchanged;
-- keep Spinny, High Res, JSON, Developer Mode, Decals host, and tab shell unchanged;
-- preserve Booth storage keys and Utilities/Booth default-vs-session ownership;
-- do not promote the Dev loader or unrelated Dev branch files;
-- no HF-Chat-Bridge runtime dependency.
-
-### Gate
-
-Before advancing `Witch_Scripts`:
-
-- candidate parent must equal current Stable head;
-- final runtime delta must contain only `tools/Booth.js` and `tools/Utilities.js`;
-- Booth blob must equal `434b5382c9e8b01e9f9e8bf53d772e72eaf53090`;
-- Utilities blob must equal `036fca4d7f68a1dee0f7d160777d453ac53274af`;
-- manifest must report Booth 27.0.0/build v27 and Utilities 1.2.1;
-- replay remains 0.1.1 and unchanged;
-- public shell remains 1.2.0;
-- final changed-file list must be limited to the seven target files above.
-
-### Decision
-
-Proceed as a narrow Stable module promotion. Require one clean public refresh/smoke after branch movement.
-
-**Runtime behavior changed:** yes — Booth v27 and Utilities v1.2.1 public module promotion.
-
----
-
-Historical pre-flight entries through PFC-2026-09-07-025 are preserved in Git history at public commit `b0bc170af613fc31615cd4ce78e030db3012b426`.
+`PFC-2026-09-08-030` and earlier remain preserved verbatim in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and its ancestors.
