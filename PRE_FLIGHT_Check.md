@@ -2,6 +2,94 @@
 
 This active pre-flight log is intentionally compact. Detailed records through `PFC-2026-09-08-047` remain preserved in Git history at Dev head `4cd8d15e49aee8e02b01f519ed32af579c94a277` and earlier.
 
+## PFC-2026-09-12-050 — Native texture-quality Dev acceptance complete
+
+Date: 2026-09-12
+
+### Reviewed
+
+- current WITCH_DEV_UI texture-quality service/UI v0.1.0;
+- D4 integrated acceptance/lifecycle checkpoint from PFC-049;
+- Blood Moon clean Dev baseline and integrated enable/readback;
+- Amanda's Blood Moon visual verdict;
+- focused accessory resource probe for Discus / Short Crown Horn / Celestial Circlet;
+- ordinary native `CK.character.refresh()` survival with Texture Quality ON;
+- non-invasive Booth/runtime topology smoke;
+- Bridge #1741, #1742, #1744, #1745, and #1746.
+
+### Confirmed Blood Moon integrated load
+
+Before enable:
+
+- standalone `HFNativeTextureReconcileTest` absent;
+- Dev service/UI present at v0.1.0;
+- scheduler idle;
+- native atlas `4096x4096`;
+- no target `atlasScale` overrides;
+- no body mask overrides;
+- native source state BL/BU `1024 bake / 512 used`, face `1024 / 1024`.
+
+### Confirmed Blood Moon enable
+
+One controlled Dev enable:
+
+- returned true and left service ON / not busy / no error;
+- adopted one expected HeroForge replacement generation;
+- native coherent atlas `4096x4096`;
+- BL/BU/face allocations `1024x1024`;
+- BL/BU/face `bakeSize=2048`, `_usedTextureSize=1024`;
+- actual bodyLower/bodyUpper color-bake masks remained the exact pinned real `1024x1024` textures;
+- scheduler idle after settle.
+
+Amanda visually confirmed body texture and decals sharp, no poop/corruption, correct Discus / Celestial Circlet / Short Crown Horn channels, and no visible material/color/emissive regression.
+
+A focused resource check found zero fallback/broken resource bindings among 16 `discus`, 2 `spikeSmall`, and 3 `starCirclet` parts.
+
+### Confirmed native-refresh survival
+
+With Texture Quality ON, one ordinary `CK.character.refresh()`:
+
+- completed without error;
+- service remained ON and `verify()` returned OK;
+- adoption count advanced to two, proving expected replacement-generation adoption;
+- atlas remained `4096x4096`;
+- targets remained `bakeSize=2048 / used=1024`;
+- both body mask overrides remained valid 1024 textures;
+- scheduler returned idle.
+
+### Confirmed Witch Dock / Booth integration smoke
+
+Without changing Booth mode or component state:
+
+- exactly one `/gated/booth.js` script existed;
+- script state was `loaded` and parent was BODY;
+- live `BT` runtime present;
+- live `KW_WD_BOOTH_BOOTSTRAP` present;
+- Texture Quality service and UI globals present;
+- no duplicate Booth script/runtime load was introduced by Texture Quality or the native refresh smoke.
+
+The generic scene traversal used in the topology probe did not enumerate named TokenBackground/TokenShadow/TokenFrame nodes, so no overlay-count claim is made from that probe. Duplicate Booth script topology—the relevant regression signal—was clean.
+
+### Gate result
+
+Standalone acceptance: PASS.  
+WITCH_DEV_UI D4 integrated visual/lifecycle acceptance: PASS.  
+WITCH_DEV_UI Blood Moon integrated visual/accessory acceptance: PASS.  
+Native refresh survival: PASS.  
+Non-invasive Witch Dock/Booth topology smoke: PASS.
+
+**Dev acceptance gate: CLOSED / PASS.** The feature is ready for explicit Stable promotion review.
+
+### Remaining risk / promotion boundary
+
+- D4 disable intentionally promises removal/restoration of feature-owned source policy followed by a native rebuild; it does not promise exact reproduction of HeroForge's transient pre-enable `_usedTextureSize` values.
+- Public `Witch_Scripts` must remain unchanged until Amanda explicitly approves Stable promotion.
+- Stable promotion should be narrow: port the validated Dev service/UI + manifest wiring only, preserve the accepted architecture, and repeat a clean Stable smoke rather than reopening the investigation.
+
+**Runtime behavior changed:** no. This is a documentation-only acceptance checkpoint.
+
+---
+
 ## PFC-2026-09-12-049 — D4 integrated native texture-quality acceptance
 
 Date: 2026-09-12
@@ -60,9 +148,7 @@ A subsequent OFF -> ON enable passed again:
 
 ### Remaining gate
 
-1. integrated Blood Moon enable/readback + Amanda visual confirmation;
-2. ordinary Witch Dock/Booth smoke sufficient to detect a feature-integration conflict;
-3. update current-state docs and only then consider explicit Stable promotion.
+Closed by PFC-050.
 
 ### Risk / unresolved nuance
 
@@ -138,17 +224,7 @@ The service must load inert/OFF and must not change HeroForge until the user exp
 
 ### Required live Dev gate
 
-1. install/update Witch Dock Dev and disable the standalone alpha to prevent double ownership;
-2. clean reload: verify service/UI load exactly once, service OFF, and native figure baseline unchanged;
-3. enable once on Blood Moon; verify native coherence and human visual result;
-4. disable once and verify native restore/idle state;
-5. enable once on D4 or equivalent body-glyph figure; verify exact pinned masks, accepted native promotion, and human body color/glyph result;
-6. smoke Witch Dock/Booth/other existing tools for obvious regression;
-7. only then consider an explicit Stable promotion.
-
-### Current status
-
-D4 integrated runtime/visual/lifecycle gate: PASS per PFC-049. Blood Moon integrated validation and ordinary Witch Dock/Booth smoke remain.
+Completed / PASS per PFC-049 and PFC-050.
 
 ### Rollback
 

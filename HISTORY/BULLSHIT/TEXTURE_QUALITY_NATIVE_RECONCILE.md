@@ -1,7 +1,7 @@
 # Texture Quality — Native Reconcile
 
 Date: 2026-09-12  
-Status: Witch Dock Dev candidate; standalone validated; integrated D4 PASS; integrated Blood Moon pending  
+Status: Witch Dock Dev accepted; ready for explicit Stable promotion review  
 Upstream feature ID: `rendering.texture-quality`
 
 ## Purpose
@@ -104,10 +104,74 @@ A subsequent OFF -> ON enable passed again at native 4096 atlas, 2048 allocation
 
 Bridge evidence: #1738, #1739, #1740.
 
-## Remaining Dev acceptance gate
+### Blood Moon — PASS
 
-- Blood Moon integrated enable + runtime readback + Amanda visual acceptance;
-- ordinary Witch Dock/Booth smoke sufficient to detect integration conflicts;
-- then update current-state docs and review for explicit Stable promotion.
+Clean Dev reload with the standalone disabled confirmed:
 
-Public Stable remains unchanged until explicit promotion approval.
+- Dev service/UI present;
+- scheduler idle;
+- native atlas `4096x4096`;
+- no target `atlasScale` overrides;
+- no body mask overrides;
+- native source state BL/BU `1024 bake / 512 used`, face `1024 / 1024`.
+
+One Dev enable produced:
+
+- service ON, no error, one expected generation adoption;
+- coherent native `4096x4096` atlas;
+- BL/BU/face allocations `1024x1024`;
+- `bakeSize=2048`, `_usedTextureSize=1024` on all three;
+- exact pinned real `1024x1024` body masks remained the actual color-bake inputs;
+- scheduler idle after settle.
+
+Amanda visually confirmed Blood Moon looks correct: sharp body texture and decals, no poop/corruption, correct Discus / Celestial Circlet / Short Crown Horn color/material/emissive channels, and no visible regression elsewhere.
+
+A focused resource probe found zero fallback/broken bindings among 16 `discus`, 2 `spikeSmall`, and 3 `starCirclet` parts.
+
+Bridge evidence: #1741, #1742, #1744.
+
+### Ordinary native-refresh survival — PASS
+
+With Texture Quality still ON, one ordinary `CK.character.refresh()` completed cleanly. The service adopted the replacement display/modded generation, `verify()` remained OK, adoption count advanced from one to two, atlas stayed `4096x4096`, target bake/used state stayed `2048 / 1024`, both body mask overrides remained valid 1024 textures, and the scheduler returned idle.
+
+This confirms the service survives an ordinary native regeneration without a persistent watcher or custom atlas ownership.
+
+Bridge evidence: #1745.
+
+### Witch Dock / Booth topology smoke — PASS
+
+Without changing Booth mode or component state, a topology probe found:
+
+- exactly one `/gated/booth.js` script;
+- script state `loaded`, parent BODY;
+- live `BT` runtime;
+- live `KW_WD_BOOTH_BOOTSTRAP`;
+- live Texture Quality service and UI globals.
+
+No duplicate Booth script/runtime load was introduced by Texture Quality or the native-refresh smoke. The generic scene traversal in this probe did not enumerate named TokenBackground/TokenShadow/TokenFrame nodes, so no overlay-count assertion is made from that specific probe.
+
+Bridge evidence: #1746.
+
+## Dev acceptance disposition
+
+Standalone Blood Moon + D4: PASS.  
+Integrated D4 visual/body-color/glyph gate: PASS.  
+Integrated D4 OFF -> ON lifecycle / ownership release: PASS.  
+Integrated Blood Moon accessory/material-channel gate: PASS.  
+Ordinary native refresh survival: PASS.  
+Non-invasive Witch Dock/Booth topology smoke: PASS.
+
+**WITCH_DEV_UI acceptance gate is CLOSED / PASS.**
+
+The validated behavior target is now the Dev service/UI v0.1.0 architecture above. Do not return to persistent custom atlas ownership, giant-atlas forcing, custom `CK.Atlas`, buildAtlas wrapping, direct atlas assignment, or automatic ownership watching.
+
+## Stable promotion boundary
+
+Public `Witch_Scripts` remains unchanged until Amanda explicitly approves promotion.
+
+When promotion is approved:
+
+- port only the accepted Dev service/UI and required manifest wiring;
+- preserve the current service/UI versions/build contracts unless the Stable packaging convention requires a narrow release-version bump;
+- do not reopen the underlying texture investigation absent a new regression;
+- repeat a clean Stable load/enable smoke on Blood Moon or equivalent before declaring public release complete.
