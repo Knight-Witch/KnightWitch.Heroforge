@@ -2,6 +2,45 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-12-052 — Texture Quality persistence Dev implementation
+
+Date: 2026-09-12
+
+### Scope
+
+Dev-only implementation of the approved Persistent High Res preference and Advanced reconcile UI. No Stable mutation.
+
+### Confirmed design boundary
+
+- first-time/default preference remains OFF;
+- Persistent stores only a boolean desired preference;
+- each page/figure still resolves fresh HeroForge capabilities, parts, masks, display/modded generations, and snapshots;
+- old figure sessions are discarded, never restored into a replacement figure;
+- automatic enable waits for renderer readiness, is single-flight, and is bounded to one failed automatic attempt per current figure identity;
+- manual Disable with Persistent checked is a non-persisted page-session suppression; manual Enable clears it; reload clears it naturally;
+- unchecking Persistent disables future automatic behavior but does not forcibly tear down an already-active High Res session;
+- `Reconcile Now` remains available as a user recovery action but is collapsed under the in-tool `Advanced` section.
+
+### Version/static checks
+
+- `texture-quality-native-reconcile`: v0.2.0 / `0.2.0-dev-persistent-preference`;
+- `texture-quality-native-reconcile-ui`: v0.2.0 / `0.2.0-dev-persistence-advanced-controls`;
+- `manifest.json.moduleRegistry` and Dev cache-key URLs updated consistently;
+- `node --check` passes for both changed JavaScript modules;
+- `manifest.json` parses successfully.
+
+### Protected behavior
+
+The validated v0.1.0 source-policy/reconcile/settle/verify/restore path is otherwise unchanged: native HeroForge atlas ownership, exact 1024 body-mask pinning, generation adoption, and stale-state refusal remain the governing runtime contract.
+
+### Next gate
+
+Use HF-Chat-Bridge on live `WITCH_DEV_UI` to verify: default OFF, persistence toggle immediate enable, reload persistence, figure-change fresh-session re-enable, temporary Disable suppression, manual re-enable, persistence-off behavior, atlas/mask verification, and no Booth/runtime regression. Amanda then gives the visual/UX gate.
+
+**Runtime behavior changed:** yes, Dev only. Public Stable remains untouched.
+
+---
+
 ## PFC-2026-09-12-051 — Compact governance + Texture Quality handoff
 
 Date: 2026-09-12

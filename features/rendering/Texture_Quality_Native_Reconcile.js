@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.2.0
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,10 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-hfc-alpha3-port';
+  const VERSION = '0.2.0';
+  const BUILD = '0.2.0-dev-persistent-preference';
+  const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
+  const AUTO_READY_TIMEOUT = 30000;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
   const BODIES = ['bodyLower', 'bodyUpper'];
   const SCALE = 4;
@@ -35,6 +37,12 @@
   let lastVerification = null;
   let statusText = 'OFF';
   let statusError = false;
+  let persistent = readPersistent();
+  let sessionSuppressed = false;
+  let autoPromise = null;
+  let autoAttemptedC = null;
+  let autoAttemptedD = null;
+  let autoAttemptedWithoutIdentity = false;
   const listeners = new Set();
 
   const own = (o, k) => ({
@@ -69,6 +77,38 @@
     } catch (_) {
       return null;
     }
+  }
+
+
+  function readPersistent() {
+    try {
+      const raw = UW.localStorage.getItem(PERSIST_KEY);
+      return raw === 'true' || raw === '1';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function writePersistent(value) {
+    try { UW.localStorage.setItem(PERSIST_KEY, value ? 'true' : 'false'); } catch (_) {}
+  }
+
+  function currentIdentity() {
+    const CK = UW && UW.CK;
+    const c = CK && CK.character;
+    return { c: c || null, d: c && c.data ? c.data : null };
+  }
+
+  function resetAutoAttempt() {
+    autoAttemptedC = null;
+    autoAttemptedD = null;
+    autoAttemptedWithoutIdentity = false;
+  }
+
+  function autoAlreadyAttemptedForCurrent() {
+    const identity = currentIdentity();
+    if (identity.c && identity.d) return identity.c === autoAttemptedC && identity.d === autoAttemptedD;
+    return autoAttemptedWithoutIdentity;
   }
 
   function capabilities() {
@@ -322,6 +362,9 @@
       build: BUILD,
       enabled,
       busy,
+      persistent,
+      sessionSuppressed,
+      autoPending: !!autoPromise,
       lastError,
       statusText,
       statusError,
@@ -352,12 +395,19 @@
     enabled = false;
     lastVerification = null;
     lastError = null;
-    setStatus('OFF — figure changed; enable again for this figure.', false);
+    if (persistent && !sessionSuppressed) setStatus('Persistent High Res — waiting for the new figure…', false);
+    else setStatus('OFF — figure changed; enable again for this figure.', false);
     return true;
   }
 
-  async function enable() {
+  async function enable(options = {}) {
     handleStaleFigure();
+    const automatic = !!options.automatic;
+    if (automatic && (!persistent || sessionSuppressed)) return false;
+    if (!automatic) {
+      sessionSuppressed = false;
+      resetAutoAttempt();
+    }
     if (busy || enabled) return enabled;
     busy = true;
     lastError = null;
@@ -398,6 +448,14 @@
     } catch (error) {
       lastError = String(error && error.message || error);
       enabled = false;
+      if (persistent) {
+        const identity = currentIdentity();
+        if (identity.c && identity.d) {
+          autoAttemptedC = identity.c;
+          autoAttemptedD = identity.d;
+          autoAttemptedWithoutIdentity = false;
+        }
+      }
       if (s && adoptCurrent(s)) {
         try {
           restorePolicy(s);
@@ -420,10 +478,11 @@
   async function disable() {
     handleStaleFigure();
     if (busy) return false;
+    if (persistent) sessionSuppressed = true;
     if (!session) {
       enabled = false;
       lastVerification = null;
-      setStatus('OFF', false);
+      setStatus(persistent ? 'OFF for this session — Persistent High Res will return after reload.' : 'OFF', false);
       return true;
     }
 
@@ -440,7 +499,9 @@
       session = null;
       lastVerification = null;
       lastError = null;
-      setStatus('OFF — source values restored; native atlas retained.', false);
+      setStatus(persistent
+        ? 'OFF for this session — Persistent High Res will return after reload.'
+        : 'OFF — source values restored; native atlas retained.', false);
       return true;
     } catch (error) {
       lastError = String(error && error.message || error);
@@ -453,6 +514,63 @@
       busy = false;
       emit();
     }
+  }
+
+  function setPersistent(value) {
+    persistent = !!value;
+    writePersistent(persistent);
+    if (persistent) {
+      sessionSuppressed = false;
+      resetAutoAttempt();
+      if (!enabled) setStatus('Persistent High Res — waiting for HeroForge renderer…', false);
+      queuePersistentEnable();
+    } else {
+      resetAutoAttempt();
+      if (!enabled && !busy) setStatus('OFF', false);
+      emit();
+    }
+    return persistent;
+  }
+
+  function queuePersistentEnable() {
+    if (!persistent || sessionSuppressed || enabled || busy || autoPromise || autoAlreadyAttemptedForCurrent()) return false;
+
+    autoPromise = (async () => {
+      const end = Date.now() + AUTO_READY_TIMEOUT;
+      let cap = null;
+
+      while (Date.now() < end) {
+        if (!persistent || sessionSuppressed || enabled) return false;
+        cap = capabilities();
+        if (cap.ok) break;
+        await sleep(150);
+      }
+
+      if (!cap || !cap.ok) {
+        const identity = currentIdentity();
+        if (identity.c && identity.d) {
+          autoAttemptedC = identity.c;
+          autoAttemptedD = identity.d;
+        } else {
+          autoAttemptedWithoutIdentity = true;
+        }
+        lastError = 'HeroForge renderer did not become ready for Persistent High Res.';
+        setStatus(`Persistent High Res failed — ${lastError}`, true);
+        return false;
+      }
+
+      autoAttemptedC = cap.c;
+      autoAttemptedD = cap.d;
+      autoAttemptedWithoutIdentity = false;
+      setStatus('Persistent High Res — enabling for this figure…', false);
+      return enable({ automatic: true });
+    })().finally(() => {
+      autoPromise = null;
+      emit();
+    });
+
+    emit();
+    return true;
   }
 
   async function reconcile() {
@@ -482,6 +600,7 @@
 
   function refresh() {
     handleStaleFigure();
+    queuePersistentEnable();
     return snapshotState();
   }
 
@@ -506,6 +625,7 @@
     build: BUILD,
     enable,
     disable,
+    setPersistent,
     reconcile,
     refresh,
     onChange,
@@ -520,6 +640,8 @@
     dispose,
     get enabled() { return enabled; },
     get busy() { return busy; },
+    get persistent() { return persistent; },
+    get sessionSuppressed() { return sessionSuppressed; },
     get lastError() { return lastError; },
     get lastVerification() { return lastVerification; },
     get statusText() { return statusText; },
@@ -527,4 +649,5 @@
   };
 
   emit();
+  queuePersistentEnable();
 })();

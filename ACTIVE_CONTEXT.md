@@ -1,8 +1,8 @@
 # Active Context — WITCH_DEV_UI
 
 **Updated:** 2026-09-12  
-**Current task:** Texture Quality follow-up — decide and design persistent user preference / safe automatic re-enable behavior.  
-**Runtime posture:** public Stable Texture Quality v0.1.0 is released and visually accepted; next behavior change must return to `WITCH_DEV_UI` first.
+**Current task:** Texture Quality v0.2.0 persistence candidate — live Dev validation and UX gate.  
+**Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched; persistence exists only in `WITCH_DEV_UI` until validation passes.
 
 ## Minimum continuation set
 
@@ -13,58 +13,54 @@ Read only:
 3. `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md`
 4. `features/rendering/Texture_Quality_Native_Reconcile.js`
 5. `features/rendering/Texture_Quality_Native_Reconcile_UI.js`
-6. `MODULE_VERSIONING.md` only if code/version changes are about to be committed
+6. `MODULE_VERSIONING.md` only if another code/version change is about to be committed
 
 Do not preload the full `MASTER.md`, changelog, pre-flight log, session log, standalone references, Booth history, or HeroForge.Compatibility history unless a new question specifically routes there.
 
-## Current public release — PASS
+## Public Stable — protected PASS
 
 Public `Witch_Scripts` promotion commit: `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`.
 
-Texture Quality public modules:
+Stable modules remain:
 
 - `texture-quality-native-reconcile` v0.1.0 / build `0.1.0-dev-hfc-alpha3-port`
 - `texture-quality-native-reconcile-ui` v0.1.0 / build `0.1.0-dev-texture-quality-controls`
 
-Stable Blood Moon smoke passed after Dev and standalone scripts were disabled:
+Stable Blood Moon validation remains accepted: coherent native atlas, BL/BU/face at high-resolution allocations, exact pinned 1024 body masks, zero sampled accessory fallback/broken bindings, one Booth runtime, and Amanda visual PASS. Bridge evidence #1747/#1748/#1750.
 
-- clean OFF/native baseline: 4096 atlas, BL/BU used 512, face used 1024, no scale or mask overrides;
-- one Stable enable: service ON, no error, one expected native generation adoption, coherent 4096 atlas, BL/BU/face allocations+used 1024, exact pinned 1024 body masks, scheduler idle;
-- accessory scan: zero broken/fallback bindings across 16 Discus, 2 Short Crown Horn, and 3 Celestial Circlet instances;
-- Booth topology remained one `/gated/booth.js` runtime with BT/bootstrap intact;
-- Amanda visually confirmed the public Stable result looks great.
+## Current Dev candidate
 
-Bridge evidence: #1747, #1748, #1750. Full details are already recorded in Stable `CHANGELOG.md` / `PRE_FLIGHT_Check.md`; do not reload raw issue payloads unless a regression needs them.
+Texture Quality persistence was approved and implemented on `WITCH_DEV_UI` as:
 
-## Confirmed current persistence behavior
+- service v0.2.0 / build `0.2.0-dev-persistent-preference`;
+- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`.
 
-Texture Quality v0.1.0 stores no persistent user preference.
+Approved UX/semantics:
 
-- **Same figure, ordinary native renderer refresh:** stays ON; validated in Dev.
-- **HeroForge figure change:** `handleStaleFigure()` drops the old session, clears `enabled`, and reports `OFF — figure changed; enable again for this figure.` The UI polls `service.refresh()` every 250 ms, so this state is surfaced automatically.
-- **Page reload:** module state is recreated and starts OFF/inert.
+- default/first-time state is OFF;
+- manual `Enable High Res` remains session-only when persistence is unchecked;
+- `Persistent` stores only a boolean desired preference and automatically enables High Res after page reloads and figure changes using a fresh safe reconcile session;
+- while persistence owns a pending automatic enable, the manual Enable control is disabled;
+- manual Disable while persistence is checked suppresses High Res only for the current page session; manual Enable clears that suppression, and page reload restores persistent behavior;
+- unchecking persistence disables future automatic enable but does not forcibly disable an already-active High Res session;
+- `Reconcile Now` moved into a collapsed `Advanced` section with user-facing recovery guidance.
 
-This behavior was intentional during safety validation: stale snapshots from one figure must never be restored or replayed into another figure.
+Safety behavior:
 
-## Exact handoff point
+- no renderer/session/snapshot/mask/display/modded/atlas object is persisted;
+- figure replacement still discards the old session before any new action;
+- auto-enable waits for fresh renderer readiness, is single-flight, and does not uncontrolled-retry the same failed figure;
+- the v0.1.0 native atlas/source-policy/restore/verify architecture remains otherwise unchanged.
 
-Amanda asked whether users would have to toggle Texture Quality on each time. The answer immediately before this handoff was:
+## Validation state
 
-> Right now it is not persistent. Reloading the page starts OFF, and switching figures also turns it OFF. Same-figure native refreshes stay ON. The clean next improvement is a persistent **desired preference**: remember that High Res should be enabled, but still create a fresh safe session/reconcile for each page/figure rather than reusing old snapshots.
+Static validation PASS:
 
-Amanda said she already has her response ready once the next chat is caught up. **Do not assume she has approved that design yet; let her give that response first.**
+- both JavaScript modules pass `node --check`;
+- `manifest.json` parses;
+- manifest registry/build/cache-key versions are consistent at v0.2.0.
 
-## Likely design boundary if approved
-
-Supported direction, not yet committed:
-
-- persist only a boolean user intent/preference, never session objects, snapshots, masks, display/modded references, or atlas objects;
-- a fresh page/figure must resolve fresh HeroForge capabilities/parts/masks before enabling;
-- figure change must discard the old session before any automatic action on the replacement figure;
-- auto-enable should single-flight and wait for renderer readiness rather than racing character load;
-- failures should leave that figure safely OFF with a visible status/error rather than retry-looping or reusing stale state;
-- manual Disable should plausibly turn the persistent preference OFF, but exact UX/storage semantics await Amanda's response;
-- implement/test in `WITCH_DEV_UI`; Stable v0.1.0 remains protected until Dev + human acceptance.
+Live Dev validation is still pending. Use HF-Chat-Bridge autonomously to verify persistence startup/reload/figure-change/session-disable semantics plus atlas/mask coherence and Booth topology. Amanda is needed only for final visual/UX confirmation.
 
 ## Validated architecture that must not regress
 
@@ -72,4 +68,4 @@ Keep HeroForge native atlas/generation ownership. Texture Quality owns only sour
 
 ## Cross-repo routing
 
-The engine investigation is complete. `Knight-Witch/HeroForge.Compatibility` is upstream evidence only and should not be loaded for this persistence follow-up unless a new HeroForge-internal question appears. Witch Dock now owns the product/integration behavior.
+The engine investigation is complete. `Knight-Witch/HeroForge.Compatibility` remains upstream evidence only and should not be loaded unless a new unresolved HeroForge-internal question appears. Witch Dock owns persistence/product behavior.

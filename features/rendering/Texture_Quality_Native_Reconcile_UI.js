@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile UI
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.2.0
 // @description  Witch Dock controls for the Dev native texture-quality reconcile service.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityNativeReconcileUI';
   if (UW[GLOBAL]) return;
   const TOOL_ID = 'texture-quality-native-reconcile';
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-texture-quality-controls';
+  const VERSION = '0.2.0';
+  const BUILD = '0.2.0-dev-persistence-advanced-controls';
   const STYLE_ID = 'kwTextureQualityNativeReconcileUIStyle';
 
   let registerTimer = null;
@@ -28,6 +28,7 @@
   let capabilityEl = null;
   let detailEl = null;
   let enableButton = null;
+  let persistentCheckbox = null;
   let reconcileButton = null;
 
   function getService() {
@@ -45,16 +46,26 @@
     style.textContent = `
       .kwTextureQualityRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;color-scheme:dark;}
       .kwTextureQualityIntro{font-size:11px;line-height:1.4;opacity:.82;}
-      .kwTextureQualityActions{display:grid;grid-template-columns:1.25fr 1fr;gap:6px;}
-      .kwTextureQualityActions button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:7px 8px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;font-weight:800;cursor:pointer;}
-      .kwTextureQualityActions button:hover:not(:disabled){background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}
-      .kwTextureQualityActions button:disabled{opacity:.42;cursor:default;}
+      .kwTextureQualityActions{display:flex;flex-direction:column;gap:7px;}
+      .kwTextureQualityActions button,.kwTextureQualityAdvanced button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:7px 8px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;font-weight:800;cursor:pointer;}
+      .kwTextureQualityActions button:hover:not(:disabled),.kwTextureQualityAdvanced button:hover:not(:disabled){background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}
+      .kwTextureQualityActions button:disabled,.kwTextureQualityAdvanced button:disabled{opacity:.42;cursor:default;}
+      .kwTextureQualityPersistentRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 9px;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(255,255,255,.035);}
+      .kwTextureQualityPersistentMain{min-width:0;display:flex;flex-direction:column;gap:3px;}
+      .kwTextureQualityPersistentName{font-size:11px;font-weight:800;color:rgba(255,255,255,.92);}
+      .kwTextureQualityPersistentDesc{font-size:10px;line-height:1.35;color:rgba(255,255,255,.62);}
+      .kwTextureQualityPersistentToggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:rgba(255,255,255,.82);}
+      .kwTextureQualityPersistentToggle input{transform:translateY(1px);}
       .kwTextureQualityStatus{min-height:16px;font-size:11px;line-height:1.35;font-weight:700;overflow-wrap:anywhere;}
       .kwTextureQualityStatus[data-error="1"]{color:#ff8a8a;}
       .kwTextureQualityCapability{font-size:10px;line-height:1.35;opacity:.68;overflow-wrap:anywhere;}
       .kwTextureQualityDetails{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;padding:7px;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(0,0,0,.14);}
       .kwTextureQualityDevNote{font-size:9px;line-height:1.35;color:rgba(220,195,255,.88);border-top:1px dashed rgba(190,130,255,.22);padding-top:6px;}
       .kwTextureQualityDevNote[hidden]{display:none!important;}
+      .kwTextureQualityAdvanced{border-top:1px solid rgba(255,255,255,.10);padding-top:7px;}
+      .kwTextureQualityAdvanced summary{cursor:pointer;font-size:11px;font-weight:800;color:rgba(255,255,255,.78);user-select:none;}
+      .kwTextureQualityAdvancedBody{display:flex;flex-direction:column;gap:7px;padding-top:7px;}
+      .kwTextureQualityAdvancedDesc{font-size:10px;line-height:1.4;color:rgba(255,255,255,.62);}
     `;
     document.head.appendChild(style);
   }
@@ -98,6 +109,7 @@
         statusEl.dataset.error = '1';
       }
       if (enableButton) enableButton.disabled = true;
+      if (persistentCheckbox) persistentCheckbox.disabled = true;
       if (reconcileButton) reconcileButton.disabled = true;
       return false;
     }
@@ -119,8 +131,13 @@
     }
     if (detailEl) detailEl.textContent = formatVerification(state.lastVerification);
 
+    if (persistentCheckbox) {
+      persistentCheckbox.disabled = false;
+      persistentCheckbox.checked = !!state.persistent;
+    }
     if (enableButton) {
-      enableButton.disabled = !!state.busy || !(state.capability && state.capability.ok);
+      const persistentAutoOwnsEnable = !!state.persistent && !state.enabled && !state.sessionSuppressed && !state.lastError;
+      enableButton.disabled = !!state.busy || !(state.capability && state.capability.ok) || persistentAutoOwnsEnable;
       enableButton.textContent = state.busy ? 'Working…' : state.enabled ? 'Disable High Res' : 'Enable High Res';
     }
     if (reconcileButton) reconcileButton.disabled = !!state.busy || !state.enabled;
@@ -139,15 +156,29 @@
       <div class="kwTextureQualityIntro">High-resolution body/head textures using HeroForge's own native atlas rebuild. No persistent custom atlas ownership.</div>
       <div class="kwTextureQualityActions">
         <button type="button" class="kwTextureQualityEnable">Enable High Res</button>
-        <button type="button" class="kwTextureQualityReconcile">Reconcile Now</button>
+        <div class="kwTextureQualityPersistentRow">
+          <div class="kwTextureQualityPersistentMain">
+            <div class="kwTextureQualityPersistentName">Persistent High Res</div>
+            <div class="kwTextureQualityPersistentDesc">Automatically enables High Res after reloads and figure changes. Disable remains a temporary override until you enable it again or reload the page.</div>
+          </div>
+          <label class="kwTextureQualityPersistentToggle"><input type="checkbox" class="kwTextureQualityPersistent"><span>Persistent</span></label>
+        </div>
       </div>
       <div class="kwTextureQualityStatus" data-error="0">OFF</div>
       <div class="kwTextureQualityCapability"></div>
       <div class="kwTextureQualityDetails">No active verification yet.</div>
-      <div class="kwTextureQualityDevNote" hidden>DEV: 1024 source seed, native promotion up to 2048, exact 1024 body-mask pinning.</div>`;
+      <div class="kwTextureQualityDevNote" hidden>DEV: 1024 source seed, native promotion up to 2048, exact 1024 body-mask pinning.</div>
+      <details class="kwTextureQualityAdvanced">
+        <summary>Advanced</summary>
+        <div class="kwTextureQualityAdvancedBody">
+          <div class="kwTextureQualityAdvancedDesc">Reconcile Now re-applies the current High Res source policy, asks HeroForge to rebuild the active figure natively, then verifies the resulting atlas and masks. Usually unnecessary unless textures appear to have reverted or become inconsistent.</div>
+          <button type="button" class="kwTextureQualityReconcile">Reconcile Now</button>
+        </div>
+      </details>`;
 
     section.body.appendChild(root);
     enableButton = root.querySelector('.kwTextureQualityEnable');
+    persistentCheckbox = root.querySelector('.kwTextureQualityPersistent');
     reconcileButton = root.querySelector('.kwTextureQualityReconcile');
     statusEl = root.querySelector('.kwTextureQualityStatus');
     capabilityEl = root.querySelector('.kwTextureQualityCapability');
@@ -158,6 +189,13 @@
       if (!service || service.busy) return;
       if (service.enabled) await service.disable();
       else await service.enable();
+      refresh();
+    });
+
+    persistentCheckbox.addEventListener('change', () => {
+      const service = getService();
+      if (!service || typeof service.setPersistent !== 'function') return;
+      service.setPersistent(persistentCheckbox.checked);
       refresh();
     });
 

@@ -192,9 +192,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-hfc-alpha3-port",
-      "versionOrigin": "validated-hfc-alpha3-2026-09-12"
+      "version": "0.2.0",
+      "build": "0.2.0-dev-persistent-preference",
+      "versionOrigin": "dev-persistent-preference-2026-09-12"
     },
     {
       "id": "texture-quality-native-reconcile-ui",
@@ -202,9 +202,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-texture-quality-controls",
-      "versionOrigin": "new-dev-module"
+      "version": "0.2.0",
+      "build": "0.2.0-dev-persistence-advanced-controls",
+      "versionOrigin": "dev-persistence-advanced-controls-2026-09-12"
     },
     {
       "id": "json-tool",
@@ -366,7 +366,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.1.0-dev-hfc-alpha3-port",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.2.0-dev-persistent-preference",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -375,7 +375,7 @@
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.1.0-dev-texture-quality-controls",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

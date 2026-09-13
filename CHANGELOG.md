@@ -2,6 +2,34 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-12-052 — Texture Quality persistent preference Dev candidate
+
+Date: 2026-09-12
+
+### Summary
+
+Implement Amanda's approved Texture Quality persistence UX on `WITCH_DEV_UI` while preserving the validated native reconcile architecture and stale-figure safety boundary.
+
+### Runtime/UI changes
+
+- bump `texture-quality-native-reconcile` to v0.2.0 / build `0.2.0-dev-persistent-preference`;
+- persist only the boolean `Persistent High Res` preference in local storage; no session, snapshot, mask, display/modded, atlas, or per-figure renderer object is persisted;
+- when persistence is enabled, wait for HeroForge renderer readiness and run the existing safe `enable()` path once per figure; failures stay safely OFF for that figure instead of retry-looping;
+- figure changes still discard the old active reconcile session before a fresh automatic enable is considered;
+- manual Disable while persistence is checked suppresses High Res only for the current page session; manual Enable clears that temporary suppression, and reload naturally restores persistent behavior;
+- unchecking persistence stops future automatic enables without forcing the currently active figure OFF;
+- bump `texture-quality-native-reconcile-ui` to v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
+- add a Utilities-style `Persistent` checkbox and move `Reconcile Now` into a collapsed in-tool `Advanced` section with an explanation;
+- update manifest registry versions/builds and deterministic Dev cache keys.
+
+### Validation state
+
+JavaScript syntax and manifest JSON validation pass locally. Live `WITCH_DEV_UI` runtime validation and Amanda's visual/UX gate are still required before any Stable promotion.
+
+**Runtime behavior changed:** yes, Dev only. Public `Witch_Scripts` Stable remains Texture Quality v0.1.0 and is untouched.
+
+---
+
 ## DOCK-2026-09-12-051 — Adopt compact Witch Dock project governance
 
 Date: 2026-09-12
