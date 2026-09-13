@@ -2,6 +2,85 @@
 
 This active Stable pre-flight log is intentionally compact. Detailed prior records through `PFC-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
+## PFC-2026-09-12-032 — Final public Stable Texture Quality acceptance
+
+Date: 2026-09-12
+
+### Scope
+
+Close the public release gate after the promoted Texture Quality v0.1.0 service/UI passed a clean Stable runtime smoke and Amanda's final visual confirmation.
+
+### Reviewed
+
+- Stable promotion commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`;
+- public Stable service/UI exact promoted blobs;
+- Bridge #1747 clean public baseline/topology;
+- Bridge #1748 one controlled Stable enable/readback;
+- Bridge #1750 targeted accessory/topology smoke;
+- Amanda's final public visual verdict: “looks great!”
+
+### Confirmed public load
+
+With Witch Dock Dev disabled and the standalone Native Texture Reconcile test absent:
+
+- Stable Texture Quality service/UI v0.1.0 loaded successfully;
+- feature started OFF/inert;
+- no target `atlasScale` override existed;
+- no body `masksMapOverride` existed;
+- Blood Moon baseline was native coherent `4096x4096`;
+- bodyLower/bodyUpper were `bakeSize=1024 / used=512`, face `1024 / 1024`;
+- scheduler was idle;
+- exactly one `/gated/booth.js` runtime remained, with BT and Booth bootstrap present.
+
+### Confirmed public enable
+
+One controlled call to `KWTextureQualityNativeReconcile.enable()`:
+
+- resolved true;
+- service remained ON / not busy / no error;
+- `lastVerification.ok=true`;
+- one expected native HeroForge generation replacement was adopted;
+- display/resource atlas identity was coherent at `4096x4096`;
+- bodyLower/bodyUpper/face allocations = `1024x1024`;
+- bodyLower/bodyUpper/face `_usedTextureSize = 1024`;
+- actual bodyLower/bodyUpper color-bake masks = exact pinned `1024x1024` textures;
+- both mask overrides matched the pinned expected resources;
+- scheduler returned idle.
+
+### Confirmed public accessory / integration smoke
+
+Targeted read-only scan after Stable enable found:
+
+- 16 Discus instances, 0 broken/fallback resource sets;
+- 2 Short Crown Horn / `spikeSmall` instances, 0 broken/fallback resource sets;
+- 3 Celestial Circlet / `starCirclet` instances, 0 broken/fallback resource sets;
+- exactly one Booth runtime still loaded;
+- BT/bootstrap still present;
+- Texture Quality still ON.
+
+Amanda visually confirmed the final Stable Blood Moon result looks great, including body texture, decals, accessory color/material/emissive channels, and no poop/corruption.
+
+### Persistence behavior recorded
+
+v0.1.0 is intentionally non-persistent:
+
+- normal renderer refresh on the same figure can remain ON and adopt the replacement generation;
+- page reload creates a fresh OFF service;
+- figure change is detected by the service/UI refresh loop, clears stale session bookkeeping, and reports OFF for the new figure;
+- this prevents stale figure snapshots crossing character boundaries.
+
+A persistent user preference with fresh per-figure reconciliation is the logical next enhancement, but is explicitly outside this release closeout and requires a separate Dev-first change/test cycle.
+
+### Decision
+
+Public Stable Texture Quality v0.1.0 release gate: **PASS / CLOSED**.
+
+No additional runtime edits are required for this release. The promoted runtime remains exactly the Dev-validated blobs.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation only.
+
+---
+
 ## PFC-2026-09-12-031 — Stable native Texture Quality promotion
 
 Date: 2026-09-12

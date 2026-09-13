@@ -2,6 +2,34 @@
 
 This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
+## DOCK-2026-09-12-032 — Close public Stable Texture Quality acceptance
+
+Date: 2026-09-12
+
+### Final public Stable result
+
+Public `Witch_Scripts` commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf` passed the required clean Stable smoke with Witch Dock Dev and standalone Texture Quality disabled.
+
+- Stable service/UI v0.1.0 loaded successfully;
+- feature started OFF/inert with no target `atlasScale` overrides or body mask overrides;
+- Blood Moon native baseline was coherent `4096x4096`, BL/BU `bakeSize=1024 / used=512`, face `1024 / 1024`;
+- exactly one `/gated/booth.js` runtime remained loaded with BT/bootstrap intact;
+- one controlled Stable enable returned true, stayed ON, adopted one expected HeroForge generation, and verified native coherent `4096x4096` output;
+- Blood Moon target allocations and used sizes settled at `1024/1024/1024` with exact pinned `1024x1024` body color-bake masks;
+- scheduler settled idle with no service error;
+- targeted Stable accessory scan found zero broken/fallback resources across 16 Discus, 2 Short Crown Horn, and 3 Celestial Circlet instances;
+- Amanda visually confirmed the public Stable result looks great: body texture, decals, accessory colors/material/emissive channels, and no poop/corruption.
+
+Bridge evidence: #1747 baseline/topology, #1748 enable/readback, #1750 accessory/topology smoke.
+
+### Current persistence behavior
+
+Texture Quality remains intentionally opt-in per page/figure in v0.1.0. A normal renderer refresh on the same figure preserves the active service session, but a page reload starts OFF and a HeroForge figure change is detected by the UI/service and clears the old session OFF. Persistent user preference/automatic safe re-enable is a separately scoped follow-up; it is not part of this Stable closeout.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation only; public runtime remains exactly the promoted v0.1.0 blobs.
+
+---
+
 ## DOCK-2026-09-12-031 — Promote validated native Texture Quality to Stable
 
 Date: 2026-09-12

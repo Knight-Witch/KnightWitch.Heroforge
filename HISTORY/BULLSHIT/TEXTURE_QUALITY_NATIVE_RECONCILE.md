@@ -1,7 +1,7 @@
 # Texture Quality — Native Reconcile
 
 Date: 2026-09-12  
-Status: Stable promotion candidate; standalone + Dev validation PASS  
+Status: Public Stable validated; v0.1.0 release gate PASS/CLOSED  
 Feature ID: `rendering.texture-quality`
 
 ## Purpose
@@ -15,6 +15,8 @@ Validated upstream standalone: `Knight-Witch/HeroForge.Compatibility` `rendering
 Compatibility acceptance/release checkpoint: `9bced7c9042133f766bfd47b672bdfcd845fbcd0`.
 
 Witch Dock Dev integrated acceptance head: `c8f8000d9562dbc315dc867af655358177e18d54`.
+
+Public Stable promotion commit: `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`.
 
 Stable promotes the exact Dev runtime blobs:
 
@@ -78,6 +80,32 @@ A normal native `CK.character.refresh()` while ON remained verified and adopted 
 
 Bridge evidence: #1741, #1742, #1744, #1745, #1746.
 
+## Public Stable validation — PASS
+
+Stable was updated to `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`, with Witch Dock Dev disabled and the standalone Texture Quality script absent.
+
+### Clean load
+
+The public service/UI loaded successfully and started OFF/inert. Blood Moon remained at native coherent `4096x4096`, BL/BU `bakeSize=1024 / used=512`, face `1024 / 1024`, with no target scale overrides and no body mask overrides. Booth topology remained healthy with exactly one `/gated/booth.js`, BT present, and Booth bootstrap present.
+
+Bridge evidence: #1747.
+
+### One controlled enable
+
+Stable `KWTextureQualityNativeReconcile.enable()` resolved true and left the service ON, not busy, and error-free. Verification passed with one expected generation adoption, coherent display/resource atlas identity at `4096x4096`, `1024x1024` target allocations, `_usedTextureSize=1024` for bodyLower/bodyUpper/face, and exact pinned `1024x1024` actual body color-bake masks. Scheduler returned idle.
+
+Bridge evidence: #1748.
+
+### Accessory / topology smoke
+
+After Stable enable, a targeted read-only scan found zero broken/fallback resource sets across all known Blood Moon problem families: 16 Discus, 2 Short Crown Horn / `spikeSmall`, and 3 Celestial Circlet / `starCirclet`. Exactly one Booth runtime remained loaded with BT/bootstrap intact, and Texture Quality remained ON.
+
+Amanda visually confirmed the public Stable result looks great: body texture, decals, accessory color/material/emissive channels, and no poop/corruption.
+
+Bridge evidence: #1750.
+
+**Disposition:** public Stable v0.1.0 acceptance PASS / CLOSED.
+
 ## Stable module layout
 
 `features/rendering/Texture_Quality_Native_Reconcile.js`
@@ -96,8 +124,17 @@ Bridge evidence: #1741, #1742, #1744, #1745, #1746.
 - hidden manifest loader module that self-registers the visible `Texture Quality` control under Utilities;
 - explicit Enable/Disable, manual Reconcile, and compact diagnostics.
 
+## Current persistence behavior
+
+v0.1.0 does not persist the enabled preference.
+
+- a page reload creates a new OFF service;
+- the UI polls `service.refresh()` every 250 ms;
+- if HeroForge replaces the character/data object, `handleStaleFigure()` discards the old session and reports `OFF — figure changed; enable again for this figure.`;
+- an ordinary native renderer refresh of the same character may remain ON and adopt the replacement display/modded generation.
+
+This is a safety boundary, not a technical requirement for the final UX. A future persistent preference should store only the user's desired ON/OFF preference and create a fresh safe reconcile session for each page/figure. It must never reuse stale per-figure snapshots across character boundaries.
+
 ## Stable promotion boundary
 
-This release must not merge unrelated WITCH_DEV_UI work. Public shell v1.2.1 and every existing runtime module remain byte-unchanged. Only the two new rendering files, four manifest records, and required tracking documentation are promoted.
-
-After branch movement, a clean public Stable smoke is required before marking the release fully Stable-validated.
+The public release did not merge unrelated WITCH_DEV_UI work. Public shell v1.2.1 and every pre-existing runtime module remained byte-unchanged. Only the two rendering files, four manifest records, and required tracking documentation were promoted.
