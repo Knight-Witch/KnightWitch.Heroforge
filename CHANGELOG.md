@@ -2,27 +2,39 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-13-056 — Refine Texture Quality notice hierarchy
+## DOCK-2026-09-13-057 — Fix D4 promoted-mask retry failure
 
 Date: 2026-09-13
 
 ### Summary
 
-Apply the second visual polish pass to the isolated Texture Quality Phase 1 notice after Amanda approved the revised copy density.
+Fix a D4-specific Texture Quality failure where persistence saved correctly but both automatic and manual High Res enable could fail after HeroForge had promoted the body source size to 2048.
+
+### Confirmed diagnosis
+
+- Bridge #1783 confirmed `Persistent` stored `true`; the enable failure was `Valid 1024px body masks did not load.`
+- #1785/#1786 confirmed D4 body parts can already have `_usedTextureSize=2048`, and HeroForge's `getMaskPath(hiRez, requestedSize)` only promotes that field; requesting 1024 does not lower an existing 2048 value and therefore resolves nonexistent `*_mask_2048` assets.
+- #1787 proved a reversible exact-1024 clamp around mask-path resolution returns D4's real `humanToes_mask_1024.webp` and `human_mask_1024.webp`, both loading as genuine 1024x1024 textures, while restoring the original 2048 source state immediately.
 
 ### Changes
 
-- bump `texture-quality-beta-notice` to v0.1.2 / build `0.1.2-centered-sleek-title`;
-- center all section headings to separate the modal sections more clearly;
-- change the main announcement title to a lighter, sleeker local system-font stack with reduced weight and slightly wider tracking;
-- split the closing copy into two centered lines, with `If you run into issues...` on its own line beneath the optional/default-off statement;
-- preserve the direct Discord link on `@ Knight.Witch` and the existing one-time acknowledgement key.
+- bump `texture-quality-native-reconcile` to v0.2.2 / build `0.2.2-dev-mask-path-clamp`;
+- resolve body mask paths under a temporary exact 1024 `_usedTextureSize` seed and restore the prior property descriptor/value immediately after path resolution;
+- retain the existing real-1024 mask load and exact-object verification contract;
+- avoid a native restore/rebuild when enable fails before Texture Quality has touched any owned policy state, preventing a pre-policy mask-load failure from needlessly regenerating HeroForge state;
+- preserve persistence semantics, native atlas ownership, generation adoption, allocation verification, session suppression, and the existing UI/notice modules unchanged.
 
 ### Protected behavior
 
-Texture Quality service v0.2.1, Texture Quality UI v0.2.0, persistence semantics, native atlas/mask ownership, Booth behavior, notice timing, and acknowledgement storage are unchanged.
+No custom atlas ownership, buildAtlas wrapping, direct atlas assignment, giant atlas forcing, stale cross-figure snapshots, UI contract, or notice behavior is introduced. Public Stable remains untouched.
 
-**Runtime behavior changed:** yes, Dev announcement presentation only. Public Stable remains untouched.
+**Runtime behavior changed:** yes, Dev Texture Quality service patch only.
+
+---
+
+## DOCK-2026-09-13-056 — Refine Texture Quality notice hierarchy
+
+v0.1.2 centers all section headings, uses a lighter main-title font treatment, and splits the closing copy into two centered lines. Bridge #1779/#1781 validated the exact candidate and live rendered state; Amanda approved the appearance.
 
 ---
 
@@ -38,12 +50,6 @@ The isolated v0.1.0 notice introduced one-time `OK` acknowledgement and the Phas
 
 ---
 
-## DOCK-2026-09-12-053 — Gate persistent auto-enable on visible HeroForge runtime
-
-Service v0.2.1 / build `0.2.1-dev-visible-auto-enable` prevents automatic persistence from starting in hidden HeroForge tabs and schedules the normal safe path on `visibilitychange`.
-
----
-
 ## Prior active history
 
-DOCK-2026-09-12-052 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+DOCK-2026-09-12-053 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
