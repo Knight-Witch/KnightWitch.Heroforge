@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.2.1
+// @version      0.2.2
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.2.1';
-  const BUILD = '0.2.1-dev-visible-auto-enable';
+  const VERSION = '0.2.2';
+  const BUILD = '0.2.2-dev-mask-path-clamp';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
@@ -179,9 +179,22 @@
     }
   }
 
+  function resolveMaskPath(part, hi) {
+    const usedSnapshot = own(part, '_usedTextureSize');
+    try {
+      // HeroForge's getMaskPath only promotes _usedTextureSize; it will not lower a
+      // previously promoted 2048 source when asked for 1024. Resolve against an
+      // exact temporary 1024 seed, then restore the part byte-for-byte.
+      part._usedTextureSize = USED;
+      return part.getMaskPath(hi, USED);
+    } finally {
+      restore(usedSnapshot);
+    }
+  }
+
   async function loadMasks(cap) {
     const hi = !!(cap.m.settings && cap.m.settings.hiRez);
-    const paths = BODIES.map((key) => cap.parts[key].getMaskPath(hi, USED));
+    const paths = BODIES.map((key) => resolveMaskPath(cap.parts[key], hi));
     if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported 1024px body masks.');
 
     await Promise.all(paths.map((path) => Promise.resolve(cap.R.getResource(path, 'webp', OWNER))));
@@ -455,7 +468,8 @@
           autoAttemptedWithoutIdentity = false;
         }
       }
-      if (s && adoptCurrent(s)) {
+      const policyTouched = !!(s && (s.scales.length || s.partsSeen.length || s.meshesSeen.length));
+      if (policyTouched && adoptCurrent(s)) {
         try {
           restorePolicy(s);
           nativeRestore(s);
