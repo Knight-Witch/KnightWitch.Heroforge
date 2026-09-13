@@ -2,58 +2,53 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-13-057 — Fix D4 promoted-mask retry failure
+## DOCK-2026-09-13-058 — Gate persistent Texture Quality on stable renderer readiness
 
 Date: 2026-09-13
 
 ### Summary
 
-Fix a D4-specific Texture Quality failure where persistence saved correctly but both automatic and manual High Res enable could fail after HeroForge had promoted the body source size to 2048.
+Prevent Persistent High Res from starting against a still-changing HeroForge generation during heavy figure/library transitions.
 
 ### Confirmed diagnosis
 
-- Bridge #1783 confirmed `Persistent` stored `true`; the enable failure was `Valid 1024px body masks did not load.`
-- #1785/#1786 confirmed D4 body parts can already have `_usedTextureSize=2048`, and HeroForge's `getMaskPath(hiRez, requestedSize)` only promotes that field; requesting 1024 does not lower an existing 2048 value and therefore resolves nonexistent `*_mask_2048` assets.
-- #1787 proved a reversible exact-1024 clamp around mask-path resolution returns D4's real `humanToes_mask_1024.webp` and `human_mask_1024.webp`, both loading as genuine 1024x1024 textures, while restoring the original 2048 source state immediately.
+- D4 cold-reload persistence passed on v0.2.2, and a normal library-save transition also looked correct.
+- Heavy figures Seya and Twilight Soak could report a Persistent High Res failure while the figure was still settling.
+- Bridge #1797 captured Twilight Soak failed with `Timed out waiting for native reconciliation to settle.`; an earlier verification on the same transition had bodyLower packed at only 512x512 despite scale 4 / bake 2048 / used seed 1024.
+- #1798 then confirmed the post-failure native figure itself was fully idle, `finished=true`, `resourcesReady=true`, with coherent 4096x4096 display/resource atlases.
+- One bounded manual High Res enable on that already-settled Twilight Soak succeeded in about 3.9 seconds and verified 2048x2048 bodyLower/bodyUpper/face allocations plus exact 1024 body masks (#1800).
+
+Therefore Twilight Soak was not exceeding the Phase 1 atlas policy in this test. Automatic persistence was entering the existing reconcile path before the heavy figure generation had become quiescent.
 
 ### Changes
 
-- bump `texture-quality-native-reconcile` to v0.2.2 / build `0.2.2-dev-mask-path-clamp`;
-- resolve body mask paths under a temporary exact 1024 `_usedTextureSize` seed and restore the prior property descriptor/value immediately after path resolution;
-- retain the existing real-1024 mask load and exact-object verification contract;
-- avoid a native restore/rebuild when enable fails before Texture Quality has touched any owned policy state, preventing a pre-policy mask-load failure from needlessly regenerating HeroForge state;
-- preserve persistence semantics, native atlas ownership, generation adoption, allocation verification, session suppression, and the existing UI/notice modules unchanged.
-
-### Operational correction
-
-Three accidental documentation-only commits temporarily replaced `ACTIVE_CONTEXT.md` with a one-character placeholder while advancing Dev. The corrective merge restores the reviewed v0.2.2 candidate tree without force-rewriting branch history. None of those commits changed any runtime file or the Stable branch.
+- bump `texture-quality-native-reconcile` to v0.2.3 / build `0.2.3-dev-stable-auto-readiness`;
+- keep manual Enable unchanged;
+- before automatic Persistent enable only, require HeroForge scheduler idle, display resources/finished not false, a coherent native display/resource atlas, and a stable character/data/display/modded/atlas/part signature for 1200 ms;
+- reset the quiet window whenever the generation or part/target allocation signature changes;
+- abandon an in-progress automatic wait if the document becomes hidden so the existing visibility handler can schedule a fresh foreground attempt;
+- preserve the existing 30-second bounded readiness window.
 
 ### Protected behavior
 
-No custom atlas ownership, buildAtlas wrapping, direct atlas assignment, giant atlas forcing, stale cross-figure snapshots, UI contract, or notice behavior is introduced. Public Stable remains untouched.
+The validated High Res transaction itself is unchanged: scale 4, bake 2048, used-size 1024 seed, exact real 1024 body masks, native generation/adoption, native atlas ownership, verifier, rollback, persistence storage semantics, manual Disable suppression, UI and Phase 1 notice remain unchanged. Public Stable remains untouched.
 
-**Runtime behavior changed:** yes, Dev Texture Quality service patch only.
+**Runtime behavior changed:** yes, Dev automatic-persistence readiness only.
+
+---
+
+## DOCK-2026-09-13-057 — Fix D4 promoted-mask retry failure
+
+v0.2.2 fixed D4 mask-path resolution after native source promotion by temporarily resolving the real 1024 body-mask path under an exact 1024 used-size seed, restoring the prior value immediately, and avoiding unnecessary native restore when no policy state was touched. D4 manual/automatic enable and cold reload subsequently passed.
 
 ---
 
 ## DOCK-2026-09-13-056 — Refine Texture Quality notice hierarchy
 
-v0.1.2 centers all section headings, uses a lighter main-title font treatment, and splits the closing copy into two centered lines. Bridge #1779/#1781 validated the exact candidate and live rendered state; Amanda approved the appearance.
-
----
-
-## DOCK-2026-09-12-055 — Polish Texture Quality beta announcement
-
-v0.1.1 centered the expanded title, enlarged body/section typography, condensed the copy, and linked `@ Knight.Witch` directly to Amanda's Discord profile while preserving the Phase 1 acknowledgement contract. Bridge #1777/#1778 validated the exact candidate and live rendered values.
-
----
-
-## DOCK-2026-09-12-054 — Add one-time Texture Quality Phase 1 announcement
-
-The isolated v0.1.0 notice introduced one-time `OK` acknowledgement and the Phase 1 Texture Quality announcement without coupling the modal to the validated Texture Quality service/UI architecture.
+v0.1.2 centers all section headings, uses a lighter main-title font treatment, and splits the closing copy into two centered lines. Amanda approved the appearance.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-12-053 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+DOCK-2026-09-12-055 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.

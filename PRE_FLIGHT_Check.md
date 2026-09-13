@@ -2,62 +2,58 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-13-057 — D4 promoted mask-path clamp
+## PFC-2026-09-13-058 — Persistent High Res stable-readiness gate
 
 Date: 2026-09-13
 
 ### Scope
 
-Repair the confirmed D4 Texture Quality enable failure without changing the validated native-reconcile ownership architecture or persistence UX.
+Repair heavy-figure Persistent High Res transition failures without changing the validated texture-quality reconcile transaction.
 
 ### Reviewed
 
 - current `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`;
-- Texture Quality service v0.2.1 / `0.2.1-dev-visible-auto-enable`;
+- Texture Quality service v0.2.2 / `0.2.2-dev-mask-path-clamp`;
 - `MODULE_VERSIONING.md` patch-bump rules;
-- HeroForge.Compatibility `feature/rendering-texture-quality` evidence for the real-1024 body-mask contract and D4 native source promotion;
-- Bridge #1783-#1787 live D4 diagnostics and reversible mask-resolution probe.
+- current native scheduler/display readiness contract used by `settle()`;
+- Bridge #1797-#1800 heavy Twilight Soak diagnostics and one bounded settled-state enable.
 
 ### Confirmed root cause
 
-D4 persisted `Persistent=true` correctly. The failure occurred because its body parts had `_usedTextureSize=2048`; HeroForge's current `getMaskPath` only raises `_usedTextureSize`, so `getMaskPath(...,1024)` continued to resolve nonexistent 2048 mask paths. A reversible probe proved temporary exact-1024 seeding resolves and loads the real 1024 body masks while restoring the prior 2048 values immediately.
+Twilight Soak failed during automatic persistence with a reconcile timeout and one recorded 512x512 bodyLower allocation, but the restored native figure later reported an idle scheduler, finished/resources-ready display and coherent 4096x4096 atlas. Running the unchanged v0.2.2 manual Enable once after that settled state succeeded in ~3.9 seconds with 2048x2048 target allocations and exact 1024 body masks. Seya showed the same user-visible pattern of an early failure followed by later recovery.
+
+This supports an automatic-start readiness defect rather than a motherload atlas-capacity failure for these tested figures.
 
 ### Change
 
-- service v0.2.2 / build `0.2.2-dev-mask-path-clamp`;
-- add a narrow body-mask resolver that snapshots `_usedTextureSize`, temporarily seeds exactly 1024 for `getMaskPath`, then restores the original descriptor/value in `finally`;
-- retain the existing post-load requirement that both mask textures are exactly 1024x1024;
-- run rollback/native restore only when the service actually recorded owned policy mutations, so pre-policy mask failures do not trigger needless HeroForge regeneration;
-- no Texture Quality UI or announcement code change.
-
-### Operational correction
-
-Three documentation-only branch-control mistakes created intermediate commits with `ACTIVE_CONTEXT.md` replaced by a placeholder. The corrective merge uses the already-reviewed v0.2.2 candidate tree, restores the proper router, records this correction here and in `CHANGELOG.md`, and avoids force-rewriting Dev history. Runtime source and Stable were not modified by any of those accidental commits.
-
-### Protected behavior
-
-Keep HeroForge native atlas/resource ownership, scale 4 / bake 2048 / used-size 1024 seed policy, legitimate native promotion through 2048, exact 1024 body-mask pinning, expected-generation adoption, stale-identity refusal, persistence/session-suppression semantics, and Booth boundaries.
+- service v0.2.3 / build `0.2.3-dev-stable-auto-readiness`;
+- automatic Persistent enable now waits for scheduler idle, resources/finished not false and display/resource atlas identity;
+- require the same character/data/display/modded/atlas plus full part signature and target allocations to remain unchanged for 1200 ms before calling the existing `enable({automatic:true})` path;
+- reset the stability window on any generation/signature change;
+- exit the pending auto wait if HeroForge becomes hidden so foreground `visibilitychange` can reschedule normally;
+- retain the existing 30-second readiness bound;
+- manual Enable, texture policy, mask resolution, native lifecycle, verifier and rollback remain unchanged.
 
 ### Required validation
 
-Before any Stable promotion: exact service/manifest source inspection and version/cache-key consistency; live D4 persistent automatic enable from the current stored `true` preference; verify coherent display/resource atlas, scale/bake/used/allocation bounds, exact pinned 1024 masks, scheduler idle and no error; Amanda visual D4 body/decal gate; cold reload persistence; fresh figure transition; then narrow Stable promotion only after explicit approval.
+Before advancing beyond Dev: exact service syntax and manifest parse/version/cache-key consistency; live v0.2.3 auto-enable on a settled current figure; then fresh heavy transitions Seya and Twilight Soak with Persistent checked and no manual Enable. Require no early failure, successful automatic ON state, coherent native atlas, valid 2048-or-supported target allocations, exact 1024 body masks and idle scheduler. Amanda supplies visual confirmation. Public Stable remains untouched pending explicit promotion approval.
 
-**Runtime behavior changed:** yes, Dev Texture Quality service patch only. Public Stable remains untouched.
+**Runtime behavior changed:** yes, Dev automatic-persistence readiness only.
+
+---
+
+## PFC-2026-09-13-057 — D4 promoted mask-path clamp
+
+v0.2.2 fixed D4 mask resolution after 2048 source promotion and passed D4 live automatic/manual enable plus cold reload persistence. The High Res ownership architecture remained native-reconcile based.
 
 ---
 
 ## PFC-2026-09-13-056 — Texture Quality notice hierarchy polish
 
-Notice v0.1.2 centered section headings, changed the title typography, and split/centered the closing block. Bridge #1779/#1781 passed static/live rendering checks and Amanda approved the result.
-
----
-
-## PFC-2026-09-12-055 — Texture Quality announcement copy/layout polish
-
-v0.1.1 passed exact syntax/manifest checks and live rendering checks through Bridge #1777/#1778.
+Notice v0.1.2 centered section headings, changed the title typography, and split/centered the closing block. Amanda approved the result.
 
 ---
 
 ## Prior current preflight
 
-PFC-2026-09-12-054 and earlier remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+PFC-2026-09-12-055 and earlier remain preserved in Git history. Fetch only when a current task needs their specific evidence.

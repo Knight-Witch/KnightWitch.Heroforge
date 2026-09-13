@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.2.2
+// @version      0.2.3
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,10 +18,11 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.2.2';
-  const BUILD = '0.2.2-dev-mask-path-clamp';
+  const VERSION = '0.2.3';
+  const BUILD = '0.2.3-dev-stable-auto-readiness';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
+  const AUTO_STABLE_MS = 1200;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
   const BODIES = ['bodyLower', 'bodyUpper'];
   const SCALE = 4;
@@ -552,15 +553,62 @@
     autoPromise = (async () => {
       const end = Date.now() + AUTO_READY_TIMEOUT;
       let cap = null;
+      let readyState = null;
+      let readySince = 0;
 
       while (Date.now() < end) {
         if (!persistent || sessionSuppressed || enabled) return false;
+        if (document.hidden || document.visibilityState !== 'visible') return false;
         cap = capabilities();
-        if (cap.ok) break;
+        const atlas = cap.ok ? cap.display.atlas : null;
+        const ready = !!(
+          cap.ok &&
+          !cap.c._needsUpdating &&
+          !cap.c._inUpdate &&
+          cap.display.resourcesReady !== false &&
+          cap.display.finished !== false &&
+          atlas &&
+          atlas === cap.m.resourceAtlas
+        );
+        if (!ready) {
+          readyState = null;
+          readySince = 0;
+          await sleep(150);
+          continue;
+        }
+
+        const signature = JSON.stringify([
+          atlasSize(atlas),
+          Object.keys(cap.parts).sort().map((key) => [key, partId(cap.parts[key])]),
+          TARGETS.map((key) => allocation(atlas, key))
+        ]);
+        const same = !!(
+          readyState &&
+          cap.c === readyState.c &&
+          cap.d === readyState.d &&
+          cap.display === readyState.display &&
+          cap.m === readyState.m &&
+          atlas === readyState.atlas &&
+          signature === readyState.signature
+        );
+
+        if (!same) {
+          readyState = {
+            c: cap.c,
+            d: cap.d,
+            display: cap.display,
+            m: cap.m,
+            atlas,
+            signature
+          };
+          readySince = Date.now();
+        } else if (Date.now() - readySince >= AUTO_STABLE_MS) {
+          break;
+        }
         await sleep(150);
       }
 
-      if (!cap || !cap.ok) {
+      if (!cap || !cap.ok || !readyState || Date.now() - readySince < AUTO_STABLE_MS) {
         const identity = currentIdentity();
         if (identity.c && identity.d) {
           autoAttemptedC = identity.c;

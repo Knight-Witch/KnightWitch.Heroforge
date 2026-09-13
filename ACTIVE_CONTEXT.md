@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_UI
 
 **Updated:** 2026-09-13  
-**Current task:** Texture Quality persistence regression on D4 — validate service v0.2.2 promoted-mask path fix, then finish cold-reload/figure-change gates.  
+**Current task:** Texture Quality heavy-figure persistence race — validate service v0.2.3 stable-renderer auto-readiness on Seya and Twilight Soak.  
 **Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
 
 ## Minimum continuation set
@@ -16,7 +16,7 @@ Read only:
 6. `features/rendering/Texture_Quality_Beta_Notice.js`
 7. `MODULE_VERSIONING.md` only if another code/version change is about to be committed
 
-Do not preload full repo history/changelog/preflight unless a new question specifically routes there.
+Do not preload full repo history/changelog/preflight unless a current question specifically routes there.
 
 ## Public Stable — protected PASS
 
@@ -26,35 +26,37 @@ Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0
 
 ## Current Dev candidate
 
-- service v0.2.2 / build `0.2.2-dev-mask-path-clamp`;
+- service v0.2.3 / build `0.2.3-dev-stable-auto-readiness`;
 - UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
 - isolated beta notice v0.1.2 / build `0.1.2-centered-sleek-title`.
 
 Persistence semantics remain unchanged: default OFF; boolean-only `Persistent`; fresh page/figure session; manual Disable while persistent is page-session suppression; manual Enable/reload clears suppression; unchecking persistence stops future auto behavior without forcing an active session off; `Reconcile Now` remains under collapsed `Advanced`.
 
-## D4 regression — confirmed root cause
+## D4 v0.2.2 — closed PASS
 
-Amanda enabled persistence and reloaded D4. Persistence itself worked: Bridge #1783 read both service `persistent=true` and stored `kw.witchDock.textureQuality.persistent = true`. Automatic enable and a later manual Enable failed with `Valid 1024px body masks did not load.`
+v0.2.2 fixed D4's promoted body-mask path case by resolving body mask paths under a temporary exact 1024 used-size seed and restoring the prior value immediately. D4 then passed automatic and manual High Res, exact 1024 mask verification, Amanda visual quality, and a genuine cold reload with stored Persistent=true. Bridge #1790-#1794.
 
-#1785/#1786 confirmed D4 bodyLower `humanToes` and bodyUpper `human` had been promoted to `_usedTextureSize=2048`. Current HeroForge `getMaskPath(hiRez,size)` only raises `_usedTextureSize`; asking for 1024 cannot lower an existing 2048 state, so it resolves nonexistent `*_mask_2048` resources.
+## Heavy transition race — confirmed
 
-Bridge #1787 proved the narrow correction: snapshot each body's current used size, temporarily seed exactly 1024 only while resolving `getMaskPath`, immediately restore the prior value, then load the returned resources. D4 resolved `humanToes_mask_1024.webp` and `human_mask_1024.webp`, both genuine 1024x1024, while original 2048 used-size values were restored and the character remained idle.
+A normal library save transitioned successfully, but heavy Seya and Twilight Soak could show an early Persistent High Res failure while the figure was still loading. Twilight Soak is Amanda's largest kitbash and remains the preferred future motherload benchmark.
 
-Service v0.2.2 applies that exact temporary mask-path clamp. It also skips native restore/rebuild when enable fails before any Texture Quality-owned policy field was touched; pre-policy mask failures should not regenerate HeroForge state.
+Bridge #1797 captured Twilight Soak failed with `Timed out waiting for native reconciliation to settle.`; one transition verification had bodyLower packed at 512x512. #1798 later showed the restored native Twilight state fully idle with `finished=true`, `resourcesReady=true`, and coherent 4096x4096 display/resource atlases.
 
-HeroForge.Compatibility evidence was consulted because this was an unresolved engine edge case. Its native-reconcile alpha notes explicitly show D4 source promotion and state that Alpha.3 D4 live validation was still pending before the architecture moved into Witch Dock.
+One bounded manual v0.2.2 Enable on that already-settled Twilight state succeeded in about 3.9 seconds, verified native 4096x4096, 2048x2048 bodyLower/bodyUpper/face allocations, and exact 1024 body masks (#1800). Therefore this observed failure is an automatic-start readiness race, not a demonstrated Phase 1 atlas-capacity limit.
+
+## v0.2.3 change
+
+Only automatic Persistent start timing changes. Before calling the existing `enable({automatic:true})` path, the service requires HeroForge scheduler idle, resources/finished not false, coherent native atlas identity, and the same character/data/display/modded/atlas plus full part signature and target allocations to remain unchanged for 1200 ms. The 30-second bound and visibility gating remain. Manual Enable is unchanged.
+
+The High Res transaction, scale/bake/used policy, D4 mask-path fix, native atlas ownership, generation adoption, verifier, rollback, UI, persistence storage semantics and notice are unchanged.
 
 ## Phase 1 announcement
 
-Notice v0.1.2 is visually approved for now. It remains isolated, uses the sleek centered title/section hierarchy and two-line centered closing copy, links `@ Knight.Witch` directly to Discord, and stores only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`.
-
-## Chrome-only loader side observation
-
-Amanda separately observed sudden Chrome/Tampermonkey-only Witch Dock startup slowdown affecting Dev and Stable but not Firefox. Direct raw-file fetches remained fast while module registration lagged, so no Witch Dock loader change is justified from current evidence.
+Notice v0.1.2 is visually approved for now. It remains isolated, uses the centered sleek hierarchy and direct Discord link, and writes only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`.
 
 ## Next gate
 
-Static-check the exact detached v0.2.2 service + manifest candidate before advancing `WITCH_DEV_UI`. Then use the Bridge to replace the currently failed v0.2.1 live service once, allowing stored Persistent=true to auto-enable D4. Read back once before any retry. Require coherent atlas identity, scale/bake/used/allocation bounds, exact pinned 1024 masks, idle scheduler and no error. Amanda then performs the D4 visual body/decal gate. After that, test cold reload persistence and a fresh figure transition. Stable remains protected until explicit promotion approval.
+Static-check the exact detached v0.2.3 service/manifest candidate before moving `WITCH_DEV_UI`. Then load exact v0.2.3 into the current settled Twilight page and confirm stored Persistent=true auto-enables cleanly. After that Amanda switches, without touching Texture Quality, to Seya and then Twilight Soak. Bridge verifies each fresh figure waits for quiescence and reaches ON with coherent atlas, valid target allocations, exact 1024 body masks and idle scheduler. Amanda supplies visual confirmation. Stable remains protected until explicit narrow promotion approval.
 
 ## Architecture that must not regress
 
