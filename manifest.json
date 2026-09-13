@@ -1,417 +1,52 @@
 {
   "version": 1,
   "moduleRegistry": [
-    {
-      "id": "witch-dock-core",
-      "title": "Witch Dock Core",
-      "path": "Witch_Dock.user.js",
-      "kind": "core",
-      "load": "userscript",
-      "version": "1.0.8",
-      "build": "1.0.8",
-      "versionOrigin": "existing"
-    },
-    {
-      "id": "witch-dock-dev-loader",
-      "title": "Witch Dock Dev Loader",
-      "path": "Witch_Dock_DEV.user.js",
-      "kind": "core",
-      "load": "userscript-dev",
-      "version": "0.5.1",
-      "build": "1.0.8.6-cache-keyed-loader",
-      "versionOrigin": "dev-loader-cache-repair-2026-09-07"
-    },
-    {
-      "id": "expanded-ui-scroll-guards",
-      "title": "Expanded UI Scroll Guards",
-      "path": "HeroForge_UI/Expanded_UI_Scroll_Guards.js",
-      "kind": "heroForgeUI",
-      "load": "manifest",
-      "version": "1.0.0",
-      "build": "2026-07-03-layouts",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "hf-ui-scroll-split-safe",
-      "title": "HF UI Scroll Split Safe",
-      "path": "HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
-      "kind": "heroForgeUI",
-      "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "hf-ui-slot-bridge",
-      "title": "HF UI Slot Bridge",
-      "path": "HeroForge_UI/HF_UI_Slot_Bridge.js",
-      "kind": "heroForgeUI",
-      "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "expanded-decal-slots",
-      "title": "Expanded Decal Slots",
-      "path": "HeroForge_UI/Expanded_Decal_Slots.js",
-      "kind": "heroForgeUI",
-      "load": "conditional",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "corrected-bound-decal-gizmo",
-      "title": "Corrected Bound Decal Gizmo",
-      "path": "HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
-      "kind": "heroForgeUI",
-      "load": "manifest",
-      "version": "1.1.1",
-      "build": "1.1.1-dev-fresh-slot-normalization",
-      "versionOrigin": "dev-fresh-slot-normalization-2026-09-08"
-    },
-    {
-      "id": "witch-dock-developer-mode",
-      "title": "Developer Mode",
-      "path": "features/core/Witch_Dock_Developer_Mode.js",
-      "kind": "core-feature",
-      "load": "manifest",
-      "version": "0.3.0",
-      "build": "0.3.0-public-ready-manifest-source",
-      "versionOrigin": "existing"
-    },
-    {
-      "id": "body-editor",
-      "title": "Body Editor",
-      "path": "tools/Body_Editor.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "4.0.0",
-      "build": "v4",
-      "versionOrigin": "normalized-existing"
-    },
-    {
-      "id": "pose-tool",
-      "title": "Pose",
-      "path": "tools/Pose.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "decals-dev",
-      "title": "Decals",
-      "path": "tools/Decals.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "1.1.0",
-      "versionOrigin": "dev-ui-host-cleanup-2026-09-06"
-    },
-    {
-      "id": "booth-runtime-bootstrap",
-      "title": "Booth Runtime Bootstrap",
-      "path": "features/booth/Booth_Runtime_Bootstrap.js",
-      "kind": "compatibility-feature",
-      "load": "manifest",
-      "version": "0.1.1",
-      "build": "0.1.1-dev-native-loader-coordination",
-      "versionOrigin": "dev-native-loader-coordination-2026-09-08"
-    },
-    {
-      "id": "booth-tool",
-      "title": "Booth",
-      "path": "tools/Booth.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "27.0.4",
-      "build": "v27.0.4",
-      "versionOrigin": "dev-booth-environment-ownership-repair-2026-09-07"
-    },
-    {
-      "id": "booth-black-canvas-display-replay",
-      "title": "Booth Black Canvas Display Replay",
-      "path": "features/booth/Black_Canvas_Display_Replay.js",
-      "kind": "compatibility-feature",
-      "load": "manifest",
-      "version": "0.1.5",
-      "build": "0.1.5-dev-restore-before-booth-handoff",
-      "versionOrigin": "dev-booth-environment-ownership-repair-2026-09-07"
-    },
-    {
-      "id": "photo-booth-true-resolution",
-      "title": "High Res Image Capture Service",
-      "path": "features/media/Photo_Booth_True_Resolution.js",
-      "kind": "feature-service",
-      "load": "manifest",
-      "version": "0.8.0",
-      "build": "0.8.0-service-only-provider",
-      "versionOrigin": "existing"
-    },
-    {
-      "id": "photo-booth-true-resolution-readiness",
-      "title": "Photo Booth True Resolution Readiness",
-      "path": "HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
-      "kind": "heroForgeUI",
-      "load": "manifest",
-      "version": "1.0.0",
-      "build": "1.0.0-public-readiness",
-      "versionOrigin": "existing"
-    },
-    {
-      "id": "photo-booth-true-resolution-ui",
-      "title": "High Res Image Capture UI",
-      "path": "features/media/Photo_Booth_True_Resolution_UI.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.3.0",
-      "build": "0.3.0-service-ui-ownership",
-      "versionOrigin": "existing"
-    },
-    {
-      "id": "spinny-mini-webp",
-      "title": "Spinny Mini WebP Service",
-      "path": "features/media/Spinny_Mini_WebP.js",
-      "kind": "feature-service",
-      "load": "manifest",
-      "version": "0.5.1",
-      "build": "0.5.1-witch-dock-dev-download-scroll-guard",
-      "versionOrigin": "validated-hfc-v0.5.0"
-    },
-    {
-      "id": "spinny-mini-webp-ui",
-      "title": "Spinny Mini WebP UI",
-      "path": "features/media/Spinny_Mini_WebP_UI.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.1.1",
-      "build": "0.1.1-dev-download-ux",
-      "versionOrigin": "new-dev-module"
-    },
-    {
-      "id": "texture-quality-native-reconcile",
-      "title": "Texture Quality Native Reconcile Service",
-      "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
-      "kind": "feature-service",
-      "load": "manifest",
-      "version": "0.2.1",
-      "build": "0.2.1-dev-visible-auto-enable",
-      "versionOrigin": "dev-visible-auto-enable-2026-09-12"
-    },
-    {
-      "id": "texture-quality-native-reconcile-ui",
-      "title": "Texture Quality Native Reconcile UI",
-      "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.2.0",
-      "build": "0.2.0-dev-persistence-advanced-controls",
-      "versionOrigin": "dev-persistence-advanced-controls-2026-09-12"
-    },
-    {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "path": "features/rendering/Texture_Quality_Beta_Notice.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.1.1",
-      "build": "0.1.1-copy-layout-polish",
-      "versionOrigin": "dev-copy-layout-polish-2026-09-12"
-    },
-    {
-      "id": "json-tool",
-      "title": "JSON",
-      "path": "tools/JSON_Tool.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
-    },
-    {
-      "id": "utilities",
-      "title": "Utilities",
-      "path": "tools/Utilities.js",
-      "kind": "tool",
-      "load": "manifest",
-      "version": "1.2.1",
-      "versionOrigin": "dev-booth-startup-defaults-2026-09-06"
-    }
+    {"id":"witch-dock-core","title":"Witch Dock Core","path":"Witch_Dock.user.js","kind":"core","load":"userscript","version":"1.0.8","build":"1.0.8","versionOrigin":"existing"},
+    {"id":"witch-dock-dev-loader","title":"Witch Dock Dev Loader","path":"Witch_Dock_DEV.user.js","kind":"core","load":"userscript-dev","version":"0.5.1","build":"1.0.8.6-cache-keyed-loader","versionOrigin":"dev-loader-cache-repair-2026-09-07"},
+    {"id":"expanded-ui-scroll-guards","title":"Expanded UI Scroll Guards","path":"HeroForge_UI/Expanded_UI_Scroll_Guards.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","build":"2026-07-03-layouts","versionOrigin":"baseline-2026-09-06"},
+    {"id":"hf-ui-scroll-split-safe","title":"HF UI Scroll Split Safe","path":"HeroForge_UI/HF_UI_Scroll_Split_Safe.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
+    {"id":"hf-ui-slot-bridge","title":"HF UI Slot Bridge","path":"HeroForge_UI/HF_UI_Slot_Bridge.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
+    {"id":"expanded-decal-slots","title":"Expanded Decal Slots","path":"HeroForge_UI/Expanded_Decal_Slots.js","kind":"heroForgeUI","load":"conditional","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
+    {"id":"corrected-bound-decal-gizmo","title":"Corrected Bound Decal Gizmo","path":"HeroForge_UI/Corrected_Bound_Decal_Gizmo.js","kind":"heroForgeUI","load":"manifest","version":"1.1.1","build":"1.1.1-dev-fresh-slot-normalization","versionOrigin":"dev-fresh-slot-normalization-2026-09-08"},
+    {"id":"witch-dock-developer-mode","title":"Developer Mode","path":"features/core/Witch_Dock_Developer_Mode.js","kind":"core-feature","load":"manifest","version":"0.3.0","build":"0.3.0-public-ready-manifest-source","versionOrigin":"existing"},
+    {"id":"body-editor","title":"Body Editor","path":"tools/Body_Editor.js","kind":"tool","load":"manifest","version":"4.0.0","build":"v4","versionOrigin":"normalized-existing"},
+    {"id":"pose-tool","title":"Pose","path":"tools/Pose.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
+    {"id":"decals-dev","title":"Decals","path":"tools/Decals.js","kind":"tool","load":"manifest","version":"1.1.0","versionOrigin":"dev-ui-host-cleanup-2026-09-06"},
+    {"id":"booth-runtime-bootstrap","title":"Booth Runtime Bootstrap","path":"features/booth/Booth_Runtime_Bootstrap.js","kind":"compatibility-feature","load":"manifest","version":"0.1.1","build":"0.1.1-dev-native-loader-coordination","versionOrigin":"dev-native-loader-coordination-2026-09-08"},
+    {"id":"booth-tool","title":"Booth","path":"tools/Booth.js","kind":"tool","load":"manifest","version":"27.0.4","build":"v27.0.4","versionOrigin":"dev-booth-environment-ownership-repair-2026-09-07"},
+    {"id":"booth-black-canvas-display-replay","title":"Booth Black Canvas Display Replay","path":"features/booth/Black_Canvas_Display_Replay.js","kind":"compatibility-feature","load":"manifest","version":"0.1.5","build":"0.1.5-dev-restore-before-booth-handoff","versionOrigin":"dev-booth-environment-ownership-repair-2026-09-07"},
+    {"id":"photo-booth-true-resolution","title":"High Res Image Capture Service","path":"features/media/Photo_Booth_True_Resolution.js","kind":"feature-service","load":"manifest","version":"0.8.0","build":"0.8.0-service-only-provider","versionOrigin":"existing"},
+    {"id":"photo-booth-true-resolution-readiness","title":"Photo Booth True Resolution Readiness","path":"HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js","kind":"heroForgeUI","load":"manifest","version":"1.0.0","build":"1.0.0-public-readiness","versionOrigin":"existing"},
+    {"id":"photo-booth-true-resolution-ui","title":"High Res Image Capture UI","path":"features/media/Photo_Booth_True_Resolution_UI.js","kind":"feature-ui","load":"manifest","version":"0.3.0","build":"0.3.0-service-ui-ownership","versionOrigin":"existing"},
+    {"id":"spinny-mini-webp","title":"Spinny Mini WebP Service","path":"features/media/Spinny_Mini_WebP.js","kind":"feature-service","load":"manifest","version":"0.5.1","build":"0.5.1-witch-dock-dev-download-scroll-guard","versionOrigin":"validated-hfc-v0.5.0"},
+    {"id":"spinny-mini-webp-ui","title":"Spinny Mini WebP UI","path":"features/media/Spinny_Mini_WebP_UI.js","kind":"feature-ui","load":"manifest","version":"0.1.1","build":"0.1.1-dev-download-ux","versionOrigin":"new-dev-module"},
+    {"id":"texture-quality-native-reconcile","title":"Texture Quality Native Reconcile Service","path":"features/rendering/Texture_Quality_Native_Reconcile.js","kind":"feature-service","load":"manifest","version":"0.2.1","build":"0.2.1-dev-visible-auto-enable","versionOrigin":"dev-visible-auto-enable-2026-09-12"},
+    {"id":"texture-quality-native-reconcile-ui","title":"Texture Quality Native Reconcile UI","path":"features/rendering/Texture_Quality_Native_Reconcile_UI.js","kind":"feature-ui","load":"manifest","version":"0.2.0","build":"0.2.0-dev-persistence-advanced-controls","versionOrigin":"dev-persistence-advanced-controls-2026-09-12"},
+    {"id":"texture-quality-beta-notice","title":"Texture Quality Phase 1 Beta Notice","path":"features/rendering/Texture_Quality_Beta_Notice.js","kind":"feature-ui","load":"manifest","version":"0.1.2","build":"0.1.2-centered-sleek-title","versionOrigin":"dev-centered-sleek-title-2026-09-13"},
+    {"id":"json-tool","title":"JSON","path":"tools/JSON_Tool.js","kind":"tool","load":"manifest","version":"1.0.0","versionOrigin":"baseline-2026-09-06"},
+    {"id":"utilities","title":"Utilities","path":"tools/Utilities.js","kind":"tool","load":"manifest","version":"1.2.1","versionOrigin":"dev-booth-startup-defaults-2026-09-06"}
   ],
   "tools": [
-    {
-      "id": "witch-dock-developer-mode",
-      "title": "Developer Mode",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/core/Witch_Dock_Developer_Mode.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "expanded-ui-scroll-guards",
-      "title": "Expanded UI Scroll Guards",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "hf-ui-scroll-split-safe",
-      "title": "HF UI Scroll Split Safe",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "hf-ui-slot-bridge",
-      "title": "HF UI Slot Bridge",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "corrected-bound-decal-gizmo",
-      "title": "Corrected Bound Decal Gizmo",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "body-editor",
-      "title": "Body Editor",
-      "tab": "Body",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
-      "enabledByDefault": true
-    },
-    {
-      "id": "pose-tool",
-      "title": "Pose",
-      "tab": "Pose",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js",
-      "enabledByDefault": true
-    },
-    {
-      "id": "decals-dev",
-      "title": "Decals",
-      "tab": "Decals",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Decals.js",
-      "enabledByDefault": true
-    },
-    {
-      "id": "booth-runtime-bootstrap",
-      "title": "Booth Runtime Bootstrap",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "booth-tool",
-      "title": "Booth",
-      "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js?v=27.0.4-v27.0.4",
-      "enabledByDefault": true
-    },
-    {
-      "id": "booth-black-canvas-display-replay",
-      "title": "Booth Black Canvas Display Replay",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "photo-booth-true-resolution",
-      "title": "High Res Image Capture Service",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "photo-booth-true-resolution-readiness",
-      "title": "Photo Booth True Resolution Readiness",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "photo-booth-true-resolution-ui",
-      "title": "High Res Image Capture UI",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Photo_Booth_True_Resolution_UI.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "spinny-mini-webp",
-      "title": "Spinny Mini WebP Service",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "spinny-mini-webp-ui",
-      "title": "Spinny Mini WebP UI",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP_UI.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "texture-quality-native-reconcile",
-      "title": "Texture Quality Native Reconcile Service",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.2.1-dev-visible-auto-enable",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "texture-quality-native-reconcile-ui",
-      "title": "Texture Quality Native Reconcile UI",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Beta_Notice.js?v=0.1.1-copy-layout-polish",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "json-tool",
-      "title": "JSON",
-      "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
-      "enabledByDefault": true
-    },
-    {
-      "id": "utilities",
-      "title": "Utilities",
-      "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Utilities.js?v=1.2.1",
-      "enabledByDefault": true
-    }
+    {"id":"witch-dock-developer-mode","title":"Developer Mode","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/core/Witch_Dock_Developer_Mode.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"expanded-ui-scroll-guards","title":"Expanded UI Scroll Guards","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"hf-ui-scroll-split-safe","title":"HF UI Scroll Split Safe","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"hf-ui-slot-bridge","title":"HF UI Slot Bridge","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"corrected-bound-decal-gizmo","title":"Corrected Bound Decal Gizmo","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"body-editor","title":"Body Editor","tab":"Body","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js","enabledByDefault":true},
+    {"id":"pose-tool","title":"Pose","tab":"Pose","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js","enabledByDefault":true},
+    {"id":"decals-dev","title":"Decals","tab":"Decals","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Decals.js","enabledByDefault":true},
+    {"id":"booth-runtime-bootstrap","title":"Booth Runtime Bootstrap","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"booth-tool","title":"Booth","tab":"Booth","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Booth.js?v=27.0.4-v27.0.4","enabledByDefault":true},
+    {"id":"booth-black-canvas-display-replay","title":"Booth Black Canvas Display Replay","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"photo-booth-true-resolution","title":"High Res Image Capture Service","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"photo-booth-true-resolution-readiness","title":"Photo Booth True Resolution Readiness","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"photo-booth-true-resolution-ui","title":"High Res Image Capture UI","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Photo_Booth_True_Resolution_UI.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"spinny-mini-webp","title":"Spinny Mini WebP Service","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"spinny-mini-webp-ui","title":"Spinny Mini WebP UI","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/media/Spinny_Mini_WebP_UI.js","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"texture-quality-native-reconcile","title":"Texture Quality Native Reconcile Service","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.2.1-dev-visible-auto-enable","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"texture-quality-native-reconcile-ui","title":"Texture Quality Native Reconcile UI","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"texture-quality-beta-notice","title":"Texture Quality Phase 1 Beta Notice","tab":"HeroForge UI","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Beta_Notice.js?v=0.1.2-centered-sleek-title","enabledByDefault":true,"hidden":true,"type":"heroForgeUI"},
+    {"id":"json-tool","title":"JSON","tab":"JSON","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js","enabledByDefault":true},
+    {"id":"utilities","title":"Utilities","tab":"Utilities","url":"https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/tools/Utilities.js?v=1.2.1","enabledByDefault":true}
   ]
 }

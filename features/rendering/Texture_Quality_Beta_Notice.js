@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Beta Notice
 // @namespace    KnightWitch
-// @version      0.1.1
+// @version      0.1.2
 // @description  One-time Phase 1 announcement for Witch Dock Texture Quality.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityBetaNotice';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-copy-layout-polish';
+  const VERSION = '0.1.2';
+  const BUILD = '0.1.2-centered-sleek-title';
   const ACK_KEY = 'kw.witchDock.textureQuality.betaNotice.phase1.v1';
   const OVERLAY_ID = 'kwTextureQualityBetaNoticeOverlay';
   const STYLE_ID = 'kwTextureQualityBetaNoticeStyle';
@@ -48,10 +48,10 @@
       #${OVERLAY_ID}[hidden]{display:none!important;}
       .kwTQBetaNotice{width:min(760px,calc(100vw - 36px));max-height:min(840px,calc(100vh - 36px));display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:linear-gradient(180deg,rgba(32,27,40,.995),rgba(18,16,23,.995));box-shadow:0 24px 70px rgba(0,0,0,.58);color:rgba(255,255,255,.93);font-family:Arial,sans-serif;}
       .kwTQBetaHeader{padding:17px 20px;border-bottom:1px solid rgba(255,255,255,.11);background:rgba(122,62,170,.18);text-align:center;}
-      .kwTQBetaTitle{font-size:19px;line-height:1.28;font-weight:900;letter-spacing:.2px;text-align:center;}
+      .kwTQBetaTitle{font-family:"Avenir Next","Segoe UI Variable Display","Helvetica Neue","Segoe UI",sans-serif;font-size:20px;line-height:1.3;font-weight:600;letter-spacing:.65px;text-align:center;}
       .kwTQBetaBody{padding:17px 20px 13px;overflow:auto;font-size:13.5px;line-height:1.52;scrollbar-width:thin;}
       .kwTQBetaBody p{margin:0 0 12px;}
-      .kwTQBetaBody h3{margin:18px 0 8px;font-size:15px;line-height:1.3;font-weight:900;letter-spacing:.75px;color:rgba(237,218,255,.98);}
+      .kwTQBetaBody h3{margin:18px 0 8px;font-size:15px;line-height:1.3;font-weight:900;letter-spacing:.75px;text-align:center;color:rgba(237,218,255,.98);}
       .kwTQBetaBody ul{margin:5px 0 12px;padding-left:22px;}
       .kwTQBetaBody li{margin:6px 0;}
       .kwTQBetaBody li>ul{margin-top:4px;margin-bottom:4px;}
@@ -59,6 +59,9 @@
       .kwTQBetaBody em{color:rgba(240,224,255,.94);}
       .kwTQBetaBody a{color:rgba(220,177,255,.98);font-weight:900;text-decoration:underline;text-underline-offset:2px;}
       .kwTQBetaBody a:hover{color:#fff;}
+      .kwTQBetaClosing{margin:18px 0 2px;text-align:center;}
+      .kwTQBetaClosing p{margin:0;}
+      .kwTQBetaClosing p+p{margin-top:7px;}
       .kwTQBetaFooter{display:flex;justify-content:flex-end;padding:11px 14px;border-top:1px solid rgba(255,255,255,.11);background:rgba(0,0,0,.18);}
       .kwTQBetaOk{min-width:96px;border:1px solid rgba(204,153,255,.62);border-radius:7px;padding:8px 16px;background:rgba(151,78,210,.30);color:#fff;font-size:12px;font-weight:900;cursor:pointer;}
       .kwTQBetaOk:hover{background:rgba(170,85,255,.44);border-color:rgba(220,177,255,.86);}
@@ -110,7 +113,10 @@
             <li>Further work on the extreme ceiling for exceptionally massive builds.</li>
           </ul>
 
-          <p><strong>Texture Quality is optional and starts OFF by default.</strong> If you run into issues, reach out to me directly on Discord <a href="https://discord.com/users/579968778360848395" target="_blank" rel="noopener noreferrer">@ Knight.Witch</a>.</p>
+          <div class="kwTQBetaClosing">
+            <p><strong>Texture Quality is optional and starts OFF by default.</strong></p>
+            <p>If you run into issues, reach out to me directly on Discord <a href="https://discord.com/users/579968778360848395" target="_blank" rel="noopener noreferrer">@ Knight.Witch</a>.</p>
+          </div>
         </div>
         <div class="kwTQBetaFooter">
           <button type="button" class="kwTQBetaOk">OK</button>

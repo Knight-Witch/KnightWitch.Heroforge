@@ -2,50 +2,48 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-12-055 — Polish Texture Quality beta announcement
+## DOCK-2026-09-13-056 — Refine Texture Quality notice hierarchy
 
-Date: 2026-09-12
+Date: 2026-09-13
 
 ### Summary
 
-Refine the first-run Texture Quality announcement after Amanda's visual review without changing Texture Quality service behavior, persistence semantics, or the Utilities controls.
+Apply the second visual polish pass to the isolated Texture Quality Phase 1 notice after Amanda approved the revised copy density.
 
 ### Changes
 
-- bump `texture-quality-beta-notice` to v0.1.1 / build `0.1.1-copy-layout-polish`;
-- retitle the modal to `Nat 20! New Beta Unlocked: Texture Quality Upgrade Is Live!` and center the heading;
-- increase body text size and strengthen section-heading hierarchy with larger type and wider letter spacing;
-- shorten and consolidate the announcement copy while preserving Phase 1 scope, extreme-build limits, load-settle guidance, crash-state recovery, future optimization plans, and the FRD/T handoff warning;
-- keep the actionable instruction to disable only FRD/T's three Decal Resolution toggles, not the rest of FRD/T;
-- hyperlink the visible Discord contact `@ Knight.Witch` directly to Amanda's Discord user profile;
-- keep the acknowledgement key unchanged so users who already dismissed this Phase 1 notice are not forced to acknowledge the copy-only revision again.
+- bump `texture-quality-beta-notice` to v0.1.2 / build `0.1.2-centered-sleek-title`;
+- center all section headings to separate the modal sections more clearly;
+- change the main announcement title to a lighter, sleeker local system-font stack with reduced weight and slightly wider tracking;
+- split the closing copy into two centered lines, with `If you run into issues...` on its own line beneath the optional/default-off statement;
+- preserve the direct Discord link on `@ Knight.Witch` and the existing one-time acknowledgement key.
 
 ### Protected behavior
 
-Texture Quality service v0.2.1, Texture Quality UI v0.2.0, persistence storage, temporary session suppression, native atlas ownership, mask policy, Booth behavior, and the notice acknowledgement contract are unchanged.
+Texture Quality service v0.2.1, Texture Quality UI v0.2.0, persistence semantics, native atlas/mask ownership, Booth behavior, notice timing, and acknowledgement storage are unchanged.
 
-**Runtime behavior changed:** yes, Dev announcement presentation/copy only. Public Stable remains untouched.
+**Runtime behavior changed:** yes, Dev announcement presentation only. Public Stable remains untouched.
+
+---
+
+## DOCK-2026-09-12-055 — Polish Texture Quality beta announcement
+
+v0.1.1 centered the expanded title, enlarged body/section typography, condensed the copy, and linked `@ Knight.Witch` directly to Amanda's Discord profile while preserving the Phase 1 acknowledgement contract. Bridge #1777/#1778 validated the exact candidate and live rendered values.
 
 ---
 
 ## DOCK-2026-09-12-054 — Add one-time Texture Quality Phase 1 announcement
 
-The isolated v0.1.0 notice introduced one-time `OK` acknowledgement and the Phase 1 Texture Quality announcement without coupling the modal to the validated Texture Quality service/UI architecture. Bridge #1766/#1767/#1768 validated syntax, first-show, acknowledgement, and no-repeat behavior.
+The isolated v0.1.0 notice introduced one-time `OK` acknowledgement and the Phase 1 Texture Quality announcement without coupling the modal to the validated Texture Quality service/UI architecture.
 
 ---
 
 ## DOCK-2026-09-12-053 — Gate persistent auto-enable on visible HeroForge runtime
 
-Service v0.2.1 / build `0.2.1-dev-visible-auto-enable` prevents automatic persistence from starting in hidden HeroForge tabs and schedules the normal safe path on `visibilitychange`. Bridge #1755/#1757/#1760 diagnosed the hidden-tab failure; #1761 confirmed the exact corrective service/manifest static PASS.
-
----
-
-## DOCK-2026-09-12-052 — Texture Quality persistent preference Dev candidate
-
-The approved boolean-only persistence model and Advanced reconcile UI were implemented on `WITCH_DEV_UI`. Public Stable was not changed.
+Service v0.2.1 / build `0.2.1-dev-visible-auto-enable` prevents automatic persistence from starting in hidden HeroForge tabs and schedules the normal safe path on `visibilitychange`.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-12-051 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+DOCK-2026-09-12-052 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.

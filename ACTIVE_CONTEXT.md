@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_UI
 
-**Updated:** 2026-09-12  
-**Current task:** Texture Quality persistence + Phase 1 announcement polish — finish v0.1.1 visual/UX gate and final cold-reload validation.  
+**Updated:** 2026-09-13  
+**Current task:** Texture Quality persistence + Phase 1 announcement polish — finish v0.1.2 visual/UX gate and final cold-reload validation.  
 **Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
 
 ## Minimum continuation set
@@ -28,7 +28,7 @@ Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0
 
 - service v0.2.1 / build `0.2.1-dev-visible-auto-enable`;
 - UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- isolated beta notice v0.1.1 / build `0.1.1-copy-layout-polish`.
+- isolated beta notice v0.1.2 / build `0.1.2-centered-sleek-title`.
 
 Approved persistence semantics remain:
 
@@ -50,7 +50,7 @@ After Chrome restart, a transient cold-start mask-load failure at #1764 self-rec
 
 The announcement remains an isolated optional module so notice failure cannot break Texture Quality. It stores only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`.
 
-v0.1.1 is a presentation/copy polish pass after Amanda's first visual review: centered expanded title, larger body type, larger/wider-spaced section headings, shorter copy, and a direct Discord hyperlink on `@ Knight.Witch`. The acknowledgement key intentionally remains unchanged.
+Amanda approved v0.1.1 copy density. v0.1.2 is the final hierarchy/font polish pass: centered section headings, a lighter/sleeker main-title font treatment, and two centered closing lines with the support/contact sentence on its own line. The Discord hyperlink and acknowledgement key remain unchanged.
 
 ## Chrome-only loader side observation
 
@@ -58,7 +58,7 @@ Amanda observed a sudden Chrome/Tampermonkey-only Witch Dock startup slowdown th
 
 ## Next gate
 
-Static-check the exact v0.1.1 notice + manifest candidate, move `WITCH_DEV_UI` only after PASS, clear only the Dev notice acknowledgement marker, then use Amanda for the revised modal visual/UX check. Continue Bridge validation autonomously for `OK` acknowledgement/no-repeat and the remaining cold-reload/figure persistence checks. Stable remains protected until explicit promotion.
+Static-check the exact v0.1.2 notice + manifest candidate, move `WITCH_DEV_UI` only after PASS, hot-load/clear only the Dev notice acknowledgement marker, then use Amanda for the revised modal visual/UX check. Continue Bridge validation autonomously for `OK` acknowledgement/no-repeat and the remaining cold-reload/figure persistence checks. Stable remains protected until explicit promotion.
 
 ## Architecture that must not regress
 
