@@ -2,69 +2,48 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-12-053 — Gate persistent auto-enable on visible HeroForge runtime
+## DOCK-2026-09-12-054 — Add one-time Texture Quality Phase 1 announcement
 
 Date: 2026-09-12
 
 ### Summary
 
-Live Bridge validation of the first Texture Quality persistence candidate found that an automatic reconcile can be started while HeroForge is in a hidden/background tab. In that state HeroForge left `_needsUpdating=true`, did not converge display/resource atlas identity, and both the reconcile and recovery restore timed out. The preference model itself was not the failure; automatic scheduling was too permissive.
+Add a first-run Witch Dock announcement for the Texture Quality beta without modifying the already-working Texture Quality Utilities UI or service architecture.
 
-### Fix
+### Changes
 
-- bump Texture Quality service to v0.2.1 / build `0.2.1-dev-visible-auto-enable`;
-- persistent auto-enable now refuses to start while `document.hidden` or `visibilityState !== 'visible'`;
-- add a `visibilitychange` hook that schedules the existing safe automatic enable path once HeroForge becomes visible again;
-- keep manual Enable behavior unchanged;
-- keep the boolean-only persistence/session-suppression model unchanged;
-- update manifest registry version/build/cache key accordingly.
+- add `features/rendering/Texture_Quality_Beta_Notice.js` v0.1.0 / build `0.1.0-phase1-announcement` as an isolated optional module;
+- show `Nat 20: New Beta Unlocked!` once after Witch Dock and the Texture Quality service are available;
+- use a Witch Dock-style scrollable modal with explicit `OK` acknowledgement;
+- write only the versioned acknowledgement marker `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`, so later refreshes do not repeat the notice;
+- keep notice state completely separate from `Persistent High Res` and renderer/session state;
+- preserve the existing Texture Quality UI v0.2.0 unchanged, including `Persistent` and collapsed `Advanced > Reconcile Now`;
+- register the notice as a hidden manifest-loaded module with its own deterministic Dev cache key.
+
+### Copy scope
+
+The announcement explains Phase 1 capabilities and limits, expected texture settle time, future optimization/tier work, crash-state recovery, and the FRD/T handoff. It explicitly tells users to turn off only FRD/T's three Decal Resolution toggles, not the whole script.
 
 ### Validation state
 
-The failing hidden-tab behavior is confirmed by Bridge evidence #1755/#1757/#1760. v0.2.1 static and fresh live validation are required before Amanda's visual gate. Public Stable remains untouched.
+Service v0.2.1 static validation passed via Bridge #1761 and restarted transport health passed #1762/#1763. The clean restarted runtime briefly reported a cold-start mask-load failure at #1764, then self-recovered on the final figure identity and verified ON at #1765 with coherent 4096x4096 native atlas and 2048 target allocations. Cold-reload behavior remains part of the final Dev gate; no architecture change is justified from that single self-recovering transition.
 
-**Runtime behavior changed:** yes, Dev only.
+**Runtime behavior changed:** yes, Dev announcement only. Public Stable remains untouched.
+
+---
+
+## DOCK-2026-09-12-053 — Gate persistent auto-enable on visible HeroForge runtime
+
+Service v0.2.1 / build `0.2.1-dev-visible-auto-enable` prevents automatic persistence from starting in hidden HeroForge tabs and schedules the normal safe path on `visibilitychange`. Bridge #1755/#1757/#1760 diagnosed the hidden-tab failure; #1761 confirmed the exact corrective service/manifest static PASS.
 
 ---
 
 ## DOCK-2026-09-12-052 — Texture Quality persistent preference Dev candidate
 
-Date: 2026-09-12
-
-### Summary
-
-Implement Amanda's approved Texture Quality persistence UX on `WITCH_DEV_UI` while preserving the validated native reconcile architecture and stale-figure safety boundary.
-
-### Runtime/UI changes
-
-- bump `texture-quality-native-reconcile` to v0.2.0 / build `0.2.0-dev-persistent-preference`;
-- persist only the boolean `Persistent High Res` preference in local storage; no session, snapshot, mask, display/modded, atlas, or per-figure renderer object is persisted;
-- when persistence is enabled, wait for HeroForge renderer readiness and run the existing safe `enable()` path once per figure; failures stay safely OFF for that figure instead of retry-looping;
-- figure changes still discard the old active reconcile session before a fresh automatic enable is considered;
-- manual Disable while persistence is checked suppresses High Res only for the current page session; manual Enable clears that temporary suppression, and reload naturally restores persistent behavior;
-- unchecking persistence stops future automatic enables without forcing the currently active figure OFF;
-- bump `texture-quality-native-reconcile-ui` to v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- add a Utilities-style `Persistent` checkbox and move `Reconcile Now` into a collapsed in-tool `Advanced` section with an explanation;
-- update manifest registry versions/builds and deterministic Dev cache keys.
-
-### Validation state
-
-JavaScript syntax and manifest JSON validation passed before live testing. Live validation exposed the hidden-tab scheduler issue now addressed by DOCK-2026-09-12-053.
-
-**Runtime behavior changed:** yes, Dev only. Public `Witch_Scripts` Stable remains Texture Quality v0.1.0 and is untouched.
-
----
-
-## DOCK-2026-09-12-051 — Adopt compact Witch Dock project governance
-
-Date: 2026-09-12
-
-Public Texture Quality v0.1.0 is fully Stable accepted. Governance was compacted around `PROJECT_CONTRACT.md`, `ACTIVE_CONTEXT.md`, rolling logs, and Bridge-first runtime validation.
-
-**Runtime behavior changed:** no.
+The approved boolean-only persistence model and Advanced reconcile UI were implemented on `WITCH_DEV_UI`. Public Stable was not changed.
 
 ---
 
 ## Prior active history
 
-Detailed DOCK-2026-09-12-050 and earlier entries remain preserved in Git history. Do not load them unless a current task specifically needs that evidence.
+DOCK-2026-09-12-051 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.

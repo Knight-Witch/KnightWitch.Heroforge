@@ -1,57 +1,38 @@
 # Texture Quality — Native Reconcile
 
-**Status:** Public Stable v0.1.0 accepted; Dev v0.2.1 persistence candidate awaiting fresh live validation.  
+**Status:** Public Stable v0.1.0 accepted; Dev persistence service v0.2.1 + UI v0.2.0 + isolated Phase 1 notice v0.1.0 awaiting final acceptance.  
 **Public release:** `Witch_Scripts` commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`
 
 ## Validated architecture
 
-Texture Quality owns source policy for the active figure/session only:
+Texture Quality owns source policy for the active figure/session only: atlasScale BL/BU/face = 4, bake seed 2048, used-size seed 1024 minimum, exact real 1024 body masks, and HeroForge-native data/change/buildAtlas/refresh/update ownership. Verification requires coherent display/resource atlas identity, valid target allocations and exact pinned 1024 body color-bake masks.
 
-- `atlasScale.bodyLower/bodyUpper/face = 4`;
-- seed `bakeSize = 2048`;
-- seed `_usedTextureSize = 1024` minimum;
-- exact real 1024 bodyLower/bodyUpper mask textures are pinned;
-- HeroForge retains native atlas/generation ownership and its normal data/change/buildAtlas/refresh/update lifecycle;
-- replacement display/modded generations may be adopted only while character/data/target-part identity remains valid;
-- verification requires coherent display/resource atlas identity, valid high-resolution target allocations, and exact 1024 body color-bake masks.
+Do not reintroduce custom `CK.Atlas`, `buildAtlas` wrapping/replacement, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.
 
-Do **not** reintroduce custom `CK.Atlas`, `buildAtlas` wrapping/replacement, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.
+## Stable baseline
 
-## Public Stable v0.1.0
-
-Stable has no persistent preference. Same-figure native renderer refresh remains ON; figure change discards the active session OFF; page reload starts OFF/inert.
-
-Stable Blood Moon acceptance is closed PASS. Bridge evidence #1747/#1748/#1750 and Amanda's visual confirmation remain the protected release baseline.
+Stable v0.1.0 has no persistence. Blood Moon public acceptance is closed PASS; Bridge #1747/#1748/#1750 and Amanda's visual confirmation remain the protected baseline.
 
 ## Dev persistence UX
 
-Approved behavior:
+- default OFF;
+- manual Enable is session-only without persistence;
+- `Persistent` stores only boolean desired intent;
+- reload/figure change creates a fresh reconcile session;
+- manual Disable while persistent is a page-session suppression cleared by manual Enable or reload;
+- unchecking persistence stops future automatic behavior but does not force an active session OFF;
+- `Reconcile Now` is under collapsed `Advanced`.
 
-- first-time/default state OFF;
-- manual Enable is session-only when persistence is unchecked;
-- `Persistent` stores only a boolean desired preference;
-- each page/figure always creates a fresh reconcile session; no snapshots, masks, atlas/display/modded objects, or other renderer state persist;
-- manual Disable while persistence is checked is a page-session suppression cleared by manual Enable or reload;
-- unchecking persistence stops future automatic behavior without forcing the active current session OFF;
-- `Reconcile Now` is retained under collapsed `Advanced` with recovery guidance.
+Service v0.2.1 / `0.2.1-dev-visible-auto-enable` fixes the confirmed hidden-tab scheduler failure by refusing automatic start while HeroForge is hidden and scheduling the normal path on `visibilitychange`. Manual Enable and the validated reconcile/restore architecture are unchanged.
 
-UI candidate remains v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`.
+## Clean-restart runtime note
 
-## Hidden-tab failure and v0.2.1 correction
+Bridge #1764 saw one cold-start automatic attempt fail before the exact 1024 body masks were available. The final HeroForge figure identity then triggered a fresh bounded attempt, and #1765 verified the same runtime ON with no error, coherent 4096x4096 atlas, generation adoption, 2048 BL/BU/face allocations and 2048 used sizes. This is currently a self-recovering startup transition; final cold reload must confirm it does not become a persistent user-visible defect.
 
-The first service persistence candidate, v0.2.0, was live-tested through HF-Chat-Bridge while the HeroForge tab was hidden. HeroForge exposed the required capability objects, but its native update loop did not progress. The automatic reconcile remained `_needsUpdating=true`, display/resource atlas identity diverged, and both reconcile and recovery restore timed out. Evidence: Bridge #1755/#1757/#1760.
+## Phase 1 announcement
 
-This is a scheduler/readiness issue, not a reason to alter the validated texture architecture.
-
-Service v0.2.1 / build `0.2.1-dev-visible-auto-enable` therefore:
-
-- refuses to start **automatic** persistent enable while `document.hidden` or `visibilityState !== 'visible'`;
-- listens for `visibilitychange` and schedules the same safe automatic enable path once HeroForge becomes visible;
-- leaves manual Enable unchanged;
-- leaves stale-figure refusal, native ownership, source policy, mask pinning, settle/verify/restore behavior, boolean persistence, and temporary session suppression otherwise unchanged.
-
-Chrome/Bridge were restarted after the failed v0.2.0 probe, providing a clean runtime for v0.2.1 validation.
+`features/rendering/Texture_Quality_Beta_Notice.js` v0.1.0 / `0.1.0-phase1-announcement` is an isolated optional module. It waits for Witch Dock and the Texture Quality service, presents the one-time `Nat 20: New Beta Unlocked!` rollout notice, and writes only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after explicit `OK` acknowledgement. It has no renderer or persistence-preference ownership.
 
 ## Next gate
 
-Validate v0.2.1 on `WITCH_DEV_UI`: clean load, default/persisted startup behavior, visible-tab automatic enable, hidden-tab no-op, temporary Disable suppression, manual re-enable, figure-change fresh-session behavior, atlas/mask verification, Booth topology smoke, then Amanda visual/UX confirmation. Public Stable remains untouched until an explicit narrow promotion.
+Validate the notice first-run/dismissal/no-repeat behavior and finish persistence session regression, atlas/mask verification and Booth smoke. Then Amanda performs the final modal/Utilities visual gate and a cold reload; figure-change navigation follows if needed. Stable remains untouched until explicit narrow promotion.
