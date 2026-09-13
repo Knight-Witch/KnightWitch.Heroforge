@@ -1,177 +1,105 @@
 # Texture Quality — Native Reconcile
 
-Date: 2026-09-12  
-Status: Witch Dock Dev accepted; ready for explicit Stable promotion review  
-Upstream feature ID: `rendering.texture-quality`
+**Status:** Public Stable accepted; persistence UX is the next Witch Dock follow-up.  
+**Public release:** `Witch_Scripts` commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`  
+**Upstream feature:** HeroForge.Compatibility `rendering.texture-quality`
 
 ## Purpose
 
-Prevent HeroForge's complexity-driven body/head texture collapse without reintroducing the stale-generation/material-channel failures caused by the old persistent Protected Textures architecture.
+Prevent HeroForge's complexity-driven body/head texture collapse while preserving native generation/resource ownership and avoiding the stale material/color/emissive failures caused by the old persistent Protected Textures architecture.
 
-## Provenance
+## Validated architecture
 
-Validated upstream source: `Knight-Witch/HeroForge.Compatibility` standalone `rendering-texture-quality-native-reconcile.user.js` v0.2.0-alpha.3.
+Texture Quality owns source policy for the active figure/session only:
 
-Standalone acceptance checkpoint commit: `1c5b238a21c6acc5767d3c1b7f7ab5c702bf8f75`.
+- `atlasScale.bodyLower/bodyUpper/face = 4`;
+- seed `bakeSize = 2048`;
+- seed `_usedTextureSize = 1024` as a minimum; HeroForge may natively promote through 2048;
+- load and pin real exact 1024 bodyLower/bodyUpper mask textures;
+- use HeroForge's native data/change/buildAtlas/refresh/update lifecycle;
+- adopt expected replacement display/modded generations;
+- require character/data/target-part identity to remain stable during a session;
+- verify display/resource atlas coherence, target source/allocation bounds, and exact pinned 1024 body color-bake masks.
 
-The Dev service is a vendored port; Witch Dock has no runtime dependency on HeroForge.Compatibility.
+Do **not** reintroduce custom `CK.Atlas`, `buildAtlas` wrapping/replacement, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.
 
-## Why the old architecture was rejected
-
-The old Protected Textures v0.1.5 path wrapped `modded.buildAtlas`, constructed/assigned custom giant atlases, and persistently watched/reasserted atlas ownership. Live investigation showed this could preserve a high-resolution-looking but generation-incoherent state where accessory material/color/emissive channels were wrong.
-
-A native HeroForge reconciliation event repaired all affected accessory channels while preserving high-resolution source policy. That established that persistent custom atlas ownership was unnecessary and likely interfered with the native resource-selection/repack lifecycle.
-
-## Validated native architecture
-
-On explicit enable only:
-
-1. resolve current bodyLower/bodyUpper/face and validate required named native lifecycle capabilities;
-2. load real 1024 bodyLower/bodyUpper masks using each current part's `getMaskPath(..., 1024)`;
-3. snapshot every source object/field the feature will own;
-4. seed `atlasScale=4`, `bakeSize=2048`, `_usedTextureSize=1024` for bodyLower/bodyUpper/face;
-5. pin bodyLower/bodyUpper mask overrides to the real 1024 textures;
-6. call native `data.change({})`, reapply the source policy to the refreshed generation, call native `modded.buildAtlas()`, then `character.refresh()`;
-7. wait for HeroForge's scheduler/display/resource atlas to settle coherently;
-8. adopt replacement display/modded generation objects while requiring the same character/data and target-part identities;
-9. accept native used/allocation sizes from 1024 through 2048;
-10. require the actual body color-bake `masksMap` to remain the exact pinned 1024 texture.
-
-No custom `CK.Atlas` construction, buildAtlas replacement, direct atlas assignment, or persistent watcher is used.
-
-## Standalone live acceptance
-
-### Blood Moon
-
-Native potato baseline: 4096 atlas; BL/BU 256; face 512; bake 1024; used 256/256/512.
-
-Accepted result: native coherent 4096 atlas; scale 4/4/4; BL/BU/face 1024 allocations; bake 2048; used 1024; exact 1024 masks. Amanda confirmed excellent body/decal quality, no poop, and correct Discus / Celestial Circlet / Short Crown Horn channels.
-
-### D4
-
-Native baseline: 4096 atlas; BL/BU bake 1024 used 512; face bake 1024 used 1024.
-
-Accepted result: native coherent 4096 atlas; scale 4/4/4; BL/BU/face 2048 allocations; bake 2048; native-promoted used 2048 on all three; exact 1024 body masks. Amanda confirmed the historically sensitive body paint/glyph channel is correct, body/face and decals are sharp, no poop/corruption, and no obvious wrong accessory channels.
-
-## Dev module layout
+## Module layout
 
 `features/rendering/Texture_Quality_Native_Reconcile.js`
 
 - v0.1.0 / build `0.1.0-dev-hfc-alpha3-port`;
-- hidden manifest-loaded service;
-- global: `KWTextureQualityNativeReconcile`;
-- OFF/inert on load;
-- APIs: enable, disable, reconcile, refresh, verify, capabilities, getState, onChange, dispose;
-- figure change clears stale session bookkeeping OFF without replaying old snapshots into the new figure.
+- global `KWTextureQualityNativeReconcile`;
+- APIs include enable, disable, reconcile, refresh, verify, getState, capabilities, onChange, dispose;
+- current service starts OFF/inert on page load.
 
 `features/rendering/Texture_Quality_Native_Reconcile_UI.js`
 
 - v0.1.0 / build `0.1.0-dev-texture-quality-controls`;
-- hidden loader module that self-registers visible Witch Dock tool `texture-quality-native-reconcile` under Utilities;
-- explicit Enable/Disable and Reconcile controls;
-- shows capability, atlas/target sizes, native promotion, body masks, adoption count, and errors.
+- registers visible `Texture Quality` controls under Utilities;
+- polls `service.refresh()` every 250 ms and reflects ON/OFF/error/verification state.
 
-## Integrated Dev validation
+The public Stable runtime uses the exact Dev-validated blobs:
 
-### D4 — PASS
+- service blob `f1891bb266ea1e8f03101d96b43bc9d38de3fa46`;
+- UI blob `2c781d4c8e0a0ae472187512875d7db369897c7f`.
 
-Clean Dev reload with the standalone disabled confirmed:
+## Acceptance summary
 
-- service/UI loaded exactly once;
-- service started OFF/inert;
-- standalone global absent;
-- D4 baseline stayed native `4096x4096`, BL/BU `1024 bake / 512 used`, face `1024 / 1024`, no body mask overrides, scheduler idle.
+### Standalone / upstream
 
-One Dev enable then produced:
+Blood Moon and D4 both passed runtime + human visual gates. Blood Moon validated the high-pressure accessory/material-channel case; D4 validated the historically sensitive body color/glyph channel. Upstream architecture checkpoint: HeroForge.Compatibility `1c5b238a21c6acc5767d3c1b7f7ab5c702bf8f75` and later release-context checkpoint `9bced7c9042133f766bfd47b672bdfcd845fbcd0`.
 
-- service ON, no error, one expected generation adoption;
-- native coherent `4096x4096` atlas;
-- BL/BU/face allocations `2048x2048` and used `2048`;
-- exact pinned real `1024x1024` body masks as actual color-bake inputs;
-- scheduler idle after settle.
+### Witch Dock Dev
 
-Amanda visually confirmed the integrated result looks perfect, including the historically sensitive body color/glyph channel, body/face sharpness, decals, no poop/corruption, and no wrong material/color/emissive channels.
+D4 passed integrated body-color/glyph visuals, exact pinned masks, disable ownership release, and repeated OFF -> ON lifecycle. Blood Moon passed integrated body/decal/accessory visuals and focused accessory resource checks. Same-figure native `CK.character.refresh()` remained verified, and Booth topology retained exactly one loaded `/gated/booth.js` runtime.
 
-Bridge evidence: #1735, #1737.
+Dev acceptance head: `c8f8000d9562dbc315dc867af655358177e18d54`.
 
-### D4 disable / repeated lifecycle — PASS with native-recalculation nuance
+### Public Stable — PASS
 
-Controlled disable returned true and removed every feature-owned target scale override and both body mask overrides. HeroForge rebuilt natively at 4096 atlas / bake 1024 with scheduler idle.
+Clean Stable Blood Moon validation after disabling Dev/standalone scripts:
 
-The rebuilt D4 generation settled at `_usedTextureSize=1024/1024/1024`, not its original `512/512/1024`. Because feature-owned scale/mask properties were confirmed absent, this is native post-restore recalculation rather than retained Witch Dock ownership. The disable contract therefore means "restore/remove owned source policy and rebuild natively," not "guarantee identical transient native used-size values."
-
-A subsequent OFF -> ON enable passed again at native 4096 atlas, 2048 allocations/used, exact 1024 masks, no error, scheduler idle.
-
-Bridge evidence: #1738, #1739, #1740.
-
-### Blood Moon — PASS
-
-Clean Dev reload with the standalone disabled confirmed:
-
-- Dev service/UI present;
+- initial native atlas 4096x4096; no Texture Quality scale/mask overrides;
+- one enable returned true, service ON / no error;
+- one expected native generation adoption;
+- coherent 4096x4096 display/resource atlas;
+- BL/BU/face allocations and used sizes settled at 1024;
+- exact pinned 1024 body color-bake masks remained active;
 - scheduler idle;
-- native atlas `4096x4096`;
-- no target `atlasScale` overrides;
-- no body mask overrides;
-- native source state BL/BU `1024 bake / 512 used`, face `1024 / 1024`.
+- zero broken/fallback bindings across 16 Discus, 2 Short Crown Horn, and 3 Celestial Circlet instances;
+- exactly one Booth runtime remained present;
+- Amanda visually confirmed the public Stable result looks great with correct body texture, decals, accessory color/material/emissive channels, and no poop/corruption.
 
-One Dev enable produced:
+Bridge evidence: #1747 baseline/topology, #1748 enable/readback, #1750 accessory/topology smoke. Do not reload raw issue payloads unless investigating a new regression.
 
-- service ON, no error, one expected generation adoption;
-- coherent native `4096x4096` atlas;
-- BL/BU/face allocations `1024x1024`;
-- `bakeSize=2048`, `_usedTextureSize=1024` on all three;
-- exact pinned real `1024x1024` body masks remained the actual color-bake inputs;
-- scheduler idle after settle.
+## Confirmed current persistence behavior
 
-Amanda visually confirmed Blood Moon looks correct: sharp body texture and decals, no poop/corruption, correct Discus / Celestial Circlet / Short Crown Horn color/material/emissive channels, and no visible regression elsewhere.
+v0.1.0 does **not** persist the ON preference.
 
-A focused resource probe found zero fallback/broken bindings among 16 `discus`, 2 `spikeSmall`, and 3 `starCirclet` parts.
+- Same figure + ordinary native renderer refresh: remains ON and adopts the replacement generation.
+- Figure change: `handleStaleFigure()` detects character/data replacement, discards the old session, clears `enabled`, and reports `OFF — figure changed; enable again for this figure.`
+- Page reload: JavaScript state is recreated and starts OFF/inert.
 
-Bridge evidence: #1741, #1742, #1744.
+This was an intentional safety posture during validation: old snapshots/references must never be reused on a replacement figure.
 
-### Ordinary native-refresh survival — PASS
+## Next follow-up — user preference persistence
 
-With Texture Quality still ON, one ordinary `CK.character.refresh()` completed cleanly. The service adopted the replacement display/modded generation, `verify()` remained OK, adoption count advanced from one to two, atlas stayed `4096x4096`, target bake/used state stayed `2048 / 1024`, both body mask overrides remained valid 1024 textures, and the scheduler returned idle.
+The last proposed direction, **not yet approved by Amanda**, is to persist only the user's desired preference (for example, “High Res should be enabled”), while continuing to build a completely fresh session for every page/figure.
 
-This confirms the service survives an ordinary native regeneration without a persistent watcher or custom atlas ownership.
+If approved, the implementation should:
 
-Bridge evidence: #1745.
+- persist only a simple user-intent value, never snapshots, masks, atlas/display/modded references, or per-figure session objects;
+- discard the old session immediately on figure replacement;
+- wait for the replacement page/figure renderer to be ready, resolve fresh parts/capabilities/masks, then run the normal safe `enable()` path;
+- single-flight automatic enabling and fail safely OFF on that figure if readiness/reconcile fails;
+- avoid uncontrolled retry loops;
+- define manual Disable semantics for the persistent preference based on Amanda's requested UX;
+- be implemented and live-tested on `WITCH_DEV_UI` before any Stable update.
 
-### Witch Dock / Booth topology smoke — PASS
+Amanda has a response ready to the persistence proposal. The next chat should let her give that response before editing.
 
-Without changing Booth mode or component state, a topology probe found:
+## Known nuance
 
-- exactly one `/gated/booth.js` script;
-- script state `loaded`, parent BODY;
-- live `BT` runtime;
-- live `KW_WD_BOOTH_BOOTSTRAP`;
-- live Texture Quality service and UI globals.
+On D4, disabling removed all feature-owned scale/mask overrides and rebuilt natively, but HeroForge recalculated transient `_usedTextureSize` to 1024/1024/1024 instead of reproducing the original 512/512/1024 values. This is native post-restore recalculation, not retained Witch Dock ownership. Exact transient baseline reproduction is not part of the disable contract.
 
-No duplicate Booth script/runtime load was introduced by Texture Quality or the native-refresh smoke. The generic scene traversal in this probe did not enumerate named TokenBackground/TokenShadow/TokenFrame nodes, so no overlay-count assertion is made from that specific probe.
-
-Bridge evidence: #1746.
-
-## Dev acceptance disposition
-
-Standalone Blood Moon + D4: PASS.  
-Integrated D4 visual/body-color/glyph gate: PASS.  
-Integrated D4 OFF -> ON lifecycle / ownership release: PASS.  
-Integrated Blood Moon accessory/material-channel gate: PASS.  
-Ordinary native refresh survival: PASS.  
-Non-invasive Witch Dock/Booth topology smoke: PASS.
-
-**WITCH_DEV_UI acceptance gate is CLOSED / PASS.**
-
-The validated behavior target is now the Dev service/UI v0.1.0 architecture above. Do not return to persistent custom atlas ownership, giant-atlas forcing, custom `CK.Atlas`, buildAtlas wrapping, direct atlas assignment, or automatic ownership watching.
-
-## Stable promotion boundary
-
-Public `Witch_Scripts` remains unchanged until Amanda explicitly approves promotion.
-
-When promotion is approved:
-
-- port only the accepted Dev service/UI and required manifest wiring;
-- preserve the current service/UI versions/build contracts unless the Stable packaging convention requires a narrow release-version bump;
-- do not reopen the underlying texture investigation absent a new regression;
-- repeat a clean Stable load/enable smoke on Blood Moon or equivalent before declaring public release complete.
+Older detailed probe-by-probe history remains preserved in Git history before this compact rewrite.
