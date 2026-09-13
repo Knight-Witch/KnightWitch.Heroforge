@@ -1,7 +1,7 @@
 # Texture Quality — Native Reconcile
 
 Date: 2026-09-12  
-Status: Witch Dock Dev candidate; standalone validated  
+Status: Witch Dock Dev candidate; standalone validated; integrated D4 PASS; integrated Blood Moon pending  
 Upstream feature ID: `rendering.texture-quality`
 
 ## Purpose
@@ -71,14 +71,43 @@ Accepted result: native coherent 4096 atlas; scale 4/4/4; BL/BU/face 2048 alloca
 - explicit Enable/Disable and Reconcile controls;
 - shows capability, atlas/target sizes, native promotion, body masks, adoption count, and errors.
 
-## Dev acceptance gate
+## Integrated Dev validation
 
-Standalone remains canonical until the integrated Dev copy passes:
+### D4 — PASS
 
-- clean load with feature OFF and no renderer mutation;
-- Blood Moon enable + visual acceptance;
-- disable/restore readback;
-- D4/body-glyph enable + visual acceptance;
-- no conflict with existing Witch Dock/Booth behavior.
+Clean Dev reload with the standalone disabled confirmed:
+
+- service/UI loaded exactly once;
+- service started OFF/inert;
+- standalone global absent;
+- D4 baseline stayed native `4096x4096`, BL/BU `1024 bake / 512 used`, face `1024 / 1024`, no body mask overrides, scheduler idle.
+
+One Dev enable then produced:
+
+- service ON, no error, one expected generation adoption;
+- native coherent `4096x4096` atlas;
+- BL/BU/face allocations `2048x2048` and used `2048`;
+- exact pinned real `1024x1024` body masks as actual color-bake inputs;
+- scheduler idle after settle.
+
+Amanda visually confirmed the integrated result looks perfect, including the historically sensitive body color/glyph channel, body/face sharpness, decals, no poop/corruption, and no wrong material/color/emissive channels.
+
+Bridge evidence: #1735, #1737.
+
+### D4 disable / repeated lifecycle — PASS with native-recalculation nuance
+
+Controlled disable returned true and removed every feature-owned target scale override and both body mask overrides. HeroForge rebuilt natively at 4096 atlas / bake 1024 with scheduler idle.
+
+The rebuilt D4 generation settled at `_usedTextureSize=1024/1024/1024`, not its original `512/512/1024`. Because feature-owned scale/mask properties were confirmed absent, this is native post-restore recalculation rather than retained Witch Dock ownership. The disable contract therefore means "restore/remove owned source policy and rebuild natively," not "guarantee identical transient native used-size values."
+
+A subsequent OFF -> ON enable passed again at native 4096 atlas, 2048 allocations/used, exact 1024 masks, no error, scheduler idle.
+
+Bridge evidence: #1738, #1739, #1740.
+
+## Remaining Dev acceptance gate
+
+- Blood Moon integrated enable + runtime readback + Amanda visual acceptance;
+- ordinary Witch Dock/Booth smoke sufficient to detect integration conflicts;
+- then update current-state docs and review for explicit Stable promotion.
 
 Public Stable remains unchanged until explicit promotion approval.

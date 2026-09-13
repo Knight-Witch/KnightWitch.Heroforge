@@ -2,6 +2,46 @@
 
 This active changelog is intentionally compact. Detailed prior entries through `DOCK-2026-09-08-047` remain preserved in Git history at Dev head `4cd8d15e49aee8e02b01f519ed32af579c94a277` and earlier.
 
+## DOCK-2026-09-12-049 — D4 Dev texture-quality live acceptance
+
+Date: 2026-09-12
+
+### Integrated Dev result
+
+The new WITCH_DEV_UI native texture-quality service/UI loaded exactly once on D4 with the standalone alpha absent and the service OFF. Fresh-page baseline remained native `4096x4096`, bodyLower/bodyUpper `bakeSize=1024 / used=512`, face `1024 / 1024`, with no body mask overrides.
+
+One Dev-service enable then passed both runtime and human visual validation:
+
+- service v0.1.0 / build `0.1.0-dev-hfc-alpha3-port` returned true and stayed ON with no error;
+- one expected HeroForge generation replacement was adopted;
+- native atlas remained coherent `4096x4096`;
+- bodyLower/bodyUpper/face allocations and `_usedTextureSize` natively promoted to `2048x2048 / 2048`;
+- actual bodyLower/bodyUpper color-bake masks remained the exact pinned real `1024x1024` textures;
+- scheduler settled idle;
+- Amanda confirmed D4 looks perfect: body color/paint and historical glyph channel correct, body/face and decals sharp, no poop/corruption, and no wrong material/color/emissive channels.
+
+Bridge evidence: #1735 baseline, #1737 enable/readback.
+
+### Lifecycle result
+
+A controlled Dev disable returned true with no error, removed all `atlasScale` target overrides and both body `masksMapOverride` properties, left the scheduler idle, and retained a native coherent `4096x4096` atlas.
+
+HeroForge's OFF rebuild recalculated all three target `_usedTextureSize` values to 1024 rather than reproducing D4's original `512/512/1024` baseline. This is recorded as native post-restore recalculation, not retained Witch Dock ownership: scale overrides and mask overrides were absent after readback.
+
+A subsequent OFF -> ON enable passed again: native 4096 atlas, 2048 allocations/used on all targets, exact 1024 body masks, no error, scheduler idle.
+
+Bridge evidence: #1738 disable, #1739 OFF readback, #1740 re-enable.
+
+### Remaining Dev gate
+
+- integrated Blood Moon enable/readback + human visual confirmation;
+- ordinary Witch Dock/Booth smoke sufficient to detect an integration conflict;
+- then review for explicit Stable promotion.
+
+**Runtime behavior changed:** no. This is a documentation-only live-validation checkpoint. Public `Witch_Scripts` / Stable remains unchanged.
+
+---
+
 ## DOCK-2026-09-12-048 — Add Dev native texture-quality reconcile
 
 Date: 2026-09-12
@@ -55,15 +95,9 @@ The UI registers `Texture Quality` under the existing Utilities tab with explici
 
 ### Live gate
 
-Pending integrated Dev validation. Required before Stable consideration:
+D4 integrated runtime/visual/lifecycle validation is now PASS per DOCK-049. Blood Moon integrated validation and ordinary Witch Dock/Booth smoke remain before Stable consideration.
 
-1. clean Dev page load with the texture service OFF and no HeroForge mutation;
-2. controlled enable + runtime readback on Blood Moon and D4/equivalent body-glyph case;
-3. Amanda visual acceptance of body/face quality, decals, body color/glyph, accessory channels, and no poop;
-4. controlled disable/restore check;
-5. ordinary Witch Dock/Booth smoke sufficient to detect integration conflict.
-
-**Runtime behavior changed:** yes, WITCH_DEV_UI only. Public `Witch_Scripts` / Stable is unchanged.
+**Runtime behavior changed:** yes, WITCH_DEV_UI only in the preceding integration commit. Public `Witch_Scripts` / Stable is unchanged.
 
 ---
 

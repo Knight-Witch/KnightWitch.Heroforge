@@ -2,6 +2,76 @@
 
 This active pre-flight log is intentionally compact. Detailed records through `PFC-2026-09-08-047` remain preserved in Git history at Dev head `4cd8d15e49aee8e02b01f519ed32af579c94a277` and earlier.
 
+## PFC-2026-09-12-049 — D4 integrated native texture-quality acceptance
+
+Date: 2026-09-12
+
+### Reviewed
+
+- HeroForge.Compatibility `PROJECT_CONTRACT.md` and current `ACTIVE_CONTEXT.md`;
+- current WITCH_DEV_UI texture-quality service/UI v0.1.0 from Dev commit `ee8a1a9c1ed283e95e61e64d92ac66b99695658a`;
+- D4 clean integrated baseline and standalone-absent load state;
+- Bridge #1735, #1737, #1738, #1739, and #1740;
+- Amanda's live visual verdict on the integrated D4 result.
+
+### Confirmed integrated load
+
+- Dev service v0.1.0 / build `0.1.0-dev-hfc-alpha3-port` loaded once;
+- Dev UI v0.1.0 / build `0.1.0-dev-texture-quality-controls` loaded once;
+- standalone `HFNativeTextureReconcileTest` global was absent;
+- D4 remained at native `4096x4096`, BL/BU `1024 bake / 512 used`, face `1024 / 1024`, no body mask overrides, scheduler idle before enable.
+
+### Confirmed enable
+
+One controlled Dev enable:
+
+- returned true and left service ON / not busy / no error;
+- adopted one expected HeroForge display/modded generation;
+- verified native coherent `4096x4096` atlas;
+- BL/BU/face allocations = `2048x2048`;
+- BL/BU/face `_usedTextureSize = 2048`;
+- actual bodyLower/bodyUpper color-bake masks = exact pinned `1024x1024` textures;
+- scheduler idle after settle.
+
+Amanda visually confirmed the integrated D4 result looks perfect: historical body color/glyph channel correct, body/face and decals sharp, no poop/corruption, and no wrong material/color/emissive channels.
+
+### Confirmed disable / restore boundary
+
+One controlled disable:
+
+- returned true; service OFF / not busy / no error;
+- all three target `atlasScale` overrides absent after native rebuild;
+- bodyLower/bodyUpper `masksMapOverride` absent after native rebuild;
+- atlas remained native coherent `4096x4096`;
+- target `bakeSize` returned to 1024;
+- scheduler idle.
+
+HeroForge's native OFF rebuild recalculated D4 `_usedTextureSize` to `1024/1024/1024` rather than reproducing the original `512/512/1024` baseline. Because all feature-owned scale and mask overrides were absent, this is recorded as native post-restore recalculation rather than retained Witch Dock ownership. Exact baseline restoration of transient/native `_usedTextureSize` is therefore not claimed.
+
+### Confirmed repeated lifecycle
+
+A subsequent OFF -> ON enable passed again:
+
+- service ON, no error;
+- native 4096 atlas;
+- BL/BU/face 2048 allocations and used sizes;
+- exact 1024 body masks;
+- scheduler idle.
+
+### Remaining gate
+
+1. integrated Blood Moon enable/readback + Amanda visual confirmation;
+2. ordinary Witch Dock/Booth smoke sufficient to detect a feature-integration conflict;
+3. update current-state docs and only then consider explicit Stable promotion.
+
+### Risk / unresolved nuance
+
+The service's disable contract is now precisely stated: it removes/restores the source fields it owns and lets HeroForge rebuild natively. It does not guarantee the native engine will reproduce the exact pre-enable transient `_usedTextureSize` values after that rebuild.
+
+**Runtime behavior changed:** no. This checkpoint only records live validation. Public Stable remains unchanged.
+
+---
+
 ## PFC-2026-09-12-048 — Dev native texture-quality integration
 
 Date: 2026-09-12
@@ -76,11 +146,15 @@ The service must load inert/OFF and must not change HeroForge until the user exp
 6. smoke Witch Dock/Booth/other existing tools for obvious regression;
 7. only then consider an explicit Stable promotion.
 
+### Current status
+
+D4 integrated runtime/visual/lifecycle gate: PASS per PFC-049. Blood Moon integrated validation and ordinary Witch Dock/Booth smoke remain.
+
 ### Rollback
 
 Remove the two manifest entries and new rendering modules, or revert the single Dev integration commit. No Stable files are touched.
 
-**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
+**Runtime behavior changed:** yes, Dev only in the preceding integration commit. Public Stable remains unchanged.
 
 ---
 
