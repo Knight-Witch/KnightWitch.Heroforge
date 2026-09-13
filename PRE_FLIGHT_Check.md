@@ -2,46 +2,44 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-12-054 — Texture Quality Phase 1 announcement
+## PFC-2026-09-12-055 — Texture Quality announcement copy/layout polish
 
 Date: 2026-09-12
 
 ### Scope
 
-Add Amanda's requested one-time beta announcement while isolating it from the validated Texture Quality service and Utilities controls.
+Apply Amanda's visual/copy revisions to the isolated Texture Quality Phase 1 announcement only.
 
 ### Reviewed
 
 - current `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`;
-- Texture Quality service v0.2.1 / build `0.2.1-dev-visible-auto-enable`;
-- Texture Quality UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- `MODULE_VERSIONING.md`;
-- Witch Dock core About/Disclaimer overlay styling patterns;
-- Bridge #1761 service static PASS, #1762/#1763 transport health, and #1764/#1765 clean-restart runtime state.
+- `features/rendering/Texture_Quality_Beta_Notice.js` v0.1.0;
+- `MODULE_VERSIONING.md` patch-bump rules;
+- existing one-time acknowledgement behavior already validated by Bridge #1767/#1768.
 
 ### Change
 
-- new isolated module `texture-quality-beta-notice` v0.1.0 / build `0.1.0-phase1-announcement`;
-- one-time modal title `Nat 20: New Beta Unlocked!`;
-- explicit `OK` is the normal acknowledgement path;
-- `OK` stores only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack`;
-- no renderer, figure, atlas, mask, service session, or persistence-preference state is stored by the notice;
-- existing Texture Quality service/UI files remain unchanged by this update;
-- manifest registry/tool entry and deterministic cache key added for the new module.
+- bump notice to v0.1.1 / build `0.1.1-copy-layout-polish`;
+- center the new longer title and enlarge modal body/section typography;
+- condense copy without dropping the Phase 1 baseline/extreme-ceiling caveat, load-settle guidance, FRD/T migration instruction, crash-state recovery note, or planned optimization/tier work;
+- add a direct hyperlink on `@ Knight.Witch` to `https://discord.com/users/579968778360848395`;
+- preserve the existing Phase 1 acknowledgement key and isolated module boundary.
 
 ### Protected behavior
 
-No source-policy values, native reconcile timing, hidden-tab gate, mask pinning, stale-figure refusal, Persistent behavior, temporary Disable semantics, or Advanced reconcile behavior changes here.
-
-### Live observation to carry forward
-
-After the Chrome restart, #1764 observed one transient automatic attempt fail because the exact 1024 body masks were not yet available; the final HeroForge figure identity then retriggered the bounded automatic path and #1765 verified the same runtime ON with no error, coherent 4096x4096 atlas, 2048 BL/BU/face allocations and 2048 used sizes. Treat this as a cold-start transition to recheck on the final reload, not as proof that the validated architecture needs another mutation.
+No Texture Quality service/UI logic, persistence state, reconcile behavior, renderer ownership, source policy, mask overrides, Booth runtime, or Stable code changes.
 
 ### Required validation
 
-Before Stable promotion: announcement syntax/manifest static PASS; first-run notice visible with marker absent; `OK` writes marker and dismisses; module reload does not repeat after acknowledgement; persistence temporary Disable/manual re-enable; final cold page reload with persistent preference; fresh-session figure change; atlas/mask verification; Booth topology smoke; Amanda visual/UX confirmation.
+Before Stable promotion: exact notice/manifest syntax PASS; confirm v0.1.1 registry/build/cache-key consistency; clear only the Dev test acknowledgement marker; Amanda visual check for title alignment, typography, copy density, scrolling, Discord link, and `OK`; confirm `OK` still acknowledges and suppresses repeats.
 
-**Runtime behavior changed:** yes, Dev announcement only. Public Stable remains untouched.
+**Runtime behavior changed:** yes, Dev announcement presentation/copy only. Public Stable remains untouched.
+
+---
+
+## PFC-2026-09-12-054 — Texture Quality Phase 1 announcement
+
+The isolated v0.1.0 notice passed first-show, acknowledgement, and no-repeat runtime checks. Texture Quality service/UI behavior remained isolated and unchanged.
 
 ---
 

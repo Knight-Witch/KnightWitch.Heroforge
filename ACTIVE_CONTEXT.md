@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_UI
 
 **Updated:** 2026-09-12  
-**Current task:** Texture Quality persistence + isolated Phase 1 announcement — finish live Dev regression and human visual/UX gate.  
+**Current task:** Texture Quality persistence + Phase 1 announcement polish — finish v0.1.1 visual/UX gate and final cold-reload validation.  
 **Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
 
 ## Minimum continuation set
@@ -28,9 +28,9 @@ Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0
 
 - service v0.2.1 / build `0.2.1-dev-visible-auto-enable`;
 - UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- isolated beta notice v0.1.0 / build `0.1.0-phase1-announcement`.
+- isolated beta notice v0.1.1 / build `0.1.1-copy-layout-polish`.
 
-Approved persistence semantics:
+Approved persistence semantics remain:
 
 - default/first-time Texture Quality OFF;
 - manual Enable is session-only when persistence is unchecked;
@@ -40,21 +40,25 @@ Approved persistence semantics:
 - unchecking persistence stops future automatic behavior without forcing an active session OFF;
 - `Reconcile Now` remains under collapsed `Advanced`.
 
-## Scheduler/readiness evidence
+## Persistence/runtime evidence
 
-v0.2.0 failed when automatic persistence started in a hidden tab. Evidence #1755/#1757/#1760. Service v0.2.1 now gates automatic start on visible HeroForge and schedules again on `visibilitychange`; exact static validation passed #1761.
+v0.2.0 failed when automatic persistence started in a hidden tab. Evidence #1755/#1757/#1760. Service v0.2.1 gates automatic start on visible HeroForge and schedules again on `visibilitychange`; exact static validation passed #1761.
 
-After Chrome restart, #1764 briefly observed a cold-start 1024-mask load failure; the final HeroForge figure identity then caused the bounded automatic path to run fresh and #1765 verified ON/no error with coherent 4096x4096 atlas and 2048 target allocations/used sizes. Recheck this on the final cold reload before release; do not alter the validated architecture unless it reproduces as a persistent defect.
+After Chrome restart, a transient cold-start mask-load failure at #1764 self-recovered on the final HeroForge figure identity; #1765 then verified ON/no error. Temporary Disable and manual re-enable passed #1769/#1770, and #1771/#1772 confirmed coherent atlas/masks plus Booth topology/UI presence.
 
 ## Phase 1 announcement
 
-The notice is deliberately separate from the Texture Quality UI so optional announcement failure cannot break the tool. It waits for Witch Dock + Texture Quality service, shows `Nat 20: New Beta Unlocked!`, and stores only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after the user clicks `OK`.
+The announcement remains an isolated optional module so notice failure cannot break Texture Quality. It stores only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`.
 
-The copy covers Phase 1 scope/limits, expected load settling, future optimization/tier roadmap, crash-state recovery, and the instruction to disable only FRD/T's three Decal Resolution toggles rather than the whole script.
+v0.1.1 is a presentation/copy polish pass after Amanda's first visual review: centered expanded title, larger body type, larger/wider-spaced section headings, shorter copy, and a direct Discord hyperlink on `@ Knight.Witch`. The acknowledgement key intentionally remains unchanged.
+
+## Chrome-only loader side observation
+
+Amanda observed a sudden Chrome/Tampermonkey-only Witch Dock startup slowdown that does not reproduce in Firefox and affects both Dev and Stable. A live direct-fetch probe returned the same Dev manifest/Utilities/Texture Quality UI files in roughly 22–55 ms while feature modules were still unregistered, so no Witch Dock loader rewrite is justified yet. Treat Chrome/Tampermonkey/profile runtime state as the leading suspect unless further evidence changes that conclusion.
 
 ## Next gate
 
-Use HF-Chat-Bridge autonomously for announcement static/runtime checks, persistence Disable/manual re-enable, atlas/mask + Booth smoke. Then clear the test acknowledgement marker and use one human reload for the true first-run modal visual gate plus cold-reload persistence check. Figure switching may require one human navigation action if Bridge cannot do it safely.
+Static-check the exact v0.1.1 notice + manifest candidate, move `WITCH_DEV_UI` only after PASS, clear only the Dev notice acknowledgement marker, then use Amanda for the revised modal visual/UX check. Continue Bridge validation autonomously for `OK` acknowledgement/no-repeat and the remaining cold-reload/figure persistence checks. Stable remains protected until explicit promotion.
 
 ## Architecture that must not regress
 

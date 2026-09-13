@@ -212,9 +212,9 @@
       "path": "features/rendering/Texture_Quality_Beta_Notice.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-phase1-announcement",
-      "versionOrigin": "new-dev-module-2026-09-12"
+      "version": "0.1.1",
+      "build": "0.1.1-copy-layout-polish",
+      "versionOrigin": "dev-copy-layout-polish-2026-09-12"
     },
     {
       "id": "json-tool",
@@ -394,7 +394,7 @@
       "id": "texture-quality-beta-notice",
       "title": "Texture Quality Phase 1 Beta Notice",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Beta_Notice.js?v=0.1.0-phase1-announcement",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/features/rendering/Texture_Quality_Beta_Notice.js?v=0.1.1-copy-layout-polish",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

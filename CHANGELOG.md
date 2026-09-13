@@ -2,33 +2,35 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-12-054 — Add one-time Texture Quality Phase 1 announcement
+## DOCK-2026-09-12-055 — Polish Texture Quality beta announcement
 
 Date: 2026-09-12
 
 ### Summary
 
-Add a first-run Witch Dock announcement for the Texture Quality beta without modifying the already-working Texture Quality Utilities UI or service architecture.
+Refine the first-run Texture Quality announcement after Amanda's visual review without changing Texture Quality service behavior, persistence semantics, or the Utilities controls.
 
 ### Changes
 
-- add `features/rendering/Texture_Quality_Beta_Notice.js` v0.1.0 / build `0.1.0-phase1-announcement` as an isolated optional module;
-- show `Nat 20: New Beta Unlocked!` once after Witch Dock and the Texture Quality service are available;
-- use a Witch Dock-style scrollable modal with explicit `OK` acknowledgement;
-- write only the versioned acknowledgement marker `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`, so later refreshes do not repeat the notice;
-- keep notice state completely separate from `Persistent High Res` and renderer/session state;
-- preserve the existing Texture Quality UI v0.2.0 unchanged, including `Persistent` and collapsed `Advanced > Reconcile Now`;
-- register the notice as a hidden manifest-loaded module with its own deterministic Dev cache key.
+- bump `texture-quality-beta-notice` to v0.1.1 / build `0.1.1-copy-layout-polish`;
+- retitle the modal to `Nat 20! New Beta Unlocked: Texture Quality Upgrade Is Live!` and center the heading;
+- increase body text size and strengthen section-heading hierarchy with larger type and wider letter spacing;
+- shorten and consolidate the announcement copy while preserving Phase 1 scope, extreme-build limits, load-settle guidance, crash-state recovery, future optimization plans, and the FRD/T handoff warning;
+- keep the actionable instruction to disable only FRD/T's three Decal Resolution toggles, not the rest of FRD/T;
+- hyperlink the visible Discord contact `@ Knight.Witch` directly to Amanda's Discord user profile;
+- keep the acknowledgement key unchanged so users who already dismissed this Phase 1 notice are not forced to acknowledge the copy-only revision again.
 
-### Copy scope
+### Protected behavior
 
-The announcement explains Phase 1 capabilities and limits, expected texture settle time, future optimization/tier work, crash-state recovery, and the FRD/T handoff. It explicitly tells users to turn off only FRD/T's three Decal Resolution toggles, not the whole script.
+Texture Quality service v0.2.1, Texture Quality UI v0.2.0, persistence storage, temporary session suppression, native atlas ownership, mask policy, Booth behavior, and the notice acknowledgement contract are unchanged.
 
-### Validation state
+**Runtime behavior changed:** yes, Dev announcement presentation/copy only. Public Stable remains untouched.
 
-Service v0.2.1 static validation passed via Bridge #1761 and restarted transport health passed #1762/#1763. The clean restarted runtime briefly reported a cold-start mask-load failure at #1764, then self-recovered on the final figure identity and verified ON at #1765 with coherent 4096x4096 native atlas and 2048 target allocations. Cold-reload behavior remains part of the final Dev gate; no architecture change is justified from that single self-recovering transition.
+---
 
-**Runtime behavior changed:** yes, Dev announcement only. Public Stable remains untouched.
+## DOCK-2026-09-12-054 — Add one-time Texture Quality Phase 1 announcement
+
+The isolated v0.1.0 notice introduced one-time `OK` acknowledgement and the Phase 1 Texture Quality announcement without coupling the modal to the validated Texture Quality service/UI architecture. Bridge #1766/#1767/#1768 validated syntax, first-show, acknowledgement, and no-repeat behavior.
 
 ---
 
