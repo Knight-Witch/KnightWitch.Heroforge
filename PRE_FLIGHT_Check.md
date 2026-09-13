@@ -1,603 +1,89 @@
 # Pre-Flight Check Log
 
-## PFC-2026-09-08-047 — Prevent duplicate native Booth runtime and black Spinny captures
+This active pre-flight log is intentionally compact. Detailed records through `PFC-2026-09-08-047` remain preserved in Git history at Dev head `4cd8d15e49aee8e02b01f519ed32af579c94a277` and earlier.
 
-Date: 2026-09-08
+## PFC-2026-09-12-048 — Dev native texture-quality integration
 
-### Reviewed
-
-- binding HeroForge.Compatibility contract, MASTER, PRE_FLIGHT, CHANGELOG, ARCHITECTURE, FEATURE_INVENTORY, COMPATIBILITY, OWNERSHIP, and TESTING material already reviewed for this stage;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, `features/booth/Booth_Runtime_Bootstrap.js`, Booth v27.0.4, Black Canvas replay v0.1.5, True Resolution service v0.8.0, and Spinny Mini WebP v0.5.1;
-- public Witch Dock 1.2.1 runtime where black/empty 1024/2048 WebP captures and renewed Booth/Kitbash flashing were reproduced;
-- live HF-Chat-Bridge capture/compositor/scene/script probes through issues #1066-#1132;
-- prior Booth runtime bootstrap investigation and `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`;
-- Dev head before this tracking repair: `efe279fc4718ab067ae6f20e0b4042e5fa3532af`.
-
-### Confirmed findings
-
-- the WebP muxer was not the black-output origin: native `BT.maker.takeScreenshot(1024,1024)` itself returned fully opaque black pixels;
-- disabling Witch Dock True Resolution and separately disabling Black Canvas did not repair the native screenshot;
-- direct `CK.Effects.renderToCanvas()` using both the current Booth camera and HeroForge's own screenshot-camera clone rendered the figure correctly;
-- HeroForge's screenshot compositor first received a good model image, then composited an auxiliary frame/overlay image over it;
-- that auxiliary capture was opaque black because a second top-level `TokenBackground` survived the current Booth runtime's hide sequence;
-- `CK.scene` contained two complete `TokenBackground / TokenShadow / TokenFrame` trios;
-- the page contained two identical `/gated/booth.js` scripts: one inserted by the Witch Dock bootstrap and a later HeroForge-native lazy-loader copy;
-- current `BT.display.overlays` owned only the second trio, leaving the first trio orphaned;
-- removing only the proven orphan trio immediately restored healthy native screenshot output;
-- HeroForge's native lazy script contract uses a relative `src`, BODY ownership, async execution, and `data-status` lifecycle;
-- on the clean Dev reload, all 35 observed versioned HeroForge script/resource entries used `heroforge06.1.9.98`; the earlier `heroforge07.1.9.98` project target is stale for this live session.
-
-### Decision
-
-Repair only the bootstrap/load boundary. Do not patch Spinny, True Resolution, Booth screenshot compositing, or HeroForge bundle code.
-
-Bump `booth.runtime-bootstrap` to v0.1.1 / build `0.1.1-dev-native-loader-coordination` and preserve the existing saved-figure eligibility, four-stable-observation timing, named `BT.setBoothMode(savedMode)` activation, and failure isolation. Change only script discovery/request ownership:
-
-- reuse any matching Booth script already present;
-- when Witch Dock must request Booth, match HeroForge's observed lazy-script DOM/status contract;
-- expose matching/duplicate script diagnostics;
-- fail closed if duplicate matching Booth scripts are detected after bootstrap.
-
-### Target files
-
-Runtime candidate already committed before this tracking repair:
-
-- `features/booth/Booth_Runtime_Bootstrap.js`
-- `manifest.json`
-
-Durable tracking repair:
-
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
-
-### Conflict risks / preservation requirements
-
-- saved Booth must still bootstrap before HeroForge would normally load Booth;
-- a fresh camera-only figure must remain ineligible;
-- do not load `boothui.js`;
-- do not use minified/Webpack discovery where named `BT.setBoothMode` exists;
-- do not remove current live Booth overlays; orphan cleanup was diagnostic/recovery only and is not the production mechanism;
-- do not modify Booth v27.0.4, Black Canvas replay v0.1.5, Spinny v0.5.1, True Resolution v0.8.0, Utilities, gizmo, JSON, Developer Mode, or Public Stable;
-- duplicate detection must report/fail rather than partially initialize a second runtime;
-- HeroForge build identity remains runtime-discovered rather than hard-coded to either the prior 07 build or current 06 build.
-
-### Static / structural gate
-
-- bootstrap source version/build identity 0.1.1: PASS;
-- manifest registry/raw URL version/build identity 0.1.1: PASS;
-- loader contract uses relative Booth path, BODY append target, async flag, and `data-status` lifecycle: PASS by source review;
-- matching Booth script discovery compares resolved URLs and recognizes both HeroForge- and bootstrap-owned tags: PASS by source review;
-- duplicate postcondition refuses successful completion when more than one matching Booth script exists: PASS by source review;
-- Booth v27.0.4/replay v0.1.5/Spinny/True Resolution runtime files unchanged by this repair: PASS.
-
-### Live Dev gate result
-
-Clean reload using Dev v0.1.1:
-
-1. bootstrap version/build: PASS;
-2. bootstrap count/attempts exactly one: PASS;
-3. matching Booth script count one / duplicate count zero: PASS;
-4. single Booth script is relative-path, BODY-owned, `data-status=loaded`: PASS;
-5. exactly one `TokenBackground / TokenShadow / TokenFrame` trio exists and exactly matches current `BT.display.overlays`: PASS;
-6. native 1024 screenshot contains figure data: PASS;
-7. real Spinny 1024 short test: 16/16 rendered, 16/16 encoded, valid animated WebP, rotation restored: PASS;
-8. real Spinny 2048 short test: 16/16 rendered, 16/16 encoded, valid animated WebP, rotation restored: PASS;
-9. native `CK.character.refresh()` rebuild leaves one Booth script and three current overlays: PASS;
-10. automated 120-frame outer-framebuffer probe across the known refresh path recorded zero white/bright spike frames and no probe errors: PASS;
-11. human visual Booth/Kitbash flash confirmation: PENDING.
-
-Separate observation: the correctness tests measured ~42.4 s for 16 native 1024 frames and ~110.4 s for 16 native 2048 frames on the current complex figure. Capture optimization is deliberately parked as a separate investigation.
-
-**Runtime behavior changed:** yes in the preceding Dev bootstrap/manifest commits. This tracking commit itself changes no runtime behavior. Public Stable remains unchanged.
-
----
-
-## PFC-2026-09-08-046 — Fresh-slot bound decal normalization repair
-
-Date: 2026-09-08
+Date: 2026-09-12
 
 ### Reviewed
 
-- binding HeroForge.Compatibility contract, MASTER, PRE_FLIGHT, CHANGELOG, ARCHITECTURE, FEATURE_INVENTORY, COMPATIBILITY, OWNERSHIP, and TESTING;
-- current Witch Dock Dev MASTER/PRE_FLIGHT/CHANGELOG/MODULE_VERSIONING/manifest;
-- Public and Dev `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`;
-- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md` and its validated v0.4.2 fresh-slot behavior;
-- Amanda's before/after screenshots of a new untouched projected slot.
+- HeroForge.Compatibility `PROJECT_CONTRACT.md` and current `ACTIVE_CONTEXT.md`;
+- `docs/policies/FEATURE_LIFECYCLE_TESTING_RELEASE.md`;
+- validated standalone alpha.3 source and the standalone acceptance checkpoint;
+- Blood Moon runtime/visual pass and D4 body-color/glyph runtime/visual pass;
+- current Witch Dock Dev `MODULE_VERSIONING.md`, `MASTER.md`, `manifest.json`, `Witch_Dock_DEV.user.js`, Developer Mode registration pattern, and Spinny service/UI registration pattern;
+- Dev baseline head `4cd8d15e49aee8e02b01f519ed32af579c94a277`.
 
-### Confirmed
+### Confirmed upstream behavior to preserve
 
-- the v0.4.2 normalizer remains present in both Public and Dev source;
-- it normalizes only `freshBind` records matching a hard-coded bad initializer;
-- the old detector targets `v≈1.50394`, `s≈sy≈1.76859` with ±0.035 tolerance;
-- current UI shows approximately `v=1.56`, `s=sy=1.82` before and after first Project OFF, so the intended normalization is not taking effect;
-- Dev manifest currently points the corrected-gizmo tool URL at `Witch_Scripts`, so Dev cannot validate a Dev-only gizmo source change without correcting that entry.
-
-### Supported inference
-
-The current HeroForge raw initializer shifted consistently with the visible 1.56/1.82 values and therefore falls outside the old raw detector. Bridge request #752 remained unanswered during preflight, so exact current raw floats are not promoted to confirmed evidence.
+- high-resolution source policy does not require persistent giant/custom atlas ownership;
+- native HeroForge reconciliation may settle at 1024 target allocations on high-pressure figures or promote to 2048 on lower-pressure figures;
+- `_usedTextureSize=1024` is the minimum seed, not a required final value;
+- bodyLower/bodyUpper masks are the critical fixed safety boundary and must remain real exact 1024 color-bake inputs;
+- expected display/modded replacement during reconciliation is normal; actual character/data/target-part replacement is not;
+- rollback restores owned source snapshots and rebuilds natively rather than restoring stale atlas objects.
 
 ### Decision
 
-Patch only the fresh-slot initializer matcher/output. Retain the old signature, add the current observed profile with tight tolerance, and normalize first untouched bind to `h=0`, `v=0`, `s=-1.5`, `sy=-1.5`. Do not change drag transforms, history sequencing, existing transform caches, Project restoration, artwork-swap preservation, or fragment source.
+Promote the validated standalone behavior into WITCH_DEV_UI as two isolated v0.1.0 modules:
+
+- a hidden service containing the native-reconcile lifecycle and diagnostics;
+- a hidden loader/UI module that self-registers a visible `Texture Quality` tool under Utilities.
+
+The service must load inert/OFF and must not change HeroForge until the user explicitly enables it.
 
 ### Target files
 
-- `HeroForge_UI/Corrected_Bound_Decal_Gizmo.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOUND_DECAL_GIZMO.md`
+- `features/rendering/Texture_Quality_Native_Reconcile.js` — new;
+- `features/rendering/Texture_Quality_Native_Reconcile_UI.js` — new;
+- `manifest.json` — register/version/load both modules;
+- `CHANGELOG.md` — this Dev runtime update;
+- `PRE_FLIGHT_Check.md` — this record;
+- `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md` — durable integration provenance/state.
 
-### Conflict risks
+### Conflict / preservation requirements
 
-- false-positive normalization of a user-edited projected decal near the initializer values;
-- regression to validated Move/Rotate/Scale undo/redo;
-- overwriting an existing known Project-OFF transform;
-- Dev accidentally loading Stable source instead of the candidate.
-
-The `freshBind` gate, neutral H/D/rotation gate, recognized-profile matcher, exact changed-file whitelist, and Dev-only URL/version identity constrain those risks.
-
-### Live gate
-
-1. New untouched decal: Project OFF -> H/V `0/0`, S/SY `-1.5/-1.5`.
-2. Existing edited Project-OFF decal retains its transform.
-3. Project ON/OFF round-trip still retains established bound transform.
-4. Artwork swap while Project OFF still retains transform.
-5. Move/Rotate/Scale undo/redo remain unchanged if exercised.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
-
----
-
-## PFC-2026-09-07-045 — Repair Booth editor-environment ownership after v27.0.3 live failure
-
-Date: 2026-09-07
-
-### Reviewed
-
-- binding HeroForge.Compatibility project contract, master, pre-flight, changelog, architecture, feature inventory, compatibility, ownership, and testing state;
-- current Witch Dock Dev master/pre-flight/changelog/manifest;
-- Booth v27.0.3, replay v0.1.4, bootstrap v0.1.0, and Booth/replay histories;
-- Amanda's v27.0.3 screenshots and state-sequence report;
-- prior bridge evidence for `setDefaultEnvironmentVisibility`, wrapper/mesh visibility mismatch, frame UV/resize geometry, and rejected WebGL matte probes;
-- current Dev head `ca27025e137049640e50b68d98d9cdca70ed59a8`.
-
-### Confirmed findings
-
-- `BT.maker.getTokenViewOffset()` does not describe the visible editor 1:1 Booth viewport; the v27.0.3 DOM matte is visually wrong and rejected;
-- all Booth sub-toggles share the broad native overlay refresh sequence, matching the user's observation that any of Lighting/Effects/Overlays/Background can knock the editor environment back out;
-- regular environment wrapper visibility and actual background mesh visibility can disagree;
-- replay v0.1.4 drops its pre-BT semantic-background ownership without restoring the owned mesh before Booth delegation;
-- Black Canvas ON -> OFF restoring pedestal/ground but not the fantasy backdrop is consistent with those separate ownership paths.
-
-### Decision
-
-First restore deterministic environment ownership. Remove the bad matte, narrow component redraw behavior, gate editor restoration on actual render/environment state, and restore replay-owned visibility before Booth handoff. Do not solve the outer-black crop in this candidate; return to that only after environment/component behavior is live stable.
-
-### Target files
-
-- `tools/Booth.js`
-- `features/booth/Black_Canvas_Display_Replay.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
-
-### Conflict risks / preservation requirements
-
-- remove all v27.0.3 DOM matte state/DOM nodes and `getTokenViewOffset()` usage;
-- preserve named native environment setter and existing component state application;
-- do not call broad overlay resize/refresh/applyVisibility from component-toggle redraw;
-- preserve layout/timing behavior elsewhere unless directly required by this repair;
-- preserve native `CK.character.display.update()` and synchronous replay timing;
-- replay must restore only visibility it previously owned before Booth handoff;
-- do not touch bootstrap, Utilities, loader, Spinny, High Res, gizmo, JSON, Developer Mode, Decals, or Public Stable.
+- Public `Witch_Scripts` must remain untouched;
+- do not modify Witch Dock core, Dev loader, Booth, Black Canvas replay, Spinny, True Resolution, corrected decal gizmo, JSON, Utilities, or Developer Mode runtime source;
+- no custom `CK.Atlas`, buildAtlas wrapper, direct atlas assignment, or persistent ownership watcher;
+- no Compatibility/HF-Chat-Bridge runtime dependency;
+- loading the module must not auto-enable texture changes;
+- service failures must remain isolated and restore only state it owns;
+- figure changes must not apply stale snapshots to the replacement figure;
+- manifest canonical versions and source-local versions/builds must agree.
 
 ### Static gate
 
-Booth/replay JavaScript syntax, manifest JSON/version/cache identity, absence of DOM matte/getTokenViewOffset path, wrapper-true/mesh-false editor restoration mock, no broad overlay calls in component refresh, replay pre-BT-to-BT ownership handoff, native update passthrough, exact eight-file whitelist, protected blob equality, committed-byte rerun.
+- service JavaScript syntax: PASS;
+- UI JavaScript syntax: PASS;
+- manifest JSON parse: PASS;
+- unique registry/tool IDs: PASS;
+- registry + loader entries for both new modules: PASS;
+- forbidden ownership audit: PASS — no custom Atlas construction, buildAtlas assignment, direct atlas assignment, MutationObserver, or interval-based service watcher;
+- service initial state OFF: PASS;
+- exact 1024 body-mask pin/verification retained: PASS;
+- native promotion 1024..2048 accepted: PASS;
+- no Compatibility/Bridge runtime dependency: PASS.
 
-### Live gate
+### Required live Dev gate
 
-Dev only: confirm Black Canvas OFF restores the full fantasy backdrop, all Booth component toggles can be changed without losing that editor environment, Background OFF fallthrough no longer checkerboards because of a stranded replay-owned mesh, `+ New` and white-flash behavior remain correct. Outer-black 1:1 matte remains a separate pending presentation gate.
+1. install/update Witch Dock Dev and disable the standalone alpha to prevent double ownership;
+2. clean reload: verify service/UI load exactly once, service OFF, and native figure baseline unchanged;
+3. enable once on Blood Moon; verify native coherence and human visual result;
+4. disable once and verify native restore/idle state;
+5. enable once on D4 or equivalent body-glyph figure; verify exact pinned masks, accepted native promotion, and human body color/glyph result;
+6. smoke Witch Dock/Booth/other existing tools for obvious regression;
+7. only then consider an explicit Stable promotion.
 
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+### Rollback
 
----
+Remove the two manifest entries and new rendering modules, or revert the single Dev integration commit. No Stable files are touched.
 
-## PFC-2026-09-07-044 — Component-aware Black Canvas / Background fallthrough
-
-Date: 2026-09-07
-
-### Reviewed
-
-- binding HeroForge.Compatibility contract/master/pre-flight/changelog/architecture/inventory/compatibility/ownership/testing state;
-- current Witch Dock Dev master/pre-flight/changelog/manifest;
-- Booth v27.0.2, replay v0.1.3, bootstrap v0.1.0, and their Booth/Black Canvas histories;
-- Amanda's v27.0.2 visual acceptance/failure report;
-- live bridge issues #725-#748 covering current overlay/environment state, frame shader source, rejected WebGL matte probes, native token-view math, renderer geometry, and stacking context.
-
-### Confirmed findings
-
-- Black Canvas OFF now restores the ordinary fantasy editor canvas correctly;
-- Background OFF is technically preserved (`backgroundPlane.visible=false`) and does not re-enable a hidden Booth environment mesh;
-- Black Canvas ON still globally hides the regular environment, causing checkerboard when Background OFF makes the 1:1 Booth plane transparent;
-- current native gray surround is hard-coded in the frame shader and has no named color uniform;
-- custom WebGL matte attempts using both a cloned frame mesh and a fresh Mesh fail with GL `1282`; that route is rejected;
-- named `BT.maker.getTokenViewOffset()` supplies the current crop rectangle from render-manager dimensions;
-- `#character-canvas` is a suitable owned DOM host above the renderer without requiring a page-global overlay.
-
-### Decision
-
-Use an independent four-bar DOM matte driven by the named native token-view rectangle. Keep component/environment decisions in Booth and let replay delegate full BT reassertion to Booth after native `display.update()`. Retain replay's old pre-BT behavior only when the Booth API cannot own presentation.
-
-### Target files
-
-- `tools/Booth.js`
-- `features/booth/Black_Canvas_Display_Replay.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
-
-### Conflict risks / preservation requirements
-
-- do not patch HeroForge's Booth bundle;
-- do not use the failed custom WebGL matte route;
-- do not alter native `CK.character.display.update()` or the synchronous post-update replay position;
-- do not activate the editor matte inside native Photo Booth;
-- do not make Black Canvas imply Booth View;
-- do not call environment setters repeatedly after desired visibility already exists;
-- matte DOM must be pointer-inert, renderer-scoped, geometry-keyed, and fully removable;
-- capability failure must degrade to existing Black Canvas behavior rather than leave outside-crop fantasy content exposed;
-- Public Stable remains untouched.
-
-### Static gate
-
-Booth/replay JavaScript syntax, manifest JSON/version/cache identity, DOM matte geometry mock, component-aware enforcement mock, replay delegation plus legacy/pre-BT fallback mocks, exact eight-file changed whitelist, protected blob equality, and committed-byte rerun.
-
-### Live gate
-
-Dev only: verify Black Canvas OFF behavior stays fixed; Black Canvas ON + Background OFF gives fantasy environment inside 1:1 and black outside; Background ON restores Booth background with black outside; the matte tracks resize; `+ New`, both-OFF restoration, and white-flash suppression remain correct. Re-check the reported Black-OFF Background visual after this repair before inferring any additional layer.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
+**Runtime behavior changed:** yes, Dev only. Public Stable remains unchanged.
 
 ---
 
-## PFC-2026-09-07-043 — Booth frame and editor-environment fallthrough repair
+## Prior active history
 
-Date: 2026-09-07
-
-### Reviewed
-
-- binding HeroForge.Compatibility contract/master/pre-flight/changelog/architecture/inventory/compatibility/ownership/testing state;
-- current Witch Dock Dev master/pre-flight/changelog/manifest;
-- Booth v27.0.1 source and `BOOTH_V27_STABILIZATION.md`;
-- Black Canvas replay v0.1.3 and its history;
-- Booth runtime bootstrap v0.1.0 and its history;
-- Amanda's integrated Dev acceptance at head `7b6e37562d5bba0d63d410e418f769a71857a87a`;
-- current screenshots showing the gray 1:1 frame and checkerboard fallthrough;
-- live read-only/reversible HF-Chat-Bridge probes #721-#724.
-
-### Confirmed findings
-
-- lifecycle/startup/new-figure/editor-restoration/white-flash gates from v27.0.1 are live PASS;
-- current BT facade uses `BT.display.overlays.framePlane`; `BT.display.framePlane` does not exist;
-- the existing frame helper therefore misses the actual frame while Black Canvas is OFF;
-- Background OFF correctly hides the Booth background plane, but the ordinary editor environment remains hidden by Booth state, exposing checkerboard;
-- named `BT.display.environment.setDefaultEnvironmentVisibility(true)` restores the full ordinary environment state without changing the Booth background plane and can be reversed cleanly.
-
-### Decision
-
-Repair only Booth presentation ownership. Reuse the existing frame hide lifecycle with the correct current runtime fallback, and conditionally restore the ordinary editor environment behind persisted Booth only when Black Canvas is OFF and the editor background is actually hidden.
-
-### Target files
-
-- `tools/Booth.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
-
-### Conflict risks / preservation requirements
-
-- do not modify Black Canvas replay or its validated post-`display.update()` white-flash sequencing;
-- do not modify Booth bootstrap timing or same-origin native runtime activation;
-- do not modify silent-cycle timing/rearm behavior;
-- do not force editor environment visibility inside native Photo Booth;
-- do not restore editor environment while Black Canvas is ON;
-- do not call the environment setter continuously when the environment is already visible;
-- Booth Background remains an independent overlay-plane toggle;
-- Public Stable remains untouched.
-
-### Static gate
-
-- Booth JavaScript syntax;
-- manifest JSON/identity;
-- frame-path fallback mock;
-- conditional environment-restoration mock including no repeated setter call after visibility is restored;
-- Black Canvas/native-Photo-Booth gating invariants;
-- exact six-file changed whitelist;
-- protected blobs unchanged.
-
-### Live gate
-
-With Dev only: Booth ON + Black Canvas OFF must show the fantasy editor environment outside the 1:1 viewport without the gray frame; Background OFF must reveal fantasy environment inside the square instead of checkerboard; Background ON must still show the Booth background; Black Canvas ON must remain black; `+ New`, both-OFF restoration, and white-flash behavior must remain correct.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
-
----
-
-## PFC-2026-09-07-042 — Integrated Booth lifecycle regression repair
-
-Date: 2026-09-07
-
-### Reviewed
-
-- binding HeroForge.Compatibility contract, master, pre-flight, changelog, architecture, feature inventory, compatibility, ownership, and testing state;
-- current Witch Dock Dev master/pre-flight/changelog/module versioning;
-- Booth v27 source and `BOOTH_V27_STABILIZATION.md`;
-- Booth runtime bootstrap v0.1.0 and its investigation record;
-- Black Canvas replay v0.1.2 and its investigation record;
-- Amanda's integrated Dev smoke result after Dev head `a28d83c56264bf5e153415705c0043f792c13f2c`.
-
-### Confirmed findings
-
-- saved Booth + Black Canvas fresh-page startup: PASS;
-- white-flash regression: PASS;
-- Booth sub-toggle behavior: PASS;
-- `+ New Figure`: FAIL because v27 accepts bare `cfg.camera` as saved Booth despite the established strong-signal rule;
-- ordinary editor background restoration with Booth + Black Canvas OFF: FAIL;
-- replay can retain a legitimate Booth-hidden background visibility snapshot and replay it after Booth is no longer active.
-
-### Decision
-
-Surgically align Booth v27 saved-config detection with the already-validated bootstrap rule and repair shutdown/restoration ownership. Preserve all established Booth timing/retry/silent-cycle behavior.
-
-### Target files
-
-- `tools/Booth.js`
-- `features/booth/Black_Canvas_Display_Replay.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md`
-- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
-
-### Conflict risks / preservation requirements
-
-- do not alter Booth bootstrap timing, same-origin native Booth load, or `BT.setBoothMode` activation;
-- do not alter the validated `CK.character.display.update()` white-flash replay sequencing;
-- do not alter internal silent-cycle teardown/rearm timing;
-- Black Canvas remains independent from Booth Persistence;
-- a fresh figure may keep Black Canvas ON if its separate Utilities default is ON, but default-owned Booth View must fall OFF when no strong saved Booth setup exists;
-- manual current-session switches remain session overrides;
-- Public Stable stays untouched.
-
-### Static gate
-
-Exact source patching, syntax, manifest identity, replay lifecycle mocks, and protected-file equality must pass before Dev moves.
-
-### Live gate
-
-Re-test saved-figure refresh, `+ New Figure`, both toggle-off orders, fantasy editor background restoration, white-flash behavior, and Booth component toggles. Public migration remains blocked until these pass.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
-
----
-
-## PFC-2026-09-07-041 — Black Canvas pre-BT fallback
-
-Date: 2026-09-07
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing material already reviewed for this stage;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, loader, Booth v27, Utilities v1.2.1, Booth runtime bootstrap, and Black Canvas replay;
-- Public Stable replay v0.1.1;
-- `MODULE_VERSIONING.md`;
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`;
-- prior bridge evidence for `CK.environment.background`, `CK.character.display.applyLighting()`, and the background manager's `updateValues()` implementation;
-- current Dev baseline after loader repair `6cf10845e394676344ebb8699c654009267c6c61`.
-
-### Confirmed findings
-
-- Black Canvas saved state is exposed through the Booth API before BT exists;
-- Public Stable replay v0.1.1 has a diagnostic state fallback that Dev v0.1.0 did not yet carry;
-- the regular HeroForge display lighting path uses `CK.environment.background`;
-- that background manager's `updateValues()` operates on `this.mesh.material`;
-- current replay can blacken renderer canvas/holder without BT but its semantic main-background discovery starts from BT.
-
-### Supported inference
-
-`CK.environment.background.mesh` is the conservative regular-scene render target for pre-BT visibility suppression. This exact fresh-start visual mapping is not yet live-proven; therefore the candidate only uses it when it exposes a `visible` capability and treats absence/failure as no-op/retry.
-
-### Decision
-
-Build replay v0.1.2 as the union of Public Stable v0.1.1 state detection and one conservative no-BT background visibility fallback. Preserve the validated BT named `environment -> background` path whenever BT already exists. Do not bootstrap Booth for Black Canvas alone and do not change the validated post-`display.update()` replay sequencing.
-
-### Target files
-
-- `features/booth/Black_Canvas_Display_Replay.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_BLACK_CANVAS_DISPLAY_REPLAY.md`
-
-### Conflict risks / preservation requirements
-
-- native `CK.character.display.update()` must always execute;
-- existing Stable diagnostic state fallback must be retained;
-- BT semantic named-background discovery remains preferred for BT-first sessions;
-- the direct CK fallback may only own/restore the visibility value it changed;
-- Black Canvas default must not enable Booth View or load gated Booth core by itself;
-- failure to find the CK mesh must be a no-op/retry, not partial initialization;
-- Booth v27, Utilities v1.2.1, Booth runtime bootstrap, loader v0.5.1, Spinny, High Res, corrected decal gizmo, JSON, Developer Mode, Decals host, and public Stable remain untouched.
-
-### Static validation
-
-- replay syntax: PASS;
-- no-BT API-state lifecycle mock: PASS;
-- Stable diagnostic-state fallback mock: PASS;
-- BT-present semantic-path regression mock: PASS;
-- manifest v0.1.2/build/query identity: PASS;
-- candidate replay Git blob matches the locally tested source exactly: PASS.
-
-### Live gate
-
-Use the Dev userscript only. Verify Black Canvas Across Sessions ON can restore a fresh ordinary editor page to black without forcing Booth View ON. Separately verify saved-Booth persistence still bootstraps Booth when its own persistence default is ON, the known white-flash action remains flash-free, Black Canvas OFF restores the ordinary background, and `+ New Figure` remains untouched.
-
-**Runtime behavior changed:** yes, Dev Black Canvas startup only. Public Stable unchanged.
-
----
-
-## PFC-2026-09-07-040 — Dev loader cache repair
-
-Date: 2026-09-07
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility contract/master/preflight/changelog/architecture/inventory/compatibility/ownership/testing documents;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, and `Witch_Dock_DEV.user.js`;
-- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`;
-- current Dev baseline `2f3500e301e6f76367faa587e9728da3b29ae467`;
-- live public stale-manifest evidence and the subsequent hard-refresh confirmation that the repository itself already contained Booth v27 / Utilities v1.2.1.
-
-### Confirmed findings
-
-- branch-based raw GitHub URLs can return a stale manifest/module snapshot despite the loader sending `Cache-Control: no-cache`;
-- the fixed branch URL therefore needs a changing request identity for the manifest;
-- module requests need a deterministic identity that changes when the manifest declares a new module version/build;
-- `manifest.moduleRegistry` is the maintained source of module ID/version/build/path identity and can be indexed by each `tools[]` entry ID.
-
-### Decision
-
-Repair the Dev loader only. Use one per-page cache token for the manifest and deterministic module cache keys derived from `moduleRegistry`; preserve existing request flow, tool enablement, execution order, and module runtime code.
-
-### Target files
-
-- `Witch_Dock_DEV.user.js`
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/MANIFEST_AND_LOADING.md`
-
-### Conflict risks / preservation requirements
-
-- do not change Booth v27, Utilities v1.2.1, or the validated Black Canvas display replay;
-- do not change manifest tool order or enabled/default semantics;
-- preserve pre-existing query parameters on module URLs;
-- do not use a random per-module token that would defeat deterministic module identity;
-- public `Witch_Scripts` must remain untouched until Dev validation.
-
-### Static validation
-
-- `node --check Witch_Dock_DEV.user.js`: PASS.
-- `python3 -m json.tool manifest.json`: PASS.
-- every current `tools[]` ID resolves to a `moduleRegistry[]` identity: PASS.
-- deterministic module-key test, build-change invalidation test, and existing-query preservation test: PASS.
-- `git diff --check`: PASS.
-- protected blob checks for Booth v27, Utilities v1.2.1, and Dev Black Canvas replay: PASS.
-
-### Live gate
-
-Use the Dev userscript. Confirm a normal page load obtains current Dev modules without requiring `Ctrl+Shift+R`, then perform the already-pending Booth persistence/Black Canvas startup smoke. Stable loader v1.2.1 promotion remains blocked until this Dev gate passes.
-
-**Runtime behavior changed:** yes, Dev loader delivery only. Public Stable unchanged.
-
----
-
-## PFC-2026-09-07-039 — Add Dev Booth runtime bootstrap
-
-Date: 2026-09-07
-
-### Required material reviewed
-
-- binding HeroForge.Compatibility `PROJECT_CONTRACT.md`, `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `ARCHITECTURE.md`, `FEATURE_INVENTORY.md`, `COMPATIBILITY.md`, `OWNERSHIP.md`, and `TESTING.md`;
-- current Witch Dock Dev `MASTER.md`, `PRE_FLIGHT_Check.md`, `CHANGELOG.md`, `manifest.json`, `tools/Booth.js` v27, `tools/Utilities.js` v1.2.1, and Black Canvas replay module;
-- `HISTORY/BULLSHIT/BOOTH_V27_STABILIZATION.md` and the prior standalone Booth bootstrap investigation/results;
-- current Dev head `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`;
-- live public evidence after hard refresh confirming Booth v27 is actually loaded while saved Booth/Black Canvas startup still fails;
-- live bridge evidence from the earlier bootstrap probe confirming same-origin HeroForge `/gated/booth.js` creates `BT` and named `BT.setBoothMode(savedMode)` successfully initializes/enables the Booth runtime.
-
-### Confirmed findings
-
-- fresh HeroForge startup has no `BT` global before Booth core is loaded;
-- Booth v27 `readSavedBoothConfig()` still checks `CK.data.custom` only after an existing BT runtime is present;
-- this creates a circular dependency: persistence needs saved config to justify Booth activation, but v27 refuses to inspect that saved config until Booth already exists;
-- the user reproduced this on the current public v27 build: saved Booth Persistence and Black Canvas defaults were ON, yet neither restored at startup;
-- the public stale-module issue is separate: after a hard refresh the page definitely loaded Booth v27, so the persistence failure is not a v24/cache artifact;
-- HeroForge may replace `CK.data` while a figure is settling, so bootstrap eligibility must not be decided from one transient read;
-- bare camera state must not qualify because a new figure can have ordinary camera data without a saved Photo Booth setup.
-
-### Decision
-
-Do not broaden the already-large Booth v27 tool. Add a separate hidden compatibility feature `booth.runtime-bootstrap` v0.1.0/build `0.1.0-dev-native-booth-bootstrap`.
-
-The module:
-
-- reads the existing `kw.witchDock.booth.consent.v1` default;
-- inspects `CK.data.custom` independently of BT for strong saved Booth signals;
-- excludes bare-camera-only figures;
-- requires four consecutive 200 ms observations of the same `CK.data` object, mode, and strong-signal signature;
-- loads only HeroForge's own same-origin gated `booth.js` when BT is absent;
-- derives the current HeroForge build from loaded script/resource URLs instead of hard-coding a minified bundle identity;
-- requires named `BT.setBoothMode()` and uses the saved mode;
-- verifies `BT.liveEngine || BT.maker` becomes enabled;
-- then uses the existing `KW_WD_BOOTH` API to reconcile default-owned Booth View and Black Canvas;
-- single-flights work, records diagnostics, and exposes `dispose()` to stop owned polling.
-
-### Target files
-
-- `features/booth/Booth_Runtime_Bootstrap.js` (new)
-- `manifest.json`
-- `MASTER.md`
-- `PRE_FLIGHT_Check.md`
-- `CHANGELOG.md`
-- `HISTORY/BULLSHIT/BOOTH_RUNTIME_BOOTSTRAP.md` (new)
-
-### Conflict risks / preservation requirements
-
-- `tools/Booth.js` must remain byte-unchanged at v27.0.0/build `v27`;
-- `features/booth/Black_Canvas_Display_Replay.js` must remain byte-unchanged;
-- `tools/Utilities.js` must remain byte-unchanged at v1.2.1;
-- do not load HeroForge `boothui.js`;
-- do not use Webpack/module/minified discovery when named `BT.setBoothMode` is available;
-- do not bootstrap a camera-only/new figure;
-- do not initialize when the persistence default is OFF;
-- failure must degrade to ordinary unmodified HeroForge rather than suppressing model updates;
-- public `Witch_Scripts` remains untouched until Dev validation.
-
-### Static validation
-
-- Node syntax check for `Booth_Runtime_Bootstrap.js`: PASS.
-- Saved-figure mock: PASS. Four stable observations caused native `portrait` mode bootstrap, runtime enable verification, and saved Black Canvas reconciliation.
-- Fresh-camera-only mock: PASS. Zero native script insertions and zero bootstrap attempts.
-- Manifest entry is versioned in the same candidate and is ordered before `booth-tool` so polling can begin while the normal Booth tool loads.
-- Dev-owned Booth/Utilities/replay URLs receive explicit version query keys in this manifest candidate to avoid stale module responses once the new manifest itself is obtained.
-- The fixed manifest URL in the Dev/public shell remains a separate loader-cache problem and is not claimed fixed by this commit.
-- No GitHub Actions workflow exists for this Dev branch; no CI claim is made.
-
-### Live gate
-
-Use the Dev userscript only. With Booth Persistence Across Sessions and Black Canvas Across Sessions ON, load a figure that already contains a saved Booth setup and refresh without manually opening Photo Booth. Expected result: Booth View restores and the viewport is black. Then verify the known flash-causing action remains flash-free and a fresh `+ New Figure` does not auto-bootstrap Booth.
-
-Do not promote this module to Stable until the live gate passes. The separate public loader cache-busting repair must also be completed before public release.
-
-**Runtime behavior changed:** yes, Dev only. Public Stable unchanged.
-
----
-
-Historical pre-flight entries through PFC-2026-09-07-038 remain preserved in Git history at/before Dev commit `12383ca5a551acb1a6bf330f7cfad8ea68a82ad1`.
+`PFC-2026-09-08-047` and earlier remain preserved verbatim in Git history at Dev head `4cd8d15e49aee8e02b01f519ed32af579c94a277` and its ancestors.
