@@ -2,6 +2,31 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-12-053 — Gate persistent auto-enable on visible HeroForge runtime
+
+Date: 2026-09-12
+
+### Summary
+
+Live Bridge validation of the first Texture Quality persistence candidate found that an automatic reconcile can be started while HeroForge is in a hidden/background tab. In that state HeroForge left `_needsUpdating=true`, did not converge display/resource atlas identity, and both the reconcile and recovery restore timed out. The preference model itself was not the failure; automatic scheduling was too permissive.
+
+### Fix
+
+- bump Texture Quality service to v0.2.1 / build `0.2.1-dev-visible-auto-enable`;
+- persistent auto-enable now refuses to start while `document.hidden` or `visibilityState !== 'visible'`;
+- add a `visibilitychange` hook that schedules the existing safe automatic enable path once HeroForge becomes visible again;
+- keep manual Enable behavior unchanged;
+- keep the boolean-only persistence/session-suppression model unchanged;
+- update manifest registry version/build/cache key accordingly.
+
+### Validation state
+
+The failing hidden-tab behavior is confirmed by Bridge evidence #1755/#1757/#1760. v0.2.1 static and fresh live validation are required before Amanda's visual gate. Public Stable remains untouched.
+
+**Runtime behavior changed:** yes, Dev only.
+
+---
+
 ## DOCK-2026-09-12-052 — Texture Quality persistent preference Dev candidate
 
 Date: 2026-09-12
@@ -24,7 +49,7 @@ Implement Amanda's approved Texture Quality persistence UX on `WITCH_DEV_UI` whi
 
 ### Validation state
 
-JavaScript syntax and manifest JSON validation pass locally. Live `WITCH_DEV_UI` runtime validation and Amanda's visual/UX gate are still required before any Stable promotion.
+JavaScript syntax and manifest JSON validation passed before live testing. Live validation exposed the hidden-tab scheduler issue now addressed by DOCK-2026-09-12-053.
 
 **Runtime behavior changed:** yes, Dev only. Public `Witch_Scripts` Stable remains Texture Quality v0.1.0 and is untouched.
 
@@ -34,37 +59,12 @@ JavaScript syntax and manifest JSON validation pass locally. Live `WITCH_DEV_UI`
 
 Date: 2026-09-12
 
-### Summary
+Public Texture Quality v0.1.0 is fully Stable accepted. Governance was compacted around `PROJECT_CONTRACT.md`, `ACTIVE_CONTEXT.md`, rolling logs, and Bridge-first runtime validation.
 
-Align Witch Dock with the successful HeroForge.Compatibility context model so new chats can start from a tiny authoritative router instead of loading large historical files.
-
-### Governance changes
-
-- add binding `PROJECT_CONTRACT.md` for all active Witch Dock branches;
-- add `ACTIVE_CONTEXT.md` as the authoritative current-task router;
-- add `CHATGPT_PROJECT_INSTRUCTIONS.md` with paste-ready compact project rules;
-- compact `MASTER.md` into a repo-wide architecture/navigation index rather than a running investigation transcript;
-- compact this changelog and `PRE_FLIGHT_Check.md` into rolling recent logs, with prior detail preserved in Git history;
-- compact the Texture Quality history record around the validated architecture, public acceptance, current persistence behavior, and next integration question;
-- explicitly make HF-Chat-Bridge the normal development control plane while prohibiting any runtime dependency on it;
-- explicitly treat HeroForge.Compatibility as upstream engine-investigation evidence, not mandatory Witch Dock startup context.
-
-### Current task handoff
-
-Public Texture Quality v0.1.0 is fully Stable accepted. Current behavior is confirmed: same-figure native renderer refreshes preserve ON, figure changes clear the active session OFF, and page reload starts OFF. The next conversation is waiting for Amanda's response to the proposed persistent **desired preference** model: remember user intent, but always create a fresh safe per-page/per-figure session instead of persisting snapshots or renderer objects.
-
-**Runtime behavior changed:** no. No JavaScript, manifest, active module version, delivery URL, or public Stable runtime changed.
-
----
-
-## DOCK-2026-09-12-050 — Native Texture Quality Dev acceptance complete
-
-WITCH_DEV_UI Texture Quality v0.1.0 passed D4 body-color/glyph validation, D4 OFF -> ON ownership/lifecycle validation, Blood Moon accessory/material-channel validation, ordinary native-refresh survival, and the non-invasive Booth topology smoke. Dev acceptance closed PASS and the feature was subsequently promoted narrowly to Stable.
-
-Public Stable promotion/acceptance is recorded on `Witch_Scripts` at commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`; Bridge evidence #1747/#1748/#1750 and Amanda's final visual PASS close the release gate.
+**Runtime behavior changed:** no.
 
 ---
 
 ## Prior active history
 
-Detailed DOCK-2026-09-12-049 and earlier Dev entries remain preserved in Git history at `c8f8000d9562dbc315dc867af655358177e18d54` and its ancestors. Do not load them unless a current task specifically needs that evidence.
+Detailed DOCK-2026-09-12-050 and earlier entries remain preserved in Git history. Do not load them unless a current task specifically needs that evidence.

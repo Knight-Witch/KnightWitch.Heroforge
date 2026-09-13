@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.2.0
+// @version      0.2.1
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.2.0';
-  const BUILD = '0.2.0-dev-persistent-preference';
+  const VERSION = '0.2.1';
+  const BUILD = '0.2.1-dev-visible-auto-enable';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
@@ -78,7 +78,6 @@
       return null;
     }
   }
-
 
   function readPersistent() {
     try {
@@ -534,6 +533,7 @@
 
   function queuePersistentEnable() {
     if (!persistent || sessionSuppressed || enabled || busy || autoPromise || autoAlreadyAttemptedForCurrent()) return false;
+    if (document.hidden || document.visibilityState !== 'visible') return false;
 
     autoPromise = (async () => {
       const end = Date.now() + AUTO_READY_TIMEOUT;
@@ -604,6 +604,14 @@
     return snapshotState();
   }
 
+  function handleVisibilityChange() {
+    if (document.hidden || document.visibilityState !== 'visible') return;
+    if (persistent && !sessionSuppressed && !enabled && !busy) {
+      setStatus('Persistent High Res — waiting for HeroForge renderer…', false);
+      queuePersistentEnable();
+    }
+  }
+
   function onChange(listener) {
     if (typeof listener !== 'function') return () => {};
     listeners.add(listener);
@@ -615,6 +623,7 @@
     try {
       if (session && sameCharacter(session)) await disable();
     } catch (_) {}
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
     listeners.clear();
     try { delete UW[GLOBAL]; } catch (_) { UW[GLOBAL] = undefined; }
     return true;
@@ -648,6 +657,7 @@
     get statusError() { return statusError; }
   };
 
+  document.addEventListener('visibilitychange', handleVisibilityChange);
   emit();
   queuePersistentEnable();
 })();
