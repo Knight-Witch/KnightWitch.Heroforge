@@ -2,38 +2,40 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-13-058 — Gate persistent Texture Quality on stable renderer readiness
+## DOCK-2026-09-13-059 — Tolerate heavy native reconcile stalls
 
 Date: 2026-09-13
 
 ### Summary
 
-Prevent Persistent High Res from starting against a still-changing HeroForge generation during heavy figure/library transitions.
+Prevent Texture Quality from declaring heavy HeroForge generations failed merely because native rebuild work blocks or outlives the old 12-second settle window.
 
 ### Confirmed diagnosis
 
-- D4 cold-reload persistence passed on v0.2.2, and a normal library-save transition also looked correct.
-- Heavy figures Seya and Twilight Soak could report a Persistent High Res failure while the figure was still settling.
-- Bridge #1797 captured Twilight Soak failed with `Timed out waiting for native reconciliation to settle.`; an earlier verification on the same transition had bodyLower packed at only 512x512 despite scale 4 / bake 2048 / used seed 1024.
-- #1798 then confirmed the post-failure native figure itself was fully idle, `finished=true`, `resourcesReady=true`, with coherent 4096x4096 display/resource atlases.
-- One bounded manual High Res enable on that already-settled Twilight Soak succeeded in about 3.9 seconds and verified 2048x2048 bodyLower/bodyUpper/face allocations plus exact 1024 body masks (#1800).
-
-Therefore Twilight Soak was not exceeding the Phase 1 atlas policy in this test. Automatic persistence was entering the existing reconcile path before the heavy figure generation had become quiescent.
+- v0.2.3 fixed the early Persistent-start race, but Seya still exposed `Timed out waiting for native reconciliation to settle.` during the actual native rebuild.
+- A normal Seya reconcile completed its Bridge call after about 35.4 seconds yet still returned the service timeout.
+- A cleanup `disable()`/native restore took about 65.7 seconds and likewise returned a restore timeout warning.
+- After that warning, HeroForge itself reached an idle, finished/resources-ready, coherent native 4096x4096 state, proving the restore had ultimately completed and the service had given up too early.
+- The existing `settle()` loop used a fixed 12-second wall-clock bound. Heavy synchronous/native work can monopolize the page long enough that the deadline expires before the service gets another reliable observation.
 
 ### Changes
 
-- bump `texture-quality-native-reconcile` to v0.2.3 / build `0.2.3-dev-stable-auto-readiness`;
-- keep manual Enable unchanged;
-- before automatic Persistent enable only, require HeroForge scheduler idle, display resources/finished not false, a coherent native display/resource atlas, and a stable character/data/display/modded/atlas/part signature for 1200 ms;
-- reset the quiet window whenever the generation or part/target allocation signature changes;
-- abandon an in-progress automatic wait if the document becomes hidden so the existing visibility handler can schedule a fresh foreground attempt;
-- preserve the existing 30-second bounded readiness window.
+- bump `texture-quality-native-reconcile` to v0.2.4 / build `0.2.4-dev-heavy-native-settle`;
+- expand the bounded native-settle budget to 120 seconds for enable, restore and manual reconcile paths;
+- inspect the current renderer state before enforcing the expired deadline, with a short bounded confirmation allowance if the renderer is already coherent when control returns;
+- keep the existing coherence requirements unchanged: scheduler idle, resources/finished not false, display/resource atlas identity and stable target allocations.
 
-### Protected behavior
+### Explicitly not included
 
-The validated High Res transaction itself is unchanged: scale 4, bake 2048, used-size 1024 seed, exact real 1024 body masks, native generation/adoption, native atlas ownership, verifier, rollback, persistence storage semantics, manual Disable suppression, UI and Phase 1 notice remain unchanged. Public Stable remains untouched.
+The exploratory 8192 atlas, broader non-body scaling and projected/splatter source-ceiling probes are rejected as shipping changes at this stage. They are not present in v0.2.4. Texture policy, exact 1024 body masks, persistence semantics, verifier thresholds, native atlas ownership, UI and beta notice remain unchanged. Public Stable remains untouched.
 
-**Runtime behavior changed:** yes, Dev automatic-persistence readiness only.
+**Runtime behavior changed:** yes, Dev native-settle timing only.
+
+---
+
+## DOCK-2026-09-13-058 — Gate persistent Texture Quality on stable renderer readiness
+
+v0.2.3 waits for a stable visible HeroForge generation before automatic Persistent High Res starts. Manual Enable and the validated High Res recipe remained unchanged.
 
 ---
 

@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_UI
 
 **Updated:** 2026-09-13  
-**Current task:** Texture Quality heavy-figure persistence race — validate service v0.2.3 stable-renderer auto-readiness on Seya and Twilight Soak.  
+**Current task:** Texture Quality heavy-figure native settle timing — validate service v0.2.4 on Seya and Twilight Soak.  
 **Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
 
 ## Minimum continuation set
@@ -26,7 +26,7 @@ Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0
 
 ## Current Dev candidate
 
-- service v0.2.3 / build `0.2.3-dev-stable-auto-readiness`;
+- service v0.2.4 / build `0.2.4-dev-heavy-native-settle`;
 - UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
 - isolated beta notice v0.1.2 / build `0.1.2-centered-sleek-title`.
 
@@ -36,19 +36,23 @@ Persistence semantics remain unchanged: default OFF; boolean-only `Persistent`; 
 
 v0.2.2 fixed D4's promoted body-mask path case by resolving body mask paths under a temporary exact 1024 used-size seed and restoring the prior value immediately. D4 then passed automatic and manual High Res, exact 1024 mask verification, Amanda visual quality, and a genuine cold reload with stored Persistent=true. Bridge #1790-#1794.
 
-## Heavy transition race — confirmed
+## Heavy transition readiness — v0.2.3 finding
 
-A normal library save transitioned successfully, but heavy Seya and Twilight Soak could show an early Persistent High Res failure while the figure was still loading. Twilight Soak is Amanda's largest kitbash and remains the preferred future motherload benchmark.
+v0.2.3 fixed the early automatic-start race by waiting for a visible, coherent, idle HeroForge generation and a stable figure/part signature for 1200 ms before Persistent High Res starts.
 
-Bridge #1797 captured Twilight Soak failed with `Timed out waiting for native reconciliation to settle.`; one transition verification had bodyLower packed at 512x512. #1798 later showed the restored native Twilight state fully idle with `finished=true`, `resourcesReady=true`, and coherent 4096x4096 display/resource atlases.
+On current Seya testing, that readiness gate worked, but the subsequent native reconcile still exposed a separate timing defect: the service could report `Timed out waiting for native reconciliation to settle.` while HeroForge was still doing legitimate heavy native work.
 
-One bounded manual v0.2.2 Enable on that already-settled Twilight state succeeded in about 3.9 seconds, verified native 4096x4096, 2048x2048 bodyLower/bodyUpper/face allocations, and exact 1024 body masks (#1800). Therefore this observed failure is an automatic-start readiness race, not a demonstrated Phase 1 atlas-capacity limit.
+A normal Seya reconcile Bridge run lasted about 35.4 seconds and returned the timeout. A cleanup `disable()`/native restore lasted about 65.7 seconds and returned the same restore warning. After the warning, direct reads showed HeroForge fully idle and coherent again: `_needsUpdating=false`, `_inUpdate=false`, `finished=true`, `resourcesReady=true`, display/resource atlas 4096x4096.
 
-## v0.2.3 change
+Therefore the current confirmed defect is the fixed 12-second `settle()` budget, not a failure of the v0.2.3 automatic readiness gate.
 
-Only automatic Persistent start timing changes. Before calling the existing `enable({automatic:true})` path, the service requires HeroForge scheduler idle, resources/finished not false, coherent native atlas identity, and the same character/data/display/modded/atlas plus full part signature and target allocations to remain unchanged for 1200 ms. The 30-second bound and visibility gating remain. Manual Enable is unchanged.
+## v0.2.4 change
 
-The High Res transaction, scale/bake/used policy, D4 mask-path fix, native atlas ownership, generation adoption, verifier, rollback, UI, persistence storage semantics and notice are unchanged.
+Only native settle timing changes. `settle()` now has a 120-second bounded budget and checks current renderer coherence before enforcing the expired deadline. If control returns after the deadline with an already-ready renderer, it allows only a short bounded set of confirmation polls so the existing 3-sample stability rule can complete.
+
+The High Res transaction, scale/bake/used policy, D4 mask-path fix, exact body masks, native atlas ownership, generation adoption, verifier, rollback semantics, automatic readiness gate, persistence storage, UI and notice are unchanged.
+
+Exploratory 8192 atlas, broader non-body scaling and projected/splatter source-ceiling probes are not part of v0.2.4 and must not be treated as accepted architecture.
 
 ## Phase 1 announcement
 
@@ -56,8 +60,8 @@ Notice v0.1.2 is visually approved for now. It remains isolated, uses the center
 
 ## Next gate
 
-Static-check the exact detached v0.2.3 service/manifest candidate before moving `WITCH_DEV_UI`. Then load exact v0.2.3 into the current settled Twilight page and confirm stored Persistent=true auto-enables cleanly. After that Amanda switches, without touching Texture Quality, to Seya and then Twilight Soak. Bridge verifies each fresh figure waits for quiescence and reaches ON with coherent atlas, valid target allocations, exact 1024 body masks and idle scheduler. Amanda supplies visual confirmation. Stable remains protected until explicit narrow promotion approval.
+Static-check the exact detached v0.2.4 service/manifest candidate before moving `WITCH_DEV_UI`. Then hot-load exact v0.2.4 into the current clean Seya page with stored Persistent=true and no manual Enable. Require automatic ON, no timeout, coherent native atlas, valid target allocations, exact 1024 body masks and idle scheduler; Amanda confirms visual state. Then repeat fresh Seya/Twilight Soak transitions. Stable remains protected until explicit narrow promotion approval.
 
 ## Architecture that must not regress
 
-Keep HeroForge native atlas/generation ownership. Texture Quality owns only source policy and exact real 1024 body-mask overrides for the active session. Do not reintroduce custom `CK.Atlas`, `buildAtlas` wrapping, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.
+Keep HeroForge native atlas/generation ownership. Texture Quality owns only source policy and exact real 1024 body-mask overrides for the active session. Do not reintroduce custom `CK.Atlas`, `buildAtlas` wrapping/replacement, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.

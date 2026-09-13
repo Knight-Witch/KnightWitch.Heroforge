@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.2.3
+// @version      0.2.4
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,11 +18,12 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.2.3';
-  const BUILD = '0.2.3-dev-stable-auto-readiness';
+  const VERSION = '0.2.4';
+  const BUILD = '0.2.4-dev-heavy-native-settle';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
+  const SETTLE_TIMEOUT = 120000;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
   const BODIES = ['bodyLower', 'bodyUpper'];
   const SCALE = 4;
@@ -261,15 +262,17 @@
   }
 
   async function settle(s) {
-    const end = Date.now() + 12000;
+    const end = Date.now() + SETTLE_TIMEOUT;
     let lastSignature = '';
     let stable = 0;
+    let expiredReadyChecks = 0;
 
-    while (Date.now() < end) {
+    while (true) {
       if (!sameCharacter(s)) throw new Error('HeroForge character/data changed during reconcile.');
       const display = s.c.display;
       const m = display && display.modded;
       if (!display || !m || !m.parts || !display.meshes) {
+        if (Date.now() >= end) break;
         await sleep(150);
         continue;
       }
@@ -293,14 +296,30 @@
         atlasSize(atlas),
         TARGETS.map((key) => allocation(atlas, key))
       ]);
+      const ready = !!(
+        !s.c._needsUpdating &&
+        !s.c._inUpdate &&
+        display.resourcesReady !== false &&
+        display.finished !== false &&
+        atlas &&
+        atlas === resourceAtlas
+      );
 
-      if (!s.c._needsUpdating && !s.c._inUpdate && display.resourcesReady !== false && display.finished !== false && atlas && atlas === resourceAtlas) {
+      if (ready) {
         stable = signature === lastSignature ? stable + 1 : 1;
         if (stable >= 3) return;
       } else {
         stable = 0;
       }
       lastSignature = signature;
+
+      if (Date.now() >= end) {
+        if (!ready) break;
+        expiredReadyChecks += 1;
+        if (expiredReadyChecks >= 6) break;
+      } else {
+        expiredReadyChecks = 0;
+      }
       await sleep(150);
     }
 
