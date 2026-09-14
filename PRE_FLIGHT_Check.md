@@ -2,67 +2,70 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-13-059 — Heavy native settle budget
+## PFC-2026-09-13-060 — Multi-figure Texture Quality candidate
 
 Date: 2026-09-13
 
 ### Scope
 
-Repair false Texture Quality timeouts on heavy HeroForge generations without altering the validated High Res recipe or atlas ownership model.
+Extend the validated Texture Quality native-reconcile recipe to all current HeroForge figure displays without hardcoding the vanilla figure count and without changing atlas ownership or texture policy.
 
 ### Reviewed
 
 - current `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`;
-- Texture Quality service v0.2.3 / `0.2.3-dev-stable-auto-readiness`;
-- `MODULE_VERSIONING.md` patch-bump rules;
-- `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md`;
-- current `settle()` use across enable, rollback restore, manual Disable and Reconcile Now;
-- live Seya diagnostics including the normal reconcile, projected-source experiment cleanup and final clean native baseline.
+- `MODULE_VERSIONING.md` and current manifest registry;
+- Texture Quality service v0.2.4 / `0.2.4-dev-heavy-native-settle`;
+- Texture Quality UI v0.2.0 compatibility with the existing service API;
+- live one-, two-, and three-figure HeroForge runtime structure through HF-Chat-Bridge;
+- extra-figure `data.change()` and `modded.buildAtlas()` lifecycle seams plus root `CK.character.refresh()` behavior.
 
-### Confirmed root cause
+### Confirmed diagnosis
 
-v0.2.3's automatic readiness gate correctly waited for a settled figure before starting, but the subsequent native reconcile could itself take much longer than the service's fixed 12-second settle window. A normal Seya reconcile returned after about 35.4 seconds with the same timeout, and a cleanup Disable/native restore took about 65.7 seconds before returning the timeout warning. HeroForge later reached `_needsUpdating=false`, `_inUpdate=false`, `finished=true`, `resourcesReady=true` and coherent 4096x4096 display/resource atlases, proving the native restore ultimately completed.
+Texture Quality v0.2.4 resolves only `CK.character.data` / `CK.character.display`, so it can verify the primary figure while figure 2/3 remain native-low-res. HeroForge stores extras in `CK.character.allDisplays`: figure 2 appeared as `baseItem`, figure 3 as `baseItemB`; each is `data.primary=false` with independent data/modded/meshes/atlas/resourceAtlas state. This directly explains Seya remaining visually low quality when she was the second figure.
 
-The service therefore timed out before HeroForge's heavy native work became observable as settled.
+### Candidate change
 
-### Change
+- service v0.3.0 / build `0.3.0-dev-multifigure-native-reconcile`;
+- enumerate the primary display plus every unique compatible display in `CK.character.allDisplays`;
+- preserve the existing per-figure High Res recipe exactly: atlasScale targets 4, bake 2048, used-size seed 1024 minimum, exact 1024 body masks;
+- run each figure through its own native data/modded seams, then use one root HeroForge refresh;
+- settle and verify the entire active figure set, not only the primary display;
+- add count-agnostic scene membership resync for figures added/removed while High Res is active;
+- keep primary-shaped verification fields for the existing UI while adding `figureCount` and per-figure verification records.
 
-- service v0.2.4 / build `0.2.4-dev-heavy-native-settle`;
-- add a 120-second bounded native settle budget;
-- evaluate current renderer coherence before enforcing an expired deadline;
-- if control returns after the deadline with an already-ready renderer, allow only a short bounded set of confirmation polls so the existing 3-sample stability rule can complete;
-- preserve the existing scheduler/finished/resources-ready/atlas-identity/target-allocation checks.
+### Static checks already passed
 
-### Excluded from this patch
+- candidate JavaScript parses with `node --check`;
+- a three-display mock runtime reports `figureCount=3`, coherent primary capability, and no initialization error;
+- UI module is unchanged and remains API-compatible;
+- manifest service version/build/cache key are updated to v0.3.0.
 
-No 8192 atlas forcing, broader non-body atlasScale policy, projected/splatter bake ceiling changes, verifier loosening, persistence semantic changes, UI changes or notice changes are included.
+### Required live validation
 
-### Required validation
+1. Hot-load exact v0.3.0 on the current clean three-figure Dev scene with Texture Quality initially OFF.
+2. Manual Enable must verify all three figure pipelines, exact 1024 body masks, valid target allocations, coherent native atlases and idle root scheduler.
+3. While still enabled, add/remove a figure and confirm dynamic scene resync discovers the membership change without hardcoded count logic.
+4. Reload a known multi-figure scene with Seya as a non-primary figure; require visible quality improvement on Seya plus per-figure technical verification.
+5. Repeat a heavy extra-figure case such as Twilight Soak if practical before Stable promotion.
 
-Before moving Dev: exact candidate JS syntax, manifest parse/version/build/cache-key consistency and diff review. Then hot-load exact v0.2.4 on the current clean Seya page with stored Persistent=true and no manual Enable; require automatic ON, no timeout, coherent native atlas, exact 1024 body masks and idle renderer. Next repeat fresh Seya/Twilight Soak transitions before any Stable promotion. Amanda supplies visual confirmation.
+No Stable promotion until the multi-figure visual gate passes.
 
-**Runtime behavior changed:** yes, Dev native-settle timing only.
+**Runtime behavior changed:** yes, Dev Texture Quality figure scope and dynamic scene reconciliation.
+
+---
+
+## PFC-2026-09-13-059 — Heavy native settle budget
+
+v0.2.4 raised the native settle budget to 120 seconds while preserving scheduler/finished/resources-ready/atlas-identity/target-allocation requirements. Seya's false timeout path was closed before this multi-figure investigation.
 
 ---
 
 ## PFC-2026-09-13-058 — Persistent High Res stable-readiness gate
 
-v0.2.3 waits for scheduler/display/atlas quiescence and a stable figure signature before automatic Persistent enable. The High Res transaction itself remained unchanged.
-
----
-
-## PFC-2026-09-13-057 — D4 promoted mask-path clamp
-
-v0.2.2 fixed D4 mask resolution after 2048 source promotion and passed D4 live automatic/manual enable plus cold reload persistence. The High Res ownership architecture remained native-reconcile based.
-
----
-
-## PFC-2026-09-13-056 — Texture Quality notice hierarchy polish
-
-Notice v0.1.2 centered section headings, changed the title typography, and split/centered the closing block. Amanda approved the result.
+v0.2.3 waits for renderer/atlas quiescence and a stable figure signature before automatic Persistent enable.
 
 ---
 
 ## Prior current preflight
 
-PFC-2026-09-12-055 and earlier remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+PFC-2026-09-13-057 and earlier remain preserved in Git history. Fetch only when a current task needs their specific evidence.

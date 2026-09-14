@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_UI
 
 **Updated:** 2026-09-13  
-**Current task:** Texture Quality heavy-figure native settle timing — validate service v0.2.4 on Seya and Twilight Soak.  
+**Current task:** Texture Quality multi-figure scope — validate count-agnostic service v0.3.0 against vanilla 1/2/3 figures and heavy non-primary figures.  
 **Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
 
 ## Minimum continuation set
@@ -10,58 +10,66 @@ Read only:
 
 1. `PROJECT_CONTRACT.md`
 2. this file
-3. `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md`
+3. `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md` when durable engine history is needed
 4. `features/rendering/Texture_Quality_Native_Reconcile.js`
 5. `features/rendering/Texture_Quality_Native_Reconcile_UI.js`
-6. `features/rendering/Texture_Quality_Beta_Notice.js`
-7. `MODULE_VERSIONING.md` only if another code/version change is about to be committed
+6. `MODULE_VERSIONING.md` before another code/version commit
 
-Do not preload full repo history/changelog/preflight unless a current question specifically routes there.
+Do not preload full repo history/changelog/preflight unless a current step specifically requires them.
 
 ## Public Stable — protected PASS
 
 Public `Witch_Scripts` promotion commit: `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`.
 
-Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0-dev-texture-quality-controls`. Blood Moon acceptance is closed PASS with Bridge #1747/#1748/#1750 and Amanda visual PASS.
+Stable remains service v0.1.0 / `0.1.0-dev-hfc-alpha3-port` + UI v0.1.0 / `0.1.0-dev-texture-quality-controls`. Blood Moon acceptance remains closed PASS. Stable has not been modified by the current investigation.
 
 ## Current Dev candidate
 
-- service v0.2.4 / build `0.2.4-dev-heavy-native-settle`;
-- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- isolated beta notice v0.1.2 / build `0.1.2-centered-sleek-title`.
+- service v0.3.0 / build `0.3.0-dev-multifigure-native-reconcile` — detached candidate until exact static review passes;
+- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls` unchanged;
+- beta notice v0.1.2 / build `0.1.2-centered-sleek-title` unchanged.
 
-Persistence semantics remain unchanged: default OFF; boolean-only `Persistent`; fresh page/figure session; manual Disable while persistent is page-session suppression; manual Enable/reload clears suppression; unchecking persistence stops future auto behavior without forcing an active session off; `Reconcile Now` remains under collapsed `Advanced`.
+Persistence semantics remain unchanged: default OFF; boolean-only Persistent intent; manual Disable while persistent is page-session suppression; manual Enable/reload clears suppression; unchecking persistence stops future automatic behavior without forcing an active session off.
 
-## D4 v0.2.2 — closed PASS
+## Closed prerequisites
 
-v0.2.2 fixed D4's promoted body-mask path case by resolving body mask paths under a temporary exact 1024 used-size seed and restoring the prior value immediately. D4 then passed automatic and manual High Res, exact 1024 mask verification, Amanda visual quality, and a genuine cold reload with stored Persistent=true. Bridge #1790-#1794.
+- v0.2.2 fixed promoted 1024 body-mask path resolution on D4 and passed automatic/manual/cold-reload validation.
+- v0.2.3 waits for a visible, coherent, idle, stable HeroForge generation before Persistent automatic enable.
+- v0.2.4 expanded native settle to 120 seconds and checks ready state before enforcing expiry; this closed Seya's false timeout caused by heavy native work exceeding the old 12-second budget.
 
-## Heavy transition readiness — v0.2.3 finding
+## Confirmed multi-figure root cause
 
-v0.2.3 fixed the early automatic-start race by waiting for a visible, coherent, idle HeroForge generation and a stable figure/part signature for 1200 ms before Persistent High Res starts.
+Seya remained visually low quality because she was figure 2, while Texture Quality v0.2.4 only targeted `CK.character.data` / `CK.character.display` — the primary figure.
 
-On current Seya testing, that readiness gate worked, but the subsequent native reconcile still exposed a separate timing defect: the service could report `Timed out waiting for native reconciliation to settle.` while HeroForge was still doing legitimate heavy native work.
+Live clean-scene mapping through HF-Chat-Bridge established:
 
-A normal Seya reconcile Bridge run lasted about 35.4 seconds and returned the timeout. A cleanup `disable()`/native restore lasted about 65.7 seconds and returned the same restore warning. After the warning, direct reads showed HeroForge fully idle and coherent again: `_needsUpdating=false`, `_inUpdate=false`, `finished=true`, `resourcesReady=true`, display/resource atlas 4096x4096.
+- one figure: primary pipeline at `CK.character.display`;
+- two figures: `CK.character.allDisplays` contains `""` plus `baseItem`; `baseItem.data.primary=false` and owns an independent coherent native atlas/resourceAtlas and independent body/head parts;
+- three figures: registry contains `""`, `baseItem`, `baseItemB`; both extras are independent non-primary render pipelines;
+- Colliefolk figure 2 part IDs: bodyLower 11426 / bodyUpper 11181 / face 26096;
+- raccoonfolk figure 3 part IDs: bodyLower 26112 / bodyUpper 11181 / face 26130;
+- each extra exposes its own `data.change()` and `modded.buildAtlas()`; root `CK.character.refresh()` remains the normal scene update request.
 
-Therefore the current confirmed defect is the fixed 12-second `settle()` budget, not a failure of the v0.2.3 automatic readiness gate.
+Therefore the service must enumerate current figure displays dynamically rather than hardcoding a count. This should naturally cover future Additional Minis figures if HeroForge registers them through the same `allDisplays` collection.
 
-## v0.2.4 change
+## v0.3.0 candidate architecture
 
-Only native settle timing changes. `settle()` now has a 120-second bounded budget and checks current renderer coherence before enforcing the expired deadline. If control returns after the deadline with an already-ready renderer, it allows only a short bounded set of confirmation polls so the existing 3-sample stability rule can complete.
+- collect the primary display plus every unique compatible entry in `CK.character.allDisplays`;
+- keep one session with independent per-figure data/display/modded/part/mask snapshots;
+- apply the existing validated policy unchanged to each figure: BL/BU/face atlasScale 4, bake 2048, used-size seed 1024, exact real 1024 body masks;
+- use each figure's native `data.change()` and `modded.buildAtlas()`, then one root `CK.character.refresh()`;
+- settle only when the root scheduler is idle and every figure has finished/resources-ready coherent display/resource atlas identity;
+- verify every figure independently while retaining primary-shaped top-level verification fields for UI compatibility;
+- while High Res is active, detect figure-registry/target changes and queue a stable native resync so added figures inherit the policy without hardcoded figure limits.
 
-The High Res transaction, scale/bake/used policy, D4 mask-path fix, exact body masks, native atlas ownership, generation adoption, verifier, rollback semantics, automatic readiness gate, persistence storage, UI and notice are unchanged.
-
-Exploratory 8192 atlas, broader non-body scaling and projected/splatter source-ceiling probes are not part of v0.2.4 and must not be treated as accepted architecture.
-
-## Phase 1 announcement
-
-Notice v0.1.2 is visually approved for now. It remains isolated, uses the centered sleek hierarchy and direct Discord link, and writes only `kw.witchDock.textureQuality.betaNotice.phase1.v1 = ack` after `OK`.
+No 8192 atlas forcing, global-4 policy, projected/splatter overrides, custom atlas ownership or direct atlas assignment belongs to v0.3.0.
 
 ## Next gate
 
-Static-check the exact detached v0.2.4 service/manifest candidate before moving `WITCH_DEV_UI`. Then hot-load exact v0.2.4 into the current clean Seya page with stored Persistent=true and no manual Enable. Require automatic ON, no timeout, coherent native atlas, valid target allocations, exact 1024 body masks and idle scheduler; Amanda confirms visual state. Then repeat fresh Seya/Twilight Soak transitions. Stable remains protected until explicit narrow promotion approval.
-
-## Architecture that must not regress
-
-Keep HeroForge native atlas/generation ownership. Texture Quality owns only source policy and exact real 1024 body-mask overrides for the active session. Do not reintroduce custom `CK.Atlas`, `buildAtlas` wrapping/replacement, direct atlas assignment, giant-atlas forcing, persistent atlas ownership, or stale cross-figure snapshots.
+1. Validate the exact detached v0.3.0 service blob and manifest JSON/diff.
+2. Move `WITCH_DEV_UI` only after static checks pass.
+3. Hot-load exact v0.3.0 on the current clean three-figure scene with Texture Quality OFF; manual Enable must verify all three pipelines and exact masks.
+4. Exercise dynamic membership by adding/removing a figure while High Res stays ON.
+5. Reload a scene with Seya as a non-primary figure and require Amanda visual confirmation that Seya now receives the quality improvement.
+6. Heavy non-primary follow-up with Twilight Soak if practical.
+7. Stable remains protected until explicit narrow promotion approval.

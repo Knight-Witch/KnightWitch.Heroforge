@@ -2,34 +2,43 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-13-059 — Tolerate heavy native reconcile stalls
+## DOCK-2026-09-13-060 — Texture Quality multi-figure native reconcile
 
 Date: 2026-09-13
 
 ### Summary
 
-Prevent Texture Quality from declaring heavy HeroForge generations failed merely because native rebuild work blocks or outlives the old 12-second settle window.
+Extend Texture Quality from the primary HeroForge figure only to every current figure display registered by HeroForge, without changing the validated High Res texture recipe or native ownership model.
 
 ### Confirmed diagnosis
 
-- v0.2.3 fixed the early Persistent-start race, but Seya still exposed `Timed out waiting for native reconciliation to settle.` during the actual native rebuild.
-- A normal Seya reconcile completed its Bridge call after about 35.4 seconds yet still returned the service timeout.
-- A cleanup `disable()`/native restore took about 65.7 seconds and likewise returned a restore timeout warning.
-- After that warning, HeroForge itself reached an idle, finished/resources-ready, coherent native 4096x4096 state, proving the restore had ultimately completed and the service had given up too early.
-- The existing `settle()` loop used a fixed 12-second wall-clock bound. Heavy synchronous/native work can monopolize the page long enough that the deadline expires before the service gets another reliable observation.
+- `CK.character.display` / `CK.character.data` represent the primary figure targeted by Texture Quality v0.2.4.
+- HeroForge exposes additional figure pipelines through `CK.character.allDisplays`.
+- With two figures, `allDisplays.baseItem` is `data.primary=false`, owns its own `data`, `modded`, meshes and coherent native atlas/resourceAtlas, and has body/head part IDs distinct from the primary figure.
+- With three figures, `allDisplays` contains `""`, `baseItem`, and `baseItemB`; both non-primary entries own independent coherent native render pipelines.
+- This explains Seya's apparent contradiction: Texture Quality verified the scene's primary figure while Seya, loaded as figure 2, remained untouched.
 
 ### Changes
 
-- bump `texture-quality-native-reconcile` to v0.2.4 / build `0.2.4-dev-heavy-native-settle`;
-- expand the bounded native-settle budget to 120 seconds for enable, restore and manual reconcile paths;
-- inspect the current renderer state before enforcing the expired deadline, with a short bounded confirmation allowance if the renderer is already coherent when control returns;
-- keep the existing coherence requirements unchanged: scheduler idle, resources/finished not false, display/resource atlas identity and stable target allocations.
+- bump `texture-quality-native-reconcile` to v0.3.0 / build `0.3.0-dev-multifigure-native-reconcile`;
+- dynamically enumerate the primary display plus every unique compatible entry in `CK.character.allDisplays`;
+- apply the existing scale 4 / bake 2048 / used-size seed 1024 / exact 1024 body-mask policy independently to each figure pipeline;
+- keep one HeroForge-owned native lifecycle: per-figure `data.change()` + `modded.buildAtlas()`, followed by the normal root `CK.character.refresh()`;
+- verify every figure's display/resource atlas identity, target allocations, source values and exact pinned body masks;
+- retain backward-compatible primary verification fields while adding per-figure verification and figure counts;
+- detect figure-registry membership changes while High Res is active and queue a stable, bounded native scene resync so newly added figures can inherit High Res without hardcoding a figure limit.
 
-### Explicitly not included
+### Explicitly unchanged
 
-The exploratory 8192 atlas, broader non-body scaling and projected/splatter source-ceiling probes are rejected as shipping changes at this stage. They are not present in v0.2.4. Texture policy, exact 1024 body masks, persistence semantics, verifier thresholds, native atlas ownership, UI and beta notice remain unchanged. Public Stable remains untouched.
+No 8192 atlas forcing, global-4 texture pressure, projected/splatter source override, custom `CK.Atlas`, direct atlas assignment, persistent atlas ownership, persistence semantic change, UI module change, or beta-notice change is included. Public Stable remains untouched.
 
-**Runtime behavior changed:** yes, Dev native-settle timing only.
+**Runtime behavior changed:** yes, Dev Texture Quality figure scope and dynamic scene reconciliation.
+
+---
+
+## DOCK-2026-09-13-059 — Tolerate heavy native reconcile stalls
+
+v0.2.4 expanded the bounded native settle budget to 120 seconds and checks renderer coherence before enforcing an expired deadline. Heavy Seya native work no longer false-times out simply because HeroForge blocks the page longer than the old 12-second window.
 
 ---
 
@@ -41,16 +50,10 @@ v0.2.3 waits for a stable visible HeroForge generation before automatic Persiste
 
 ## DOCK-2026-09-13-057 — Fix D4 promoted-mask retry failure
 
-v0.2.2 fixed D4 mask-path resolution after native source promotion by temporarily resolving the real 1024 body-mask path under an exact 1024 used-size seed, restoring the prior value immediately, and avoiding unnecessary native restore when no policy state was touched. D4 manual/automatic enable and cold reload subsequently passed.
-
----
-
-## DOCK-2026-09-13-056 — Refine Texture Quality notice hierarchy
-
-v0.1.2 centers all section headings, uses a lighter main-title font treatment, and splits the closing copy into two centered lines. Amanda approved the appearance.
+v0.2.2 fixed D4 mask-path resolution after native source promotion and passed D4 automatic/manual enable plus cold reload persistence.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-12-055 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+DOCK-2026-09-13-056 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
