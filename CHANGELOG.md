@@ -2,6 +2,36 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-14-064 -- Deduplicate shared HeroForge Part snapshots
+
+Date: 2026-09-14
+
+### Summary
+
+Fix Texture Quality restore and dynamic-membership handling when separate HeroForge figures share the same underlying Part object instances.
+
+### Confirmed diagnosis and validation
+
+- The two Colliefolk extras had distinct data, modded, display, and mesh objects, but their bodyLower and bodyUpper Part objects were the same object references.
+- v0.3.2 stored snapshots per figure pipeline. A later pipeline could therefore snapshot an already-promoted shared Part and overwrite the first figure's native restore with contaminated 2048 values.
+- v0.3.3 stores one first-seen native snapshot per shared Part object for the whole session, and newly joined figures derive mask capability from that stored native bake ceiling.
+- Live Dev passed Enable -> Disable -> immediate Enable, 3->2 removal while High Res stayed ON, 2->3 addition while High Res stayed ON, and Disable after the dynamic add. Both Collies restored bodyLower=1024 and bodyUpper=512 and retained materialSim=color.
+
+### Changes
+
+- bump Texture Quality service to v0.3.3 / build `0.3.3-dev-shared-part-snapshots`;
+- deduplicate Part snapshots across all figure pipelines by object identity;
+- use the stored native Part bake ceiling when loading masks for figures added to an active High Res session;
+- update manifest registry/build/cache key.
+
+### Explicitly unchanged
+
+Texture recipe, atlas target, readiness/settle timing, primary-only Data.change ownership, persistence semantics, UI API, direct child display ownership, and public Stable are unchanged.
+
+**Runtime behavior changed:** yes -- Dev shared-Part snapshot/restore correction.
+
+---
+
 ## DOCK-2026-09-13-063 — Preserve non-primary HeroForge material state
 
 Date: 2026-09-13

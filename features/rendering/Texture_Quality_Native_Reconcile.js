@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.2
+// @version      0.3.3
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.2';
-  const BUILD = '0.3.2-dev-preserve-child-modded-state';
+  const VERSION = '0.3.3';
+  const BUILD = '0.3.3-dev-shared-part-snapshots';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -236,10 +236,17 @@
     }
   }
 
-  function rememberPart(p, part) {
-    if (!p.partsSeen.some((entry) => entry.o === part)) {
-      p.partsSeen.push({ o: part, bakeSize: part.bakeSize, used: part._usedTextureSize });
+  function partSnapshot(s, part) {
+    return s && s.partSnapshots ? s.partSnapshots.find((entry) => entry.o === part) || null : null;
+  }
+
+  function rememberPart(s, p, part) {
+    let snapshot = partSnapshot(s, part);
+    if (!snapshot) {
+      snapshot = { o: part, bakeSize: part.bakeSize, used: part._usedTextureSize };
+      s.partSnapshots.push(snapshot);
     }
+    if (!p.partsSeen.some((entry) => entry.o === part)) p.partsSeen.push(snapshot);
   }
 
   function rememberMesh(p, mesh) {
@@ -248,8 +255,9 @@
     }
   }
 
-  function supportedMaskSize(part) {
-    const nativeBake = Number(part && part.bakeSize);
+  function supportedMaskSize(part, s) {
+    const snapshot = partSnapshot(s, part);
+    const nativeBake = Number(snapshot ? snapshot.bakeSize : part && part.bakeSize);
     return Number.isFinite(nativeBake) && nativeBake > 0 ? Math.min(USED, nativeBake) : USED;
   }
 
@@ -273,9 +281,9 @@
     } catch (_) {}
   }
 
-  async function loadMasks(row, R) {
+  async function loadMasks(row, R, s = null) {
     const hi = !!(row.m.settings && row.m.settings.hiRez);
-    const sizes = Object.fromEntries(BODIES.map((key) => [key, supportedMaskSize(row.parts[key])]));
+    const sizes = Object.fromEntries(BODIES.map((key) => [key, supportedMaskSize(row.parts[key], s)]));
     const paths = BODIES.map((key) => resolveMaskPath(row.parts[key], hi, sizes[key]));
     if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported body masks.');
 
@@ -334,7 +342,7 @@
     for (const key of TARGETS) p.d.atlasScale[key] = SCALE;
 
     for (const key of TARGETS) {
-      rememberPart(p, currentState.parts[key]);
+      rememberPart(s, p, currentState.parts[key]);
       currentState.parts[key].bakeSize = BAKE;
       currentState.parts[key]._usedTextureSize = USED;
     }
@@ -372,7 +380,7 @@
       const ids = Object.fromEntries(TARGETS.map((key) => [key, partId(row.parts[key])]));
       if (!p) {
         p = createPipeline(row);
-        p.masks = await loadMasks(row, R || cap.R);
+        p.masks = await loadMasks(row, R || cap.R, s);
       } else {
         p.key = row.key;
         p.primary = row.primary;
@@ -381,7 +389,7 @@
         const changedParts = TARGETS.some((key) => p.ids[key] !== ids[key]);
         if (changedParts) {
           p.ids = ids;
-          p.masks = await loadMasks(row, R || cap.R);
+          p.masks = await loadMasks(row, R || cap.R, s);
         }
       }
       next.push(p);
@@ -724,12 +732,13 @@
       s = {
         c: cap.c,
         primaryD: cap.c.data,
-        pipelines: cap.pipelines.map(createPipeline)
+        pipelines: cap.pipelines.map(createPipeline),
+        partSnapshots: []
       };
 
       await Promise.all(s.pipelines.map(async (p) => {
         const row = cap.pipelines.find((entry) => entry.d === p.d);
-        p.masks = await loadMasks(row, cap.R);
+        p.masks = await loadMasks(row, cap.R, s);
       }));
       if (!adoptAll(s)) throw new Error('HeroForge changed while masks loaded.');
       for (const p of s.pipelines) applyPolicy(s, p);

@@ -2,6 +2,46 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-14-064 -- Shared-Part snapshot ownership
+
+Date: 2026-09-14
+
+### Scope
+
+Repair Texture Quality shared-Part snapshot contamination without changing the validated texture recipe, renderer ownership model, persistence semantics, or public Stable.
+
+### Confirmed findings
+
+- Separate Colliefolk figure pipelines can share identical bodyLower/bodyUpper Part object references.
+- Per-pipeline snapshots are therefore not independent: a later figure can capture a Part after an earlier figure already promoted it.
+- The live-only v0.3.3 candidate deduplicated first snapshots by Part object identity and used that native bake ceiling for dynamic membership mask loading.
+
+### Live validation
+
+- repeated Enable -> Disable -> immediate Enable PASS;
+- automatic 3->2 membership removal PASS while High Res remained ON;
+- automatic 2->3 membership addition PASS while High Res remained ON;
+- Disable after dynamic addition PASS, restoring both Collies to bodyLower=1024 and bodyUpper=512 with material sims intact;
+- Bridge evidence includes #2098 (dynamic-add coherent 3-figure ON state) and #2100 (post-dynamic-add restore values).
+
+### Candidate committed by this preflight
+
+- service v0.3.3 / build `0.3.3-dev-shared-part-snapshots`;
+- one session-level first snapshot per shared Part object;
+- dynamically-added figures reuse stored native bake ceilings for mask capability;
+- manifest registry/build/cache key updated consistently.
+
+### Remaining gates
+
+1. Reload live Dev and confirm exact committed v0.3.3 is loaded.
+2. Run a narrow committed-source smoke.
+3. Human visual gate with Seya as a non-primary figure, then a heavy non-primary case if practical.
+4. Public Stable remains untouched until explicit narrow promotion approval.
+
+**Runtime behavior changed:** yes -- Dev-only shared-Part lifecycle correction.
+
+---
+
 ## PFC-2026-09-13-063 — Preserve non-primary material state
 
 Date: 2026-09-13
