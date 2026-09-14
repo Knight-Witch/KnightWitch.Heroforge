@@ -2,6 +2,37 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-13-061 — Bound multi-figure body-mask loading to native capability
+
+Date: 2026-09-13
+
+### Summary
+
+Repair the v0.3.0 multi-figure Texture Quality mask prerequisite for valid HeroForge species whose body mask assets do not exist at 1024px, and prevent HeroForge resource promises from wedging the service indefinitely during mask preparation.
+
+### Confirmed diagnosis
+
+- Colliefolk figure 2 and raccoonfolk figure 3 both use bodyUpper part 11181 (`furryClaws`).
+- That part reports native `bakeSize=512`; `furryClaws_mask_512.webp` exists and loads as 512×512, while the 1024 and 2048 variants are genuine 404s.
+- v0.3.0 therefore failed before applying High Res because it required every body mask to resolve/load at exactly 1024px.
+- A diagnostic using the native 512 mask then exposed a second issue: awaiting HeroForge's `CK.Resources.getResource()` promise can remain pending even while the renderer itself is idle, leaving Texture Quality stuck at `Preparing native reconcile…`.
+
+### Changes
+
+- bump `texture-quality-native-reconcile` to v0.3.1 / build `0.3.1-dev-bounded-mask-capability`;
+- select each body mask at the native supported size up to the existing 1024px preference, using the part's pre-policy native bake ceiling;
+- keep the source-quality policy itself unchanged at scale 4 / bake 2048 / used-size seed 1024;
+- trigger HeroForge mask resource loading without awaiting the resource promise, then bounded-poll `getNow()` for up to five seconds;
+- verify each pinned body mask against its exact selected supported size rather than hard-requiring 1024px for every species.
+
+### Explicitly unchanged
+
+No change to multi-figure enumeration, native atlas ownership, persistence semantics, 120s native settle behavior, UI, beta notice, global atlas size, projected-decal handling, or public Stable.
+
+**Runtime behavior changed:** yes, Dev Texture Quality mask capability/loading and verification.
+
+---
+
 ## DOCK-2026-09-13-060 — Texture Quality multi-figure native reconcile
 
 Date: 2026-09-13

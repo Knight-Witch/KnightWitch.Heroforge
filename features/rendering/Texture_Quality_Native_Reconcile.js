@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.0
+// @version      0.3.1
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.0';
-  const BUILD = '0.3.0-dev-multifigure-native-reconcile';
+  const VERSION = '0.3.1';
+  const BUILD = '0.3.1-dev-bounded-mask-capability';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -28,7 +28,7 @@
   const BODIES = ['bodyLower', 'bodyUpper'];
   const SCALE = 4;
   const BAKE = 2048;
-  const USED = 1024; // minimum source seed; body masks stay exactly 1024px
+  const USED = 1024; // minimum source seed; body masks use the native supported size up to 1024px
   const OWNER = 82042049;
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -248,35 +248,59 @@
     }
   }
 
-  function resolveMaskPath(part, hi) {
+  function supportedMaskSize(part) {
+    const nativeBake = Number(part && part.bakeSize);
+    return Number.isFinite(nativeBake) && nativeBake > 0 ? Math.min(USED, nativeBake) : USED;
+  }
+
+  function resolveMaskPath(part, hi, size) {
     const usedSnapshot = own(part, '_usedTextureSize');
     try {
       // HeroForge's getMaskPath only promotes _usedTextureSize; it will not lower a
-      // previously promoted 2048 source when asked for 1024. Resolve against an
-      // exact temporary 1024 seed, then restore the part byte-for-byte.
-      part._usedTextureSize = USED;
-      return part.getMaskPath(hi, USED);
+      // previously promoted source. Resolve against the exact native-supported body
+      // mask size for this part, then restore the part byte-for-byte.
+      part._usedTextureSize = size;
+      return part.getMaskPath(hi, size);
     } finally {
       restore(usedSnapshot);
     }
   }
 
+  function requestTexture(R, path) {
+    try {
+      const pending = R.getResource(path, 'webp', OWNER);
+      if (pending && typeof pending.catch === 'function') pending.catch(() => {});
+    } catch (_) {}
+  }
+
   async function loadMasks(row, R) {
     const hi = !!(row.m.settings && row.m.settings.hiRez);
-    const paths = BODIES.map((key) => resolveMaskPath(row.parts[key], hi));
-    if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported 1024px body masks.');
+    const sizes = Object.fromEntries(BODIES.map((key) => [key, supportedMaskSize(row.parts[key])]));
+    const paths = BODIES.map((key) => resolveMaskPath(row.parts[key], hi, sizes[key]));
+    if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported body masks.');
 
-    await Promise.all(paths.map((path) => Promise.resolve(R.getResource(path, 'webp', OWNER))));
+    paths.forEach((path) => requestTexture(R, path));
     const end = Date.now() + 5000;
-    while (Date.now() < end && (!R.getNow(paths[0]) || !R.getNow(paths[1]))) {
+    while (Date.now() < end) {
+      const ready = paths.every((path, index) => {
+        const dims = texSize(R.getNow(path));
+        const size = sizes[BODIES[index]];
+        return dims[0] === size && dims[1] === size;
+      });
+      if (ready) break;
       await sleep(100);
     }
 
     const textures = paths.map((path) => R.getNow(path));
-    if (textures.some((texture) => texSize(texture)[0] !== USED || texSize(texture)[1] !== USED)) {
-      throw new Error('Valid 1024px body masks did not load.');
+    for (let index = 0; index < BODIES.length; index += 1) {
+      const key = BODIES[index];
+      const size = sizes[key];
+      const dims = texSize(textures[index]);
+      if (dims[0] !== size || dims[1] !== size) {
+        throw new Error(`Valid ${size}px ${key} body mask did not load.`);
+      }
     }
-    return { bodyLower: textures[0], bodyUpper: textures[1], paths };
+    return { bodyLower: textures[0], bodyUpper: textures[1], paths, sizes };
   }
 
   function createPipeline(row) {
@@ -573,12 +597,13 @@
         actual: texSize(actual),
         overrideSame: mesh.masksMapOverride === p.masks[key]
       };
+      const maskSize = Number(p.masks && p.masks.sizes && p.masks.sizes[key]) || USED;
       if (
-        out.masks[key].expected[0] !== USED || out.masks[key].expected[1] !== USED ||
-        out.masks[key].actual[0] !== USED || out.masks[key].actual[1] !== USED ||
+        out.masks[key].expected[0] !== maskSize || out.masks[key].expected[1] !== maskSize ||
+        out.masks[key].actual[0] !== maskSize || out.masks[key].actual[1] !== maskSize ||
         !out.masks[key].overrideSame
       ) {
-        return { ...out, ok: false, reason: `${key} color-bake mask is not the pinned 1024px texture.` };
+        return { ...out, ok: false, reason: `${key} color-bake mask is not the pinned ${maskSize}px supported texture.` };
       }
     }
 

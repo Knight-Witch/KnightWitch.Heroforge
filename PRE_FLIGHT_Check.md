@@ -2,6 +2,55 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-13-061 — Multi-figure native mask capability + bounded loader
+
+Date: 2026-09-13
+
+### Scope
+
+Keep the v0.3.0 count-agnostic multi-figure architecture, but make its body-mask prerequisite valid for HeroForge species whose real mask assets top out below 1024px and prevent resource promises from wedging Enable before native reconcile starts.
+
+### Reviewed
+
+- current `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`;
+- `MODULE_VERSIONING.md` and current manifest registry;
+- exact v0.3.0 multi-figure service source;
+- live three-figure scene: primary + Colliefolk + raccoonfolk;
+- body source ceilings and mask paths/resources for the two extra figures;
+- Bridge/Power state after the hung diagnostic and a clean page reload.
+
+### Confirmed diagnosis
+
+- Multi-figure enumeration itself works: the live scene exposes `""`, `baseItem`, and `baseItemB`.
+- Both extras use bodyUpper part 11181 (`furryClaws`). Its native `bakeSize` is 512.
+- `furryClaws_mask_512.webp` exists and loads as 512×512; the 1024 and 2048 variants are 404.
+- v0.3.0's exact-1024-mask prerequisite is therefore invalid for these otherwise supported figures.
+- The first native-size diagnostic still hung at `Preparing native reconcile…` while the HF scheduler was idle because it awaited a `CK.Resources.getResource()` promise that did not resolve.
+- Reload restored a clean v0.3.0 OFF scene with all three figure displays intact and Bridge Power idle/healthy.
+
+### Candidate change
+
+- service v0.3.1 / build `0.3.1-dev-bounded-mask-capability`;
+- choose body mask size from the part's pre-policy native bake ceiling, capped at the existing 1024 preference;
+- preserve High Res source policy at scale 4 / bake 2048 / used-size seed 1024;
+- request masks through `CK.Resources.getResource()` but do not await its promise; bounded-poll `getNow()` for the exact expected dimensions;
+- verify exact per-body pinned mask dimensions from the selected supported size.
+
+### Required live validation
+
+1. Load exact v0.3.1 with Persistent OFF on the clean three-figure scene.
+2. Manual Enable must complete without hanging and verify all three pipelines.
+3. Primary body masks should remain 1024 where supported; Colliefolk/raccoonfolk `furryClaws` bodyUpper should pin 512 exactly.
+4. Confirm every figure has coherent native display/resource atlas identity, valid 1024–2048 target allocations, and idle root scheduler.
+5. Exercise add/remove membership while High Res is ON.
+6. Reload a known scene with Seya non-primary and require visible quality improvement before any Stable promotion.
+
+Public Stable remains untouched.
+
+**Runtime behavior changed:** yes, Dev Texture Quality mask capability/loading and verification.
+
+---
+
 ## PFC-2026-09-13-060 — Multi-figure Texture Quality candidate
 
 Date: 2026-09-13
