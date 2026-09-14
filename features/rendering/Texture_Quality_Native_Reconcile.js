@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.1
+// @version      0.3.2
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.1';
-  const BUILD = '0.3.1-dev-bounded-mask-capability';
+  const VERSION = '0.3.2';
+  const BUILD = '0.3.2-dev-preserve-child-modded-state';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -396,8 +396,10 @@
   function nativeReconcile(s) {
     if (!adoptAll(s)) throw new Error('HeroForge figure set changed before reconcile.');
     for (const p of s.pipelines) {
-      p.d.change({}, p.d.settings || s.c.settings);
-      if (!adoptPipeline(s, p)) throw new Error('HeroForge figure changed during native reconcile.');
+      if (p.primary) {
+        p.d.change({}, p.d.settings || s.c.settings);
+        if (!adoptPipeline(s, p)) throw new Error('HeroForge figure changed during native reconcile.');
+      }
       applyPolicy(s, p);
       p.m.buildAtlas();
     }
@@ -412,7 +414,7 @@
       if (!row) continue;
       p.display = row.display;
       p.m = row.m;
-      p.d.change({}, p.d.settings || s.c.settings);
+      if (p.primary) p.d.change({}, p.d.settings || s.c.settings);
     }
     s.c.refresh();
   }

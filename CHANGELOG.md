@@ -2,119 +2,55 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-13-062 — Freeze Texture Quality multi-figure lifecycle handoff
+## DOCK-2026-09-13-063 — Preserve non-primary HeroForge material state
 
 Date: 2026-09-13
 
 ### Summary
 
-Record the exact continuation state after diagnosing the non-primary display-adoption gap in Texture Quality v0.3.1 and live-testing an uncommitted v0.3.2 candidate through HF-Chat-Bridge.
+Fix Texture Quality multi-figure reconciliation by preserving HeroForge-owned non-primary `data/modded` state instead of independently rebuilding each child figure with `Data.change()`.
 
-### Confirmed handoff state
+### Confirmed diagnosis
 
-- HeroForge root `character.update()` arms the primary display through `display.change(data)`, but does not independently arm each extra display after its `modded.buildAtlas()` result changes.
-- A non-primary display can therefore retain a stale display atlas while its newly rebuilt `resourceAtlas` is larger/coherent.
-- Calling the extra display's native `display.change(display.data, true)` safely adopts the rebuilt atlas and sets `display.needsUpdate=true`; direct child `display.update()` is not safe and threw inside HeroForge material handling.
-- A live-only v0.3.2 candidate using the extra-display `change(data, true)` seam fixed the original atlas split for both extra figures, but the backgrounded HeroForge tab did not finish the child render/update cycle before the existing 120-second settle timeout.
-- Last readback (#1991) still had root `_needsUpdating=true`, both extras at coherent 4096×4096 display/resource atlas identity, `needsUpdate=true`, and `finished=false`.
+- A clean two-figure scene gives the non-primary Colliefolk a resolved `modded.sim` object with `materialSim="color"` and `clutPath` present.
+- Texture Quality v0.3.1 independently called `Data.change()` on every figure. HeroForge's `Data.change()` replaces `this.modded` with a new object; the child rebuild retained the `materialSim` name but lost the resolved `modded.sim` object.
+- The next native child update therefore failed specifically inside `applyMaterialSims()` with `Cannot read properties of undefined (reading 'clutPath')`.
+- A bounded live probe that suppressed only the child's `Data.change()` made the exact v0.3.1 Enable complete with both figures finished and coherent at 4096×4096; the matching Disable/restore also completed cleanly with the child material sim preserved.
 
 ### Changes
 
-- update `ACTIVE_CONTEXT.md` with the exact at-most-once runtime baton, Bridge evidence, rejected child-update seam, uncommitted v0.3.2 candidate description, and safe next-step sequence;
-- explicitly record that repository runtime source/manifest remain v0.3.1 and that the live v0.3.2 candidate exists only in the current page runtime;
-- require the next chat to read back current state before any mutation and validate the candidate in a foreground HeroForge tab before committing it.
+- bump `texture-quality-native-reconcile` to v0.3.2 / build `0.3.2-dev-preserve-child-modded-state`;
+- call `Data.change()` only for the primary/root figure during reconcile and restore;
+- preserve non-primary HeroForge-resolved `modded` state while continuing to apply the existing Texture Quality policy and native `buildAtlas()` per figure;
+- retain one root `CK.character.refresh()` so HeroForge owns child display propagation;
+- update the canonical manifest version/build and cache key.
 
 ### Explicitly unchanged
 
-No runtime source, manifest, module version, cache key, UI, persistence semantics, texture recipe, public behavior, or Stable code changed.
+No direct child `display.change()` or `display.update()`, no direct atlas assignment, no fabricated/copied material sim state, no 8192 atlas forcing, no texture recipe change, no settle/readiness timing change, no UI/persistence change, and no public Stable change.
 
-**Runtime behavior changed:** no — documentation-only handoff.
+**Runtime behavior changed:** yes — Dev Texture Quality no longer destroys required non-primary material state during native reconcile/restore.
+
+---
+
+## DOCK-2026-09-13-062 — Freeze Texture Quality multi-figure lifecycle handoff
+
+Documentation-only handoff recorded the then-open non-primary display lifecycle investigation and rejected live-only child-adoption candidates. No runtime code, manifest, or Stable behavior changed.
 
 ---
 
 ## DOCK-2026-09-13-061 — Bound multi-figure body-mask loading to native capability
 
-Date: 2026-09-13
-
-### Summary
-
-Repair the v0.3.0 multi-figure Texture Quality mask prerequisite for valid HeroForge species whose body mask assets do not exist at 1024px, and prevent HeroForge resource promises from wedging the service indefinitely during mask preparation.
-
-### Confirmed diagnosis
-
-- Colliefolk figure 2 and raccoonfolk figure 3 both use bodyUpper part 11181 (`furryClaws`).
-- That part reports native `bakeSize=512`; `furryClaws_mask_512.webp` exists and loads as 512×512, while the 1024 and 2048 variants are genuine 404s.
-- v0.3.0 therefore failed before applying High Res because it required every body mask to resolve/load at exactly 1024px.
-- A diagnostic using the native 512 mask then exposed a second issue: awaiting HeroForge's `CK.Resources.getResource()` promise can remain pending even while the renderer itself is idle, leaving Texture Quality stuck at `Preparing native reconcile…`.
-
-### Changes
-
-- bump `texture-quality-native-reconcile` to v0.3.1 / build `0.3.1-dev-bounded-mask-capability`;
-- select each body mask at the native supported size up to the existing 1024px preference, using the part's pre-policy native bake ceiling;
-- keep the source-quality policy itself unchanged at scale 4 / bake 2048 / used-size seed 1024;
-- trigger HeroForge mask resource loading without awaiting the resource promise, then bounded-poll `getNow()` for up to five seconds;
-- verify each pinned body mask against its exact selected supported size rather than hard-requiring 1024px for every species.
-
-### Explicitly unchanged
-
-No change to multi-figure enumeration, native atlas ownership, persistence semantics, 120s native settle behavior, UI, beta notice, global atlas size, projected-decal handling, or public Stable.
-
-**Runtime behavior changed:** yes, Dev Texture Quality mask capability/loading and verification.
+Texture Quality v0.3.1 selected each body mask at its real native supported size up to the existing 1024px preference and bounded mask resource readiness without awaiting HeroForge promises that can remain pending. The High Res source policy remained scale 4 / bake 2048 / used-size seed 1024.
 
 ---
 
 ## DOCK-2026-09-13-060 — Texture Quality multi-figure native reconcile
 
-Date: 2026-09-13
-
-### Summary
-
-Extend Texture Quality from the primary HeroForge figure only to every current figure display registered by HeroForge, without changing the validated High Res texture recipe or native ownership model.
-
-### Confirmed diagnosis
-
-- `CK.character.display` / `CK.character.data` represent the primary figure targeted by Texture Quality v0.2.4.
-- HeroForge exposes additional figure pipelines through `CK.character.allDisplays`.
-- With two figures, `allDisplays.baseItem` is `data.primary=false`, owns its own `data`, `modded`, meshes and coherent native atlas/resourceAtlas, and has body/head part IDs distinct from the primary figure.
-- With three figures, `allDisplays` contains `""`, `baseItem`, and `baseItemB`; both non-primary entries own independent coherent native render pipelines.
-- This explains Seya's apparent contradiction: Texture Quality verified the scene's primary figure while Seya, loaded as figure 2, remained untouched.
-
-### Changes
-
-- bump `texture-quality-native-reconcile` to v0.3.0 / build `0.3.0-dev-multifigure-native-reconcile`;
-- dynamically enumerate the primary display plus every unique compatible entry in `CK.character.allDisplays`;
-- apply the existing scale 4 / bake 2048 / used-size seed 1024 / exact 1024 body-mask policy independently to each figure pipeline;
-- keep one HeroForge-owned native lifecycle: per-figure `data.change()` + `modded.buildAtlas()`, followed by the normal root `CK.character.refresh()`;
-- verify every figure's display/resource atlas identity, target allocations, source values and exact pinned body masks;
-- retain backward-compatible primary verification fields while adding per-figure verification and figure counts;
-- detect figure-registry membership changes while High Res is active and queue a stable, bounded native scene resync so newly added figures can inherit High Res without hardcoding a figure limit.
-
-### Explicitly unchanged
-
-No 8192 atlas forcing, global-4 texture pressure, projected/splatter source override, custom `CK.Atlas`, direct atlas assignment, persistent atlas ownership, persistence semantic change, UI module change, or beta-notice change is included. Public Stable remains untouched.
-
-**Runtime behavior changed:** yes, Dev Texture Quality figure scope and dynamic scene reconciliation.
-
----
-
-## DOCK-2026-09-13-059 — Tolerate heavy native reconcile stalls
-
-v0.2.4 expanded the bounded native settle budget to 120 seconds and checks renderer coherence before enforcing an expired deadline. Heavy Seya native work no longer false-times out simply because HeroForge blocks the page longer than the old 12-second window.
-
----
-
-## DOCK-2026-09-13-058 — Gate persistent Texture Quality on stable renderer readiness
-
-v0.2.3 waits for a stable visible HeroForge generation before automatic Persistent High Res starts. Manual Enable and the validated High Res recipe remained unchanged.
-
----
-
-## DOCK-2026-09-13-057 — Fix D4 promoted-mask retry failure
-
-v0.2.2 fixed D4 mask-path resolution after native source promotion and passed D4 automatic/manual enable plus cold reload persistence.
+Texture Quality v0.3.0 added count-agnostic primary + `CK.character.allDisplays` figure enumeration, per-figure policy/verification, and dynamic scene membership reconciliation. The later v0.3.2 correction supersedes v0.3.0/v0.3.1's independent non-primary `Data.change()` assumption.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-13-056 and earlier entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
+DOCK-2026-09-13-059 and earlier detailed entries remain preserved in Git history. Fetch only when a current task needs their specific evidence.
