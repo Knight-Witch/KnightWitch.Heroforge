@@ -2,6 +2,39 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-14-069 -- Add FRD warning guide and Witch Dock sign-off to Texture Quality notice
+
+Date: 2026-09-14
+
+### Summary
+
+Refine only the Dev Texture Quality announcement popup after visual/copy review. The notice advances from v0.2.0 to v0.2.1 / build `0.2.1-frd-warning-assets-signoff`; Texture Quality service/UI behavior and public Stable remain unchanged.
+
+### Notice changes
+
+- changes the compatibility shorthand from `FRD/T` to the clearer `FRD` throughout the live popup;
+- promotes the Full Res Decals compatibility note into a dedicated amber warning callout with `⚠️` framing on both sides of the header;
+- adds a centered visual guide showing the three FRD `Decal Resolution` toggles that should be OFF;
+- adds the white Knight Witch emblem centered beneath the Discord contact line as a sign-off;
+- normalizes missing sentence-ending punctuation across the popup copy while preserving Amanda's wording and hierarchy;
+- keeps supporting warning/instruction lines in the smaller secondary-text treatment;
+- asset failures are isolated: missing guide/emblem images hide themselves without blocking or breaking the notice.
+
+### Assets
+
+- `features/rendering/assets/Texture_Quality_FRD_Decal_Resolution.webp` — lossless WebP version of Amanda's provided FRD settings screenshot;
+- `features/rendering/assets/Witch_Dock_Emblem_White.webp` — compact lossless white emblem for the popup sign-off.
+
+### Validation
+
+`node --check` passes on the v0.2.1 notice candidate. The candidate manifest parses with unique module/tool IDs, and reconstructing the v0.2.0 notice metadata/cache key reproduces prior manifest blob `385738a55cc9dab62c1f5082a6021cd4a2c9f199` exactly. Both asset blob SHAs were verified against local Git hashes before commit.
+
+Human visual review remains the gate; do not promote the notice to Stable until Amanda approves the rendered v0.2.1 popup.
+
+**Runtime behavior changed:** yes -- Dev-only announcement UI/copy/assets. Texture Quality engine/service behavior and public Stable are untouched.
+
+---
+
 ## DOCK-2026-09-14-068 -- Expand Texture Quality beta notice for release review
 
 Date: 2026-09-14
@@ -73,7 +106,7 @@ Texture Quality v0.3.4 added HeroForge-owned `colorBake.paints.setupMaterials('c
 
 ## DOCK-2026-09-14-064 -- Deduplicate shared HeroForge Part snapshots
 
-Texture Quality v0.3.3 deduplicated first snapshots by object identity, fixing restore contamination across figures that share body Part instances. Repeated Enable/Disable and dynamic 3->2 / 2->3 membership validation passed.
+Texture Quality v0.3.3 deduplicated first snapshots by shared Part object identity, fixing restore contamination across figures that share body Part instances. Repeated Enable/Disable and dynamic 3->2 / 2->3 membership validation passed.
 
 ---
 

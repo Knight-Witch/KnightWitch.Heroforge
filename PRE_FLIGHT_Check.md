@@ -2,6 +2,52 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-14-069 -- Texture Quality notice v0.2.1 FRD warning/assets candidate
+
+Date: 2026-09-14
+
+### Scope
+
+Change only the Dev Texture Quality beta notice presentation/copy and add the two user-provided visual assets it now references. Do not alter Texture Quality service/UI behavior or public Stable.
+
+### Reviewed
+
+- binding `PROJECT_CONTRACT.md`, current `ACTIVE_CONTEXT.md`, and `MODULE_VERSIONING.md`;
+- current Dev notice v0.2.0 / build `0.2.0-expanded-release-copy`;
+- current notice registry/cache-key wiring in `manifest.json`;
+- Amanda's FRD settings screenshot and white emblem asset;
+- requested `FRD/T` -> `FRD` wording change, dual warning emoji header, centered screenshot, punctuation cleanup, and centered emblem sign-off.
+
+### Version / candidate
+
+- notice canonical/source version: v0.2.1;
+- build: `0.2.1-frd-warning-assets-signoff`;
+- PATCH bump because this is a focused presentation/copy/asset refinement of the v0.2 release-review notice;
+- public Texture Quality service v0.3.4 and UI v0.2.0 are not modified.
+
+### Asset identity
+
+- FRD visual guide blob: `b968a8d622e95ac1b1a42e397731e4be79c0c84d`, verified against local Git hash of the lossless WebP conversion;
+- white sign-off emblem blob: `0615e1d888820677d60332618b6cca918a68b26a`, verified against local Git hash of the compact lossless WebP conversion;
+- both assets are display-only and the popup hides a failed image load rather than failing the notice.
+
+### Static gate
+
+- `node --check` passes on exact notice candidate blob `9c575825179a97e0682caab3f508a21b512bf6ce`;
+- candidate manifest parses as JSON with 24 unique module registry IDs and 21 unique tool IDs;
+- candidate notice registry/version/cache key all agree on v0.2.1 / `0.2.1-frd-warning-assets-signoff`;
+- reconstructing the previous notice metadata/cache key from the candidate reproduces prior manifest blob `385738a55cc9dab62c1f5082a6021cd4a2c9f199` exactly.
+
+### Live gate
+
+Hot-load the exact committed Dev notice through HF-Chat-Bridge while preserving Amanda's acknowledgement state. Confirm v0.2.1/build identity, warning callout text, both `⚠️` markers, centered FRD guide image, centered emblem, and `Hell Yeah!` button are present. Amanda remains the subjective visual/copy gate.
+
+Do not promote the notice to `Witch_Scripts` until she explicitly approves it.
+
+**Runtime behavior changed:** yes -- Dev-only beta notice UI/copy/assets. No Texture Quality engine/service behavior and no Stable runtime changes.
+
+---
+
 ## PFC-2026-09-14-068 -- Texture Quality beta notice v0.2.0 visual-review candidate
 
 Date: 2026-09-14
