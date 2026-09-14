@@ -2,6 +2,44 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-14-068 -- Texture Quality beta notice v0.2.0 visual-review candidate
+
+Date: 2026-09-14
+
+### Scope
+
+Change only the Dev Texture Quality beta notice presentation/copy plus its canonical manifest version/cache key and required rolling documentation/router records. Do not alter Texture Quality service/UI behavior or public Stable.
+
+### Reviewed
+
+- binding `PROJECT_CONTRACT.md` and current `ACTIVE_CONTEXT.md`;
+- `MODULE_VERSIONING.md`;
+- current Dev notice v0.1.2 / build `0.1.2-centered-sleek-title`;
+- current `manifest.json` notice registry entry and loader URL;
+- Amanda's requested release-copy hierarchy, nested text sizing, header/divider treatment, and confirmation-label change.
+
+### Version / candidate
+
+- notice canonical/source version: v0.2.0;
+- build: `0.2.0-expanded-release-copy`;
+- version bump is MINOR because this is a meaningful notice UI/copy expansion;
+- public Texture Quality service v0.3.4 and UI v0.2.0 are not modified.
+
+### Static gate
+
+- `node --check` passes on `Texture_Quality_Beta_Notice.js`;
+- candidate manifest parses as JSON;
+- module and tool IDs remain unique;
+- reconstructing the pre-change manifest from the candidate exactly reproduces blob `39daa7fb06e2a65415f5be131ef92f7762bf6f25`, proving the manifest delta is limited to the notice registry metadata and its Dev cache-keyed URL.
+
+### Live gate
+
+Hot-load the exact committed Dev notice through HF-Chat-Bridge with acknowledgement state preserved. Confirm the overlay, title, and `Hell Yeah!` button are visible, then leave subjective layout/copy acceptance to Amanda. Do not promote the notice to `Witch_Scripts` until she approves it.
+
+**Runtime behavior changed:** yes -- Dev-only beta notice UI/copy. No Texture Quality engine/service behavior changes and no Stable runtime changes.
+
+---
+
 ## PFC-2026-09-14-067 -- Stable promotion handoff
 
 Date: 2026-09-14
