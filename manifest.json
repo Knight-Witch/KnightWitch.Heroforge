@@ -182,9 +182,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-hfc-alpha3-port",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-12"
+      "version": "0.3.4",
+      "build": "0.3.4-dev-native-color-material-setup",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
     },
     {
       "id": "texture-quality-native-reconcile-ui",
@@ -192,9 +192,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-dev-texture-quality-controls",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-12"
+      "version": "0.2.0",
+      "build": "0.2.0-dev-persistence-advanced-controls",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
     },
     {
       "id": "json-tool",
@@ -356,7 +356,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.1.0-dev-hfc-alpha3-port",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.4-dev-native-color-material-setup",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -365,7 +365,7 @@
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.1.0-dev-texture-quality-controls",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

@@ -2,6 +2,37 @@
 
 This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
+## DOCK-2026-09-14-033 — Promote accepted multi-figure Texture Quality to public Stable
+
+Date: 2026-09-14
+
+### Summary
+
+Narrowly promote the accepted `WITCH_DEV_UI` Texture Quality service/UI into public `Witch_Scripts` without merging unrelated Dev work.
+
+- service: v0.3.4 / build `0.3.4-dev-native-color-material-setup`;
+- UI: v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
+- exact accepted Dev service blob: `cf2f5974177a65bc6a5419ace824cc9565b79710`;
+- exact accepted Dev UI blob: `863b5ccb4f76ffac105f2e0f8d3f46ac8a37ff94`;
+- Stable manifest changes only the two Texture Quality registry entries and their two `Witch_Scripts` cache-keyed loader URLs;
+- no Texture Quality beta notice, unrelated Dev module, public shell change, or HeroForge.Compatibility/Bridge runtime dependency is promoted.
+
+### Accepted behavior preserved
+
+The promoted service retains primary-only `Data.change()`, HeroForge-owned child-display propagation, session-global first snapshots for shared Part objects, native `colorBake.paints.setupMaterials('color')`, dynamic multi-figure membership reconciliation, persistence with safe per-page/per-figure readiness, owned-state restore, and the accepted 1024px source/allocation floor with native promotion toward 2048 when atlas pressure permits.
+
+The accepted 1030% three-figure stress result remains valid: a pressured extra may remain at 1024 while other targets promote to 2048; that is not a failure unless a targeted allocation drops below 1024 or verified visuals degrade.
+
+### Pre-move gate
+
+Fresh checks before moving Stable confirmed both local JavaScript files parse with `node --check`, their Git blob SHAs exactly match the accepted Dev blobs above, the candidate manifest parses as JSON with unique module/tool IDs, and both public Texture Quality URLs point only to `Witch_Scripts` with deterministic cache keys.
+
+After branch movement, run the narrow public Stable runtime smoke through HF-Chat-Bridge and stop for diagnosis if Stable differs from the accepted Dev behavior.
+
+**Runtime behavior changed:** yes — public Stable Texture Quality advances from service/UI v0.1.0 to v0.3.4/v0.2.0 with the accepted persistence and multi-figure lifecycle behavior.
+
+---
+
 ## DOCK-2026-09-12-032 — Close public Stable Texture Quality acceptance
 
 Date: 2026-09-12

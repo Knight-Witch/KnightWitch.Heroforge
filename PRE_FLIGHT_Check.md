@@ -2,6 +2,80 @@
 
 This active Stable pre-flight log is intentionally compact. Detailed prior records through `PFC-2026-09-08-030` remain preserved in Git history at Stable head `2d0304dccc241ae5d493563bdca00a036257e362` and earlier.
 
+## PFC-2026-09-14-033 — Accepted multi-figure Texture Quality Stable promotion
+
+Date: 2026-09-14
+
+### Scope
+
+Promote only the accepted Texture Quality service/UI from `WITCH_DEV_UI` into public `Witch_Scripts`, plus the required two registry entries, two Stable cache-keyed loader URLs, and release logs. Do not merge unrelated Dev work or the separate Texture Quality beta notice.
+
+### Reviewed
+
+- `PROJECT_CONTRACT.md`, `ACTIVE_CONTEXT.md`, and `MODULE_VERSIONING.md` on `WITCH_DEV_UI`;
+- Dev head `29758cd2f7830624a18720a55e92e1adbd8fc8af`;
+- protected Stable parent `c93485d741fe9d1801b0f6924b7204a8d922792c`;
+- accepted runtime commit `edd276b21af4ee4ce354857b09e5e7340fd007ad`;
+- exact Dev Texture Quality service/UI and corresponding Stable v0.1.0 files;
+- Stable `manifest.json`, `CHANGELOG.md`, and this pre-flight log.
+
+### Exact promoted source identity
+
+- service v0.3.4 / build `0.3.4-dev-native-color-material-setup`, blob `cf2f5974177a65bc6a5419ace824cc9565b79710`;
+- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`, blob `863b5ccb4f76ffac105f2e0f8d3f46ac8a37ff94`;
+- Stable candidate reuses those accepted Dev blobs byte-for-byte; no runtime logic is rewritten during promotion.
+
+### Static / manifest gate
+
+Before moving Stable:
+
+- `node --check` passed on both exact Dev runtime blobs;
+- local Git blob hashing reconfirmed both source SHAs exactly;
+- candidate `manifest.json` parses successfully;
+- module registry IDs are unique and tool IDs are unique;
+- candidate Texture Quality URLs point to `Witch_Scripts`, never `WITCH_DEV_UI`;
+- cache keys match service v0.3.4 and UI v0.2.0 build identities;
+- public shell and every unrelated Stable module remain inherited byte-for-byte from parent.
+
+### Changed-file whitelist
+
+The promotion candidate may differ from Stable parent in exactly five files:
+
+1. `features/rendering/Texture_Quality_Native_Reconcile.js`;
+2. `features/rendering/Texture_Quality_Native_Reconcile_UI.js`;
+3. `manifest.json`;
+4. `CHANGELOG.md`;
+5. `PRE_FLIGHT_Check.md`.
+
+No `HISTORY` file is required by the current router; no unrelated Dev feature is part of this promotion.
+
+### Validated behavior being preserved
+
+- primary-only `Data.change()`;
+- HeroForge parent-owned child display propagation;
+- session-global first snapshots for shared Part objects;
+- native `colorBake.paints.setupMaterials('color')` material refresh;
+- dynamic three-figure membership handling;
+- persistent preference with fresh readiness/reconcile per page/figure;
+- owned-state restore without direct atlas/uniform/sim takeover;
+- atlas scale 4, bake target 2048, source/allocation floor 1024, with native promotion toward 2048 when atlas pressure permits.
+
+The accepted 1030% stress result is explicitly valid when a pressured target remains at 1024 while other allocations promote to 2048.
+
+### Post-promotion gate
+
+After the branch move, load actual `Witch_Scripts` Stable and use HF-Chat-Bridge for the narrow runtime smoke: confirm service/UI identity, renderer readiness/idle state, High Res enable across the current scene if available, verification/material sanity, Disable/restore, and final state. Bridge mutations remain at-most-once; if execution is uncertain, read state back before any retry.
+
+If Stable differs from the accepted Dev behavior, stop and diagnose rather than widening public scope.
+
+### Rollback
+
+Revert this single Stable promotion commit or fast-forward Stable to a clean revert of it. No unrelated module is included, so rollback is limited to the two Texture Quality blobs, their manifest wiring, and these release records.
+
+**Runtime behavior changed:** yes — Texture Quality advances from public v0.1.0 to accepted service v0.3.4 / UI v0.2.0.
+
+---
+
 ## PFC-2026-09-12-032 — Final public Stable Texture Quality acceptance
 
 Date: 2026-09-12
