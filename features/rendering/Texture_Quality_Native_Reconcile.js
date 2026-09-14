@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.3
+// @version      0.3.4
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.3';
-  const BUILD = '0.3.3-dev-shared-part-snapshots';
+  const VERSION = '0.3.4';
+  const BUILD = '0.3.4-dev-native-color-material-setup';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -401,6 +401,14 @@
     return cap;
   }
 
+  function setupColorMaterials(display) {
+    const paints = display && display.colorBake && display.colorBake.paints;
+    if (!paints || typeof paints.setupMaterials !== 'function') {
+      throw new Error('HeroForge color-bake material setup is unavailable.');
+    }
+    paints.setupMaterials('color');
+  }
+
   function nativeReconcile(s) {
     if (!adoptAll(s)) throw new Error('HeroForge figure set changed before reconcile.');
     for (const p of s.pipelines) {
@@ -409,6 +417,7 @@
         if (!adoptPipeline(s, p)) throw new Error('HeroForge figure changed during native reconcile.');
       }
       applyPolicy(s, p);
+      setupColorMaterials(p.display);
       p.m.buildAtlas();
     }
     s.c.refresh();
@@ -422,7 +431,11 @@
       if (!row) continue;
       p.display = row.display;
       p.m = row.m;
-      if (p.primary) p.d.change({}, p.d.settings || s.c.settings);
+      if (p.primary) {
+        p.d.change({}, p.d.settings || s.c.settings);
+        if (!adoptPipeline(s, p)) throw new Error('HeroForge figure changed during native restore.');
+      }
+      setupColorMaterials(p.display);
     }
     s.c.refresh();
   }

@@ -2,6 +2,37 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-14-065 -- Refresh pinned color-bake materials
+
+Date: 2026-09-14
+
+### Summary
+
+Fix Texture Quality verification/rendering when a shared-Part multi-figure scene keeps a native 512px body mask in an existing color-bake material after the 1024px override is pinned.
+
+### Confirmed diagnosis and validation
+
+- With primary + Seya, v0.3.3 pinned the correct 1024px body mask but the primary material `masksMap` remained 512px.
+- HeroForge native `colorBake.paints.getMask()` prefers `masksMapOverride`; a bounded probe showed native `paints.setupMaterials('color')` immediately moved the actual material uniform from 512px to the exact pinned 1024px texture.
+- A live-only v0.3.4 candidate explicitly refreshed HeroForge-owned color materials after policy install and during restore.
+- Three-figure Seya Enable PASS: all display/resource atlases coherent at 4096×4096, both primary body masks 1024×1024 and pinned, Seya `materialSim` / `clutPath` intact.
+- Matching Disable PASS: renderer idle, all three figure atlases coherent, Seya material state intact, source-restored OFF status.
+
+### Changes
+
+- bump Texture Quality service to v0.3.4 / build `0.3.4-dev-native-color-material-setup`;
+- invoke HeroForge-owned `colorBake.paints.setupMaterials('color')` after mask policy application;
+- perform matching native color-material setup during restore after fresh primary generation adoption;
+- update manifest registry/build/cache key.
+
+### Explicitly unchanged
+
+Texture recipe, atlas target, body-mask capability ceiling, readiness/settle timing, persistence semantics, primary-only `Data.change()` ownership, child display ownership, and public Stable are unchanged.
+
+**Runtime behavior changed:** yes -- Dev color-bake material refresh correction.
+
+---
+
 ## DOCK-2026-09-14-064 -- Deduplicate shared HeroForge Part snapshots
 
 Date: 2026-09-14

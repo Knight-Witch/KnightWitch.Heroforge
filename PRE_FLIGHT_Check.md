@@ -2,6 +2,45 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-14-065 -- Native color-material refresh
+
+Date: 2026-09-14
+
+### Scope
+
+Repair the Seya/shared-Part color-bake mask mismatch without changing the validated texture recipe, renderer ownership model, persistence semantics, timing, or public Stable.
+
+### Confirmed findings
+
+- v0.3.3 could retain a 512px primary color-bake `masksMap` despite a correct pinned 1024px override.
+- HeroForge `colorBake.paints.getMask()` prefers `masksMapOverride`.
+- A bounded native probe showed `colorBake.paints.setupMaterials('color')` updates the real material uniform to the exact pinned 1024px texture; no direct uniform assignment is required.
+
+### Live validation
+
+- live-only v0.3.4 candidate Enable PASS on primary + Seya + third figure;
+- all three display/resource atlases coherent at 4096×4096; primary body masks both 1024×1024 pinned; Seya `materialSim` / `clutPath` intact;
+- matching Disable PASS; root renderer idle, all figure atlases coherent, source-restored OFF state.
+
+### Candidate committed by this preflight
+
+- service v0.3.4 / build `0.3.4-dev-native-color-material-setup`;
+- native `setupMaterials('color')` after policy install and during restore;
+- fresh primary generation adoption before restore material setup;
+- manifest registry/build/cache key updated;
+- no direct child display mutation, direct uniform assignment, direct atlas assignment, or timing change.
+
+### Remaining gates
+
+1. Reload exact committed v0.3.4 and run one Enable/Disable smoke.
+2. Human visual gate on Seya as a non-primary figure.
+3. Heavy non-primary case such as Twilight Soak if practical.
+4. Public Stable remains untouched until explicit narrow promotion approval.
+
+**Runtime behavior changed:** yes -- Dev native color-material refresh correction.
+
+---
+
 ## PFC-2026-09-14-064 -- Shared-Part snapshot ownership
 
 Date: 2026-09-14
