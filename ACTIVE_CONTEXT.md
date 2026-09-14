@@ -1,8 +1,9 @@
 # Active Context - WITCH_DEV_UI
 
 **Updated:** 2026-09-14
-**Current task:** Texture Quality multi-figure Dev phase accepted; await explicit narrow Stable-promotion approval or a new task.
-**Runtime posture:** public Stable Texture Quality v0.1.0 remains released/accepted and untouched.
+**Current task:** Public Stable promotion handoff. The next chat should perform a narrow `Witch_Scripts` Texture Quality promotion from the accepted Dev state, then run a narrow Stable smoke.
+**Approval:** Amanda explicitly approved beginning the public-update phase in the next chat. This handoff itself does not mutate Stable.
+**Runtime posture:** WITCH_DEV_UI Texture Quality v0.3.4 is accepted; public Stable remains unchanged.
 
 ## Minimum continuation set
 
@@ -10,79 +11,69 @@ Read only:
 
 1. `PROJECT_CONTRACT.md`
 2. this file
-3. `features/rendering/Texture_Quality_Native_Reconcile.js` only if Texture Quality runtime work resumes
-4. `features/rendering/Texture_Quality_Native_Reconcile_UI.js` only if UI/service API behavior becomes relevant
-5. `MODULE_VERSIONING.md` before any later runtime/version commit
-6. `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md` only when older engine evidence is genuinely needed
+3. `MODULE_VERSIONING.md` before any runtime/version promotion
+4. `features/rendering/Texture_Quality_Native_Reconcile.js` on `WITCH_DEV_UI`
+5. `features/rendering/Texture_Quality_Native_Reconcile_UI.js` on `WITCH_DEV_UI`
+6. the corresponding Texture Quality service/UI files and `manifest.json` on `Witch_Scripts`
+7. `CHANGELOG.md` and `PRE_FLIGHT_Check.md` only when preparing the promotion commit
+8. `HISTORY/BULLSHIT/TEXTURE_QUALITY_NATIVE_RECONCILE.md` only if an unresolved engine question genuinely requires old evidence
 
-Do not preload full repo history/changelog/preflight/session logs.
+Do not preload full repo history, MASTER, session logs, unrelated changelogs/preflight history, or HeroForge.Compatibility.
 
-## Public Stable - protected PASS
-
-Public `Witch_Scripts` promotion commit remains `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`. Stable service/UI remain v0.1.0 and were not touched during the v0.3.x multi-figure investigation.
-
-## Current Dev runtime
+## Accepted Dev state
 
 - service v0.3.4 / build `0.3.4-dev-native-color-material-setup`;
-- runtime commit `edd276b21af4ee4ce354857b09e5e7340fd007ad`;
-- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls` unchanged;
-- beta notice v0.1.2 unchanged.
+- validated runtime commit `edd276b21af4ee4ce354857b09e5e7340fd007ad`;
+- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
+- current Dev acceptance/docs head before this handoff: `f3fe492913b34493b0373324d28e6f7613f9379d`.
 
-v0.3.2 primary-only `Data.change()` ownership, v0.3.3 shared-Part snapshot ownership, and v0.3.4 HeroForge-owned color-material setup are all retained. No direct child display mutation, direct atlas assignment, direct uniform assignment, fabricated/copied sim state, or unbounded lifecycle retries are allowed.
+Retain the validated ownership model:
 
-## Current accepted behavior
+- primary-only `Data.change()`;
+- HeroForge parent-owned child display propagation;
+- session-global first snapshots for shared Part objects;
+- HeroForge-owned `colorBake.paints.setupMaterials('color')` for pinned mask material refresh;
+- no direct child display mutation, direct atlas assignment, direct uniform assignment, fabricated/copied sim state, or unbounded retries.
 
-High Res policy is intentionally floor-based rather than "force every target to 2048":
+## Dev acceptance - CLOSED PASS
 
-- atlas scale target = 4;
-- bake target = 2048;
-- `_usedTextureSize` seed / validated High Res floor = 1024;
-- HeroForge may natively promote individual allocations to 2048 when atlas pressure permits;
-- verification requires each targeted allocation to remain at least 1024 and no larger than 2048, with supported body masks pinned at their native ceiling up to 1024.
+The current Texture Quality multi-figure Dev phase is complete. Do not restart the investigation.
 
-This distinction matters for heavy builds. A 1024 packed target under pressure is still a valid High Res result; future ultra-heavy / "insanity mode" work begins when HeroForge pushes a targeted allocation below 1024 or when a verified result is still visibly degraded.
+Validated coverage includes:
 
-## Multi-figure validation - PASS
-
-Committed v0.3.4 passed the full current Dev gate:
-
-- repeated Enable/Disable and committed-source smoke;
-- three-figure dynamic 3->2 and 2->3 membership handling;
-- shared Part snapshot/restore handling;
+- committed-source Enable/Disable smoke;
+- repeated Enable/Disable;
+- three-figure 3->2 and 2->3 dynamic membership;
+- shared-Part snapshot/restore;
 - non-primary materialSim preservation;
 - Seya shared-Part color-mask correction;
-- human Seya non-primary visual gate;
-- heavy three-detailed-figure 1030% kitbash stress gate.
+- human visual PASS on Seya as non-primary;
+- heavy three-detailed-figure 1030% kitbash stress PASS;
+- heavy Disable/restore and final re-enable PASS.
 
-### 1030% stress evidence
+The 1030% scene demonstrated intended pressure scaling: one extra packed bodyLower/bodyUpper at the accepted 1024x1024 High Res floor while its face and the other headline targets reached 2048x2048. Amanda visually confirmed all three figures' body textures and decals looked excellent. This is valid current behavior, not a defect.
 
-Clean post-refresh OFF baseline:
+High Res policy remains floor-based: atlas scale 4, bake target 2048, source/allocation floor 1024, with native promotion toward 2048 when atlas pressure permits.
 
-- primary: bodyLower/bodyUpper 512x512, face 1024x1024;
-- extra 1: bodyLower/bodyUpper 512x512, face 512x512;
-- extra 2: bodyLower/bodyUpper 512x512, face 1024x1024.
+## Public Stable baseline - protected until promotion
 
-Heavy Enable resolved true in ~4.05s:
+`Witch_Scripts` currently remains at head `c93485d741fe9d1801b0f6924b7204a8d922792c`; its last runtime Texture Quality promotion commit is `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`. Stable Texture Quality service/UI remain v0.1.0 at the start of the next chat.
 
-- primary: bodyLower/bodyUpper/face 2048x2048;
-- extra 1: bodyLower/bodyUpper 1024x1024, face 2048x2048;
-- extra 2: bodyLower/bodyUpper/face 2048x2048;
-- extra 1 still held 2048 bake/used targets, confirming HeroForge native atlas pressure selected the 1024 allocation;
-- body masks stayed at the validated supported sizes;
-- Amanda visually confirmed all three figures had stellar/high-resolution body textures and decals.
+## Promotion contract for the next chat
 
-Heavy Disable resolved true in ~4.1s with root idle and non-primary material sims intact. Disable restores source policy but intentionally retains already-built native atlases until HeroForge rebuilds them. Final re-enable resolved true in ~3.49s and the active scene was left High Res ON.
+Amanda has approved starting the public update. Do not ask again merely to begin the narrow Texture Quality promotion.
 
-Bridge evidence: #2177, #2178, #2181-#2194.
+1. Reconfirm `WITCH_DEV_UI` and `Witch_Scripts` branch heads before writing.
+2. Inspect the exact Dev and Stable Texture Quality service/UI files plus their manifest registry/cache entries.
+3. Determine the smallest complete Texture Quality promotion surface. Do **not** merge WITCH_DEV_UI wholesale and do not carry unrelated Dev changes into Stable.
+4. Promote only the accepted Texture Quality behavior and required manifest/version/cache wiring, preserving unrelated Stable files and behavior.
+5. Follow `MODULE_VERSIONING.md`; run syntax/static checks before moving Stable.
+6. Every promotion commit must update the appropriate `CHANGELOG.md` and add a concise `PRE_FLIGHT_Check.md` record.
+7. After promotion, load actual `Witch_Scripts` Stable and run the narrowest meaningful runtime smoke through HF-Chat-Bridge: service/version identity, renderer idle/readiness, Enable verification across the current three-figure scene if still available, Disable/restore, and material-state sanity.
+8. If Stable behavior differs from the exact accepted Dev behavior, stop and diagnose rather than widening scope or patching blindly.
 
-## Closed root causes retained for future reference
+Stable is not an experimental branch.
 
-- v0.3.2: independent child `Data.change()` destroyed resolved child `modded.sim`; fixed by primary-only `Data.change()` and parent-owned propagation.
-- v0.3.3: separate figure pipelines can share the same Part objects; fixed by session-global first snapshots keyed by object identity.
-- v0.3.4: correct pinned mask could exist while an existing color-bake material retained a 512px uniform; fixed through HeroForge-owned `colorBake.paints.setupMaterials('color')` after policy install and during restore.
+## Deferred work
 
-## Next step
-
-Do not change runtime code merely because the 1030% scene produced a valid 1024 pressure-scaled body allocation. Current multi-figure scope is accepted.
-
-If Amanda explicitly approves narrow Stable promotion, follow the contract: promote only the validated Texture Quality changes, then run the narrowest meaningful `Witch_Scripts` Stable smoke. Otherwise take the next task from Amanda and leave Stable untouched.
+Ultra-heavy / "insanity mode" is a separate future phase. It begins only when HeroForge drives a targeted allocation below the validated 1024px High Res floor or a verified state is visibly degraded. Do not mix that work into this promotion.

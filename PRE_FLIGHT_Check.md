@@ -2,49 +2,47 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-14-066 -- Multi-figure stress acceptance
+## PFC-2026-09-14-067 -- Stable promotion handoff
 
 Date: 2026-09-14
 
 ### Scope
 
-Close the current Dev validation gate for Texture Quality multi-figure support without changing runtime code, manifest data, ownership boundaries, timing, or public Stable.
+Prepare a fresh-chat handoff for the public Texture Quality update after Dev acceptance. This record is documentation-only; it does not alter runtime code, manifests, module versions, or `Witch_Scripts`.
 
-### Confirmed findings
+### Confirmed release state
 
-- exact committed v0.3.4 / `0.3.4-dev-native-color-material-setup` loaded from WITCH_DEV_UI after refresh;
-- committed-source three-figure Seya Enable/Disable smoke passed and Seya visually upgraded as a non-primary figure;
-- heavy follow-up used three detailed figures with a 1030% kitbash load;
-- clean OFF baseline: primary body 512px / face 1024px; extra 1 body 512px / face 512px; extra 2 body 512px / face 1024px;
-- heavy Enable PASS in ~4.05s, renderer idle, three native atlases verified;
-- primary packed 2048px on bodyLower/bodyUpper/face;
-- extra 1 packed 1024px bodyLower/bodyUpper and 2048px face under atlas pressure while its bake/used targets remained 2048;
-- extra 2 packed 2048px on bodyLower/bodyUpper/face;
-- 1024px is the deliberate High Res verification floor (`USED` source seed); native promotion to 2048 is opportunistic, so extra 1 remained within current feature guarantees;
-- human visual gate PASS: all three body textures and decals looked high resolution / stellar;
-- heavy Disable PASS in ~4.1s, root idle, non-primary `materialSim="color"` intact;
-- Disable source-restore semantics intentionally retain the already-built native atlas allocations until HeroForge rebuilds them;
-- final Enable PASS in ~3.49s; scene left High Res ON.
+- WITCH_DEV_UI Texture Quality service v0.3.4 / `0.3.4-dev-native-color-material-setup` is accepted;
+- UI v0.2.0 / `0.2.0-dev-persistence-advanced-controls` is the accepted Dev UI state;
+- committed-source smoke, repeated Enable/Disable, dynamic multi-figure add/remove, shared-Part restore, non-primary material preservation, Seya visual validation, and the 1030% three-detailed-figure stress gate all passed;
+- the heavy scene demonstrated valid native pressure scaling to the 1024px High Res floor without visible degradation;
+- current Stable remains unchanged at `Witch_Scripts` head `c93485d741fe9d1801b0f6924b7204a8d922792c` with last Texture Quality runtime promotion commit `4bb0cc9ff18b7d797ead8d16f7a63032250616cf`.
 
-### Bridge evidence
+### Approval and next-chat procedure
 
-- #2177 clean OFF / idle state;
-- #2178/#2181 clean allocation baselines;
-- #2182/#2183 heavy Enable result;
-- #2184/#2185 per-extra post-enable allocations;
-- #2186 confirms extra 1 retained 2048 bake/used targets;
-- #2187/#2188 confirms verifier accepted the 1024 floor by design;
-- #2189/#2190 heavy Disable/restore result;
-- #2191/#2192 post-restore allocations/material sims;
-- #2193/#2194 final re-enable result.
+Amanda explicitly approved beginning the public-update phase in the next chat.
 
-### Gate result
+1. Read `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md` first.
+2. Read `MODULE_VERSIONING.md` before any runtime/version write.
+3. Reconfirm Dev and Stable branch heads.
+4. Compare only the exact Texture Quality service/UI files and required manifest registry/cache wiring between WITCH_DEV_UI and Witch_Scripts.
+5. Build the smallest complete promotion; do not merge the Dev branch wholesale.
+6. Preserve unrelated Stable behavior and all validated ownership/timing semantics.
+7. Run syntax/static checks before moving Stable.
+8. Update release changelog/preflight records with the promotion commit.
+9. Load actual Witch_Scripts Stable and run a narrow HF-Chat-Bridge smoke; diagnose any mismatch instead of broadening scope.
 
-Current Texture Quality multi-figure Dev phase: PASS.
+### Deferred boundary
 
-Remaining release step is procedural: public Stable remains untouched until Amanda gives explicit narrow promotion approval. Future ultra-heavy / "insanity mode" work is separate and should begin only when a target drops below the 1024px High Res floor or a verified state still looks visibly degraded.
+Ultra-heavy / "insanity mode" is not part of this release. It begins only if a targeted allocation falls below the validated 1024px High Res floor or a verified state is still visibly degraded.
 
-**Runtime behavior changed:** no -- documentation-only validation record.
+**Runtime behavior changed:** no -- documentation-only handoff.
+
+---
+
+## PFC-2026-09-14-066 -- Multi-figure stress acceptance
+
+Exact committed v0.3.4 passed Seya non-primary visual validation and a 1030% three-detailed-figure stress test. One pressured extra used the intentional 1024px High Res body floor while other headline targets promoted to 2048px; human visual quality passed. Heavy Disable/restore and final re-enable also passed.
 
 ---
 

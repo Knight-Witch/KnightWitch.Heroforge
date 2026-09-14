@@ -2,35 +2,38 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-14-066 -- Accept Texture Quality multi-figure stress gate
+## DOCK-2026-09-14-067 -- Hand off Texture Quality to Stable promotion
 
 Date: 2026-09-14
 
 ### Summary
 
-Close the current Texture Quality multi-figure Dev validation after exact committed v0.3.4 passes normal, shared-Part, visual, and heavy three-figure testing. No runtime code changed in this entry.
+Record the completed Dev phase and hand the next chat a narrow public Stable promotion task. Amanda explicitly approved beginning the public update in the next chat. No Stable or runtime files are changed by this entry.
 
-### Confirmed validation
+### Promotion boundary
 
-- exact committed service remains v0.3.4 / `0.3.4-dev-native-color-material-setup`;
-- clean three-figure post-refresh OFF baseline was captured before the heavy test;
-- a 1030% kitbash scene enabled successfully in ~4.05s and verified all three figures with coherent native atlases;
-- primary reached 2048x2048 bodyLower/bodyUpper/face; one pressured extra reached the intentional High Res floor of 1024x1024 on bodyLower/bodyUpper while its face reached 2048x2048; the other extra reached 2048x2048 on all three targets;
-- the pressured extra still had 2048 bake/used targets, confirming HeroForge native packing pressure selected the lower allocation rather than Witch Dock changing the policy;
-- the verifier is intentionally floor-based: `USED=1024` is the minimum High Res source seed, while HeroForge may natively promote individual allocations to 2048 when space permits;
-- Amanda visually confirmed body textures and decals on all three figures looked high resolution / stellar;
-- heavy-scene Disable/restore passed in ~4.1s with root idle and non-primary material sims intact; Disable restores source policy while deliberately retaining the already-built native atlases;
-- final re-enable passed in ~3.49s and the scene was left High Res ON.
+- do not restart the completed v0.3.4 multi-figure investigation;
+- reconfirm both branch heads before writing;
+- inspect only the exact Texture Quality service/UI files plus required `manifest.json` registry/cache entries on Dev and Stable;
+- do not merge WITCH_DEV_UI wholesale or carry unrelated Dev work into Stable;
+- follow `MODULE_VERSIONING.md`, run static/syntax checks, update release logs, then run a narrow `Witch_Scripts` smoke through HF-Chat-Bridge;
+- if Stable differs from the validated Dev behavior, diagnose rather than widening scope or patching blindly.
 
-### Future boundary
+### Accepted Dev source
 
-The later ultra-heavy / "insanity mode" investigation is separate. It becomes relevant when a targeted allocation falls below the validated 1024px High Res floor or visual quality degrades despite a verified state; this 1030% scene did not cross that boundary.
+Service v0.3.4 / `0.3.4-dev-native-color-material-setup` and UI v0.2.0 / `0.2.0-dev-persistence-advanced-controls` have passed committed-source smoke, non-primary Seya visual validation, dynamic multi-figure membership, shared-Part restore, and the 1030% three-detailed-figure stress gate.
 
-### Explicitly unchanged
+### Deferred
 
-Service/UI code, texture recipe, atlas target, readiness/settle timing, ownership boundaries, persistence semantics, manifest/cache key, and public Stable are unchanged.
+Ultra-heavy / "insanity mode" remains a separate future phase and should not be mixed into this promotion.
 
-**Runtime behavior changed:** no -- documentation-only acceptance record.
+**Runtime behavior changed:** no -- documentation-only release handoff.
+
+---
+
+## DOCK-2026-09-14-066 -- Accept Texture Quality multi-figure stress gate
+
+Current Dev v0.3.4 passed the full multi-figure gate, including a 1030% three-detailed-figure scene. One pressured extra packed body allocations at the intentional 1024px High Res floor while other headline targets promoted to 2048px; Amanda visually confirmed all three figures' body textures and decals looked excellent. Heavy Disable/restore and final re-enable passed.
 
 ---
 
