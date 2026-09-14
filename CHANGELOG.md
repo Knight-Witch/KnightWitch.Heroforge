@@ -2,6 +2,36 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-13-062 — Freeze Texture Quality multi-figure lifecycle handoff
+
+Date: 2026-09-13
+
+### Summary
+
+Record the exact continuation state after diagnosing the non-primary display-adoption gap in Texture Quality v0.3.1 and live-testing an uncommitted v0.3.2 candidate through HF-Chat-Bridge.
+
+### Confirmed handoff state
+
+- HeroForge root `character.update()` arms the primary display through `display.change(data)`, but does not independently arm each extra display after its `modded.buildAtlas()` result changes.
+- A non-primary display can therefore retain a stale display atlas while its newly rebuilt `resourceAtlas` is larger/coherent.
+- Calling the extra display's native `display.change(display.data, true)` safely adopts the rebuilt atlas and sets `display.needsUpdate=true`; direct child `display.update()` is not safe and threw inside HeroForge material handling.
+- A live-only v0.3.2 candidate using the extra-display `change(data, true)` seam fixed the original atlas split for both extra figures, but the backgrounded HeroForge tab did not finish the child render/update cycle before the existing 120-second settle timeout.
+- Last readback (#1991) still had root `_needsUpdating=true`, both extras at coherent 4096×4096 display/resource atlas identity, `needsUpdate=true`, and `finished=false`.
+
+### Changes
+
+- update `ACTIVE_CONTEXT.md` with the exact at-most-once runtime baton, Bridge evidence, rejected child-update seam, uncommitted v0.3.2 candidate description, and safe next-step sequence;
+- explicitly record that repository runtime source/manifest remain v0.3.1 and that the live v0.3.2 candidate exists only in the current page runtime;
+- require the next chat to read back current state before any mutation and validate the candidate in a foreground HeroForge tab before committing it.
+
+### Explicitly unchanged
+
+No runtime source, manifest, module version, cache key, UI, persistence semantics, texture recipe, public behavior, or Stable code changed.
+
+**Runtime behavior changed:** no — documentation-only handoff.
+
+---
+
 ## DOCK-2026-09-13-061 — Bound multi-figure body-mask loading to native capability
 
 Date: 2026-09-13

@@ -2,6 +2,45 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-13-062 — Multi-figure lifecycle handoff freeze
+
+Date: 2026-09-13
+
+### Scope
+
+Freeze the exact continuation state after diagnosing Texture Quality's non-primary display-adoption gap and live-testing an uncommitted v0.3.2 candidate, without changing runtime code.
+
+### Reviewed
+
+- current `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`;
+- committed Texture Quality service v0.3.1 source and current manifest registry;
+- HeroForge root `character.refresh()` / `character.update()` source through HF-Chat-Bridge;
+- extra-display `change()` / `update()` behavior through bounded live probes;
+- clean three-figure baseline after reload;
+- live-only v0.3.2 candidate behavior while HeroForge was backgrounded;
+- at-most-once Enable result and post-failure restore readback.
+
+### Confirmed findings
+
+- Root HeroForge update orchestration calls `display.change(data)` for the root/primary display only; it does not independently arm every extra display after an extra figure's `modded.buildAtlas()` changes its resource atlas.
+- `display.change(display.data, true)` is a valid native extra-display adoption seam: it adopted the rebuilt atlas and set `display.needsUpdate=true` without direct atlas assignment.
+- Direct child `display.update()` is not safe as a service seam; the live probe threw inside HeroForge material handling (`clutPath`).
+- The hot-loaded v0.3.2 candidate added native `display.change(data, true)` for non-primary reconcile/restore and eliminated the original extra-figure display/resource atlas split.
+- The candidate test ran backgrounded; HeroForge did not finish the child render/update cycle before the existing 120-second settle timeout.
+- Last readback (#1991) still showed root `_needsUpdating=true`; both extras were atlas-coherent at 4096×4096 but had `needsUpdate=true` and `finished=false`.
+
+### Handoff gate
+
+The next chat must begin with a non-mutating runtime readback. Do not replay Enable/Disable/reconcile or child lifecycle mutations blindly. If child work remains pending, foreground HeroForge and allow its normal render loop to run before re-reading state. If recovery requires a reload, verify the clean v0.3.1 OFF/native baseline before re-hot-loading or testing v0.3.2.
+
+A v0.3.2 runtime commit is allowed only after a foreground three-figure Enable and Disable/restore both finish coherently. If committed, normal module version/build, manifest/cache key, changelog/preflight, syntax/static validation, and narrow live regression requirements apply.
+
+Public Stable remains untouched.
+
+**Runtime behavior changed:** no — documentation-only handoff.
+
+---
+
 ## PFC-2026-09-13-061 — Multi-figure native mask capability + bounded loader
 
 Date: 2026-09-13
