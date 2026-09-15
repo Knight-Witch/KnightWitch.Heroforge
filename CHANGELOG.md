@@ -2,6 +2,29 @@
 
 This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-14-036` remain preserved in Git history at Stable head `dcf53166a12321cc5bbe1d94133c3d1d29655e59` and earlier.
 
+## DOCK-2026-09-15-038 — Close public Texture Quality lifecycle/projected-host rollout
+
+Date: 2026-09-15
+
+### Final public Stable result
+
+Public promotion commit `dac34877b5d02208c99072e67bf0e59b9233b11b` passed the narrow post-promotion Stable smoke.
+
+- the active page manifest was confirmed as `Witch_Scripts/manifest.json`;
+- public manifest versions/load order were core v0.3.5 -> same-figure guard v0.1.0 -> active-decal v0.1.1 -> existing UI v0.2.0;
+- all promoted public URLs were Stable-only, all three runtime sources were byte-identical to Dev commit `d0d198cea6f8d755b79ff667c1b3d550956ea0cb`, and all three compiled;
+- the newly loaded one-figure scene was idle/ready and correctly reported High Res OFF because persistence was false after the figure change;
+- one at-most-once public `enable()` completed successfully;
+- final Stable state: `ON — 8192×4096`, core verification PASS, bodyLower/bodyUpper/face scale 4 with 2048 bake/source and 2048×2048 packed allocations, native atlas ownership coherent, guard idle/no drift/no error, active-decal idle/no error;
+- projected host selection on the live figure contained exactly `humanWing1L`, `humanWing1R`, `humanWing2L`, `humanWing2R`;
+- no HF-Chat-Bridge runtime dependency was introduced.
+
+Public Texture Quality lifecycle/projected-host patch is therefore **PASS / CLOSED**.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation-only closeout; public runtime remains promotion commit `dac34877b5d02208c99072e67bf0e59b9233b11b`.
+
+---
+
 ## DOCK-2026-09-15-037 — Promote Texture Quality kitbash lifecycle and projected-host patch
 
 Date: 2026-09-15

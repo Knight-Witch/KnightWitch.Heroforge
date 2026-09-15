@@ -2,6 +2,61 @@
 
 This active Stable pre-flight log is intentionally compact. Detailed prior Stable records through `PFC-2026-09-14-036` remain preserved in Git history at Stable head `dcf53166a12321cc5bbe1d94133c3d1d29655e59` and earlier.
 
+## PFC-2026-09-15-038 — Final public Texture Quality lifecycle/projected-host acceptance
+
+Date: 2026-09-15
+
+### Scope
+
+Close the public Stable release gate after the approved lifecycle/projected-host candidate was narrowly promoted to `Witch_Scripts`.
+
+### Reviewed
+
+- Stable promotion commit `dac34877b5d02208c99072e67bf0e59b9233b11b`;
+- Dev source commit `d0d198cea6f8d755b79ff667c1b3d550956ea0cb`;
+- core v0.3.5 / build `0.3.5-preserve-native-source-floor`;
+- same-figure drift guard v0.1.0 / build `0.1.0-dev-stable-same-figure-repair`;
+- active-decal priority v0.1.1 / build `0.1.1-dev-projected-host-lifecycle-coordination`;
+- HF-Chat-Bridge public smoke requests #2549 through #2559.
+
+### Stable provenance/source gate
+
+- `KWWitchDockManifestURL` resolved to `Witch_Scripts/manifest.json` on the live page.
+- Public manifest load order was core -> drift guard -> active-decal -> existing UI.
+- Every promoted module URL pointed to `Witch_Scripts`, never `WITCH_DEV_UI`.
+- Public core/guard/active runtime source text was byte-identical to the exact approved Dev commit and each source compiled successfully.
+
+### Fresh-figure public runtime smoke
+
+Amanda loaded a new figure during the smoke. That gave a fresh public-session target and did not invalidate the source/provenance checks.
+
+Before the active smoke, the scene was HeroForge-idle/ready and Texture Quality correctly reported `OFF — figure changed; enable again for this figure.` Persistence was false, so absence of body/head scale ownership was expected rather than a failed auto-enable.
+
+One at-most-once public `KWTextureQualityNativeReconcile.enable()` completed successfully and returned `true`. Final readback confirmed:
+
+- public manifest provenance still `Witch_Scripts`;
+- core: v0.3.5, enabled, idle, no scene-sync pending, no error, verification PASS, one figure;
+- status: `ON — 8192×4096`;
+- HeroForge renderer idle/ready, atlas 8192×4096, native atlas identity coherent;
+- bodyLower: scale 4 / bake 2048 / source 2048 / packed 2048×2048;
+- bodyUpper: scale 4 / bake 2048 / source 2048 / packed 2048×2048;
+- face: scale 4 / bake 2048 / source 2048 / packed 2048×2048;
+- same-figure guard: attached, idle, no drift, previous proven repair count 1, last result true, no error;
+- active-decal policy: idle, clean, not lifecycle-blocked, no error;
+- projected active accessory slots: `humanWing1L`, `humanWing1R`, `humanWing2L`, `humanWing2R`.
+
+### Release decision
+
+Public Stable Texture Quality lifecycle/projected-host patch: **PASS / CLOSED**.
+
+### Rollback
+
+This closeout commit is documentation only. If runtime rollback is ever required, revert narrow promotion commit `dac34877b5d02208c99072e67bf0e59b9233b11b`.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation only.
+
+---
+
 ## PFC-2026-09-15-037 — Texture Quality lifecycle/projected-host Stable promotion
 
 Date: 2026-09-15
