@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Active Decal Priority
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.1.1
 // @description  Dev-only adaptive atlas policy for textures that actually carry decals.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityActiveDecalPriority';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-dev-active-decal-scale-policy';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-dev-projected-host-lifecycle-coordination';
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const SCALE = 4;
   const ATLAS_WIDTH = 8192;
@@ -108,12 +108,29 @@
     return true;
   }
 
+  function projectedHostKeys(row, decals) {
+    const splatter = decals && decals.splatter;
+    if (!splatter || typeof splatter !== 'object') return [];
+    const out = new Set();
+    const entries = Array.isArray(splatter) ? splatter : Object.values(splatter);
+    for (const entry of entries) {
+      const filter = entry && entry.filter;
+      if (!filter || typeof filter !== 'object') continue;
+      for (const [key, selected] of Object.entries(filter)) {
+        if (selected === true && row.parts[key] && !CORE_TARGETS.has(key)) out.add(key);
+      }
+    }
+    return Array.from(out);
+  }
+
   function activeAccessoryKeys(row) {
     const decals = row && row.d && row.d.decals;
     if (!decals || typeof decals !== 'object') return [];
-    return Object.keys(decals).filter((key) => (
-      row.parts[key] && !CORE_TARGETS.has(key) && hasAppliedDecals(decals[key])
-    ));
+    const active = new Set(Object.keys(decals).filter((key) => (
+      key !== 'splatter' && row.parts[key] && !CORE_TARGETS.has(key) && hasAppliedDecals(decals[key])
+    )));
+    for (const key of projectedHostKeys(row, decals)) active.add(key);
+    return Array.from(active);
   }
 
   function ensureSettings() {
@@ -229,11 +246,22 @@
     return changed;
   }
 
+  function lifecycleBlocked() {
+    let core = null;
+    let repair = null;
+    try { core = service && typeof service.getState === 'function' ? service.getState() : null; } catch (_) {}
+    try {
+      const guard = UW && UW.KWTextureQualitySameFigureDriftGuard;
+      repair = guard && typeof guard.getState === 'function' ? guard.getState() : null;
+    } catch (_) {}
+    return !!((core && core.sceneSyncPending) || (repair && repair.pending));
+  }
+
   function queuePolicyReconcile() {
-    if (disposed || reconcilePromise || !policyDirty || !service || !service.enabled || service.busy) return false;
+    if (disposed || reconcilePromise || !policyDirty || !service || !service.enabled || service.busy || lifecycleBlocked()) return false;
     reconcilePromise = Promise.resolve()
       .then(async () => {
-        if (disposed || !service || !service.enabled || service.busy) return false;
+        if (disposed || !service || !service.enabled || service.busy || lifecycleBlocked()) return false;
         const ok = await originals.reconcile.call(service);
         if (ok) policyDirty = false;
         return ok;
@@ -310,19 +338,21 @@
     };
 
     candidate.refresh = (...args) => {
-      // Do not pre-mutate a merely desired persistent session. The enable wrapper
-      // applies this policy immediately before the core service performs its rebuild.
-      if (candidate.enabled && !candidate.busy) safeEnsurePolicy();
+      // Let the core and same-figure lifecycle guard inspect native state first. If a
+      // core lifecycle repair or scene-membership sync is pending, do not mutate
+      // accessory scale policy ahead of that stable reconcile.
+      const state = originals.refresh.apply(candidate, args);
+      const blocked = lifecycleBlocked();
+      if (candidate.enabled && !candidate.busy && !blocked) safeEnsurePolicy();
       else if (!candidate.enabled && !candidate.busy && figures.size) {
         restorePolicy();
         policyDirty = false;
       }
-      const state = originals.refresh.apply(candidate, args);
-      if (state && state.enabled && !state.busy && policyDirty) queuePolicyReconcile();
+      if (state && state.enabled && !state.busy && !blocked && policyDirty) queuePolicyReconcile();
       return state;
     };
 
-    if (candidate.enabled && !candidate.busy) {
+    if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
       safeEnsurePolicy();
       queuePolicyReconcile();
     }
@@ -345,6 +375,7 @@
       })),
       reconcilePending: !!reconcilePromise,
       policyDirty,
+      lifecycleBlocked: lifecycleBlocked(),
       lastError
     };
   }
@@ -372,7 +403,7 @@
     attach,
     refresh: () => {
       if (!service) attach();
-      if (service && service.enabled && !service.busy) {
+      if (service && service.enabled && !service.busy && !lifecycleBlocked()) {
         safeEnsurePolicy();
         if (policyDirty) queuePolicyReconcile();
       }
