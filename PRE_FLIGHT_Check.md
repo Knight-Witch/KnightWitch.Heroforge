@@ -2,6 +2,44 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-15-073 -- Kitbash Texture Quality handoff
+
+Date: 2026-09-15
+
+### Scope
+
+Documentation/router handoff only. No runtime module, manifest, UI, or Stable source changed in this commit.
+
+### Exact current evidence
+
+- Same-browser Chrome comparison against Lob's FullResDecals Extreme: Amanda judged Witch Dock slightly sharper on the tested body decals; skirt detail appeared the same; wing difference remained uncertain because the wing decals were very large. Treat this as figure-specific visual evidence only.
+- Repeated 8192×4096 vs 8192×8192 visual A/B showed no visible body-decal improvement from square 8K. Do not adopt square 8K as the normal body-quality default without new evidence.
+- Projected decal location was corrected to `CK.character.data.decals.splatter`. On D4-with-wings, 35 projected entries were present; 9 targeted `bodyLower`, 25 targeted `bodyUpper`, and 8 targeted wing slots through true filter keys. Current active-decal v0.1.0 does not correctly cover these projected hosts.
+- Kitbash same-figure drift is confirmed. A kitbash move can clear High Res `atlasScale` policy and downgrade packed allocations while figure identity/part IDs remain unchanged. Earlier capture showed bodyLower/bodyUpper/face allocations 512/512/1024 and all four wings 512 after the reset; a normal core reconcile restored body/head to 2048×2048.
+- Bridge #2491 captured a second clean potato state after Amanda touched the figure again: `_needsUpdating=false`, `_inUpdate=false`, resources ready/finished true, atlas 8192×4096, body/head scale entries missing, body `_usedTextureSize` still 2048, wing scale entries missing, wing `_usedTextureSize` still 1024.
+- Immediately after #2491, Amanda reported that the figure briefly stayed potato and then fixed itself automatically. The human visual recovery is confirmed; the exact runtime mechanism is not yet proven by Bridge readback.
+- A temporary drift-guard probe was installed only for diagnosis and then fully removed. It showed that triggering reconcile while HeroForge still reports an update in progress can hit the existing settle timeout. Existing readiness/settle behavior was not changed.
+- No temporary helper remains installed from that drift-guard probe. No runtime source was committed from it.
+- Muddy/greenish body-color patches around the right leg/thigh, torso, and one hand remain an unproven visual symptom and must not yet be conflated with the lifecycle bug.
+
+### Next-chat startup / first actions
+
+1. Read `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md`, then only files routed there.
+2. Before any mutation, use HF-Chat-Bridge to capture the currently recovered D4-with-wings state: core state, body/head scale + packed allocation, wing scale/source/allocation, active-decal state, atlas dimensions.
+3. Reproduce one controlled kitbash move and capture good → potato → automatic recovery. Determine the actual recovery signal/hook instead of inferring from elapsed time.
+4. Fix projected `data.decals.splatter[*].filter` host selection in the active-decal service, excluding body/head ownership already handled by the core service.
+5. Only after the stable lifecycle signal is proven, add a bounded same-figure drift repair that preserves current readiness checks, polling, retries, settle behavior, snapshots, rollback, and ownership boundaries.
+6. Recheck the weird body-color patches after a clean recovery and keep that issue separate unless the evidence ties them together.
+7. Run the still-missing real 2–3 figure active-decal extension regression before any Stable promotion.
+
+### Promotion state
+
+Not ready for Stable promotion. `Witch_Scripts` remains untouched. Human visual acceptance is partially positive, but projected-host coverage and same-figure kitbash lifecycle behavior remain open.
+
+**Runtime behavior changed:** no -- documentation/router handoff only.
+
+---
+
 ## PFC-2026-09-14-072 -- Smart active-decal live Dev validation
 
 Date: 2026-09-14

@@ -2,6 +2,29 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-15-073 -- Hand off kitbash Texture Quality lifecycle investigation
+
+Date: 2026-09-15
+
+### Summary
+
+Record the current Texture Quality investigation state before chat handoff. Stable remains untouched and no runtime/module/manifest source changed in this commit.
+
+- Same-browser Chrome visual comparison against Lob's FullResDecals Extreme favored Witch Dock slightly on the tested figure's body decals; skirt detail appeared equivalent; wing comparison remained inconclusive because the wing decals were very large.
+- Repeated 8192×4096 vs 8192×8192 body-decal comparison showed no visible gain from square 8K, so square 8K is not justified as a normal body-quality default.
+- Corrected projected-decal discovery: real projected entries live under `character.data.decals.splatter` and target host parts through true `filter` keys. D4-with-wings exposed 35 projected entries, including 8 wing-target hits. Current v0.1.0 active-decal policy does not correctly cover these projected hosts.
+- Confirmed same-figure kitbash lifecycle drift: moving the figure can clear owned `atlasScale` policy and drop packed body/head allocations while figure identity and part IDs remain unchanged, so the existing `sameFigureSet` scene-sync gate can miss the reset. Manual core reconcile restores the intended 2048 body/head allocations.
+- Bridge #2491 captured a second clean post-kitbash potato state with HeroForge already reporting idle/ready: atlas 8192×4096; body/head scale entries missing; body sources still 2048; wing scale entries missing; wing sources still 1024.
+- Immediately after that capture, Amanda observed the figure briefly remain potato and then automatically recover. The recovery is visually confirmed but its exact runtime cause is not yet proven; the next chat must capture the good→potato→recovered lifecycle before implementing a durable fix.
+- A temporary runtime drift-guard probe was tested and fully removed. Premature reconcile while HeroForge still reports an update in progress can hit the accepted settle timeout, so no readiness/settle timing was weakened or replaced with guessed delays.
+- Weird muddy/greenish body-color patches after kitbash remain a separate unproven visual symptom pending controlled recovery comparison.
+
+Next work is routed through `ACTIVE_CONTEXT.md`: read-only recovered-state capture first, then one controlled kitbash lifecycle trace, projected `splatter` host selector fix, and only then a bounded same-figure drift repair if the correct stable seam is proven.
+
+**Runtime behavior changed:** no -- documentation/router handoff only. Stable unchanged.
+
+---
+
 ## DOCK-2026-09-14-072 -- Live-validate smart active-decal texture priority
 
 Date: 2026-09-14
