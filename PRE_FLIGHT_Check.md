@@ -2,6 +2,49 @@
 
 This active Stable pre-flight log is intentionally compact. Detailed prior records through `PFC-2026-09-12-032` remain preserved in Git history at promotion head `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` and earlier.
 
+## PFC-2026-09-14-036 — Final public Texture Quality beta notice acceptance
+
+Date: 2026-09-14
+
+### Scope
+
+Close the public Stable notice release gate after the human-approved Dev popup was narrowly promoted to `Witch_Scripts`.
+
+### Reviewed
+
+- Stable notice promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77`;
+- public notice v0.2.1 / build `0.2.1-frd-warning-assets-signoff`;
+- HF-Chat-Bridge #2215 and #2216;
+- prior human visual approval of committed Dev v0.2.1 at `bb73e05fcf8ff9f920fb6171d7777d84466c221b`.
+
+### Stable smoke
+
+Bridge #2215 performed one at-most-once hot-load of the exact public `Witch_Scripts` notice while temporarily clearing and then restoring the existing acknowledgement key. Bridge #2216 then confirmed:
+
+- `KWWitchDockManifestURL` points to `Witch_Scripts/manifest.json`;
+- notice version `0.2.1`;
+- build `0.2.1-frd-warning-assets-signoff`;
+- one visible `#kwTextureQualityBetaNoticeOverlay`;
+- visible FRD warning header `⚠️ Using Full Res Decals / Textures (+ Other Tweaks)? Read this. ⚠️`;
+- visible centered FRD guide sourced from `Witch_Scripts/features/rendering/assets/Texture_Quality_FRD_Decal_Resolution.webp`;
+- visible 72×72 emblem sourced from `Witch_Scripts/features/rendering/assets/Witch_Dock_Emblem_White.webp`;
+- visible `Hell Yeah!` button;
+- Power status `complete` and no Power error.
+
+The public rendering dimensions matched the approved Dev candidate for the FRD guide and emblem, and no Dev asset URL leaked into the public notice.
+
+### Release decision
+
+Public Texture Quality Phase 1 beta notice v0.2.1 release gate: **PASS / CLOSED**.
+
+### Rollback
+
+This closeout commit is documentation only. If the public notice itself ever needs rollback, revert promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77`; Texture Quality service/UI should remain untouched.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation only.
+
+---
+
 ## PFC-2026-09-14-035 — Approved Texture Quality beta notice Stable promotion
 
 Date: 2026-09-14

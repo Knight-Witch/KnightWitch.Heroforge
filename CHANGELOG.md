@@ -2,6 +2,28 @@
 
 This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-12-032` remain preserved in Git history at promotion head `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` and earlier.
 
+## DOCK-2026-09-14-036 — Close public Texture Quality beta notice rollout
+
+Date: 2026-09-14
+
+### Final public Stable result
+
+Public `Witch_Scripts` notice promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77` passed the narrow post-promotion Stable smoke.
+
+- Bridge #2215 hot-loaded the exact public notice from `Witch_Scripts` while preserving the existing acknowledgement value;
+- Bridge #2216 confirmed the page is Stable-owned via `KWWitchDockManifestURL = .../Witch_Scripts/manifest.json`;
+- public notice identity: v0.2.1 / build `0.2.1-frd-warning-assets-signoff`;
+- the overlay, dual-`⚠️` FRD warning header, centered FRD guide, centered emblem, and `Hell Yeah!` button were all present and visible;
+- both image `src` values resolved from `Witch_Scripts/features/rendering/assets`, never `WITCH_DEV_UI`;
+- the FRD guide rendered at approximately 498×220 and the emblem at 72×72, matching the approved Dev presentation;
+- HF-Chat-Bridge Power reported `complete` with no error.
+
+The public notice rollout is therefore **PASS / CLOSED**. Texture Quality service v0.3.4 / UI v0.2.0 remain unchanged.
+
+**Runtime behavior changed by this checkpoint:** no. Documentation-only closeout; public notice runtime remains exactly promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77`.
+
+---
+
 ## DOCK-2026-09-14-035 — Publish approved Texture Quality beta notice
 
 Date: 2026-09-14
