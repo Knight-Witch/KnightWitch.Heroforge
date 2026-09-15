@@ -2,48 +2,46 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-15-074 -- Same-figure repair + projected-host Dev candidate
+## PFC-2026-09-15-075 -- Post-promotion Dev baton housekeeping
 
 Date: 2026-09-15
 
-### Confirmed diagnosis
+### Scope
 
-- Read-only recovered D4 baseline: High Res enabled/idle, 8192×4096 atlas, bodyLower/bodyUpper/face scale 4 with 2048 sources and 2048×2048 allocations; wing source ceiling remained 1024 with no owned wing scale entries before projected-host repair.
-- A leftover temporary `__kwTqKitbashStableGuardProbe` was discovered. Source inspection showed it waited for stable same refs/readiness and then called `reconcile({sceneSync:true})` on persistent core drift.
-- Programmatic persisted transform edits did not reproduce potato, narrowing the trigger to the interactive kitbash drag lifecycle.
-- A bounded observer around a real human drag captured `character.change` with `transforms` + `atlasScale`, immediate loss of body/head scale policy, renderer transition, and the temporary guard's later `reconcile({sceneSync:true})`. Amanda simultaneously observed brief potato -> automatic recovery.
-- Temporary observer and stable guard were removed through Bridge Power; readback confirmed both globals absent and the normal Dev wrapper chain restored.
+Documentation-only cleanup after the Texture Quality lifecycle/projected-host patch was promoted from validated Dev runtime commit `d0d198cea6f8d755b79ff667c1b3d550956ea0cb` to public Stable.
 
-### Candidate
+### Confirmed release state
 
-- New hidden module `texture-quality-same-figure-drift-guard` v0.1.0 / `0.1.0-dev-stable-same-figure-repair`.
-- `texture-quality-active-decal-priority` -> v0.1.1 / `0.1.1-dev-projected-host-lifecycle-coordination`.
-- Projected selector admits only real current non-core atlas parts selected by literal `data.decals.splatter[*].filter[key] === true`.
-- Lifecycle adapter does not own figure membership, does not weaken settle/readiness checks, and does not use HF-Chat-Bridge at runtime. It waits for 1200 ms stable c/data/display/modded/atlas references and renderer signature before a single existing-service reconcile.
-- Active-decal policy defers while core scene sync or same-figure repair is pending, preventing projected-host scale writes from masking the drift signal or racing the repair.
+- Public runtime promotion commit: `dac34877b5d02208c99072e67bf0e59b9233b11b`.
+- Public rollout closeout/current Stable head: `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
+- Stable provenance was confirmed from `Witch_Scripts/manifest.json`; the three promoted runtime files were byte-identical to the validated Dev blobs and compiled successfully.
+- Public smoke on a newly loaded figure returned `enable() === true`, then read back core v0.3.5 ON at 8192×4096 with bodyLower/bodyUpper/face scale 4, bake/source 2048, packed 2048×2048, coherent resource atlas, idle HeroForge, and no lifecycle-extension errors.
+- Active-decal readback selected the four D4 wing hosts and remained idle/no-error. The same-figure guard remained idle/no-error after its previously proven repair path.
 
-### Static checks
+### Corrected baton state
 
-- `node --check features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js` -- PASS.
-- `node --check features/rendering/Texture_Quality_Active_Decal_Priority.js` -- PASS.
-- `python -m json.tool manifest.json` -- PASS.
-- Manifest registry IDs unique; load order verified core -> drift guard -> active decal -> UI.
-- Local mock regression verified projected host selection and confirmed active-decal policy defers while same-figure repair is pending.
+The prior `ACTIVE_CONTEXT.md` was stale after promotion: it still said Stable was untouched/not authorized and listed the 2–3 figure regression as a pre-promotion gate. This record corrects that mismatch without changing runtime behavior.
 
-### Remaining live gates
+### Outstanding regression coverage
 
-1. Hot-load/reload the exact committed Dev candidate on D4 with wings.
-2. Verify the eight projected wing-target hits are represented by actual active wing host slots, without blanket promotion of unrelated parts.
-3. Perform one real kitbash drag; confirm potato recovery occurs through the committed guard and ends with body/head 2048×2048, no errors, no repeated reconcile loop.
-4. Human-check the previously observed leg/torso/hand muddy-color artifact after clean recovery.
-5. Run the still-missing real 2–3 figure active-decal regression.
+1. Real 2-figure High Res regression, including projected/accessory ownership separation.
+2. Real kitbash drag on one figure while two figures are present; confirm no guard/scene-sync race or collateral degradation.
+3. Add/remove a third figure and repeat the narrow lifecycle/state checks.
+4. Deliberate A -> B -> A figure-switch/session behavior.
+5. At least one non-wing projected-host example and one no-projected-host control.
+6. Do not reopen the prior muddy/green artifact unless it visibly reproduces.
 
-Stable `Witch_Scripts` is not authorized for promotion and remains untouched.
+Further investigation/fixes must occur in `WITCH_DEV_UI`; public Stable is protected at the closeout head until another Dev change passes its own gate and receives explicit promotion approval.
 
-**Runtime behavior changed:** yes -- Dev candidate only.
+### Validation for this commit
+
+- Intended changed-file set: `ACTIVE_CONTEXT.md`, `CHANGELOG.md`, `PRE_FLIGHT_Check.md` only.
+- No JavaScript, manifest, module version, cache key, or public Stable file is intentionally changed.
+
+**Runtime behavior changed:** no. Documentation/housekeeping only.
 
 ---
 
 ## Prior current preflight
 
-PFC-2026-09-15-073 and earlier detailed records remain preserved in Git history.
+PFC-2026-09-15-074 and earlier detailed records remain preserved in Git history.

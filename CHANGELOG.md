@@ -2,29 +2,26 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-15-074 -- Add stable same-figure Texture Quality repair candidate
+## DOCK-2026-09-15-075 -- Refresh Dev baton after public Texture Quality rollout
 
 Date: 2026-09-15
 
 ### Summary
 
-Add a Dev-only lifecycle repair for the confirmed kitbash same-figure atlas-policy reset and extend smart active-decal priority to projected `splatter` hosts. Stable remains untouched.
+Housekeeping-only update after the validated Texture Quality same-figure lifecycle/projected-host patch was promoted to public Stable and passed its Stable smoke.
 
-- Live Bridge tracing of a real Amanda-driven kitbash drag proved the failing lifecycle: HeroForge emitted a same-figure `character.change` containing both `transforms` and `atlasScale`; body/head `atlasScale` ownership disappeared while the current packed atlas could still momentarily report 2048 allocations; later renderer generations entered the visible potato state.
-- The previously installed temporary stable guard was found still active despite the prior handoff stating it had been removed. Its initial install state had `lastResult=null`; the recovered state had `lastResult=true`; the traced real drag showed it issuing `reconcile({sceneSync:true})` after HeroForge reached a stable ready generation. This proves that guard caused the observed automatic recovery.
-- All temporary observer/guard wrappers were then removed and Bridge readback confirmed only the normal Dev core/active-decal wrappers remained.
-- Add `Texture_Quality_Same_Figure_Drift_Guard.js` v0.1.0 / `0.1.0-dev-stable-same-figure-repair`. It detects only already-enabled, same-figure core policy drift, defers to existing membership scene-sync when figure count changes, waits for the same 1200 ms stable renderer criteria used by the core service, then calls the existing reconcile once if drift still exists.
-- Advance active-decal priority to v0.1.1 / `0.1.1-dev-projected-host-lifecycle-coordination`. It now collects real non-core projected hosts only from `data.decals.splatter[*].filter[key] === true`, and defers accessory scale mutation/reconcile while core scene sync or same-figure repair is pending.
-- Manifest load order is core reconcile -> same-figure drift guard -> active-decal priority -> existing UI. Core v0.3.5 and UI v0.2.0 are unchanged.
+- Records validated Dev runtime source `d0d198cea6f8d755b79ff667c1b3d550956ea0cb`.
+- Records public runtime promotion `dac34877b5d02208c99072e67bf0e59b9233b11b` and Stable closeout `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
+- Marks D4-with-wings single-figure lifecycle/projected-host validation closed: four real wing hosts selected, committed real kitbash drag visually passed, and no current muddy/green artifact reproduced.
+- Records public Stable smoke success on a newly loaded figure: core v0.3.5 enabled to 8192×4096 with bodyLower/bodyUpper/face scale 4, 2048 source/bake, 2048×2048 packed allocations, and no guard/active-decal error.
+- Corrects the stale Dev baton that still claimed Stable was untouched/not authorized.
+- Sets the next work to the still-missing real 2–3 figure regression, deliberate figure-switch coverage, one non-wing projected-host case, and one no-projected-host control.
+- Broader Enhanced Object Textures remains out of scope.
 
-Static validation: both changed/new JavaScript modules pass `node --check`; `manifest.json` parses and has unique registry IDs with the required load order.
-
-Live exact-commit validation is still required on D4 with wings, including one real kitbash drag and projected wing-host verification. Multi-figure active-decal regression remains required before any Stable promotion.
-
-**Runtime behavior changed:** yes -- Dev only. Stable unchanged.
+**Runtime behavior changed:** no. Documentation/housekeeping only; no runtime module, manifest, version, or public Stable behavior changes.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-15-073 and earlier detailed entries remain preserved in Git history.
+DOCK-2026-09-15-074 and earlier detailed entries remain preserved in Git history.
