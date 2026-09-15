@@ -197,6 +197,16 @@
       "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
     },
     {
+      "id": "texture-quality-beta-notice",
+      "title": "Texture Quality Phase 1 Beta Notice",
+      "path": "features/rendering/Texture_Quality_Beta_Notice.js",
+      "kind": "feature-ui",
+      "load": "manifest",
+      "version": "0.2.1",
+      "build": "0.2.1-frd-warning-assets-signoff",
+      "versionOrigin": "stable-promoted-human-approved-2026-09-14"
+    },
+    {
       "id": "json-tool",
       "title": "JSON",
       "path": "tools/JSON_Tool.js",
@@ -366,6 +376,15 @@
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "texture-quality-beta-notice",
+      "title": "Texture Quality Phase 1 Beta Notice",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

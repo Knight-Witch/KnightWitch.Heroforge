@@ -2,6 +2,30 @@
 
 This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-12-032` remain preserved in Git history at promotion head `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` and earlier.
 
+## DOCK-2026-09-14-035 — Publish approved Texture Quality beta notice
+
+Date: 2026-09-14
+
+### Summary
+
+Narrowly promote the human-approved Texture Quality Phase 1 announcement from `WITCH_DEV_UI` into public `Witch_Scripts` without changing the accepted Texture Quality service/UI runtime.
+
+- notice v0.2.1 / build `0.2.1-frd-warning-assets-signoff`;
+- approved Dev source commit: `bb73e05fcf8ff9f920fb6171d7777d84466c221b`;
+- approved Dev notice blob: `9c575825179a97e0682caab3f508a21b512bf6ce`;
+- Stable-equivalent notice differs only in public source labeling and the asset base moving from `WITCH_DEV_UI` to `Witch_Scripts`; Stable notice blob: `4802b536d00457d2580100792262cabbef73a5e5`;
+- FRD guide asset blob: `b968a8d622e95ac1b1a42e397731e4be79c0c84d`;
+- white emblem asset blob: `0615e1d888820677d60332618b6cca918a68b26a`;
+- Amanda visually approved the Dev popup with the dual-warning FRD callout, centered FRD settings guide, normalized punctuation, centered emblem sign-off, and `Hell Yeah!` confirmation button.
+
+The public manifest now registers the beta notice as a hidden enabled-by-default HeroForge UI module and loads it only from `Witch_Scripts` using the deterministic v0.2.1 cache key. The notice remains one-time via its existing acknowledgement key and does not change Texture Quality engine behavior.
+
+Static pre-promotion checks passed: `node --check`, manifest JSON parsing, unique module/tool IDs, Stable-only notice URL, and exact reconstruction of the pre-change Stable manifest blob `094835946282e5e66552a31e18036f56804a7827`.
+
+**Runtime behavior changed:** yes — public Stable gains the approved one-time Texture Quality announcement UI. Texture Quality service v0.3.4 / UI v0.2.0 behavior is unchanged.
+
+---
+
 ## DOCK-2026-09-14-034 — Close public Stable multi-figure Texture Quality rollout
 
 Date: 2026-09-14

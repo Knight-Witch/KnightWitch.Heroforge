@@ -2,6 +2,54 @@
 
 This active Stable pre-flight log is intentionally compact. Detailed prior records through `PFC-2026-09-12-032` remain preserved in Git history at promotion head `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` and earlier.
 
+## PFC-2026-09-14-035 — Approved Texture Quality beta notice Stable promotion
+
+Date: 2026-09-14
+
+### Scope and approval
+
+Promote only the approved Texture Quality Phase 1 notice, its two display assets, Stable manifest registration/cache-key wiring, and required release records. Do not change the accepted Texture Quality service/UI or any unrelated Stable module.
+
+Amanda visually approved the committed Dev v0.2.1 popup before promotion. Approved presentation includes:
+
+- `⚠️` framing on both sides of the FRD warning header;
+- `FRD` terminology rather than `FRD/T`;
+- centered FRD settings screenshot showing the three Decal Resolution toggles to disable;
+- normalized sentence punctuation;
+- centered white Knight Witch emblem sign-off below the Discord line;
+- `Hell Yeah!` confirmation button.
+
+### Source identity
+
+- Dev approval commit: `bb73e05fcf8ff9f920fb6171d7777d84466c221b`;
+- Dev notice v0.2.1 / build `0.2.1-frd-warning-assets-signoff`, blob `9c575825179a97e0682caab3f508a21b512bf6ce`;
+- Stable-equivalent notice blob: `4802b536d00457d2580100792262cabbef73a5e5`;
+- Stable source changes from approved Dev are limited to the userscript label dropping `DEV` and `ASSET_BASE` pointing to `Witch_Scripts` rather than `WITCH_DEV_UI`;
+- FRD guide asset blob: `b968a8d622e95ac1b1a42e397731e4be79c0c84d`;
+- emblem asset blob: `0615e1d888820677d60332618b6cca918a68b26a`;
+- Stable parent before promotion: `38dbf8dc3d69c9ec6ab55f09f9a9185bd4b6d429`.
+
+### Static gate
+
+- reconstructed current Stable manifest hashes exactly to existing blob `094835946282e5e66552a31e18036f56804a7827` before modification;
+- Stable notice passes `node --check`;
+- candidate manifest parses successfully;
+- module registry IDs and tool IDs remain unique;
+- the public notice loader URL and notice asset base point only to `Witch_Scripts`, never `WITCH_DEV_UI`;
+- Texture Quality service/UI entries remain v0.3.4 / v0.2.0 unchanged.
+
+### Required post-promotion smoke
+
+After moving `Witch_Scripts`, hot-load the exact public notice through HF-Chat-Bridge while preserving acknowledgement state. Confirm public notice version/build, overlay visibility, FRD warning title, centered guide image, emblem image, `Hell Yeah!` button, and `Witch_Scripts` asset provenance. Any public divergence from the approved Dev visual candidate is a stop condition.
+
+### Rollback
+
+Revert the narrow notice promotion commit if the public notice or assets diverge. Texture Quality service/UI must not be rolled back for a notice-only issue.
+
+**Runtime behavior changed:** yes — public Stable gains the approved one-time announcement UI only.
+
+---
+
 ## PFC-2026-09-14-034 — Final public Stable multi-figure Texture Quality acceptance
 
 Date: 2026-09-14
