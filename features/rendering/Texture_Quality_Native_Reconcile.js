@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.4
+// @version      0.3.5
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.4';
-  const BUILD = '0.3.4-dev-native-color-material-setup';
+  const VERSION = '0.3.5';
+  const BUILD = '0.3.5-preserve-native-source-floor';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -342,9 +342,15 @@
     for (const key of TARGETS) p.d.atlasScale[key] = SCALE;
 
     for (const key of TARGETS) {
-      rememberPart(s, p, currentState.parts[key]);
-      currentState.parts[key].bakeSize = BAKE;
-      currentState.parts[key]._usedTextureSize = USED;
+      const part = currentState.parts[key];
+      const nativeUsed = Number(part._usedTextureSize);
+      rememberPart(s, p, part);
+      part.bakeSize = BAKE;
+      // USED is a floor, not a forced value. Preserve HeroForge's native promotion
+      // when the current generation is already above the protected 1024px minimum.
+      part._usedTextureSize = Number.isFinite(nativeUsed) && nativeUsed > 0
+        ? Math.min(BAKE, Math.max(USED, nativeUsed))
+        : USED;
     }
 
     for (const key of BODIES) {

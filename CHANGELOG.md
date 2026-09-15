@@ -1,92 +1,23 @@
 # Changelog
 
-This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-12-032` remain preserved in Git history at promotion head `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` and earlier.
+This active Stable changelog is intentionally compact. Detailed prior Stable entries through `DOCK-2026-09-14-036` remain preserved in Git history at Stable head `dcf53166a12321cc5bbe1d94133c3d1d29655e59` and earlier.
 
-## DOCK-2026-09-14-036 — Close public Texture Quality beta notice rollout
+## DOCK-2026-09-15-037 — Promote Texture Quality kitbash lifecycle and projected-host patch
 
-Date: 2026-09-14
-
-### Final public Stable result
-
-Public `Witch_Scripts` notice promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77` passed the narrow post-promotion Stable smoke.
-
-- Bridge #2215 hot-loaded the exact public notice from `Witch_Scripts` while preserving the existing acknowledgement value;
-- Bridge #2216 confirmed the page is Stable-owned via `KWWitchDockManifestURL = .../Witch_Scripts/manifest.json`;
-- public notice identity: v0.2.1 / build `0.2.1-frd-warning-assets-signoff`;
-- the overlay, dual-`⚠️` FRD warning header, centered FRD guide, centered emblem, and `Hell Yeah!` button were all present and visible;
-- both image `src` values resolved from `Witch_Scripts/features/rendering/assets`, never `WITCH_DEV_UI`;
-- the FRD guide rendered at approximately 498×220 and the emblem at 72×72, matching the approved Dev presentation;
-- HF-Chat-Bridge Power reported `complete` with no error.
-
-The public notice rollout is therefore **PASS / CLOSED**. Texture Quality service v0.3.4 / UI v0.2.0 remain unchanged.
-
-**Runtime behavior changed by this checkpoint:** no. Documentation-only closeout; public notice runtime remains exactly promotion commit `2e8662d9d55322aac0d64c67a279052e7de6df77`.
-
----
-
-## DOCK-2026-09-14-035 — Publish approved Texture Quality beta notice
-
-Date: 2026-09-14
+Date: 2026-09-15
 
 ### Summary
 
-Narrowly promote the human-approved Texture Quality Phase 1 announcement from `WITCH_DEV_UI` into public `Witch_Scripts` without changing the accepted Texture Quality service/UI runtime.
+Narrowly promote the human-validated Texture Quality patch from `WITCH_DEV_UI` commit `d0d198cea6f8d755b79ff667c1b3d550956ea0cb` into public `Witch_Scripts`.
 
-- notice v0.2.1 / build `0.2.1-frd-warning-assets-signoff`;
-- approved Dev source commit: `bb73e05fcf8ff9f920fb6171d7777d84466c221b`;
-- approved Dev notice blob: `9c575825179a97e0682caab3f508a21b512bf6ce`;
-- Stable-equivalent notice differs only in public source labeling and the asset base moving from `WITCH_DEV_UI` to `Witch_Scripts`; Stable notice blob: `4802b536d00457d2580100792262cabbef73a5e5`;
-- FRD guide asset blob: `b968a8d622e95ac1b1a42e397731e4be79c0c84d`;
-- white emblem asset blob: `0615e1d888820677d60332618b6cca918a68b26a`;
-- Amanda visually approved the Dev popup with the dual-warning FRD callout, centered FRD settings guide, normalized punctuation, centered emblem sign-off, and `Hell Yeah!` confirmation button.
+- core service advances to v0.3.5 / build `0.3.5-preserve-native-source-floor`, exact Dev blob `f63665ebd34cdaee865de65b4b6ff973eb85b582`;
+- new same-figure drift guard v0.1.0 / build `0.1.0-dev-stable-same-figure-repair`, exact Dev blob `830328fa2dd6405f9aec98cfa19b8868ad714b96`;
+- active-decal policy advances to v0.1.1 / build `0.1.1-dev-projected-host-lifecycle-coordination`, exact Dev blob `a89c57e09cdaa2f4213f6b3a8eed95118f4c4d14`;
+- the public manifest loads core -> same-figure guard -> active-decal policy -> existing Texture Quality UI, preserving the validated wrapper/lifecycle order;
+- projected `data.decals.splatter[*].filter` hosts are now included only when the filter value is literally `true`, the target is a real atlas part, and the target is not bodyLower/bodyUpper/face already owned by the core service;
+- same-figure kitbash policy loss is repaired only after HeroForge reaches the existing stable ready generation, reusing the accepted readiness/stability contract rather than a guessed delay;
+- Amanda performed the committed Dev visual gate on D4 with wings: a real kitbash move completed with no visible issue after the repair candidate was loaded.
 
-The public manifest now registers the beta notice as a hidden enabled-by-default HeroForge UI module and loads it only from `Witch_Scripts` using the deterministic v0.2.1 cache key. The notice remains one-time via its existing acknowledgement key and does not change Texture Quality engine behavior.
+Static promotion checks: exact reconstruction of the prior Stable manifest matched blob `965aedcc68faff80e878a297c3237a0d2a470ef8`; candidate manifest parses with unique registry/tool IDs; all three promoted runtime blobs are the already syntax-checked Dev blobs; all new public loader URLs point only to `Witch_Scripts`.
 
-Static pre-promotion checks passed: `node --check`, manifest JSON parsing, unique module/tool IDs, Stable-only notice URL, and exact reconstruction of the pre-change Stable manifest blob `094835946282e5e66552a31e18036f56804a7827`.
-
-**Runtime behavior changed:** yes — public Stable gains the approved one-time Texture Quality announcement UI. Texture Quality service v0.3.4 / UI v0.2.0 behavior is unchanged.
-
----
-
-## DOCK-2026-09-14-034 — Close public Stable multi-figure Texture Quality rollout
-
-Date: 2026-09-14
-
-### Final public Stable result
-
-Public `Witch_Scripts` runtime commit `d2470ee7d1fbfe052326937a9ba9468ff5339fbf` passed the required post-promotion Stable smoke with the Dev loader disabled.
-
-- Stable provenance was confirmed from `Witch_Scripts/manifest.json`, not `WITCH_DEV_UI`;
-- service: v0.3.4 / build `0.3.4-dev-native-color-material-setup`;
-- UI: v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`;
-- Amanda toggled High Res ON in public Stable, visually confirmed all three figures looked correct with zero errors, refreshed the page, and confirmed High Res persisted across the reload;
-- Bridge #2204 confirmed the reloaded Stable scene ON with 3 figures, coherent native 4096×4096 atlas output, bodyLower/bodyUpper/face allocations and used sizes at 2048, exact pinned 1024×1024 body masks, and an idle renderer;
-- Bridge #2205 performed one controlled Disable; #2206 confirmed `OFF for this session — Persistent High Res will return after reload`, no Texture Quality error, and an idle renderer;
-- Bridge #2207 performed one controlled final Enable; #2208 confirmed Stable provenance again, all 3 figures verified, coherent 4096×4096 atlas output, 2048 target allocations/used sizes, pinned 1024×1024 masks, no error, and renderer idle;
-- High Res was left ON at the end of the smoke.
-
-The persistence bug from public v0.1.0 is therefore closed in public Stable: the desired High Res preference survives reload while each page/figure receives a fresh readiness/reconcile cycle rather than stale session ownership.
-
-No unrelated Dev feature, beta notice, public shell change, HeroForge.Compatibility dependency, or HF-Chat-Bridge runtime dependency was promoted.
-
-**Runtime behavior changed by this checkpoint:** no. Documentation-only closeout; public runtime remains exactly commit `d2470ee7d1fbfe052326937a9ba9468ff5339fbf`.
-
----
-
-## DOCK-2026-09-14-033 — Promote accepted multi-figure Texture Quality to public Stable
-
-Date: 2026-09-14
-
-### Summary
-
-Narrowly promoted the accepted `WITCH_DEV_UI` Texture Quality service/UI into public `Witch_Scripts` without merging unrelated Dev work.
-
-- service v0.3.4 / build `0.3.4-dev-native-color-material-setup`, exact accepted Dev blob `cf2f5974177a65bc6a5419ace824cc9565b79710`;
-- UI v0.2.0 / build `0.2.0-dev-persistence-advanced-controls`, exact accepted Dev blob `863b5ccb4f76ffac105f2e0f8d3f46ac8a37ff94`;
-- public runtime promotion commit `d2470ee7d1fbfe052326937a9ba9468ff5339fbf`, parent `c93485d741fe9d1801b0f6924b7204a8d922792c`;
-- changed-file whitelist was exactly the two Texture Quality runtime files, `manifest.json`, `CHANGELOG.md`, and `PRE_FLIGHT_Check.md`;
-- both exact runtime blobs passed `node --check`, candidate manifest parsed with unique module/tool IDs, and public Texture Quality URLs pointed only to `Witch_Scripts` with deterministic cache keys.
-
-The promoted runtime preserves native HeroForge ownership, dynamic three-figure membership handling, shared-Part snapshot/restore behavior, native color material setup, persistent High Res preference with fresh readiness per page/figure, owned-state restore, atlas scale 4, bake target 2048, and the accepted 1024 source/allocation floor with native promotion toward 2048 where atlas pressure permits.
-
-**Runtime behavior changed:** yes — public Stable Texture Quality advanced from service/UI v0.1.0 to v0.3.4/v0.2.0.
+**Runtime behavior changed:** yes — public Stable gains the projected-host texture policy and bounded same-figure kitbash lifecycle repair. No unrelated Dev modules are promoted.
