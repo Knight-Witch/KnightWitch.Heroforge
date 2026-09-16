@@ -2,26 +2,29 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-16-078 -- Close #7 / activate JSON status re-check
+## PFC-2026-09-16-079 -- Reopen #7 / park JSON detour
 
 Date: 2026-09-16
 
 ### Scope
 
-Documentation-only closeout/routing update. No Witch Dock runtime source or public Stable change is included.
+Documentation-only routing correction. No Witch Dock runtime source or public Stable change is included.
 
-### Issue #7 conclusion
+### Corrected active state
 
-- Exact reported `Loading failed: connection error` text is absent from the Witch Dock repository.
-- Current Dev loader GitHub/module fetch failures are caught silently and do not create that toast.
-- Live Bridge DOM/runtime searches found no persistent Witch Dock-owned matching emitter.
-- Hero Forge official release notes document its native behavior: failed part loads show a network-error message and are retried on later changes.
-- A broad 30-second trace ran while the popup visibly reproduced; its text-node hook saturated on ordinary HeroForge churn before retaining the transient toast, so that trace is not used as exact-emitter proof.
-- Supported conclusion: no Witch Dock fix is justified. #7 is closed upstream/not-planned unless a later controlled comparison proves Dock causation.
+- Issue #7 is OPEN again. The prior upstream-only closure was premature because Hero Forge's documented native network-error behavior was not tied to the exact observed popup by a captured failing request/emitter.
+- The earlier 30-second trace is insufficient evidence: broad DOM text hooks saturated on ordinary UI churn and later network/error sections were truncated.
+- Next diagnostic is a bounded low-noise failed-network/transient-notification capture during reproduction.
+- No runtime patch should be made until the failing request/call path is isolated.
 
-### Next gate — JSON character import/export
+### Deferred JSON status preserved
 
-Treat the old JSON breakage report as a status re-check, not a confirmed current bug. Inspect `tools/JSON_Tool.js`, verify its live runtime dependencies, test export first, and only perform import with a reversible/snapshot-backed at-most-once test. Read `MODULE_VERSIONING.md` only if a runtime fix is actually needed.
+- Current `tools/JSON_Tool.js` is bulk library backup/export only; no character import/restore path is present.
+- `json-tool` v1.0.0 registered successfully on current Dev.
+- Live smoke indexed 1,890 configs and 35 folder marks and downloaded at least 650 config JSONs with no reported failures before being manually paused.
+- Pause/resume controls worked.
+- Full ZIP completion was not required because JSON is not the active task.
+- Amanda has additional bugs to add before JSON is resumed; do not infer their priority.
 
 ### Validation for this commit
 
@@ -33,9 +36,15 @@ Treat the old JSON breakage report as a status re-check, not a confirmed current
 
 ---
 
+## PFC-2026-09-16-078 -- Close #7 / activate JSON status re-check
+
+Superseded in part by PFC-2026-09-16-079: #7 is reopened and JSON is deferred.
+
+---
+
 ## PFC-2026-09-16-077 -- Resume backlog / activate issue #7
 
-Bridge gate completed and #7 was selected for diagnosis. #7 is now resolved/reclassified by the entry above.
+Bridge gate completed and #7 was selected for diagnosis.
 
 ---
 
