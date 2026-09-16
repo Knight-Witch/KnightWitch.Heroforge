@@ -2,27 +2,28 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-16-076 -- Close post-promotion Texture Quality regression matrix
+## DOCK-2026-09-16-077 -- Resume Witch Dock backlog after Bridge gate
 
 Date: 2026-09-16
 
 ### Summary
 
-Documentation-only closeout after the already-promoted Texture Quality lifecycle/projected-host patch passed the full post-promotion Dev regression matrix.
+Documentation-only agenda/baton update after the mandatory HF-Chat-Bridge ergonomics gate completed successfully.
 
-- 2-figure High Res baseline passed on D5/Seya + Demi.
-- Real Demi kitbash drag triggered the expected brief native downgrade and one successful same-figure repair; D5 remained coherent.
-- Third-figure add passed with Witch of the Wilds; `hairZ` provided an additional projected-host family.
-- Real Witch kitbash drag advanced the guard from repair 1 -> 2 and recovered all three figures cleanly.
-- Third-figure removal cleaned `baseItemB` / `hairZ` ownership without an extra repair.
-- Deliberate D5 -> Demi -> D5 same-canvas switching preserved High Res and per-figure projected-host ownership.
-- Canvas/scene round-trip with Persistence ON passed: projected decals were immediate; body atlases briefly rebuilt then returned automatically to verified High Res. Runtime confirmed persistence remained enabled and no extra guard repair/error occurred.
-- Final default/unpainted third-figure inert control passed: core verified 3 figures while active-decal state reported `baseItemB.activeAccessorySlots: []`; D5 and Demi retained their own existing host sets.
-- The prior muddy/green artifact remains closed absent reproduction.
-- No additional Texture Quality runtime patch is required from this regression.
-- Mandatory next work is HF-Chat-Bridge issue `#2580` before any unrelated Witch Dock backlog item: reduce trusted DEV workbench friction with a path-aware/broader named-path call design.
+- HF-Chat-Bridge main userscript v0.3.2 is installed and live-validated; issue `HF-Chat-Bridge#2580` is closed.
+- Direct trusted named-path calls and same-request call-result handles are now available for Witch Dock diagnostics; relay v0.2.2 and Power v0.1.0 are unchanged.
+- Witch Dock backlog is resumed with issue `#7` — intermittent `Loading failed: connection error` toast — as the next active task.
+- #7 remains diagnosis-first: emitter/request/trigger/retry behavior are unknown, so no runtime fix is assumed yet.
+- Historical import/export/capture reports remain re-test items, not confirmed current failures.
+- Texture Quality lifecycle/projected-host work remains CLOSED/PASS; broader Enhanced Object Textures remains a separate future feature track.
 
-**Runtime behavior changed:** no. Documentation/housekeeping only; no runtime module, manifest, version, cache key, or public Stable behavior changes.
+**Runtime behavior changed:** no. Documentation/housekeeping only; no JavaScript, manifest, module version, cache key, or public Stable behavior changes.
+
+---
+
+## DOCK-2026-09-16-076 -- Close post-promotion Texture Quality regression matrix
+
+Documentation-only closeout after the already-promoted Texture Quality lifecycle/projected-host patch passed the full post-promotion Dev regression matrix. No additional runtime patch was required. The mandatory next gate was HF-Chat-Bridge issue `#2580`, now completed by the entry above.
 
 ---
 
