@@ -2,28 +2,33 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-16-077 -- Resume Witch Dock backlog after Bridge gate
+## DOCK-2026-09-16-078 -- Reclassify connection toast and route JSON re-test
 
 Date: 2026-09-16
 
 ### Summary
 
-Documentation-only agenda/baton update after the mandatory HF-Chat-Bridge ergonomics gate completed successfully.
+Documentation-only closeout/routing update after issue #7 diagnosis.
 
-- HF-Chat-Bridge main userscript v0.3.2 is installed and live-validated; issue `HF-Chat-Bridge#2580` is closed.
-- Direct trusted named-path calls and same-request call-result handles are now available for Witch Dock diagnostics; relay v0.2.2 and Power v0.1.0 are unchanged.
-- Witch Dock backlog is resumed with issue `#7` — intermittent `Loading failed: connection error` toast — as the next active task.
-- #7 remains diagnosis-first: emitter/request/trigger/retry behavior are unknown, so no runtime fix is assumed yet.
-- Historical import/export/capture reports remain re-test items, not confirmed current failures.
-- Texture Quality lifecycle/projected-host work remains CLOSED/PASS; broader Enhanced Object Textures remains a separate future feature track.
+- Issue #7 is closed as upstream/not a confirmed Witch Dock-owned defect. No matching Witch Dock emitter/source string was found, and Witch Dock's own module loader silently catches its fetch failures.
+- Hero Forge officially documents a native part-load network-error message and automatic retry on later changes, matching the observed transient/self-recovering behavior.
+- No Witch Dock runtime patch is justified for #7. Reopen only if a controlled comparison proves a specific Dock module causes or materially increases the native failures.
+- Backlog issue #8 now routes the first historical status re-check: JSON character import/export.
+- JSON import/export remains diagnosis-first; the historical report is not assumed to reproduce on current HeroForge.
 
 **Runtime behavior changed:** no. Documentation/housekeeping only; no JavaScript, manifest, module version, cache key, or public Stable behavior changes.
 
 ---
 
+## DOCK-2026-09-16-077 -- Resume Witch Dock backlog after Bridge gate
+
+Documentation-only routing update after HF-Chat-Bridge v0.3.2 was installed/live-validated. Issue #7 was selected for diagnosis and has now been resolved/reclassified by the entry above.
+
+---
+
 ## DOCK-2026-09-16-076 -- Close post-promotion Texture Quality regression matrix
 
-Documentation-only closeout after the already-promoted Texture Quality lifecycle/projected-host patch passed the full post-promotion Dev regression matrix. No additional runtime patch was required. The mandatory next gate was HF-Chat-Bridge issue `#2580`, now completed by the entry above.
+Texture Quality post-promotion hardening passed and closed with no additional runtime patch required.
 
 ---
 

@@ -2,25 +2,26 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-16-077 -- Resume backlog / activate issue #7
+## PFC-2026-09-16-078 -- Close #7 / activate JSON status re-check
 
 Date: 2026-09-16
 
 ### Scope
 
-Documentation-only routing update after the HF-Chat-Bridge stop gate completed. No Witch Dock runtime source or public Stable change is included.
+Documentation-only closeout/routing update. No Witch Dock runtime source or public Stable change is included.
 
-### Confirmed state
+### Issue #7 conclusion
 
-- Texture Quality post-promotion regression hardening remains PASS/CLOSED.
-- HF-Chat-Bridge issue `#2580` is closed after main userscript v0.3.2 was installed and live-validated.
-- Bridge direct trusted named-path calls and same-request call-result handles are available for diagnostics; relay v0.2.2 / Power v0.1.0 remain unchanged.
-- Backlog issue `#8` is free to resume.
-- The first confirmed open Witch Dock bug is issue `#7`: repeated transient `Loading failed: connection error` toast on both Stable and Dev.
+- Exact reported `Loading failed: connection error` text is absent from the Witch Dock repository.
+- Current Dev loader GitHub/module fetch failures are caught silently and do not create that toast.
+- Live Bridge DOM/runtime searches found no persistent Witch Dock-owned matching emitter.
+- Hero Forge official release notes document its native behavior: failed part loads show a network-error message and are retried on later changes.
+- A broad 30-second trace ran while the popup visibly reproduced; its text-node hook saturated on ordinary HeroForge churn before retaining the transient toast, so that trace is not used as exact-emitter proof.
+- Supported conclusion: no Witch Dock fix is justified. #7 is closed upstream/not-planned unless a later controlled comparison proves Dock causation.
 
-### Diagnosis gate for #7
+### Next gate — JSON character import/export
 
-Do not patch from the visible message alone. First identify the emitter/request and trigger path through current source search plus HF-Chat-Bridge runtime/DOM/network/event inspection. Preserve optional-feature isolation. If a runtime fix is required, read `MODULE_VERSIONING.md`, change only Dev, validate narrowly, and do not promote Stable without Amanda's explicit approval.
+Treat the old JSON breakage report as a status re-check, not a confirmed current bug. Inspect `tools/JSON_Tool.js`, verify its live runtime dependencies, test export first, and only perform import with a reversible/snapshot-backed at-most-once test. Read `MODULE_VERSIONING.md` only if a runtime fix is actually needed.
 
 ### Validation for this commit
 
@@ -32,9 +33,15 @@ Do not patch from the visible message alone. First identify the emitter/request 
 
 ---
 
+## PFC-2026-09-16-077 -- Resume backlog / activate issue #7
+
+Bridge gate completed and #7 was selected for diagnosis. #7 is now resolved/reclassified by the entry above.
+
+---
+
 ## PFC-2026-09-16-076 -- Texture Quality post-promotion regression closeout
 
-Texture Quality lifecycle/projected-host hardening passed and closed with no additional runtime fix. Its mandatory follow-up Bridge gate is now completed by the entry above.
+Texture Quality lifecycle/projected-host hardening passed and closed with no additional runtime fix.
 
 ---
 
