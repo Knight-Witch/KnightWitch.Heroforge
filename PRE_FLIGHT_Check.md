@@ -2,41 +2,39 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-15-075 -- Post-promotion Dev baton housekeeping
+## PFC-2026-09-16-076 -- Texture Quality post-promotion regression closeout
 
-Date: 2026-09-15
+Date: 2026-09-16
 
 ### Scope
 
-Documentation-only cleanup after the Texture Quality lifecycle/projected-host patch was promoted from validated Dev runtime commit `d0d198cea6f8d755b79ff667c1b3d550956ea0cb` to public Stable.
+Documentation-only closeout for the already-promoted Texture Quality lifecycle/projected-host patch. No runtime source or public Stable change is included.
 
-### Confirmed release state
+### Live regression evidence
 
-- Public runtime promotion commit: `dac34877b5d02208c99072e67bf0e59b9233b11b`.
-- Public rollout closeout/current Stable head: `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
-- Stable provenance was confirmed from `Witch_Scripts/manifest.json`; the three promoted runtime files were byte-identical to the validated Dev blobs and compiled successfully.
-- Public smoke on a newly loaded figure returned `enable() === true`, then read back core v0.3.5 ON at 8192×4096 with bodyLower/bodyUpper/face scale 4, bake/source 2048, packed 2048×2048, coherent resource atlas, idle HeroForge, and no lifecycle-extension errors.
-- Active-decal readback selected the four D4 wing hosts and remained idle/no-error. The same-figure guard remained idle/no-error after its previously proven repair path.
+- 2-figure High Res scene verified with D5/Seya + Demi at native 8192×4096 and core body/head 2048 policy.
+- Real Demi kitbash drag: visible downgrade/recovery observed; guard repair count 0 -> 1; no collateral D5 failure.
+- Third figure Witch of the Wilds: add verified at 3 figures; projected host `hairZ` discovered independently.
+- Real Witch kitbash drag: guard repair count 1 -> 2 with `baseItemB` reason; final 3-figure state coherent.
+- Remove Witch: returned to verified 2-figure state; `baseItemB` / `hairZ` active ownership disappeared; repair count remained 2.
+- Same-canvas D5 -> Demi -> D5 switching: High Res stayed enabled; no new repair; host ownership remained isolated; HeroForge idle afterward.
+- Canvas/scene round-trip with Persistence ON: visual reapply succeeded automatically. Decals were immediate; body atlases briefly rebuilt. Runtime afterward: `enabled:true`, `persistent:true`, `busy:false`, `sceneSyncPending:false`, no core error, status `ON — 2 figures · native atlases verified`; guard remained at exactly 2 repairs; active-decal module idle/no-error.
+- Default/unpainted third-figure inert control: core status `ON — 3 figures · native atlases verified`; guard remained idle at exactly 2 repairs; active-decal state contained D5 wing hosts, Demi non-wing hosts, and `baseItemB.activeAccessorySlots: []`; HeroForge idle.
+- Prior muddy/green artifact did not reproduce.
 
-### Corrected baton state
+### Conclusion
 
-The prior `ACTIVE_CONTEXT.md` was stale after promotion: it still said Stable was untouched/not authorized and listed the 2–3 figure regression as a pre-promotion gate. This record corrects that mismatch without changing runtime behavior.
+Post-promotion Texture Quality regression hardening: **PASS / CLOSED**. No new Dev runtime fix or Stable promotion is required.
 
-### Outstanding regression coverage
+### Mandatory next gate
 
-1. Real 2-figure High Res regression, including projected/accessory ownership separation.
-2. Real kitbash drag on one figure while two figures are present; confirm no guard/scene-sync race or collateral degradation.
-3. Add/remove a third figure and repeat the narrow lifecycle/state checks.
-4. Deliberate A -> B -> A figure-switch/session behavior.
-5. At least one non-wing projected-host example and one no-projected-host control.
-6. Do not reopen the prior muddy/green artifact unless it visibly reproduces.
-
-Further investigation/fixes must occur in `WITCH_DEV_UI`; public Stable is protected at the closeout head until another Dev change passes its own gate and receives explicit promotion approval.
+Do not begin another Witch Dock bug/feature. Move first to `Knight-Witch/HF-Chat-Bridge#2580` and improve trusted DEV workbench ergonomics/call scope. Validate that Bridge update and update Amanda's installed Bridge component(s) only as required before resuming the Witch Dock backlog.
 
 ### Validation for this commit
 
 - Intended changed-file set: `ACTIVE_CONTEXT.md`, `CHANGELOG.md`, `PRE_FLIGHT_Check.md` only.
 - No JavaScript, manifest, module version, cache key, or public Stable file is intentionally changed.
+- Stable remains protected at `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
 
 **Runtime behavior changed:** no. Documentation/housekeeping only.
 
@@ -44,4 +42,4 @@ Further investigation/fixes must occur in `WITCH_DEV_UI`; public Stable is prote
 
 ## Prior current preflight
 
-PFC-2026-09-15-074 and earlier detailed records remain preserved in Git history.
+PFC-2026-09-15-075 and earlier detailed records remain preserved in Git history.

@@ -2,26 +2,30 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-15-075 -- Refresh Dev baton after public Texture Quality rollout
+## DOCK-2026-09-16-076 -- Close post-promotion Texture Quality regression matrix
 
-Date: 2026-09-15
+Date: 2026-09-16
 
 ### Summary
 
-Housekeeping-only update after the validated Texture Quality same-figure lifecycle/projected-host patch was promoted to public Stable and passed its Stable smoke.
+Documentation-only closeout after the already-promoted Texture Quality lifecycle/projected-host patch passed the full post-promotion Dev regression matrix.
 
-- Records validated Dev runtime source `d0d198cea6f8d755b79ff667c1b3d550956ea0cb`.
-- Records public runtime promotion `dac34877b5d02208c99072e67bf0e59b9233b11b` and Stable closeout `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
-- Marks D4-with-wings single-figure lifecycle/projected-host validation closed: four real wing hosts selected, committed real kitbash drag visually passed, and no current muddy/green artifact reproduced.
-- Records public Stable smoke success on a newly loaded figure: core v0.3.5 enabled to 8192×4096 with bodyLower/bodyUpper/face scale 4, 2048 source/bake, 2048×2048 packed allocations, and no guard/active-decal error.
-- Corrects the stale Dev baton that still claimed Stable was untouched/not authorized.
-- Sets the next work to the still-missing real 2–3 figure regression, deliberate figure-switch coverage, one non-wing projected-host case, and one no-projected-host control.
-- Broader Enhanced Object Textures remains out of scope.
+- 2-figure High Res baseline passed on D5/Seya + Demi.
+- Real Demi kitbash drag triggered the expected brief native downgrade and one successful same-figure repair; D5 remained coherent.
+- Third-figure add passed with Witch of the Wilds; `hairZ` provided an additional projected-host family.
+- Real Witch kitbash drag advanced the guard from repair 1 -> 2 and recovered all three figures cleanly.
+- Third-figure removal cleaned `baseItemB` / `hairZ` ownership without an extra repair.
+- Deliberate D5 -> Demi -> D5 same-canvas switching preserved High Res and per-figure projected-host ownership.
+- Canvas/scene round-trip with Persistence ON passed: projected decals were immediate; body atlases briefly rebuilt then returned automatically to verified High Res. Runtime confirmed persistence remained enabled and no extra guard repair/error occurred.
+- Final default/unpainted third-figure inert control passed: core verified 3 figures while active-decal state reported `baseItemB.activeAccessorySlots: []`; D5 and Demi retained their own existing host sets.
+- The prior muddy/green artifact remains closed absent reproduction.
+- No additional Texture Quality runtime patch is required from this regression.
+- Mandatory next work is HF-Chat-Bridge issue `#2580` before any unrelated Witch Dock backlog item: reduce trusted DEV workbench friction with a path-aware/broader named-path call design.
 
-**Runtime behavior changed:** no. Documentation/housekeeping only; no runtime module, manifest, version, or public Stable behavior changes.
+**Runtime behavior changed:** no. Documentation/housekeeping only; no runtime module, manifest, version, cache key, or public Stable behavior changes.
 
 ---
 
 ## Prior active history
 
-DOCK-2026-09-15-074 and earlier detailed entries remain preserved in Git history.
+DOCK-2026-09-15-075 and earlier detailed entries remain preserved in Git history.
