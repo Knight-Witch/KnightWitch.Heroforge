@@ -4,7 +4,7 @@ This file defines the required versioning contract for active Witch Dock runtime
 
 ## Canonical registry
 
-`manifest.json` contains the canonical `moduleRegistry` array for active runtime modules. It includes normal manifest-loaded tools, hidden HeroForge UI modules, conditional runtime children, and the Witch Dock core shell.
+`manifest.json` contains the canonical `moduleRegistry` array for active runtime modules. It includes normal manifest-loaded tools, hidden HeroForge UI modules, conditional runtime children, the Witch Dock core shell, and the canonical Dev launcher when present on Dev.
 
 Every active runtime module must have exactly one registry entry containing at minimum:
 
@@ -38,6 +38,21 @@ Use semantic versioning for maintained numeric module versions:
 - **MAJOR** (`X.0.0`): breaking API/storage/behavior contract, replacement architecture requiring migration, or intentionally incompatible redesign.
 
 New experimental modules may begin below `1.0.0` (for example `0.1.0`). Existing live modules that had no trustworthy historical version received a documented `1.0.0` baseline on 2026-09-06; this is a tracking baseline, not reconstructed release history.
+
+## Dev channel identity synchronization
+
+The canonical Dev entrypoint is `Witch_Dock_DEV.user.js`.
+
+Its user-visible identity is one contract, not three independent labels. When the Dev launcher version changes, update all of the following together:
+
+- userscript `@version`;
+- userscript `@name`, formatted `WITCH DOCK - DEV v<version>`;
+- runtime `DEV_VERSION` / visible Dock title identity;
+- `manifest.json.moduleRegistry` entry `witch-dock-dev-launcher` version/build.
+
+The visible Dock title and Tampermonkey script name must report the same Dev/version identity. Dev `@updateURL`, `@downloadURL`, manifest routing, and manifest-loaded URLs must remain on `WITCH_DEV_MAIN` unless a specifically documented migration changes the channel architecture.
+
+Do not bump the Stable core merely because the Dev channel wrapper changes. `witch-dock-core` tracks the shared core source; `witch-dock-dev-launcher` tracks the Dev-specific installed/bootstrap surface.
 
 ## Initial normalization — 2026-09-06
 

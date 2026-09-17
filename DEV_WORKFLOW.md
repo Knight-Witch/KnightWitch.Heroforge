@@ -8,6 +8,8 @@
 - **Short-lived task branches** isolate risky or parallel experiments.
 - **Git history** is the archive; old branches are not filing cabinets.
 
+The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and load only `WITCH_DEV_MAIN` runtime sources.
+
 ## 1. Starting work
 
 Every non-trivial runtime change starts with an issue/task describing the problem, intended scope, and acceptance gate.
@@ -32,17 +34,20 @@ If a runtime file differs from Stable but is not represented by an open divergen
 
 When Stable receives an independent hotfix/change, mirror that new Stable state into Dev unless Dev has a tracked conflicting change for the same scope.
 
+Dev channel routing itself is an intentional infrastructure divergence: the Dev launcher/manifest must point at `WITCH_DEV_MAIN` so Dev actually tests Dev source. Unaffected module bytes should still match Stable until an issue changes them.
+
 ## 3. Validation
 
 Use the narrowest meaningful gates:
 
 - syntax/static checks;
 - manifest/version consistency;
+- Dev channel identity/routing checks;
 - HF-Chat-Bridge runtime inspection/probes;
 - targeted regression checks;
 - Amanda's visual confirmation when appearance/interaction is part of acceptance.
 
-A parse success is not runtime proof.
+A parse success is not runtime proof. For Dev startup specifically, verify the visible title says Dev, the Tampermonkey entry says Dev with the same version, `KWWitchDockManifestURL` points to `WITCH_DEV_MAIN`, and module-loader requests do not silently resolve to Stable.
 
 ## 4. Promotion to public
 
@@ -50,7 +55,9 @@ Promotion is always explicit and narrow. Do not merge all of Dev merely because 
 
 Identify the exact validated files/commits, promote only that scope to `Witch_Scripts`, then run the Stable smoke.
 
-## 5. Post-promotion cleanup — required
+## 5. Post-promotion cleanup — automatic and required
+
+A passing Stable smoke automatically enters this phase. The original promotion approval already authorizes this janitorial closeout; do not pause to ask Amanda for separate cleanup permission.
 
 After Stable passes:
 
@@ -58,11 +65,12 @@ After Stable passes:
 2. remove the resolved entry from `DEV_DIVERGENCES.json`;
 3. remove temporary diagnostics/probes/flags/shims unless intentionally retained;
 4. update or close the source issue;
-5. delete short-lived task/promotion branches no longer needed;
+5. delete short-lived task/promotion branches no longer needed once their useful history is safely reachable;
 6. trim `ACTIVE_CONTEXT.md` to current work;
-7. compare untouched runtime/module paths for accidental drift.
+7. compare untouched runtime/module paths for accidental drift;
+8. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
 
-The rollout is not complete until this cleanup is done.
+Do not call the rollout complete before those steps are done. This cleanup authorization does not permit unrelated Stable edits or scope expansion.
 
 ## 6. Legacy branch retirement
 

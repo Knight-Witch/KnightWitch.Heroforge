@@ -30,11 +30,19 @@ An unaffected module should be byte-for-byte equivalent to Stable whenever pract
 
 Unexpected Dev-vs-Stable runtime drift is a defect until explained.
 
+## Canonical Dev runtime identity
+
+- The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`, not the public `Witch_Dock.user.js` entrypoint.
+- Dev must identify itself clearly in Tampermonkey and in the visible Dock title bar using the same channel/version identity.
+- Dev update/download URLs, manifest routing, and manifest-loaded runtime URLs must resolve to `WITCH_DEV_MAIN`, never silently to `Witch_Scripts` or a legacy Dev branch.
+- A Dev bootstrap/channel-seam failure must fail visibly rather than silently running Stable while appearing to be Dev.
+- Keep the Dev launcher narrow. It is a channel/bootstrap boundary and temporary migration seam toward issue #10, not a second application core.
+
 ## Development flow
 
 Normal flow:
 
-issue/task -> diagnosis -> Dev implementation -> static checks -> live Dev validation -> human visual gate when relevant -> explicit narrow Stable promotion -> Stable smoke -> Dev reconciliation/janitorial closeout.
+issue/task -> diagnosis -> Dev implementation -> static checks -> live Dev validation -> human visual gate when relevant -> explicit narrow Stable promotion -> Stable smoke -> automatic Dev reconciliation/janitorial closeout.
 
 Preserve known-working timing, polling, retries, readiness checks, ownership boundaries, snapshots, rollback behavior, cache-key behavior, module order, enablement behavior, and failure isolation unless testing proves a change safe.
 
@@ -52,7 +60,11 @@ Expose bounded privileged operations rather than raw Tampermonkey capabilities i
 
 ## Release janitorial gate
 
-A Dev -> Stable rollout is not complete merely because Stable works. Before closing the rollout:
+A Dev -> Stable rollout is not complete merely because Stable works. Once the authorized Stable promotion passes its smoke test, Dev cleanup begins immediately as part of that same authorized rollout. Do **not** stop to ask Amanda whether Dev should now be cleaned; no second approval is required for the janitorial work below.
+
+This standing authorization covers only reconciliation/cleanup required to finish the already-approved promotion in Dev, its issue/task branches, and project records. It does not authorize unrelated runtime work or additional public Stable changes.
+
+Before closing the rollout:
 
 - confirm the exact promoted scope;
 - pass Stable smoke;

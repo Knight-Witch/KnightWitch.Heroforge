@@ -2,6 +2,48 @@
 
 This is the rolling current Dev pre-flight log for `WITCH_DEV_MAIN`. Older Stable/legacy records remain durable in Git history.
 
+## PFC-2026-09-17-002 — Canonical Dev launcher/channel identity
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #19 only: establish an unmistakable installed Dev identity and route Dev manifest/module loading to `WITCH_DEV_MAIN`. Public Stable remains untouched.
+
+### Static evidence
+
+- `Witch_Dock_DEV.user.js` parses with `node --check`.
+- Dev userscript `@name` is `WITCH DOCK - DEV v1.2.2`; `@version` is `1.2.2`; update/download URLs point to `WITCH_DEV_MAIN`.
+- Dev launcher exposes `KWWitchDockDevChannel`, fetches the shared branch core, requires exactly one known Stable manifest declaration seam, replaces that declaration with the Dev manifest URL, and shows a visible bootstrap error instead of silently falling back if the seam/fetch fails.
+- `manifest.json` parses successfully.
+- Registry IDs are unique: 27 entries including `witch-dock-dev-launcher` v1.2.2.
+- Runtime module IDs are unique: 23 modules plus one hidden bootstrap.
+- Every manifest-loaded runtime URL points to `WITCH_DEV_MAIN`; none points to `Witch_Scripts`, `WITCH_DEV_UI`, or legacy `WITCH_DEV`.
+- Existing shared `Witch_Dock.user.js` core source remains untouched at its Stable-derived 1.2.1 identity.
+- `DEV_DIVERGENCES.json` records issue #19 and the two intentional Dev-only runtime paths.
+
+### Required live gate
+
+With public Stable disabled and `Witch_Dock_DEV.user.js` installed/enabled:
+
+1. refresh HeroForge;
+2. confirm Tampermonkey shows `WITCH DOCK - DEV v1.2.2`;
+3. confirm the Dock title bar shows exactly `WITCH DOCK - DEV v1.2.2`;
+4. confirm `KWWitchDockManifestURL` resolves to `WITCH_DEV_MAIN/manifest.json`;
+5. confirm `KWModuleLoader` completes with the expected enabled module count and zero unexpected failures;
+6. confirm representative module request URLs resolve to `WITCH_DEV_MAIN`;
+7. confirm normal Dock tools/tabs appear and basic interaction is unchanged.
+
+Do not close #19 until that live/human gate passes.
+
+### Governance change
+
+The project contract/workflow now states explicitly that a passing Stable smoke automatically triggers Dev janitorial reconciliation. No additional user approval is required to complete cleanup for the already-authorized promotion; this does not authorize unrelated Stable changes.
+
+**Runtime/module/manifest/public behavior changed:** Dev runtime/manifest behavior changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-001 — New Dev governance baseline
 
 Date: 2026-09-17

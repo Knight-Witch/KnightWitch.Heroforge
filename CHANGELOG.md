@@ -2,6 +2,27 @@
 
 This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
+## DOCK-2026-09-17-002 — Make canonical Dev identity/routing explicit
+
+Date: 2026-09-17
+
+### Summary
+
+Established issue #19 as the canonical Dev-channel identity layer without modifying public Stable.
+
+- Added `Witch_Dock_DEV.user.js` v1.2.2 / build `1.2.2-dev-channel-bootstrap` as the installed Dev entrypoint.
+- Tampermonkey name and intended visible Dock title are the same identity: `WITCH DOCK - DEV v1.2.2`.
+- Dev update/download URLs point to `WITCH_DEV_MAIN`.
+- The narrow launcher fetches the Stable-derived shared `Witch_Dock.user.js` core from `WITCH_DEV_MAIN`, replaces only its manifest-channel declaration, and fails visibly if that expected seam is not found.
+- Dev `manifest.json` now registers the Dev launcher and routes the bootstrap plus all 23 manifest-loaded modules to `WITCH_DEV_MAIN`; unaffected module source bytes remain Stable-equivalent until issue-linked work changes them.
+- Added binding project/workflow/versioning rules requiring Dev identity synchronization and automatic post-Stable-smoke janitorial reconciliation without a second user approval.
+- Recorded the intentional Dev channel divergence in `DEV_DIVERGENCES.json`.
+- Public `Witch_Scripts` was not changed.
+
+**Runtime/module/manifest/public behavior changed:** Dev runtime/manifest behavior changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-001 — Establish clean Stable-derived Dev baseline
 
 Date: 2026-09-17

@@ -2,6 +2,16 @@
   "version": 1,
   "moduleRegistry": [
     {
+      "id": "witch-dock-dev-launcher",
+      "title": "Witch Dock Dev Launcher",
+      "path": "Witch_Dock_DEV.user.js",
+      "kind": "dev-bootstrap",
+      "load": "userscript",
+      "version": "1.2.2",
+      "build": "1.2.2-dev-channel-bootstrap",
+      "versionOrigin": "dev-channel-identity-2026-09-17"
+    },
+    {
       "id": "witch-dock-core",
       "title": "Witch Dock Core",
       "path": "Witch_Dock.user.js",
@@ -260,7 +270,7 @@
       "id": "witch-dock-module-loader",
       "title": "Witch Dock Module Loader",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Module_Loader.js?v=0.1.1-stable-page-fetch-ordered-exec",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Module_Loader.js?v=0.1.1-stable-page-fetch-ordered-exec",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -271,7 +281,7 @@
       "id": "witch-dock-developer-mode",
       "title": "Developer Mode",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Developer_Mode.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Developer_Mode.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -280,7 +290,7 @@
       "id": "expanded-ui-scroll-guards",
       "title": "Expanded UI Scroll Guards",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -289,7 +299,7 @@
       "id": "hf-ui-scroll-split-safe",
       "title": "HF UI Scroll Split Safe",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -298,7 +308,7 @@
       "id": "hf-ui-slot-bridge",
       "title": "HF UI Slot Bridge",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/HF_UI_Slot_Bridge.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -307,7 +317,7 @@
       "id": "corrected-bound-decal-gizmo",
       "title": "Corrected Bound Decal Gizmo",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -316,28 +326,28 @@
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Body_Editor.js",
       "enabledByDefault": true
     },
     {
       "id": "pose-tool",
       "title": "Pose",
       "tab": "Pose",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Pose.js",
       "enabledByDefault": true
     },
     {
       "id": "decals-dev",
       "title": "Decals",
       "tab": "Decals",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Decals.js",
       "enabledByDefault": true
     },
     {
       "id": "booth-runtime-bootstrap",
       "title": "Booth Runtime Bootstrap",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -346,14 +356,14 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js?v=27.0.4-v27.0.4",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.0.4-v27.0.4",
       "enabledByDefault": true
     },
     {
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -362,7 +372,7 @@
       "id": "photo-booth-true-resolution",
       "title": "High Res Image Capture Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/media/Photo_Booth_True_Resolution.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -371,7 +381,7 @@
       "id": "photo-booth-true-resolution-readiness",
       "title": "Photo Booth True Resolution Readiness",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -380,7 +390,7 @@
       "id": "photo-booth-true-resolution-ui",
       "title": "High Res Image Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution_UI.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/media/Photo_Booth_True_Resolution_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -389,7 +399,7 @@
       "id": "spinny-mini-webp",
       "title": "Spinny Mini WebP Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/media/Spinny_Mini_WebP.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -398,7 +408,7 @@
       "id": "spinny-mini-webp-ui",
       "title": "Spinny Mini WebP UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP_UI.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/media/Spinny_Mini_WebP_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -407,7 +417,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.5-preserve-native-source-floor",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.5-preserve-native-source-floor",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -416,7 +426,7 @@
       "id": "texture-quality-same-figure-drift-guard",
       "title": "Texture Quality Same-Figure Drift Guard",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js?v=0.1.0-dev-stable-same-figure-repair",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js?v=0.1.0-dev-stable-same-figure-repair",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -425,7 +435,7 @@
       "id": "texture-quality-active-decal-priority",
       "title": "Texture Quality Active Decal Priority",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Active_Decal_Priority.js?v=0.1.1-dev-projected-host-lifecycle-coordination",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Active_Decal_Priority.js?v=0.1.1-dev-projected-host-lifecycle-coordination",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -434,7 +444,7 @@
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -443,7 +453,7 @@
       "id": "texture-quality-beta-notice",
       "title": "Texture Quality Phase 1 Beta Notice",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -452,14 +462,14 @@
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/JSON_Tool.js",
       "enabledByDefault": true
     },
     {
       "id": "utilities",
       "title": "Utilities",
       "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Utilities.js",
       "enabledByDefault": true
     }
   ]
