@@ -2,6 +2,24 @@
 
 This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
+## DOCK-2026-09-17-003 — Freeze issue #10 monolith contract before extraction
+
+Date: 2026-09-17
+
+### Summary
+
+Started issue #10 on short-lived architecture branch `wd/10-modular-bootstrap` with a source-grounded contract inventory before runtime extraction.
+
+- Added `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
+- Recorded the current monolith responsibilities: privileged userscript APIs, bootstrap/delivery, Dock shell/application state, CSS/presentation, tool/section registry, undo/redo/hotkeys, About/Disclaimer, compact asset, and embedded bone HUD/detection.
+- Froze current storage keys, public/global seams, loader/cache behavior, interaction behavior, and extraction gates as protected architecture-refactor contracts.
+- Defined staged migration order: privileged host seam -> low-risk presentation/feature extraction -> application-shell extraction -> final small bootstrap.
+- Public `Witch_Scripts`, canonical `WITCH_DEV_MAIN`, manifest versions, and runtime source are unchanged by this commit.
+
+**Runtime/module/manifest/public behavior changed:** no. Documentation/architecture baseline only.
+
+---
+
 ## DOCK-2026-09-17-002 — Make canonical Dev identity/routing explicit
 
 Date: 2026-09-17

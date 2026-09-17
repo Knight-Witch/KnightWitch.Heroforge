@@ -2,6 +2,35 @@
 
 This is the rolling current Dev pre-flight log for `WITCH_DEV_MAIN`. Older Stable/legacy records remain durable in Git history.
 
+## PFC-2026-09-17-003 — Issue #10 contract freeze
+
+Date: 2026-09-17
+
+### Scope
+
+Documentation-only Stage A for issue #10 on `wd/10-modular-bootstrap`: record the current monolithic core responsibilities and protected behavioral contracts before moving runtime ownership.
+
+### Source evidence
+
+Confirmed from the current Stable-derived `Witch_Dock.user.js` and v0.1.1 module-loader source:
+
+- userscript privilege APIs and manifest/bootstrap delivery are embedded in the core;
+- Dock state, persistence, CSS, UI construction, drag/resize/minimize/compact behavior, tab/tool/section registry, About/Disclaimer, undo/redo/hotkeys, and bone detection are embedded in the same core;
+- active storage keys include `kw.witchDock.v1`, `kw.witchDock.toolEnabled.*`, and `kw.witchDock.sectionOrder.*`;
+- public seams include `WitchDock.registerTool`, `WitchDock.ensureDock`, `WitchDock.downloadBlob`, and `KWWitchDockManifestURL`;
+- the hidden v0.1.1 module loader preserves concurrent fetch with manifest-order execution and per-module failure isolation;
+- public Stable is not modified during this architecture work.
+
+### Acceptance
+
+- Architecture baseline recorded in `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
+- No runtime source, manifest, version/build, storage key, cache key, module order, module URL, or public Stable file changed.
+- Live runtime validation is not required for this documentation-only commit; live baseline/host validation is required before behavioral extraction.
+
+**Runtime/module/manifest/public behavior changed:** no.
+
+---
+
 ## PFC-2026-09-17-002 — Canonical Dev launcher/channel identity
 
 Date: 2026-09-17
