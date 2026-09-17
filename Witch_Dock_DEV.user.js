@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WITCH DOCK - DEV v1.3.0
+// @name         WITCH DOCK - DEV v1.3.1
 // @namespace    KnightWitch
-// @version      1.3.0
+// @version      1.3.1
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.0";
+  const DEV_VERSION = "1.3.1";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
@@ -41,6 +41,7 @@
     name: DEV_NAME,
     coreUrl: CORE_URL,
     manifestUrl: DEV_MANIFEST_URL,
+    bootstrapTransport: "host.requestText",
     status: "initializing",
     error: null
   };
@@ -166,6 +167,7 @@
     rawPrivilegesExposed: false,
     storageNamespace: STORAGE_PREFIX,
     requestScope: REPO_RAW_PREFIX,
+    bootstrapTransport: "host.requestText",
     capabilities: Object.freeze({
       requestText: typeof GM_xmlhttpRequest === "function",
       download: typeof GM_download === "function",
@@ -231,24 +233,12 @@
     document.body.appendChild(box);
   }
 
-  function fetchCore() {
-    return new Promise((resolve, reject) => {
-      GM_xmlhttpRequest({
-        method: "GET",
-        url: `${CORE_URL}?kwdev=${encodeURIComponent(DEV_VERSION)}-${Date.now()}`,
-        headers: { "Cache-Control": "no-cache" },
-        onload: (res) => {
-          if (res.status >= 200 && res.status < 300 && res.responseText) resolve(res.responseText);
-          else reject(new Error(`core fetch HTTP ${res.status || "unknown"}`));
-        },
-        onerror: () => reject(new Error("core fetch connection error")),
-        ontimeout: () => reject(new Error("core fetch timed out"))
-      });
-    });
-  }
-
   async function boot() {
-    const source = await fetchCore();
+    state.status = "fetching-core";
+    const coreRequestUrl = `${CORE_URL}?kwdev=${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
+    const source = await PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" });
+    if (!source) throw new Error("core fetch returned empty source");
+
     const matches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (matches !== 1) {
       throw new Error(`expected exactly one Stable manifest seam in core; found ${matches}`);
@@ -259,9 +249,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // PRIVILEGED_HOST is intentionally not page-global; future extracted core modules
-    // receive it explicitly rather than gaining direct GM_* access.
-    void PRIVILEGED_HOST;
+    // PRIVILEGED_HOST remains launcher-local and is now the actual bootstrap network owner.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

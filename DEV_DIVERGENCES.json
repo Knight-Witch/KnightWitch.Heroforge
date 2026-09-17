@@ -23,16 +23,18 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap introduces the first bounded privileged-host seam while keeping the monolithic application core behavior intact. The task branch self-routes its launcher/manifest/module URLs so live validation tests the actual task branch rather than canonical Dev.",
+      "reason": "Architecture work on wd/10-modular-bootstrap now routes the bootstrap core request through the bounded privileged host while keeping the monolithic application core source unchanged. The task branch self-routes launcher/manifest/module URLs so live validation tests the actual architecture branch rather than canonical Dev.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json"
       ],
       "acceptance": [
-        "Task launcher and manifest identify v1.3.0 / build 1.3.0-dev-privileged-host-seam consistently.",
+        "Task launcher and manifest identify v1.3.1 / build 1.3.1-host-owned-core-fetch consistently.",
         "Task branch launcher, core, manifest bootstrap, and manifest module URLs resolve to wd/10-modular-bootstrap during isolated validation.",
         "The privileged host exposes no raw GM_* functions page-globally; only diagnostic capability metadata is page-visible.",
-        "Existing monolithic core source and behavior remain unchanged in Stage B.",
+        "The bootstrap core request is performed through PRIVILEGED_HOST.requestText rather than a second direct GM_xmlhttpRequest path.",
+        "KWWitchDockHostInfo and KWWitchDockDevChannel report host.requestText as the bootstrap transport during live validation.",
+        "Existing monolithic core source and behavior remain unchanged through Stage C.",
         "Before integration to WITCH_DEV_MAIN, task-branch URLs are normalized back to the canonical Dev branch and revalidated."
       ]
     }

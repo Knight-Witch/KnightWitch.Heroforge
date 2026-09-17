@@ -2,6 +2,26 @@
 
 This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
+## DOCK-2026-09-17-005 — Make privileged host own bootstrap core fetch
+
+Date: 2026-09-17
+
+### Summary
+
+Advanced issue #10 Stage C on `wd/10-modular-bootstrap` after Stage B passed its live gate.
+
+- Stage B live validation passed: task provenance confirmed, host API v0.1.0 present with raw privileges not page-exposed, Dock identity correct, basic behavior normal, and module loader completed 23/23 fetched/executed with 0 failures in 505.7 ms.
+- Bumped architecture-branch Dev launcher to v1.3.1 / build `1.3.1-host-owned-core-fetch`.
+- Removed the launcher's second direct `GM_xmlhttpRequest` bootstrap path; core source now loads through `PRIVILEGED_HOST.requestText`.
+- Added diagnostic `bootstrapTransport: "host.requestText"` to host/channel state so runtime ownership can be verified without exposing the host object itself.
+- Preserved the existing core URL/cache-busting behavior, manifest seam replacement, visible boot failure path, and task-branch routing.
+- `Witch_Dock.user.js` remains unchanged in Stage C; no application/UI extraction is combined with the privilege-ownership change.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Dev launcher bootstrap ownership changed; monolithic core and public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-004 — Add issue #10 privileged-host seam candidate
 
 Date: 2026-09-17
