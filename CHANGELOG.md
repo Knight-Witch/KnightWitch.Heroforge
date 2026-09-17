@@ -2,6 +2,28 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-008 — Restore known-good compact emblem after visual failure
+
+Date: 2026-09-17
+
+### Summary
+
+Corrected the first presentation-asset extraction after the external compact emblem failed its required human visual gate.
+
+- Dev v1.3.3 passed runtime validation: correct task provenance/title, privileged-host boundary intact, `status: running`, `error: null`, and module loader 23/23 with 0 failures in 167.9 ms.
+- Human compact-button validation failed: the button rendered as a dark square with only a short white line instead of the Witch Dock emblem.
+- HF-Chat-Bridge confirmed the external image loaded successfully at 256x256 and rendered at 40x40, ruling out a missing-resource/CSP failure.
+- A pixel probe proved `ASSETS/emblem.png` itself is the wrong visual asset for compact mode: only 156 non-transparent pixels, almost all bright, bounded to x=41..255 and y=23..24.
+- Bumped the task launcher to v1.3.4 / build `1.3.4-restore-inline-compact-emblem`.
+- Removed the runtime substitution of `ASSETS/emblem.png` and restored the exact known-good inline `COMPACT_EMBLEM_URL` data URL already present in the Stable-derived core.
+- Retained the validated privileged-host/bootstrap work and exact guarded inline-emblem declaration check.
+- No CSS or other application ownership moved in this repair; checked-in `Witch_Dock.user.js` remains unchanged.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch compact-emblem source ownership was rolled back to the known-good inline core data URL and launcher/manifest version advanced to v1.3.4; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-007 — Stabilize Tampermonkey Dev identity
 
 Date: 2026-09-17

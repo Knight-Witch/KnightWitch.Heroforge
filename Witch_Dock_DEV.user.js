@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.3
+// @version      1.3.4
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,14 +22,13 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.3";
+  const DEV_VERSION = "1.3.4";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const CORE_URL = `${REPO_RAW}/${DEV_BRANCH}/Witch_Dock.user.js`;
   const DEV_MANIFEST_URL = `${REPO_RAW}/${DEV_BRANCH}/manifest.json`;
-  const COMPACT_EMBLEM_ASSET_URL = `${REPO_RAW}/${DEV_BRANCH}/ASSETS/emblem.png?kwasset=4a9fb6d772adbf884ed29cd1234999ba6e4e0db5`;
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
   const DEV_MANIFEST_DECL = `const MANIFEST_URL = "${DEV_MANIFEST_URL}";`;
   const INLINE_EMBLEM_DECL_RE = /^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/m;
@@ -44,9 +43,9 @@
     name: DEV_NAME,
     coreUrl: CORE_URL,
     manifestUrl: DEV_MANIFEST_URL,
-    compactEmblemUrl: COMPACT_EMBLEM_ASSET_URL,
+    compactEmblemUrl: "inline:data-url-from-core",
     bootstrapTransport: "host.requestText",
-    presentationAssetMode: "external-compact-emblem",
+    presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
     error: null
   };
@@ -250,23 +249,22 @@
       throw new Error(`expected exactly one Stable manifest seam in core; found ${manifestMatches}`);
     }
 
-    const emblemMatches = source.match(/^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/gm) || [];
+    const emblemMatches = source.match(INLINE_EMBLEM_DECL_RE) || [];
     if (emblemMatches.length !== 1) {
-      throw new Error(`expected exactly one inline compact emblem seam in core; found ${emblemMatches.length}`);
+      throw new Error(`expected exactly one inline compact emblem declaration in core; found ${emblemMatches.length}`);
     }
 
-    let devSource = source.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
-    devSource = devSource.replace(
-      INLINE_EMBLEM_DECL_RE,
-      `const COMPACT_EMBLEM_URL = ${JSON.stringify(COMPACT_EMBLEM_ASSET_URL)};`
-    );
+    // The v1.3.2/v1.3.3 external emblem candidate failed its human visual gate.
+    // Preserve the known-good inline data URL exactly while we continue issue #10
+    // through other bounded extraction seams. ASSETS/emblem.png is not substituted.
+    const devSource = source.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
 
     state.status = "loading-core";
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // PRIVILEGED_HOST remains launcher-local; presentation payload ownership is being
-    // migrated in bounded source seams before the legacy monolith is retired.
+    // PRIVILEGED_HOST remains launcher-local while legacy application ownership is
+    // migrated in bounded, separately validated stages.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

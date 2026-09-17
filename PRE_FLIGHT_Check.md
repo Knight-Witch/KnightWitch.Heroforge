@@ -2,6 +2,47 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history.
 
+## PFC-2026-09-17-008 — Restore compact emblem after failed visual gate
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #10 on `wd/10-modular-bootstrap`: roll back only the failed compact-emblem externalization while preserving the already-validated privileged-host/bootstrap architecture.
+
+### Failure evidence
+
+- Dev v1.3.3 runtime/provenance passed and the module loader completed 23/23 with 0 failures in 167.9 ms.
+- Human compact-button visual gate failed: the button showed only a short white line on the dark square instead of the emblem.
+- HF-Chat-Bridge `hf-20260917-wd10-emblem-diagnose-002` proved the external image was actually loaded: complete=true, natural size 256x256, rendered size 40x40, object-fit contain, opacity 1.
+- HF-Chat-Bridge `hf-20260917-wd10-emblem-pixels-001` proved the external asset content is the problem: 156 non-transparent pixels, 154 bright pixels, bounds x=41..255 / y=23..24.
+- This rules out a missing-resource/CSP/layout explanation and confirms `ASSETS/emblem.png` is not the intended compact emblem graphic.
+
+### Static evidence for v1.3.4
+
+- Task launcher version is v1.3.4; Tampermonkey `@name` remains the fixed `WITCH DOCK - DEV` identity.
+- Manifest launcher registry is synchronized at v1.3.4 / build `1.3.4-restore-inline-compact-emblem`.
+- The launcher still asserts exactly one legacy inline `COMPACT_EMBLEM_URL` declaration before executing the core.
+- The launcher no longer replaces that declaration with `ASSETS/emblem.png`; the exact Stable-derived inline data URL is preserved.
+- Dev diagnostics now report `presentationAssetMode: inline-core-emblem-restored` and `compactEmblemUrl: inline:data-url-from-core`.
+- Existing host-owned core fetch, manifest seam, storage keys, public `WitchDock` seams, loader concurrency/order/cache behavior, and Dock interaction code are unchanged.
+- No CSS is extracted in this repair.
+- Checked-in `Witch_Dock.user.js` remains unchanged from the Stable-derived monolith.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+### Required live gate
+
+1. Existing fixed-name Dev install updates in place to v1.3.4; visible Dock title is `WITCH DOCK - DEV v1.3.4`.
+2. Dev state reports `presentationAssetMode: inline-core-emblem-restored`, `compactEmblemUrl: inline:data-url-from-core`, `status: running`, `error: null`.
+3. `#kwWDCompactIcon.src` begins with `data:image/png;base64,` and loads at the expected native dimensions.
+4. Module loader remains 23/23 with zero failures.
+5. Human visual gate: fully collapse the Dock and confirm the original emblem is restored.
+6. Do not begin CSS extraction until this compact-emblem repair passes.
+
+**Runtime/module/manifest/public behavior changed:** task-branch compact-emblem source restored to the known-good inline core data URL and launcher/manifest version advanced to v1.3.4; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-007 — Stable Tampermonkey Dev identity
 
 Date: 2026-09-17
