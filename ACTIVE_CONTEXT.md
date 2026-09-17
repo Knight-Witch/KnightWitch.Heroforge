@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 privileged-host/bootstrap modularization. v1.3.5 passed its live/runtime and human visual gates. v1.3.6 is the dedicated core CSS extraction candidate.
+**Current phase:** issue #10 privileged-host/bootstrap modularization. v1.3.6 remains the core CSS extraction candidate; its live gate also exposed and now carries a bounded Booth cold-start compatibility candidate in `Booth_Runtime_Bootstrap` v0.1.2.
 
 ## Current priorities
 
-1. #10 — validate v1.3.6 / build `1.3.6-extracted-core-css`: GitHub-owned core stylesheet, guarded parity against legacy inline CSS, host-owned style insertion, unchanged Dock behavior.
+1. #10 — finish validating v1.3.6 / build `1.3.6-extracted-core-css` plus the bounded Booth v0.1.2 cold-start blocker repair. Do not merge the task branch to canonical Dev until both clean live gates pass.
 2. #19 — Dev Tampermonkey identity is fixed as `WITCH DOCK - DEV`; changing version belongs in `@version` and the visible Dock title, never in `@name`.
 3. #12 — harvest only still-relevant legacy fragments; never bulk-merge legacy Dev.
 4. #7 / #8 — preserve and re-test open bug/backlog surfaces against fresh Dev.
@@ -35,6 +35,16 @@
 - The temporary v1.3.5 post-core 48px override is removed; 48px now belongs to the extracted stylesheet.
 - `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith during this bounded migration step. Physical deletion of the now-duplicated legacy CSS source waits for the later true GitHub-owned core split.
 
+## Booth cold-start blocker candidate — v0.1.2
+
+- Cold-page diagnosis confirmed Witch Dock can have `sessionBoothView=true` while HeroForge native `BT` is still absent.
+- `Booth_Runtime_Bootstrap` v0.1.1 only reacted to persisted/saved Booth state; v0.1.2 adds the existing session Booth request as a bootstrap trigger.
+- v0.1.2 loads the version-matched HeroForge `/gated/booth.js` only when needed and delegates activation to native `BT.setBoothMode(mode)`.
+- Native source inspection proved `setBoothMode()` owns character-readiness deferral through `CharacterFinishedChanging` and later owns `maker.enable()`; do not replace this with a direct maker-enable bypass.
+- A direct `maker.enable()` probe while HeroForge reported `character.isLoading()` threw inside `booth.js`; that experiment is discarded and not present in the candidate.
+- The ready-state downstream target was observed once native maker activation completed: 4K/8K/WebP ready and module loader 23/23, 0 failed.
+- Final clean-path cold-start validation is still required on a normally ready HeroForge page. The last Bridge-driven reload remained in HeroForge's own loading/missing-display-data state, so the candidate was deliberately not forced through it.
+
 ## Protected state
 
 - Public `Witch_Scripts` remains untouched absent explicit narrow promotion approval.
@@ -43,19 +53,20 @@
 - Existing storage keys, `WitchDock` public seams, cache-key behavior, module ordering/performance, enablement, Dock interactions, and feature lifecycle remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
 - HF-Chat-Bridge is development infrastructure only and must never become a Dock runtime dependency.
 - Tampermonkey `@name` remains the stable `WITCH DOCK - DEV` identity.
+- HeroForge retains native ownership of Booth character readiness and maker enablement.
 
-## v1.3.6 live gate — external core stylesheet
+## Required live gate
 
-1. Existing fixed-name Dev install updates in place to v1.3.6; visible title is `WITCH DOCK - DEV v1.3.6`.
-2. Dev state reports `coreStylesMode: "external-bootstrap-css"`, `coreStylesApplied: true`, `status: running`, `error: null`.
-3. `KWWitchDockStylesInfo` reports v0.1.0 / build `0.1.0-extracted-core-css`, owner `privileged-bootstrap`, and applied=true.
-4. Confirm only one effective Dock stylesheet is injected from the bootstrap seam and `#kwWDCompactIcon` remains 48x48 with the correct inline emblem source.
-5. Module loader remains 23/23 with 0 failures.
-6. Human visual/interaction gate: Dock appearance is unchanged, compact icon remains correct/larger, tabs/modals/minimize/restore remain normal.
-7. If clean, continue Stage C with the next low-risk presentation/application extraction rather than changing Stable.
+1. Confirm v1.3.6 CSS state: `coreStylesMode: "external-bootstrap-css"`, `coreStylesApplied: true`, `status: running`, `error: null`; `KWWitchDockStylesInfo` v0.1.0 applied by `privileged-bootstrap`.
+2. Confirm one effective Dock stylesheet, correct 48x48 inline emblem, normal dimensions/classes, and module loader 23/23 with 0 failures.
+3. On a fresh normally ready HeroForge page with native `BT` absent, toggle Booth View on once.
+4. Confirm one version-matched `/gated/booth.js`, native `BT` appears, requested mode is active, maker becomes enabled through the native readiness path, and bootstrap error remains null.
+5. Confirm 4K, 8K, and WebP controls are enabled/ready; toggling Booth View off/on afterward must not create a duplicate Booth script or alter persistence/default behavior.
+6. Human visual/interaction gate: Dock appearance unchanged, compact icon correct/larger, tabs/modals/minimize/restore normal.
+7. Only after these pass may the task branch be normalized to canonical Dev URLs and integrated to `WITCH_DEV_MAIN`.
 
 ## Minimum continuation set
 
-Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, issue #19, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
+Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, issue #19, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
 
 Do not preload MASTER, full old logs, unrelated HISTORY files, or HeroForge.Compatibility unless current evidence requires them.

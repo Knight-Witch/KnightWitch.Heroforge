@@ -2,6 +2,52 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history.
 
+## PFC-2026-09-17-011 — Booth cold-start compatibility candidate
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #10 validation blocker on `wd/10-modular-bootstrap`: make an explicit Witch Dock Booth View session request able to cold-start HeroForge's native Booth runtime without bypassing HeroForge's own character-readiness/engine-ownership rules.
+
+### Diagnosis
+
+- Cold page baseline: Dock and all 23 normal modules can load while native `window.BT` remains absent.
+- `tools/Booth.js` can already record `sessionBoothView=true`; the v0.1.1 runtime bootstrap only reacted to persisted/saved Booth state and therefore ignored that current-session request when persistence was off.
+- Native `BT.setBoothMode()` source inspection confirmed HeroForge's intended lifecycle: if the character is not ready, it stores `_pendingMode` and subscribes `_resumePendingMode` to `CharacterFinishedChanging`; once ready it re-enters `setBoothMode()` and owns `maker.enable()` itself.
+- A bounded direct `maker.enable()` probe while HeroForge still reported `character.isLoading()` reproduced `TypeError: Cannot convert undefined or null to object` inside `/gated/booth.js`; that bypass is rejected and is not present in the candidate.
+
+### Candidate
+
+- `features/booth/Booth_Runtime_Bootstrap.js`: v0.1.2 / build `0.1.2-session-cold-start`.
+- `manifest.json.moduleRegistry`: synchronized to v0.1.2 with version origin `issue-10-validation-blocker-session-cold-start-2026-09-17`.
+- Manifest module URL cache key: `?v=0.1.2-session-cold-start`.
+- Candidate detects `KW_WD_BOOTH.getState().sessionBoothView`, derives the requested/saved Booth mode, loads the version-matched HeroForge `/gated/booth.js` only when native Booth is absent, then delegates activation to `BT.setBoothMode(mode)`.
+- Existing persistence bootstrap, polling cadence, duplicate-script guard, HeroForge version derivation, script status semantics, and failure isolation are preserved.
+- No direct `maker.enable()` call remains.
+- Dev launcher remains v1.3.6; its installed userscript bytes did not change in this blocker repair.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+### Live evidence
+
+- Ready-state probe with native Booth enabled reached `BT.currentMode=portrait`, `maker.enabled=true`, 4K and 8K enabled, WebP service `Ready`, WebP button enabled after UI refresh, and module loader 23/23 with 0 failures.
+- Final clean-source reload loaded the v0.1.2 candidate and module loader successfully, but HeroForge remained in its own `character.isLoading() === true`, missing-display-data state for the observation window, so the final clean-path Booth activation gate remains pending rather than being forced through that native readiness condition.
+
+### Required final live gate
+
+1. Start from a fresh page where HeroForge's character/display state has reached its normal ready condition.
+2. Confirm native `BT` is absent before the Booth request.
+3. Toggle Witch Dock Booth View on once.
+4. Confirm one version-matched `/gated/booth.js` exists, `BT` appears, `BT.currentMode` is the requested mode, and the native maker becomes enabled without any bootstrap error.
+5. Confirm 4K, 8K, and Capture WebP controls are enabled/ready and module loader remains 23/23 with 0 failures.
+6. Confirm turning Booth View off/on on the now-live native runtime does not create a duplicate Booth script or alter existing persistence/default behavior.
+
+Do not merge this blocker repair into canonical `WITCH_DEV_MAIN` until the clean native-owned live gate passes.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth runtime bootstrap and manifest module version/cache key changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-010 — External core stylesheet candidate
 
 Date: 2026-09-17

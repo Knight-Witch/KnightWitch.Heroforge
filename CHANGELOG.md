@@ -2,6 +2,28 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-011 — Repair cold-page Booth activation during v1.3.6 validation
+
+Date: 2026-09-17
+
+### Summary
+
+During the issue #10 v1.3.6 live gate, a separate Booth lifecycle defect surfaced on a cold HeroForge page: Witch Dock could show Booth View enabled while HeroForge's native Booth runtime (`BT`) had never been loaded, leaving the 4K, 8K, and WebP capture surfaces unavailable.
+
+- Diagnosed the failure to `features/booth/Booth_Runtime_Bootstrap.js` v0.1.1: it could bootstrap from a saved/persistent Booth setup, but it did not treat the current-session `KW_WD_BOOTH.getState().sessionBoothView` request as a reason to cold-start native Booth when persistence was off.
+- Bumped `booth-runtime-bootstrap` to v0.1.2 / build `0.1.2-session-cold-start` and added a deterministic manifest cache key.
+- v0.1.2 watches the existing session Booth request, loads HeroForge's version-matched `/gated/booth.js` only when native `BT` is absent, and reuses HeroForge's own script/status conventions so later native lazy-loading can recognize the same resource.
+- Once `BT` exists, the bootstrap delegates mode activation to HeroForge's own `BT.setBoothMode(mode)` and waits for the native engine to report enabled; it does not retain a direct `maker.enable()` bypass.
+- Runtime inspection confirmed HeroForge's ownership contract: `setBoothMode()` defers through `CharacterFinishedChanging` when `_characterReady()` is false, then re-enters native mode activation and calls `maker.enable()` itself when the character/display state is ready.
+- A temporary direct `maker.enable()` probe proved why bypassing that readiness guard is unsafe: HeroForge threw `Cannot convert undefined or null to object` while the character was still loading. That probe code was discarded.
+- The earlier ready-state probe demonstrated the target downstream result once the native engine is enabled: `BT.currentMode=portrait`, `maker.enabled=true`, 4K/8K/WebP controls enabled, and module loader 23/23 with 0 failures.
+- The final clean-path live gate remains pending because the last Bridge-driven page reload stayed in HeroForge's own `character.isLoading()` / missing display-data state for the observation window. The candidate intentionally leaves HeroForge in control rather than forcing through that state.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth runtime bootstrap behavior and module version/cache key changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-010 — Extract core Dock CSS behind privileged bootstrap
 
 Date: 2026-09-17
