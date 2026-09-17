@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.3.5",
-      "build": "1.3.5-larger-compact-emblem",
-      "versionOrigin": "issue-10-compact-emblem-size-2026-09-17"
+      "version": "1.3.6",
+      "build": "1.3.6-extracted-core-css",
+      "versionOrigin": "issue-10-core-css-extraction-2026-09-17"
     },
     {
       "id": "witch-dock-core",
@@ -20,6 +20,16 @@
       "version": "1.2.1",
       "build": "1.2.1-stable-cache-keyed-loader",
       "versionOrigin": "stable-loader-cache-repair-2026-09-07"
+    },
+    {
+      "id": "witch-dock-styles",
+      "title": "Witch Dock Core Styles",
+      "path": "features/core/Witch_Dock_Styles.css",
+      "kind": "core-style",
+      "load": "bootstrap-style",
+      "version": "0.1.0",
+      "build": "0.1.0-extracted-core-css",
+      "versionOrigin": "issue-10-core-css-extraction-2026-09-17"
     },
     {
       "id": "witch-dock-module-loader",

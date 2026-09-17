@@ -20,17 +20,20 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. The failed external compact-emblem experiment is rolled back. v1.3.4 restored the exact known-good inline emblem and passed the human visual gate; v1.3.5 keeps that source intact and enlarges only the icon inside the existing compact button using the bounded host style capability before dedicated CSS extraction resumes.",
-      "paths": ["Witch_Dock_DEV.user.js", "manifest.json"],
+      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. v1.3.6 moves core Dock CSS ownership into features/core/Witch_Dock_Styles.css, fetched in parallel with the legacy core and inserted only through the bounded privileged-host style capability. The temporary source-transform seam replaces the legacy addStyles implementation with a no-op after proving the external stylesheet matches the guarded legacy CSS contract plus the already-approved 48px compact-icon adjustment.",
+      "paths": ["Witch_Dock_DEV.user.js", "manifest.json", "features/core/Witch_Dock_Styles.css"],
       "acceptance": [
-        "Task launcher and manifest identify v1.3.5 / build 1.3.5-larger-compact-emblem consistently.",
-        "Tampermonkey @name remains fixed as WITCH DOCK - DEV while the visible Dock title is WITCH DOCK - DEV v1.3.5.",
-        "The launcher finds exactly one legacy inline compact-emblem declaration and preserves it without substituting ASSETS/emblem.png.",
-        "Runtime Dev state reports presentationAssetMode inline-core-emblem-restored, compactEmblemUrl inline:data-url-from-core, and compactIconSizePx 48.",
-        "#kwWDCompactIcon computes to 48x48 while #kwWDCompact remains 54x54; the human visual gate confirms the emblem is still correct and appropriately sized.",
+        "Task launcher and manifest identify v1.3.6 / build 1.3.6-extracted-core-css consistently.",
+        "The new witch-dock-styles registry entry is v0.1.0 / build 0.1.0-extracted-core-css and is bootstrap-owned rather than manifest-module-loaded.",
+        "Tampermonkey @name remains fixed as WITCH DOCK - DEV while the visible Dock title is WITCH DOCK - DEV v1.3.6.",
+        "The launcher fetches core source and the external core stylesheet in parallel through PRIVILEGED_HOST.requestText and applies CSS before core UI construction.",
+        "The launcher guards exactly one legacy addStyles seam, compares the extracted stylesheet to the inline legacy CSS contract with only the validated 40px-to-48px compact-icon delta, and fails visibly on mismatch.",
+        "Runtime Dev state reports coreStylesMode external-bootstrap-css and coreStylesApplied true; KWWitchDockStylesInfo identifies the v0.1.0 stylesheet and privileged-bootstrap owner.",
+        "The correct inline compact emblem remains unchanged and renders at 48x48 inside the existing compact button.",
         "Module loader still completes 23/23 with zero failures and existing cache/order/enablement behavior is unchanged.",
         "Raw GM_* privileges remain unexposed page-side.",
-        "No storage, registration, drag/minimize, hotkey, bone-HUD, module-loader, or feature lifecycle ownership moves in the v1.3.5 size adjustment.",
+        "No storage, registration, drag/minimize, hotkey, bone-HUD, module-loader, or feature lifecycle ownership moves in the v1.3.6 CSS extraction.",
+        "Checked-in Witch_Dock.user.js remains Stable-derived during this bounded migration seam; physical deletion of duplicated legacy CSS belongs to the later core split, not this validation step.",
         "Before integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated."
       ]
     }

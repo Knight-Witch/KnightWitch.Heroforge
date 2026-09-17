@@ -2,6 +2,29 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-010 — Extract core Dock CSS behind privileged bootstrap
+
+Date: 2026-09-17
+
+### Summary
+
+Advanced issue #10 after v1.3.5 passed both live runtime checks and Amanda's human compact-icon gate.
+
+- v1.3.5 live PASS: Dev state running/error null, correct inline emblem at 48x48, and module loader 23/23 with 0 failures in 294.8 ms.
+- Bumped the task launcher to v1.3.6 / build `1.3.6-extracted-core-css`.
+- Added `features/core/Witch_Dock_Styles.css`, registry id `witch-dock-styles`, v0.1.0 / build `0.1.0-extracted-core-css`.
+- Launcher now fetches the legacy core and extracted stylesheet in parallel through `PRIVILEGED_HOST.requestText`, then injects styles through bounded `PRIVILEGED_HOST.styles.add` before UI construction.
+- Added a guarded parity check: the external stylesheet must match the legacy inline CSS exactly except for the already-human-approved compact-icon size change from 40px to 48px.
+- Runtime source transformation replaces the legacy `addStyles()` implementation with a no-op so only the externally owned stylesheet is applied.
+- Removed the temporary v1.3.5 post-core 48px override; 48px is now owned by the extracted stylesheet.
+- Static parser/manifest check passed: launcher v1.3.6, styles v0.1.0, 28 registry entries, 1 bootstrap tool, 23 normal modules; old size-override block absent.
+- Checked-in `Witch_Dock.user.js` remains Stable-derived during this bounded migration seam; physical deletion of duplicated legacy CSS waits for the later true core split.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch style ownership, launcher v1.3.6, and new registered core-style v0.1.0 changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-009 — Enlarge compact emblem inside existing button
 
 Date: 2026-09-17

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.5
+// @version      1.3.6
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,16 +22,23 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.5";
+  const DEV_VERSION = "1.3.6";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const CORE_URL = `${REPO_RAW}/${DEV_BRANCH}/Witch_Dock.user.js`;
   const DEV_MANIFEST_URL = `${REPO_RAW}/${DEV_BRANCH}/manifest.json`;
+  const CORE_STYLES_VERSION = "0.1.0";
+  const CORE_STYLES_BUILD = "0.1.0-extracted-core-css";
+  const CORE_STYLES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Styles.css?v=${CORE_STYLES_VERSION}-${CORE_STYLES_BUILD}`;
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
   const DEV_MANIFEST_DECL = `const MANIFEST_URL = "${DEV_MANIFEST_URL}";`;
   const INLINE_EMBLEM_DECL_RE = /^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/m;
+  const STYLE_FUNCTION_START = '  function addStyles() {\n    GM_addStyle(`\n';
+  const STYLE_FUNCTION_END = '\n`);\n  }\n\n  function el(';
+  const INLINE_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 40px;\n  height: 40px;';
+  const EXTRACTED_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 48px;\n  height: 48px;';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -46,6 +53,11 @@
     manifestUrl: DEV_MANIFEST_URL,
     compactEmblemUrl: "inline:data-url-from-core",
     compactIconSizePx: COMPACT_ICON_SIZE_PX,
+    coreStylesUrl: CORE_STYLES_URL,
+    coreStylesVersion: CORE_STYLES_VERSION,
+    coreStylesBuild: CORE_STYLES_BUILD,
+    coreStylesMode: "external-bootstrap-css",
+    coreStylesApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -194,6 +206,9 @@
     manifestUrl: state.manifestUrl,
     compactEmblemUrl: state.compactEmblemUrl,
     compactIconSizePx: state.compactIconSizePx,
+    coreStylesUrl: state.coreStylesUrl,
+    coreStylesVersion: state.coreStylesVersion,
+    coreStylesBuild: state.coreStylesBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -241,11 +256,21 @@
     document.body.appendChild(box);
   }
 
+  function normalizeStyleText(text) {
+    return String(text == null ? "" : text).replace(/\r\n/g, "\n").replace(/\n+$/, "");
+  }
+
   async function boot() {
-    state.status = "fetching-core";
-    const coreRequestUrl = `${CORE_URL}?kwdev=${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
-    const source = await PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" });
+    state.status = "fetching-core-and-styles";
+    const nonce = `${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
+    const coreRequestUrl = `${CORE_URL}?kwdev=${nonce}`;
+    const styleRequestUrl = `${CORE_STYLES_URL}&kwdev=${nonce}`;
+    const [source, coreStyles] = await Promise.all([
+      PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" })
+    ]);
     if (!source) throw new Error("core fetch returned empty source");
+    if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -257,24 +282,46 @@
       throw new Error(`expected exactly one inline compact emblem declaration in core; found ${emblemMatches.length}`);
     }
 
-    // The v1.3.2/v1.3.3 external emblem candidate failed its human visual gate.
-    // Preserve the known-good inline data URL exactly while we continue issue #10
-    // through other bounded extraction seams. ASSETS/emblem.png is not substituted.
-    const devSource = source.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
+    const styleStart = source.indexOf(STYLE_FUNCTION_START);
+    const duplicateStyleStart = styleStart >= 0 ? source.indexOf(STYLE_FUNCTION_START, styleStart + STYLE_FUNCTION_START.length) : -1;
+    if (styleStart < 0 || duplicateStyleStart >= 0) {
+      throw new Error(`expected exactly one legacy addStyles seam in core; found ${styleStart < 0 ? 0 : 2}`);
+    }
+    const styleEnd = source.indexOf(STYLE_FUNCTION_END, styleStart + STYLE_FUNCTION_START.length);
+    if (styleEnd < 0) throw new Error("legacy addStyles seam end was not found");
+
+    const inlineStyles = source.slice(styleStart + STYLE_FUNCTION_START.length, styleEnd);
+    const compactRuleMatches = inlineStyles.split(INLINE_COMPACT_ICON_RULE).length - 1;
+    if (compactRuleMatches !== 1) {
+      throw new Error(`expected exactly one 40px compact-icon rule in legacy core styles; found ${compactRuleMatches}`);
+    }
+    const expectedExtractedStyles = inlineStyles.replace(INLINE_COMPACT_ICON_RULE, EXTRACTED_COMPACT_ICON_RULE);
+    if (normalizeStyleText(coreStyles) !== normalizeStyleText(expectedExtractedStyles)) {
+      throw new Error("extracted core stylesheet does not match the guarded legacy CSS contract");
+    }
+
+    PRIVILEGED_HOST.styles.add(coreStyles);
+    state.coreStylesApplied = true;
+    UW.KWWitchDockStylesInfo = Object.freeze({
+      version: CORE_STYLES_VERSION,
+      build: CORE_STYLES_BUILD,
+      url: CORE_STYLES_URL,
+      applied: true,
+      owner: "privileged-bootstrap",
+      parity: "legacy-core-css-plus-48px-compact-icon"
+    });
+
+    const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
+    let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
+    devSource = devSource.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
 
     state.status = "loading-core";
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // PRIVILEGED_HOST remains launcher-local while legacy application ownership is
-    // migrated in bounded, separately validated stages.
+    // CSS ownership has moved to the bootstrap-hosted GitHub stylesheet while other
+    // legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
-
-    // Small requested presentation adjustment. Keep the compact button itself at
-    // 54x54; only enlarge the known-good emblem within it. This override is
-    // intentionally isolated here and will fold into the dedicated CSS module
-    // when issue #10 moves core styles out of the monolith.
-    PRIVILEGED_HOST.styles.add(`#kwWDCompactIcon{width:${COMPACT_ICON_SIZE_PX}px;height:${COMPACT_ICON_SIZE_PX}px;}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;
     applyDevIdentity();

@@ -1,6 +1,52 @@
 # Pre-Flight Check Log
 
-Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
+Rolling current Dev pre-flight record. Older detail remains in Git history.
+
+## PFC-2026-09-17-010 — External core stylesheet candidate
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #10 on `wd/10-modular-bootstrap`: move core Dock CSS runtime ownership out of the monolithic core and into a GitHub-owned stylesheet applied by the bounded privileged bootstrap, while preserving the validated v1.3.5 appearance and interaction contracts.
+
+### Prior live evidence
+
+- v1.3.5 Dev state: running / error null / task-branch provenance correct.
+- Correct inline emblem source preserved; icon computes to 48x48.
+- Module loader: 23/23 executed, 0 failed, 294.8 ms.
+- Amanda human gate: larger compact emblem looks better.
+- HF-Chat-Bridge request: `hf-20260917-wd10-v135-live-002`.
+
+### Static evidence for v1.3.6
+
+- Task launcher parses successfully through `new Function` in Bridge static probe `hf-20260917-wd10-v136-static-002`.
+- Launcher registry: v1.3.6 / build `1.3.6-extracted-core-css`.
+- New stylesheet registry: `witch-dock-styles` v0.1.0 / build `0.1.0-extracted-core-css`.
+- Manifest structure: 28 registry entries, 1 hidden bootstrap tool, 23 normal modules.
+- `features/core/Witch_Dock_Styles.css` exists and carries the 48px compact-icon rule.
+- Launcher fetches core and stylesheet through bounded repository requests and contains an exact CSS parity guard.
+- Launcher removes the temporary v1.3.5 post-core icon-size override.
+- External stylesheet is applied before core evaluation; runtime transformation converts the legacy `addStyles()` implementation to a no-op to prevent duplicate style insertion.
+- Known-good inline compact emblem remains untouched.
+- Checked-in `Witch_Dock.user.js` remains Stable-derived; this step changes runtime ownership through the temporary guarded migration seam rather than rewriting unrelated monolith code.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+### Required live gate
+
+1. Existing fixed-name Dev install updates in place to v1.3.6; Dock title is `WITCH DOCK - DEV v1.3.6`.
+2. Bootstrap must reach `status: running` with `error: null`; a CSS parity/seam failure must instead surface visibly and stop startup.
+3. `KWWitchDockDevChannel.getState()` reports `coreStylesMode: external-bootstrap-css`, `coreStylesApplied: true`, and the v0.1.0 stylesheet URL/build.
+4. `KWWitchDockStylesInfo` reports applied=true, owner=`privileged-bootstrap`, parity=`legacy-core-css-plus-48px-compact-icon`.
+5. Verify only one effective Dock style insertion, correct 48x48 inline emblem, and normal Dock dimensions/classes.
+6. Module loader remains 23/23 with zero failures.
+7. Human visual/interaction gate: normal Dock appearance, tabs, About/Disclaimer, minimize/restore, compact launcher, and larger correct emblem.
+
+Do not continue to the next extraction if this gate fails; repair or roll back only the CSS ownership seam.
+
+**Runtime/module/manifest/public behavior changed:** task-branch core-style ownership, launcher v1.3.6, and new registered style component v0.1.0 changed; public Stable unchanged.
+
+---
 
 ## PFC-2026-09-17-009 — Larger compact emblem inside unchanged button
 
