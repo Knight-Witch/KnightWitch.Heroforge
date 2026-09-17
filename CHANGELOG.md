@@ -2,6 +2,27 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-009 — Enlarge compact emblem inside existing button
+
+Date: 2026-09-17
+
+### Summary
+
+Applied Amanda's requested compact-button presentation adjustment after the v1.3.4 known-good emblem was visually confirmed restored.
+
+- Human gate for v1.3.4 passed: the original Witch Dock emblem is visibly correct again.
+- Bumped the task launcher to v1.3.5 / build `1.3.5-larger-compact-emblem`.
+- Preserved the compact button at 54x54 and increased only `#kwWDCompactIcon` from 40x40 to 48x48.
+- Applied the 48px size as a narrow post-core style override through the already-validated bounded host `styles.add` capability; this avoids rewriting the Stable-derived monolith before the dedicated CSS extraction step.
+- Added `compactIconSizePx: 48` to Dev diagnostics for live verification.
+- The known-good inline emblem source remains unchanged; `ASSETS/emblem.png` remains excluded from runtime compact-icon ownership.
+- No storage, registration, drag/minimize, hotkey, bone-HUD, module-loader, or feature lifecycle behavior changed.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch compact-icon presentation size and launcher/manifest version changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-008 — Restore known-good compact emblem after visual failure
 
 Date: 2026-09-17

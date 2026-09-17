@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.4
+// @version      1.3.5
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.4";
+  const DEV_VERSION = "1.3.5";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -35,6 +35,7 @@
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
+  const COMPACT_ICON_SIZE_PX = 48;
 
   const state = {
     channel: "dev",
@@ -44,6 +45,7 @@
     coreUrl: CORE_URL,
     manifestUrl: DEV_MANIFEST_URL,
     compactEmblemUrl: "inline:data-url-from-core",
+    compactIconSizePx: COMPACT_ICON_SIZE_PX,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -191,6 +193,7 @@
     coreUrl: state.coreUrl,
     manifestUrl: state.manifestUrl,
     compactEmblemUrl: state.compactEmblemUrl,
+    compactIconSizePx: state.compactIconSizePx,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -266,6 +269,12 @@
     // PRIVILEGED_HOST remains launcher-local while legacy application ownership is
     // migrated in bounded, separately validated stages.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
+
+    // Small requested presentation adjustment. Keep the compact button itself at
+    // 54x54; only enlarge the known-good emblem within it. This override is
+    // intentionally isolated here and will fold into the dedicated CSS module
+    // when issue #10 moves core styles out of the monolith.
+    PRIVILEGED_HOST.styles.add(`#kwWDCompactIcon{width:${COMPACT_ICON_SIZE_PX}px;height:${COMPACT_ICON_SIZE_PX}px;}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;
     applyDevIdentity();

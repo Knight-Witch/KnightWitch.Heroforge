@@ -20,17 +20,17 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. The v1.3.2/v1.3.3 compact-emblem externalization passed runtime checks but failed the human visual gate because ASSETS/emblem.png is only a thin white line. v1.3.4 restores the exact known-good inline compact-emblem data URL from the core while preserving the privileged-host/bootstrap architecture already validated.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. The failed external compact-emblem experiment is rolled back. v1.3.4 restored the exact known-good inline emblem and passed the human visual gate; v1.3.5 keeps that source intact and enlarges only the icon inside the existing compact button using the bounded host style capability before dedicated CSS extraction resumes.",
       "paths": ["Witch_Dock_DEV.user.js", "manifest.json"],
       "acceptance": [
-        "Task launcher and manifest identify v1.3.4 / build 1.3.4-restore-inline-compact-emblem consistently.",
-        "Tampermonkey @name remains fixed as WITCH DOCK - DEV while the visible Dock title is WITCH DOCK - DEV v1.3.4.",
+        "Task launcher and manifest identify v1.3.5 / build 1.3.5-larger-compact-emblem consistently.",
+        "Tampermonkey @name remains fixed as WITCH DOCK - DEV while the visible Dock title is WITCH DOCK - DEV v1.3.5.",
         "The launcher finds exactly one legacy inline compact-emblem declaration and preserves it without substituting ASSETS/emblem.png.",
-        "Runtime Dev state reports presentationAssetMode inline-core-emblem-restored and compactEmblemUrl inline:data-url-from-core.",
-        "#kwWDCompactIcon resolves to the inline data:image/png;base64 source and the human compact-button visual gate returns to the known-good emblem.",
+        "Runtime Dev state reports presentationAssetMode inline-core-emblem-restored, compactEmblemUrl inline:data-url-from-core, and compactIconSizePx 48.",
+        "#kwWDCompactIcon computes to 48x48 while #kwWDCompact remains 54x54; the human visual gate confirms the emblem is still correct and appropriately sized.",
         "Module loader still completes 23/23 with zero failures and existing cache/order/enablement behavior is unchanged.",
         "Raw GM_* privileges remain unexposed page-side.",
-        "No CSS, storage, registration, drag/minimize, hotkey, bone-HUD, or module-loader ownership moves in the v1.3.4 repair.",
+        "No storage, registration, drag/minimize, hotkey, bone-HUD, module-loader, or feature lifecycle ownership moves in the v1.3.5 size adjustment.",
         "Before integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated."
       ]
     }
