@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWDevModuleLoader";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-parallel-fetch-ordered-exec";
+  const VERSION = "0.1.1";
+  const BUILD = "0.1.1-page-fetch-ordered-exec";
   const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
   const FALLBACK_MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_UI/manifest.json";
   const SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
@@ -83,33 +83,20 @@
     return kwWithCacheKey(url, `module-${kwStableHash(identity)}`);
   }
 
-  function gmGetText(url) {
-    return new Promise((resolve, reject) => {
-      try {
-        GM_xmlhttpRequest({
-          method: "GET",
-          url,
-          headers: { "Cache-Control": "no-cache" },
-          onload: (res) => {
-            if (res.status >= 200 && res.status < 300) resolve(res.responseText || "");
-            else reject(new Error(`HTTP ${res.status} for ${url}`));
-          },
-          onerror: () => reject(new Error(`Request failed for ${url}`))
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
+  async function fetchText(url) {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+    return response.text();
   }
 
   function getToolEnabled(toolId, enabledByDefault) {
     try {
-      const value = GM_getValue(TOOL_ENABLE_PREFIX + toolId, null);
-      if (value === null || value === undefined) return !!enabledByDefault;
-      return !!value;
-    } catch {
-      return !!enabledByDefault;
-    }
+      const raw = UW.localStorage.getItem(TOOL_ENABLE_PREFIX + toolId);
+      if (raw !== null && raw !== undefined && raw !== "") {
+        return raw === "true" || raw === "1";
+      }
+    } catch {}
+    return !!enabledByDefault;
   }
 
   function markFailure(record, phase, error) {
@@ -127,7 +114,7 @@
 
     let manifest;
     try {
-      const raw = await gmGetText(kwWithCacheKey(manifestUrl, `bootstrap-${SESSION}`));
+      const raw = await fetchText(kwWithCacheKey(manifestUrl, `bootstrap-${SESSION}`));
       manifest = JSON.parse(raw);
     } catch (error) {
       state.failed += 1;
@@ -182,7 +169,7 @@
       state.started += 1;
       const fetchStart = performance.now();
 
-      const promise = gmGetText(requestUrl).then(
+      const promise = fetchText(requestUrl).then(
         (code) => {
           record.fetchCompletedAt = new Date().toISOString();
           record.fetchDurationMs = Math.round((performance.now() - fetchStart) * 10) / 10;

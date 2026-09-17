@@ -21,30 +21,32 @@ Do not preload unrelated history. Issue #7 is paused, not closed; resume it afte
 ## Active bug — #9 slow module loading
 
 Confirmed:
-- The existing Dev shell loads manifest modules with `GM_xmlhttpRequest` to raw GitHub.
-- It performs module network requests strictly serially: each fetch is awaited before the next begins.
-- The loader has no request timeout.
-- The loader implementation itself has not changed since the September 8 cache-key repair.
-- Dev now has 23 enabled module entries versus 18 on September 8.
-- HeroForge page context and HF-Chat-Bridge remained healthy while the Dock-specific slowdown was present.
+- The legacy Dev shell loads manifest modules with Tampermonkey `GM_xmlhttpRequest` and historically did so strictly serially.
+- Dev grew from 18 enabled module entries on September 8 to 23.
+- HeroForge itself remains responsive while Witch Dock module arrival becomes extremely slow after browser uptime.
+- After explicitly switching Tampermonkey from Stable to Dev, live runtime reports `KWWitchDockManifestURL` = WITCH_DEV_UI, so current testing is now on the correct userscript.
+- The first concurrency candidate, `witch-dock-dev-module-loader` v0.1.0, did execute but failed before starting any module request: `GM_xmlhttpRequest is not defined`.
+- Cause is the loader boundary: the bootstrap is itself evaluated through `new Function(code)()` and runs in page context without Tampermonkey-only `GM_*` APIs.
 
 Supported inference:
-- Degraded per-request latency in the Chrome/Tampermonkey/raw-GitHub path is being multiplied by strict serialization; recent module-count growth made the weakness materially worse.
+- The original per-request slowdown may still be multiplied by strict serialization, but v0.1.0 did not test that theory because its bootstrap transport failed first.
 
 Current Dev candidate:
+- `witch-dock-dev-module-loader` v0.1.1 / `0.1.1-page-fetch-ordered-exec`.
 - Keep `Witch_Dock_DEV.user.js` shell unchanged.
-- `manifest.tools` loads one hidden bootstrap module.
-- `manifest.devModules` retains the prior module list and order.
-- `Witch_Dock_DEV_Module_Loader.js` launches all enabled module fetches concurrently, then awaits/executes them in the original manifest order.
-- Per-module enablement, deterministic cache keys, silent failure isolation, and `new Function(code)()` execution semantics are preserved.
+- `manifest.tools` loads one hidden bootstrap module; `manifest.devModules` preserves the prior 23-module list/order.
+- Bootstrap uses page-context `fetch(..., { cache: "no-store" })` for its manifest/module reads.
+- Enabled module fetches start concurrently, then await/execute in original manifest order.
+- Deterministic cache keys, silent failure isolation, and `new Function(code)()` execution semantics are preserved.
+- Enablement reads `kw.witchDock.toolEnabled.*` localStorage when present, otherwise manifest defaults.
 - No request timeout is added in this change.
 
 ## Immediate validation sequence
 
-1. Static syntax check bootstrap and JSON-parse manifest.
-2. Commit Dev-only candidate with module registry/log updates.
-3. Refresh current HeroForge Dev page.
-4. Use Bridge to read `KWDevModuleLoader.getState()` and confirm all enabled modules fetched/executed in order with no errors.
+1. Static syntax-check bootstrap v0.1.1 and JSON-parse manifest.
+2. Commit Dev-only page-context transport repair with registry/log updates.
+3. Refresh current HeroForge Dev page without restarting Chrome/computer.
+4. Bridge-read `KWDevModuleLoader.getState()` and confirm 23 modules actually start/fetch/execute with no bootstrap error.
 5. Human-check that Dock tabs/tools appear normally and compare load speed in the currently degraded Chrome session.
 6. Do not touch Stable until Dev passes and Amanda explicitly approves promotion.
 

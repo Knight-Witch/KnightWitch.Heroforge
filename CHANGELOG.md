@@ -2,24 +2,29 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
-## DOCK-2026-09-16-080 -- Dev parallel module-fetch candidate for issue #9
+## DOCK-2026-09-16-081 -- Repair Dev bootstrap page-context transport
 
 Date: 2026-09-16
 
 ### Summary
 
-Dev-only loader performance repair candidate for Witch Dock module startup degradation after Chrome uptime.
+Live validation of issue #9 candidate v0.1.0 exposed a page-context boundary bug before any parallel module fetches could begin.
 
-- Added `witch-dock-dev-module-loader` v0.1.0 (`0.1.0-parallel-fetch-ordered-exec`).
-- Kept the monolithic `Witch_Dock_DEV.user.js` shell unchanged.
-- Extended Dev `manifest.json` with `devModules`; `manifest.tools` now loads only the hidden Dev module-loader bootstrap.
-- The bootstrap starts enabled module network requests concurrently, but awaits and executes them in the exact prior module order.
-- Preserved `kw.witchDock.toolEnabled.*` enablement, deterministic module cache-key identity, silent per-module failure isolation, and `new Function(code)()` execution semantics.
-- Added bounded `KWDevModuleLoader.getState()` diagnostics for live validation.
+- Confirmed Dev was actually active after Tampermonkey was switched from Stable to `Witch Dock DEV - Spinny Integration`.
+- `KWDevModuleLoader` v0.1.0 ran but terminated immediately with `manifest-error: GM_xmlhttpRequest is not defined`.
+- Root cause: the hidden bootstrap is executed through `new Function(code)()` and therefore cannot use Tampermonkey-only `GM_*` APIs.
+- Bumped `witch-dock-dev-module-loader` to v0.1.1 (`0.1.1-page-fetch-ordered-exec`).
+- Replaced bootstrap `GM_xmlhttpRequest` calls with normal page-context `fetch(..., { cache: "no-store" })` while preserving deterministic cache keys, concurrent request start, manifest-order execution, and per-module failure isolation.
+- Page-context enablement checks now use the existing `kw.witchDock.toolEnabled.*` localStorage mirror when present and otherwise retain manifest defaults.
 - No request timeout or Stable/public change is included.
-- Issue #7 is paused, not closed, while issue #9 is active.
 
-**Runtime behavior changed:** yes, Dev module network fetches overlap; module execution order is intentionally unchanged. Public Stable is untouched.
+**Runtime behavior changed:** yes, Dev bootstrap transport only. Public Stable is untouched.
+
+---
+
+## DOCK-2026-09-16-080 -- Dev parallel module-fetch candidate for issue #9
+
+Initial v0.1.0 candidate. Live validation later showed its page-context bootstrap could not access `GM_xmlhttpRequest`; superseded by DOCK-2026-09-16-081.
 
 ---
 
@@ -29,12 +34,6 @@ Documentation-only routing correction after the connection-error diagnosis was c
 
 ---
 
-## DOCK-2026-09-16-078 -- Reclassify connection toast and route JSON re-test
-
-Superseded in part by DOCK-2026-09-16-079.
-
----
-
 ## Prior active history
 
-DOCK-2026-09-16-077 and earlier detailed entries remain preserved in Git history.
+DOCK-2026-09-16-078 and earlier detailed entries remain preserved in Git history.

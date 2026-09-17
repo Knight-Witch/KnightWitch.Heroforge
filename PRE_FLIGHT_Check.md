@@ -2,46 +2,53 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
-## PFC-2026-09-16-080 -- Issue #9 Dev module-loader concurrency candidate
+## PFC-2026-09-16-081 -- Issue #9 page-context bootstrap repair
 
 Date: 2026-09-16
 
 ### Scope
 
-Dev-only module loading performance repair. Public Stable is not changed.
+Dev-only correction to the module-loader bootstrap transport. Public Stable is not changed.
 
-### Diagnosis
+### Failed live gate captured
 
-- Confirmed `Witch_Dock_DEV.user.js` performs raw-GitHub module requests strictly serially.
-- Confirmed current Dev has 23 enabled module entries versus 18 on September 8.
-- Confirmed the affected HeroForge page and HF-Chat-Bridge remain responsive/healthy.
-- Supported inference: per-request slowdown is being multiplied by the serial request chain.
+- Amanda switched Tampermonkey so Stable was OFF and `Witch Dock DEV - Spinny Integration` was ON, then refreshed without restarting Chrome/computer.
+- Bridge confirmed `KWWitchDockManifestURL` pointed to `WITCH_DEV_UI`.
+- Bridge confirmed `KWDevModuleLoader` v0.1.0 / `0.1.0-parallel-fetch-ordered-exec` existed.
+- Loader state was `manifest-error` with zero modules started/fetched/executed.
+- Exact live error: `GM_xmlhttpRequest is not defined`.
+- Therefore the v0.1.0 concurrency design was not yet exercised; the slowdown result from that refresh cannot be used to judge parallel module loading.
 
-### Candidate behavior
+### Root cause / repair
 
-- New `witch-dock-dev-module-loader` v0.1.0.
-- Existing Dev shell source remains untouched.
-- `manifest.tools` contains only the hidden bootstrap; the previous module inventory/order moves intact to `manifest.devModules`.
-- Bootstrap starts all enabled requests immediately, then awaits/executes each promise in original order.
-- Existing enablement prefix, cache-key identity, execution mechanism, and per-module failure isolation are preserved.
+- Bootstrap source is evaluated through the outer userscript's `new Function(code)()` path and therefore runs in page context without Tampermonkey `GM_*` globals.
+- `witch-dock-dev-module-loader` is bumped to v0.1.1 / `0.1.1-page-fetch-ordered-exec`.
+- Manifest/module requests use page-context `fetch(..., { cache: "no-store" })`.
+- Deterministic module cache keys, concurrent fetch starts, ordered execution, and silent per-module failure isolation remain unchanged.
+- Enablement reads the existing `kw.witchDock.toolEnabled.*` localStorage mirror when present and otherwise uses manifest defaults.
 - No timeout/failure-policy change is bundled.
 
-### Static validation
+### Static validation required before live gate
 
-- `node --check features/core/Witch_Dock_DEV_Module_Loader.js` passed.
-- `manifest.json` parsed successfully.
-- `devModules` contains 23 unique IDs, first `witch-dock-developer-mode`, last `utilities`; every ID exists in `moduleRegistry`.
-- Synthetic concurrency test passed: A/B/C requests started together, completed B/C/A, and executed A/B/C.
+- JavaScript syntax-check v0.1.1 bootstrap.
+- Parse updated `manifest.json`.
+- Confirm registry/bootstrap URL both report v0.1.1 and 23 unique `devModules` remain registered.
 
-### Live gate after commit
+### Next live gate
 
-- Refresh Dev HeroForge page in the currently degraded Chrome session.
-- Bridge-read `KWDevModuleLoader.getState()`.
-- Confirm enabled modules fetched/executed without bootstrap/module errors.
-- Human-check normal Dock tabs/tools and startup speed.
-- Stable promotion is prohibited until this gate passes and Amanda explicitly approves it.
+- Refresh Dev again without restarting Chrome/computer.
+- Bridge-read `KWDevModuleLoader.getState()` while the affected browser remains degraded.
+- Confirm 23 module requests start, fetch, and execute with no bootstrap error.
+- Human-check normal tabs/tools and compare startup speed.
+- Stable promotion remains prohibited until this passes and Amanda explicitly approves it.
 
-**Runtime behavior changed:** yes, Dev-only network concurrency. Stable remains protected at `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
+**Runtime behavior changed:** yes, Dev-only bootstrap transport. Stable remains protected at `acaf18a0cfd2c751886e85a269b9427ddfaa5040`.
+
+---
+
+## PFC-2026-09-16-080 -- Issue #9 Dev module-loader concurrency candidate
+
+Initial v0.1.0 candidate; superseded after live page-context transport failure was captured.
 
 ---
 
