@@ -2,6 +2,23 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-014 — Fix fresh-page About lazy creation
+
+Date: 2026-09-17
+
+### Summary
+
+- Booth v27.0.5 / runtime bootstrap v0.2.0 final live regression passed on a normal manually refreshed HeroForge page: cold activation completed once, one native Booth script loaded, native maker became ready, 4K/8K/WebP enabled, loader remained 23/23 with zero failures, and off/on reused live BT with zero duplicates. Booth was left OFF; defaults/persistence remained unchanged.
+- The required fresh-page human modal gate exposed a separate v1.3.7 bug before visual review: `KWWitchDockModals.openAbout()` did not create the About overlay when it had not already been created.
+- Root cause is confirmed in source: `openDisclaimer()` calls its `ensureDisclaimer()` lazy creator, while `openAbout()` omitted `ensureAbout()`. The earlier structural probe had explicitly called `ensureAbout()` first and therefore masked the fresh-page path.
+- Modal module patched to v0.1.1 / build `0.1.1-lazy-about-open`; `openAbout()` now invokes `ensureAbout()` before opening.
+- Dev launcher bumped to v1.3.8 / build `1.3.8-modal-lazy-about-fix` so the corrected modal module has a fresh deterministic cache identity.
+- No Booth/runtime-bootstrap code changed in this patch. Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/modal module and registry identity changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-013 — Make explicit Booth activation independent of timer polling
 
 Date: 2026-09-17

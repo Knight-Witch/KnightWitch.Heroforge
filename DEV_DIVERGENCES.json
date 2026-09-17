@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. v1.3.7 extracts About/Disclaimer UI. Its regression gate also proved explicit Booth activation could stall because Booth Runtime Bootstrap's 200 ms poll had not fired; Booth v27.0.5 + bootstrap v0.2.0 therefore add a bounded direct session handoff while preserving HeroForge-native BT.setBoothMode ownership and retaining polling as fallback.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. Booth v27.0.5 + bootstrap v0.2.0 direct session handoff has passed final normal-refresh validation. v1.3.7 modal extraction exposed a fresh-page About lazy-create defect; launcher v1.3.8 + modal v0.1.1 repair only that modal seam.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -32,9 +32,7 @@
         "tools/Booth.js"
       ],
       "acceptance": [
-        "Task launcher/manifest identify v1.3.7 / build 1.3.7-extracted-core-modals; Tampermonkey @name remains fixed WITCH DOCK - DEV.",
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
-        "witch-dock-modals is v0.1.0 / build 0.1.0-extracted-about-disclaimer and is fetched as a bootstrap module through bounded requestText.",
         "The modal module receives only script metadata plus the existing GitHub and Ko-fi URLs; raw GM_* privileges remain unexposed page-side.",
         "The launcher finds exactly one guarded legacy modal block containing each of the six legacy modal functions exactly once and replaces only those implementations with wrappers to KWWitchDockModals.",
         "About/Disclaimer preserve existing DOM ids/classes/content, mutual exclusion, close-button/overlay/Escape behavior, links, and version display; reopen creates no duplicate overlays.",
@@ -42,11 +40,13 @@
         "No storage, registration, drag/minimize, hotkey, undo/redo, bone-HUD, or unrelated feature lifecycle ownership moves in v1.3.7.",
         "Checked-in Witch_Dock.user.js remains Stable-derived during this guarded migration seam; physical source deletion waits for the later true core split.",
         "Before eventual integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated.",
-        "witch-dock-modals remains v0.1.0 / build 0.1.0-extracted-about-disclaimer with preserved modal DOM/content/behavior.",
         "booth-tool is v27.0.5 / build v27.0.5-explicit-session-handoff and booth-runtime-bootstrap is v0.2.0 / build 0.2.0-explicit-session-handoff with synchronized deterministic cache keys.",
         "An explicit Booth session request invokes the optional bootstrap requestSession handoff immediately; the 200 ms poll remains fallback rather than the sole trigger.",
         "Direct handoff still loads at most one version-matched HeroForge /gated/booth.js and delegates activation to BT.setBoothMode without directly forcing maker.enable().",
-        "Booth v27.0.5 source-local/public API identity matches its manifest/build identity; no stale 27.0.4 diagnostic remains."
+        "Booth v27.0.5 source-local/public API identity matches its manifest/build identity; no stale 27.0.4 diagnostic remains.",
+        "Task launcher/manifest identify v1.3.8 / build 1.3.8-modal-lazy-about-fix; Tampermonkey @name remains fixed WITCH DOCK - DEV.",
+        "witch-dock-modals is v0.1.1 / build 0.1.1-lazy-about-open; openAbout performs its own lazy ensureAbout creation on a fresh page.",
+        "Fresh-page About/Disclaimer lifecycle and human visual parity must pass before Stage C continues."
       ]
     }
   ],

@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'witch-dock-modals';
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-extracted-about-disclaimer';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-lazy-about-open';
 
   if (UW.KWWitchDockModals && UW.KWWitchDockModals.version === VERSION) return;
 
@@ -38,6 +38,7 @@
   }
 
   function openAbout() {
+    ensureAbout();
     if (!state.aboutOverlay || !state.aboutModal) return;
     closeDisclaimer();
     state.aboutOverlay.setAttribute('aria-hidden', 'false');

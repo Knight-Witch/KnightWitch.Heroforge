@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction. v1.3.7 modal ownership is structurally healthy; its regression gate exposed a timer-only Booth activation failure, now addressed by Booth v27.0.5 + runtime bootstrap v0.2.0 direct session handoff candidate.
+**Current phase:** issue #10 Stage C presentation extraction. Booth v27.0.5 + bootstrap v0.2.0 final live regression passed; fresh-page v1.3.7 modal visual gating exposed an About lazy-create bug, patched in launcher v1.3.8 + modal v0.1.1.
 
 ## Current priorities
 
-1. #10 — validate the v1.3.7 modal visual gate plus Booth v27.0.5 / bootstrap v0.2.0 direct-session handoff regression; continue Stage C only if both pass.
+1. #10 — validate launcher v1.3.8 / modal v0.1.1 fresh-page About/Disclaimer lifecycle + human visual gate; Booth v27.0.5 / bootstrap v0.2.0 is already final-live PASS.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -34,13 +34,13 @@
 - Checked-in `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith; this is another guarded runtime ownership seam, not physical source deletion yet.
 - The attempted Bridge static-fetch helper failed in the helper's nested config JSON before executing candidate code; it is not candidate-failure evidence. Final syntax/runtime proof belongs to the installed v1.3.7 live gate.
 
-## Current blocker repair — explicit Booth handoff
+## Completed blocker repair — explicit Booth handoff
 
 - On the v1.3.7 page, an explicit Booth request remained pending for 10 seconds while bootstrap attempts stayed at 0; the 200 ms timer-only trigger had not executed.
 - Booth v27.0.5 now calls optional `KW_WD_BOOTH_BOOTSTRAP.requestSession()` when session Booth is enabled.
 - Runtime bootstrap v0.2.0 handles that bounded request immediately and still delegates activation to HeroForge-native `BT.setBoothMode()`; polling remains a fallback.
 - No direct maker-enable bypass is reintroduced.
-- Live validation of the new direct handoff is required before Stage C proceeds.
+- Final normal-refresh validation passed: cold activation, native maker/media readiness, off/on reuse, zero duplicates, and preserved defaults/persistence.
 
 ## Protected state
 
@@ -50,13 +50,21 @@
 - HeroForge retains native Booth character-readiness and maker-enable ownership.
 - HF-Chat-Bridge remains development infrastructure only.
 
-## v1.3.7 live gate
+## v1.3.8 modal lazy-open repair
 
-1. Existing fixed-name Dev install updates in place to v1.3.7; Dev state reaches `running` / `error:null`, `coreModalsMode: external-bootstrap-module`, `coreModalsApplied:true`.
-2. `KWWitchDockModalsInfo` and `KWWitchDockModals.getState()` report v0.1.0/build and configured=true; no modal overlays exist before first use.
+- Fresh-page visual-gate setup proved `openAbout()` did not create its overlay unless `ensureAbout()` had already been called.
+- Root cause: missing `ensureAbout()` at the start of `openAbout()`; Disclaimer already had the correct lazy-create pattern.
+- `Witch_Dock_Modals.js` v0.1.1 / build `0.1.1-lazy-about-open` adds only that missing call.
+- Launcher v1.3.8 pins modal v0.1.1 with a new deterministic cache identity.
+- Required next gate: update v1.3.8 in place, fresh refresh, About first-open/reopen, Disclaimer mutual exclusion/reopen, then human visual confirmation.
+
+## v1.3.8 live gate
+
+1. Existing fixed-name Dev install updates in place to v1.3.8; Dev state reaches `running` / `error:null`, `coreModalsMode: external-bootstrap-module`, `coreModalsApplied:true`.
+2. `KWWitchDockModalsInfo` and `KWWitchDockModals.getState()` report v0.1.1 / build `0.1.1-lazy-about-open` and configured=true; no modal overlays exist before first use.
 3. About button creates exactly one `#kwWDAboutOverlay`; title/footer/links match prior behavior; close button, overlay click, and Escape work; reopen creates no duplicate.
 4. Disclaimer creates exactly one `#kwWDDisclaimerOverlay`, closes About when opened, preserves exact content/footer, and closes via button/overlay/Escape without duplicates.
-5. Loader remains 23/23 with 0 failures; v1.3.6 CSS remains healthy. Booth regression must validate v27.0.5 + bootstrap v0.2.0 direct handoff with 4K/8K/WebP enabled.
+5. Loader remains 23/23 with 0 failures; v1.3.6 CSS remains healthy; Booth v27.0.5 + bootstrap v0.2.0 remains unchanged from its final PASS.
 6. Human visual gate: About and Disclaimer look normal/unchanged.
 7. Only after pass continue to bone HUD/detection extraction; do not integrate/promote Stable yet.
 
