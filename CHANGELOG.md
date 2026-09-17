@@ -2,6 +2,24 @@
 
 This is the rolling current Dev changelog. Older detailed entries remain durable in Git history and should be fetched only when relevant.
 
+## DOCK-2026-09-17-082 -- Handoff to modular Dev shell architecture
+
+Date: 2026-09-17
+
+### Summary
+
+Documentation-only handoff after issue #9 was fully validated and promoted to Stable.
+
+- Issue #9 is closed after Dev loaded 23/23 modules with 0 failures in 432.8 ms and Stable loaded 23/23 with 0 failures in 451.4 ms.
+- Public Stable is protected at `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- New architecture issue #10 tracks replacement of the legacy monolithic `Witch_Dock_DEV.user.js` development foundation with a modular Dev shell/bootstrap.
+- `ACTIVE_CONTEXT.md` now routes the next chat directly to monolith responsibility/seam mapping before any refactor.
+- Issue #7 remains open but is explicitly deprioritized while issue #10 is active.
+
+**Runtime behavior changed:** no. Documentation/task-routing only. No module source, manifest, or public Stable behavior changed.
+
+---
+
 ## DOCK-2026-09-16-081 -- Repair Dev bootstrap page-context transport
 
 Date: 2026-09-16

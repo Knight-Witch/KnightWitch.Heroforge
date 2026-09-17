@@ -2,6 +2,42 @@
 
 This is the compact operational preflight log. Older detailed records remain in Git history; they are not mandatory startup context.
 
+## PFC-2026-09-17-082 -- Handoff to modular Dev shell architecture
+
+Date: 2026-09-17
+
+### Scope
+
+Documentation-only task handoff. No runtime code, manifest behavior, module version, or Stable behavior is changed by this checkpoint.
+
+### Completed prior milestone
+
+- Issue #9 is closed.
+- Dev live gate: 23/23 modules started/fetched/executed, 0 failures, total loader duration 432.8 ms.
+- Stable promotion commit `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4` passed its smoke: Stable manifest provenance confirmed, 23/23 modules fetched/executed, 0 failures, 451.4 ms total.
+- Current user-side state after smoke: Stable enabled, Dev disabled.
+
+### New active task
+
+GitHub issue #10 is the authoritative architecture target: replace the legacy monolithic `Witch_Dock_DEV.user.js` development foundation with a modular Dev shell/bootstrap.
+
+The next chat must begin with source inventory and seam mapping before editing. Preserve current Dock behavior, storage keys, tool/module contracts, deterministic cache keys, enablement semantics, execution order, failure isolation, and validated parallel-fetch behavior. Existing feature-module readiness/polling/retry/ownership contracts remain protected.
+
+### Branch boundaries
+
+- Architecture work belongs to `WITCH_DEV_UI` only.
+- Public `Witch_Scripts` remains protected at `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- No architecture promotion to Stable is authorized by this handoff.
+- HF-Chat-Bridge remains development infrastructure only, never a runtime dependency.
+
+### Routing
+
+`ACTIVE_CONTEXT.md` now points to issue #10, `Witch_Dock_DEV.user.js`, `manifest.json`, `features/core/Witch_Dock_DEV_Module_Loader.js`, and `MODULE_VERSIONING.md` as the minimum starting set. Issue #7 remains open but is deprioritized.
+
+**Runtime behavior changed:** no. Documentation/task routing only.
+
+---
+
 ## PFC-2026-09-16-081 -- Issue #9 page-context bootstrap repair
 
 Date: 2026-09-16
