@@ -12,6 +12,16 @@
       "versionOrigin": "stable-loader-cache-repair-2026-09-07"
     },
     {
+      "id": "witch-dock-module-loader",
+      "title": "Witch Dock Module Loader",
+      "path": "features/core/Witch_Dock_Module_Loader.js",
+      "kind": "core-feature",
+      "load": "manifest-bootstrap",
+      "version": "0.1.1",
+      "build": "0.1.1-stable-page-fetch-ordered-exec",
+      "versionOrigin": "stable-promoted-dev-validated-2026-09-16"
+    },
+    {
       "id": "expanded-ui-scroll-guards",
       "title": "Expanded UI Scroll Guards",
       "path": "HeroForge_UI/Expanded_UI_Scroll_Guards.js",
@@ -246,6 +256,17 @@
     }
   ],
   "tools": [
+    {
+      "id": "witch-dock-module-loader",
+      "title": "Witch Dock Module Loader",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Module_Loader.js?v=0.1.1-stable-page-fetch-ordered-exec",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    }
+  ],
+  "modules": [
     {
       "id": "witch-dock-developer-mode",
       "title": "Developer Mode",
