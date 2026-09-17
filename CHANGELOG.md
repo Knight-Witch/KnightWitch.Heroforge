@@ -2,6 +2,27 @@
 
 This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
+## DOCK-2026-09-17-004 — Add issue #10 privileged-host seam candidate
+
+Date: 2026-09-17
+
+### Summary
+
+Implemented Stage B on short-lived branch `wd/10-modular-bootstrap` without changing the Stable-derived monolithic application core.
+
+- Bumped architecture-branch Dev launcher to v1.3.0 / build `1.3.0-dev-privileged-host-seam`.
+- Added a launcher-local bounded privileged host contract for repository text requests, namespaced userscript storage, downloads, clipboard writes, style insertion, and script metadata.
+- The actual privileged host object is not exposed page-globally; only frozen `KWWitchDockHostInfo` diagnostic metadata is exposed for validation.
+- Storage access is restricted to `kw.*`; repository text requests are restricted to this repository's raw GitHub prefix.
+- The task branch self-routes launcher/core/manifest/module URLs to `wd/10-modular-bootstrap` so live validation exercises the actual architecture branch.
+- Recorded issue #10 as an intentional task-branch divergence. Canonical issue #19 routing requirements remain protected for `WITCH_DEV_MAIN` and must be restored before integration.
+- `Witch_Dock.user.js` remains unchanged in Stage B.
+- Public `Witch_Scripts` remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Dev launcher/manifest behavior changed; monolithic core and public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-003 — Freeze issue #10 monolith contract before extraction
 
 Date: 2026-09-17
@@ -32,9 +53,8 @@ Established issue #19 as the canonical Dev-channel identity layer without modify
 - Tampermonkey name and intended visible Dock title are the same identity: `WITCH DOCK - DEV v1.2.2`.
 - Dev update/download URLs point to `WITCH_DEV_MAIN`.
 - The narrow launcher fetches the Stable-derived shared `Witch_Dock.user.js` core from `WITCH_DEV_MAIN`, replaces only its manifest-channel declaration, and fails visibly if that expected seam is not found.
-- Dev `manifest.json` now registers the Dev launcher and routes the bootstrap plus all 23 manifest-loaded modules to `WITCH_DEV_MAIN`; unaffected module source bytes remain Stable-equivalent until issue-linked work changes them.
+- Dev `manifest.json` registers the Dev launcher and routes runtime modules to `WITCH_DEV_MAIN`.
 - Added binding project/workflow/versioning rules requiring Dev identity synchronization and automatic post-Stable-smoke janitorial reconciliation without a second user approval.
-- Recorded the intentional Dev channel divergence in `DEV_DIVERGENCES.json`.
 - Public `Witch_Scripts` was not changed.
 
 **Runtime/module/manifest/public behavior changed:** Dev runtime/manifest behavior changed; public Stable unchanged.
@@ -53,12 +73,5 @@ Created the governance baseline for the new canonical Dev lane after branching `
 - Added `DEV_WORKFLOW.md` defining Stable parity, issue-scoped divergence, short-lived task branches, validation, narrow promotion, and mandatory post-promotion cleanup.
 - Added `DEV_DIVERGENCES.json` with zero runtime divergences at baseline.
 - Legacy `WITCH_DEV_UI` / `WITCH_DEV` remain reference-only pending migration audit #12; no legacy runtime code was merged.
-- Tracking: #11 Dev baseline, #12 legacy harvest, #13 branch retirement, #14 promotion janitorial gate.
 
 **Runtime/module/manifest/public behavior changed:** no. Documentation/governance only.
-
----
-
-## Stable baseline inherited at branch creation
-
-Public Stable commit `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4` contains the validated parallel module-loading promotion. Detailed Stable evidence remains in Git history.

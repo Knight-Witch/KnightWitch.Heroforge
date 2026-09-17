@@ -6,18 +6,34 @@
   "runtimeDivergences": [
     {
       "issue": 19,
-      "status": "active",
-      "reason": "Canonical Dev must have a distinct installed launcher/visible identity and must route its manifest-loaded runtime to WITCH_DEV_MAIN rather than silently executing Stable while appearing to be Dev.",
+      "status": "canonical-main-protected",
+      "reason": "Canonical Dev must have a distinct installed launcher/visible identity and must route its normal runtime to WITCH_DEV_MAIN rather than silently executing Stable while appearing to be Dev. Issue-scoped task branches may temporarily self-route while under active validation, but must normalize back to WITCH_DEV_MAIN before integration.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json"
       ],
       "acceptance": [
-        "Tampermonkey name and Dock title both report WITCH DOCK - DEV v1.2.2.",
-        "Dev update/download URLs resolve to WITCH_DEV_MAIN.",
-        "KWWitchDockManifestURL resolves to WITCH_DEV_MAIN/manifest.json.",
-        "Every manifest-loaded runtime URL resolves to WITCH_DEV_MAIN.",
+        "Canonical WITCH_DEV_MAIN Tampermonkey name and Dock title report the same DEV version identity.",
+        "Canonical Dev update/download URLs resolve to WITCH_DEV_MAIN.",
+        "Canonical KWWitchDockManifestURL resolves to WITCH_DEV_MAIN/manifest.json.",
+        "Canonical manifest-loaded runtime URLs resolve to WITCH_DEV_MAIN.",
         "Dev bootstrap fails visibly rather than silently falling back to Stable if its expected core seam disappears."
+      ]
+    },
+    {
+      "issue": 10,
+      "status": "task-branch-active",
+      "reason": "Architecture work on wd/10-modular-bootstrap introduces the first bounded privileged-host seam while keeping the monolithic application core behavior intact. The task branch self-routes its launcher/manifest/module URLs so live validation tests the actual task branch rather than canonical Dev.",
+      "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Task launcher and manifest identify v1.3.0 / build 1.3.0-dev-privileged-host-seam consistently.",
+        "Task branch launcher, core, manifest bootstrap, and manifest module URLs resolve to wd/10-modular-bootstrap during isolated validation.",
+        "The privileged host exposes no raw GM_* functions page-globally; only diagnostic capability metadata is page-visible.",
+        "Existing monolithic core source and behavior remain unchanged in Stage B.",
+        "Before integration to WITCH_DEV_MAIN, task-branch URLs are normalized back to the canonical Dev branch and revalidated."
       ]
     }
   ],
@@ -25,6 +41,6 @@
     "New Dev was created directly from the Stable baseline above.",
     "Governance/documentation files on Dev are intentionally Dev-specific and are not runtime divergences.",
     "Add a runtime divergence only when an open issue/task intentionally requires Dev behavior or module source to differ from Stable.",
-    "Channel routing may differ while unaffected module bytes remain Stable-equivalent."
+    "Issue-scoped task branches may self-route for accurate isolated runtime validation; task-specific routing must not survive canonical integration."
   ]
 }
