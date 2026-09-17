@@ -1,54 +1,53 @@
 # Active Context - WITCH_DEV_UI
 
-**Updated:** 2026-09-16
-**Current task:** Continue diagnosis of issue #7, the intermittent grey `Loading failed: connection error` toast. The prior upstream-only closeout was premature and #7 is reopened.
-**Protected public state:** `Witch_Scripts` remains live and closed at Stable head `acaf18a0cfd2c751886e85a269b9427ddfaa5040`. Do not change Stable unless a new Dev fix passes its own gate and Amanda explicitly approves another narrow promotion.
-**Bridge status:** HF-Chat-Bridge main userscript v0.3.2 is installed/live-validated; relay v0.2.2 and Power v0.1.0 unchanged.
+**Updated:** 2026-09-16  
+**Current task:** Diagnose and repair issue #9, Witch Dock DEV module loading becoming extremely slow after Chrome has been running for a while.  
+**Protected public state:** `Witch_Scripts` remains live and closed at Stable head `acaf18a0cfd2c751886e85a269b9427ddfaa5040`. Do not change Stable unless this Dev repair passes live validation and Amanda explicitly approves a narrow promotion.  
+**Bridge status:** HF-Chat-Bridge main userscript v0.3.2 is healthy in the currently affected browser session; relay v0.2.2 and Power v0.1.0 unchanged.
 
 ## Minimum continuation set
 
 1. `PROJECT_CONTRACT.md`;
 2. this file;
-3. GitHub issue `#7` for the active network-load bug;
-4. GitHub backlog issue `#8` for wider agenda/status;
-5. only source/runtime surfaces directly required by #7 diagnosis;
-6. `MODULE_VERSIONING.md` only if a runtime fix becomes necessary;
-7. rolling `CHANGELOG.md` / `PRE_FLIGHT_Check.md` only when committing.
+3. GitHub issue `#9`;
+4. `manifest.json`;
+5. `features/core/Witch_Dock_DEV_Module_Loader.js`;
+6. `Witch_Dock_DEV.user.js` only when comparing the legacy serial loader behavior;
+7. `MODULE_VERSIONING.md` for runtime-version discipline;
+8. rolling `CHANGELOG.md` / `PRE_FLIGHT_Check.md` only when committing.
 
-Do not preload unrelated history. Do not consult HeroForge.Compatibility unless #7 reaches an unresolved HeroForge engine seam.
+Do not preload unrelated history. Issue #7 is paused, not closed; resume it after #9 unless Amanda changes priority.
 
-## Active bug — #7 connection-error toast
+## Active bug — #9 slow module loading
 
-Confirmed user-visible behavior:
+Confirmed:
+- The existing Dev shell loads manifest modules with `GM_xmlhttpRequest` to raw GitHub.
+- It performs module network requests strictly serially: each fetch is awaited before the next begins.
+- The loader has no request timeout.
+- The loader implementation itself has not changed since the September 8 cache-key repair.
+- Dev now has 23 enabled module entries versus 18 on September 8.
+- HeroForge page context and HF-Chat-Bridge remained healthy while the Dock-specific slowdown was present.
 
-- transient grey popup reads `Loading failed: connection error`;
-- reproduces repeatedly during ordinary HeroForge/Witch Dock interaction;
-- exact reported text is absent from current Witch Dock source;
-- Witch Dock's own module-loader fetch failures are silently caught and do not render this toast;
-- Hero Forge documents a native part-load network-error/retry mechanism, but that is only a plausible ownership hypothesis until the actual failing request/emitter is captured.
+Supported inference:
+- Degraded per-request latency in the Chrome/Tampermonkey/raw-GitHub path is being multiplied by strict serialization; recent module-count growth made the weakness materially worse.
 
-The first 30-second trace was too broad: normal DOM text-node churn saturated the retained hook results and later network/error evidence was truncated. Do not use that trace as proof of the emitter.
+Current Dev candidate:
+- Keep `Witch_Dock_DEV.user.js` shell unchanged.
+- `manifest.tools` loads one hidden bootstrap module.
+- `manifest.devModules` retains the prior module list and order.
+- `Witch_Dock_DEV_Module_Loader.js` launches all enabled module fetches concurrently, then awaits/executes them in the original manifest order.
+- Per-module enablement, deterministic cache keys, silent failure isolation, and `new Function(code)()` execution semantics are preserved.
+- No request timeout is added in this change.
 
-### Immediate diagnostic sequence
+## Immediate validation sequence
 
-1. Use a low-noise capture focused on failed network requests and transient notification insertion.
-2. Reproduce the popup under that bounded capture and correlate timestamp, request URL/status, and notification path.
-3. Determine whether the failure is upstream-only or whether a Witch Dock module materially causes/increases it.
-4. Do not suppress the warning cosmetically. Do not edit runtime code until the failing request/call path is isolated.
-5. Any fix stays in `WITCH_DEV_UI`, preserves optional-feature isolation, and receives the narrowest live regression before any Stable promotion discussion.
+1. Static syntax check bootstrap and JSON-parse manifest.
+2. Commit Dev-only candidate with module registry/log updates.
+3. Refresh current HeroForge Dev page.
+4. Use Bridge to read `KWDevModuleLoader.getState()` and confirm all enabled modules fetched/executed in order with no errors.
+5. Human-check that Dock tabs/tools appear normally and compare load speed in the currently degraded Chrome session.
+6. Do not touch Stable until Dev passes and Amanda explicitly approves promotion.
 
-## Deferred JSON note — do not resume yet
+## Paused bug — #7 connection-error toast
 
-The brief JSON detour established useful status but is not next in the agenda.
-
-- `tools/JSON_Tool.js` is `Backup My Library (Bulk JSON)`; it has no character-import/restore implementation.
-- Current Dev `json-tool` v1.0.0 registered cleanly.
-- Live smoke indexed 1,890 configs, loaded 35 folder marks, and downloaded at least 650 individual config JSONs without reported failures before being manually paused.
-- Pause/resume worked.
-- Full ZIP completion was intentionally not awaited. If a separate historical character-level JSON import/export feature is meant later, identify that exact surface first.
-
-Amanda has additional bugs to add before JSON work resumes. Do not infer their priority/order until she adds them.
-
-## Recently closed — Texture Quality
-
-The promoted Texture Quality lifecycle/projected-host patch remains PASS/CLOSED after the full post-promotion regression matrix. Broader Enhanced Object Textures remains a separate future feature track.
+Issue #7 remains open. Prior upstream-only closeout was premature. Resume bounded failed-network/transient-notification capture after #9 unless priority changes.
