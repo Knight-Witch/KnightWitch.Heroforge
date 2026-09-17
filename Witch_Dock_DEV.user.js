@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.6
+// @version      1.3.7
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.6";
+  const DEV_VERSION = "1.3.7";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -32,6 +32,11 @@
   const CORE_STYLES_VERSION = "0.1.0";
   const CORE_STYLES_BUILD = "0.1.0-extracted-core-css";
   const CORE_STYLES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Styles.css?v=${CORE_STYLES_VERSION}-${CORE_STYLES_BUILD}`;
+  const CORE_MODALS_VERSION = "0.1.0";
+  const CORE_MODALS_BUILD = "0.1.0-extracted-about-disclaimer";
+  const CORE_MODALS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Modals.js?v=${CORE_MODALS_VERSION}-${CORE_MODALS_BUILD}`;
+  const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
+  const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
   const DEV_MANIFEST_DECL = `const MANIFEST_URL = "${DEV_MANIFEST_URL}";`;
   const INLINE_EMBLEM_DECL_RE = /^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/m;
@@ -39,6 +44,16 @@
   const STYLE_FUNCTION_END = '\n`);\n  }\n\n  function el(';
   const INLINE_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 40px;\n  height: 40px;';
   const EXTRACTED_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 48px;\n  height: 48px;';
+  const MODAL_BLOCK_START = '  function closeAboutModal() {';
+  const MODAL_BLOCK_END = '\nfunction buildUI() {';
+  const MODAL_FUNCTION_NAMES = Object.freeze([
+    "closeAboutModal",
+    "openAboutModal",
+    "ensureAboutModal",
+    "closeDisclaimerModal",
+    "openDisclaimerModal",
+    "ensureDisclaimerModal"
+  ]);
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -58,6 +73,11 @@
     coreStylesBuild: CORE_STYLES_BUILD,
     coreStylesMode: "external-bootstrap-css",
     coreStylesApplied: false,
+    coreModalsUrl: CORE_MODALS_URL,
+    coreModalsVersion: CORE_MODALS_VERSION,
+    coreModalsBuild: CORE_MODALS_BUILD,
+    coreModalsMode: "external-bootstrap-module",
+    coreModalsApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -209,6 +229,9 @@
     coreStylesUrl: state.coreStylesUrl,
     coreStylesVersion: state.coreStylesVersion,
     coreStylesBuild: state.coreStylesBuild,
+    coreModalsUrl: state.coreModalsUrl,
+    coreModalsVersion: state.coreModalsVersion,
+    coreModalsBuild: state.coreModalsBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -261,16 +284,19 @@
   }
 
   async function boot() {
-    state.status = "fetching-core-and-styles";
+    state.status = "fetching-core-styles-and-modals";
     const nonce = `${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
     const coreRequestUrl = `${CORE_URL}?kwdev=${nonce}`;
     const styleRequestUrl = `${CORE_STYLES_URL}&kwdev=${nonce}`;
-    const [source, coreStyles] = await Promise.all([
+    const modalRequestUrl = `${CORE_MODALS_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
+    if (!coreModals) throw new Error("core modal module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -311,16 +337,65 @@
       parity: "legacy-core-css-plus-48px-compact-icon"
     });
 
+    state.status = "loading-core-modals";
+    eval(`${coreModals}\n//# sourceURL=${CORE_MODALS_URL}`);
+    const modalApi = UW.KWWitchDockModals;
+    if (!modalApi || modalApi.version !== CORE_MODALS_VERSION || modalApi.build !== CORE_MODALS_BUILD) {
+      throw new Error("external core modal module did not register the expected API/version");
+    }
+    if (typeof modalApi.configure !== "function" || typeof modalApi.ensureAbout !== "function" || typeof modalApi.openDisclaimer !== "function") {
+      throw new Error("external core modal module is missing required methods");
+    }
+    modalApi.configure({
+      scriptMeta: PRIVILEGED_HOST.scriptMeta(),
+      githubRepoUrl: GITHUB_REPO_URL,
+      kofiUrl: KOFI_URL
+    });
+    state.coreModalsApplied = true;
+    UW.KWWitchDockModalsInfo = Object.freeze({
+      version: CORE_MODALS_VERSION,
+      build: CORE_MODALS_BUILD,
+      url: CORE_MODALS_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-about-disclaimer-dom-and-behavior"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
+
+    const modalStart = devSource.indexOf(MODAL_BLOCK_START);
+    const duplicateModalStart = modalStart >= 0 ? devSource.indexOf(MODAL_BLOCK_START, modalStart + MODAL_BLOCK_START.length) : -1;
+    if (modalStart < 0 || duplicateModalStart >= 0) {
+      throw new Error(`expected exactly one legacy modal block start; found ${modalStart < 0 ? 0 : 2}`);
+    }
+    const modalEnd = devSource.indexOf(MODAL_BLOCK_END, modalStart + MODAL_BLOCK_START.length);
+    if (modalEnd < 0) throw new Error("legacy modal block end was not found");
+    const legacyModalBlock = devSource.slice(modalStart, modalEnd);
+    for (const functionName of MODAL_FUNCTION_NAMES) {
+      const count = legacyModalBlock.split(`function ${functionName}(`).length - 1;
+      if (count !== 1) throw new Error(`expected exactly one ${functionName} in legacy modal block; found ${count}`);
+    }
+
+    const modalReplacement = [
+      '  function closeAboutModal() { return UW.KWWitchDockModals.closeAbout(); }',
+      '  function openAboutModal() { return UW.KWWitchDockModals.openAbout(); }',
+      '  function ensureAboutModal() { return UW.KWWitchDockModals.ensureAbout(); }',
+      '  function closeDisclaimerModal() { return UW.KWWitchDockModals.closeDisclaimer(); }',
+      '  function openDisclaimerModal() { return UW.KWWitchDockModals.openDisclaimer(); }',
+      '  function ensureDisclaimerModal() { return UW.KWWitchDockModals.ensureDisclaimer(); }',
+      '',
+      'function buildUI() {'
+    ].join('\n');
+    devSource = devSource.slice(0, modalStart) + modalReplacement + devSource.slice(modalEnd + MODAL_BLOCK_END.length);
     devSource = devSource.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
 
     state.status = "loading-core";
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS ownership has moved to the bootstrap-hosted GitHub stylesheet while other
-    // legacy application responsibilities remain in the Stable-derived core.
+    // CSS and modal ownership have moved to bootstrap-hosted GitHub components while
+    // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

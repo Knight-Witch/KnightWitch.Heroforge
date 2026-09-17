@@ -5,68 +5,55 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 privileged-host/bootstrap modularization. v1.3.6 remains the core CSS extraction candidate; its live gate also exposed and now carries a bounded Booth cold-start compatibility candidate in `Booth_Runtime_Bootstrap` v0.1.2.
+**Current phase:** issue #10 Stage C presentation extraction. v1.3.6 CSS and Booth v0.1.2 blocker gates passed; v1.3.7 extracts About/Disclaimer UI behind a GitHub-owned bootstrap module.
 
 ## Current priorities
 
-1. #10 — finish validating v1.3.6 / build `1.3.6-extracted-core-css` plus the bounded Booth v0.1.2 cold-start blocker repair. Do not merge the task branch to canonical Dev until both clean live gates pass.
-2. #19 — Dev Tampermonkey identity is fixed as `WITCH DOCK - DEV`; changing version belongs in `@version` and the visible Dock title, never in `@name`.
-3. #12 — harvest only still-relevant legacy fragments; never bulk-merge legacy Dev.
-4. #7 / #8 — preserve and re-test open bug/backlog surfaces against fresh Dev.
-5. #13 — retire obsolete branches only after harvest proves nothing useful is stranded.
-6. #14 — Stable-smoke success automatically triggers Dev janitorial reconciliation; no second cleanup approval.
+1. #10 — validate v1.3.7 / build `1.3.7-extracted-core-modals`, then continue Stage C with bone HUD/detection only if the modal gate passes.
+2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
+3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
 ## Completed live milestones
 
-- **v1.3.0 privileged host:** PASS. Host API v0.1.0 present; raw GM privileges not page-exposed; loader 23/23, 0 failed.
-- **v1.3.1 host-owned bootstrap fetch:** PASS. `bootstrapTransport: host.requestText`; loader 23/23, 0 failed.
-- **v1.3.3 stable Tampermonkey identity/runtime:** PASS. Fixed-name install worked; loader 23/23, 0 failed in 167.9 ms.
-- **v1.3.2/v1.3.3 external compact emblem:** FAIL visual gate. `ASSETS/emblem.png` is the wrong image.
-- **v1.3.4 inline emblem restore:** PASS human visual gate.
-- **v1.3.5 larger correct emblem:** PASS. Bridge confirmed v1.3.5 running, icon 48x48, correct inline data URL, loader 23/23 with 0 failures in 294.8 ms; Amanda confirmed the larger icon looks better. Bridge request: `hf-20260917-wd10-v135-live-002`.
+- v1.3.0 privileged host: PASS; raw GM privileges not page-exposed; loader 23/23, 0 failed.
+- v1.3.1 host-owned core fetch: PASS.
+- v1.3.3 stable Tampermonkey identity: PASS.
+- v1.3.2/v1.3.3 external compact emblem: FAIL visual gate; wrong asset.
+- v1.3.4 restored known-good inline emblem: PASS.
+- v1.3.5 48x48 emblem inside 54x54 button: PASS human gate.
+- v1.3.6 external core CSS: PASS automated + human visual gate; one effective stylesheet, correct 48x48 emblem, loader 23/23, 0 failed.
+- Booth v0.1.2 cold-start blocker: PASS final native-owned lifecycle gate after a normal manual HeroForge refresh. Cold Booth request loaded one version-matched `/gated/booth.js`, native `BT.maker.enabled=true`, runtime/engine ready, 4K/8K/WebP enabled, no error; off/on cycle kept one script and preserved defaults/persistence. Bridge requests: `hf-20260917-wd10-booth-final-activate-001`, `hf-20260917-wd10-media-controls-final-001`, `hf-20260917-wd10-booth-cycle-final-001`.
 
-## v1.3.6 candidate — extracted core CSS
+## v1.3.7 candidate — extracted About/Disclaimer UI
 
-- New GitHub-owned `features/core/Witch_Dock_Styles.css`, registry id `witch-dock-styles`, v0.1.0 / build `0.1.0-extracted-core-css`.
-- Launcher v1.3.6 fetches the Stable-derived core and external stylesheet in parallel through `PRIVILEGED_HOST.requestText`.
-- Before applying the stylesheet, the launcher extracts the legacy inline CSS contract from the fetched core and requires exact parity after only the already-approved compact-icon delta from 40px to 48px.
-- CSS is inserted through the bounded host `styles.add` capability before the core builds UI.
-- The runtime source-transform replaces the legacy `addStyles()` implementation with a no-op so the Dock receives one stylesheet, not duplicate inline + external copies.
-- The temporary v1.3.5 post-core 48px override is removed; 48px now belongs to the extracted stylesheet.
-- `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith during this bounded migration step. Physical deletion of the now-duplicated legacy CSS source waits for the later true GitHub-owned core split.
-
-## Booth cold-start blocker candidate — v0.1.2
-
-- Cold-page diagnosis confirmed Witch Dock can have `sessionBoothView=true` while HeroForge native `BT` is still absent.
-- `Booth_Runtime_Bootstrap` v0.1.1 only reacted to persisted/saved Booth state; v0.1.2 adds the existing session Booth request as a bootstrap trigger.
-- v0.1.2 loads the version-matched HeroForge `/gated/booth.js` only when needed and delegates activation to native `BT.setBoothMode(mode)`.
-- Native source inspection proved `setBoothMode()` owns character-readiness deferral through `CharacterFinishedChanging` and later owns `maker.enable()`; do not replace this with a direct maker-enable bypass.
-- A direct `maker.enable()` probe while HeroForge reported `character.isLoading()` threw inside `booth.js`; that experiment is discarded and not present in the candidate.
-- The ready-state downstream target was observed once native maker activation completed: 4K/8K/WebP ready and module loader 23/23, 0 failed.
-- Final clean-path cold-start validation is still required on a normally ready HeroForge page. The last Bridge-driven reload remained in HeroForge's own loading/missing-display-data state, so the candidate was deliberately not forced through it.
+- New `features/core/Witch_Dock_Modals.js`, registry id `witch-dock-modals`, v0.1.0 / build `0.1.0-extracted-about-disclaimer`.
+- Launcher v1.3.7 fetches core, stylesheet, and modal module in parallel through bounded `PRIVILEGED_HOST.requestText`.
+- Modal module receives only bounded script metadata plus existing GitHub/Ko-fi URLs; no raw GM capability is exposed.
+- Launcher guards the exact legacy modal block and all six legacy modal function names, then replaces only those implementations with thin wrappers to `UW.KWWitchDockModals`.
+- `getScriptMeta()` remains in the core because the bone HUD still uses it. Header button handlers and all modal DOM ids/classes/text/close semantics remain unchanged.
+- Checked-in `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith; this is another guarded runtime ownership seam, not physical source deletion yet.
+- The attempted Bridge static-fetch helper failed in the helper's nested config JSON before executing candidate code; it is not candidate-failure evidence. Final syntax/runtime proof belongs to the installed v1.3.7 live gate.
 
 ## Protected state
 
-- Public `Witch_Scripts` remains untouched absent explicit narrow promotion approval.
-- Canonical `WITCH_DEV_MAIN` remains untouched by this task branch until task validation passes.
-- The correct compact emblem remains the exact inline data URL already present in the core; `ASSETS/emblem.png` is not used for compact mode.
-- Existing storage keys, `WitchDock` public seams, cache-key behavior, module ordering/performance, enablement, Dock interactions, and feature lifecycle remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
-- HF-Chat-Bridge is development infrastructure only and must never become a Dock runtime dependency.
-- Tampermonkey `@name` remains the stable `WITCH DOCK - DEV` identity.
-- HeroForge retains native ownership of Booth character readiness and maker enablement.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched during task-branch validation.
+- Existing storage keys, `WitchDock` public seams, module ordering/cache keys/failure isolation, Dock layout/interactions, hotkeys, undo/redo, and bone HUD contracts remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
+- Correct compact emblem remains inline; `ASSETS/emblem.png` is not used.
+- HeroForge retains native Booth character-readiness and maker-enable ownership.
+- HF-Chat-Bridge remains development infrastructure only.
 
-## Required live gate
+## v1.3.7 live gate
 
-1. Confirm v1.3.6 CSS state: `coreStylesMode: "external-bootstrap-css"`, `coreStylesApplied: true`, `status: running`, `error: null`; `KWWitchDockStylesInfo` v0.1.0 applied by `privileged-bootstrap`.
-2. Confirm one effective Dock stylesheet, correct 48x48 inline emblem, normal dimensions/classes, and module loader 23/23 with 0 failures.
-3. On a fresh normally ready HeroForge page with native `BT` absent, toggle Booth View on once.
-4. Confirm one version-matched `/gated/booth.js`, native `BT` appears, requested mode is active, maker becomes enabled through the native readiness path, and bootstrap error remains null.
-5. Confirm 4K, 8K, and WebP controls are enabled/ready; toggling Booth View off/on afterward must not create a duplicate Booth script or alter persistence/default behavior.
-6. Human visual/interaction gate: Dock appearance unchanged, compact icon correct/larger, tabs/modals/minimize/restore normal.
-7. Only after these pass may the task branch be normalized to canonical Dev URLs and integrated to `WITCH_DEV_MAIN`.
+1. Existing fixed-name Dev install updates in place to v1.3.7; Dev state reaches `running` / `error:null`, `coreModalsMode: external-bootstrap-module`, `coreModalsApplied:true`.
+2. `KWWitchDockModalsInfo` and `KWWitchDockModals.getState()` report v0.1.0/build and configured=true; no modal overlays exist before first use.
+3. About button creates exactly one `#kwWDAboutOverlay`; title/footer/links match prior behavior; close button, overlay click, and Escape work; reopen creates no duplicate.
+4. Disclaimer creates exactly one `#kwWDDisclaimerOverlay`, closes About when opened, preserves exact content/footer, and closes via button/overlay/Escape without duplicates.
+5. Loader remains 23/23 with 0 failures; v1.3.6 CSS and Booth v0.1.2/media readiness remain healthy.
+6. Human visual gate: About and Disclaimer look normal/unchanged.
+7. Only after pass continue to bone HUD/detection extraction; do not integrate/promote Stable yet.
 
 ## Minimum continuation set
 
-Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, issue #19, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
+Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.
 
 Do not preload MASTER, full old logs, unrelated HISTORY files, or HeroForge.Compatibility unless current evidence requires them.

@@ -12,7 +12,6 @@
       "acceptance": [
         "Canonical Tampermonkey @name is the fixed WITCH DOCK - DEV identity and @namespace remains stable.",
         "Canonical userscript @version, runtime DEV_VERSION, manifest launcher version/build, and visible Dock title version remain synchronized.",
-        "Visible Dock title is formatted WITCH DOCK - DEV v<version>; the changing version is not embedded in Tampermonkey @name.",
         "Canonical update/download URLs, manifest URL, and manifest-loaded runtime URLs resolve to WITCH_DEV_MAIN.",
         "A Dev bootstrap/channel-seam failure is visible rather than silently falling back to Stable."
       ]
@@ -20,25 +19,20 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. v1.3.6 moves core Dock CSS ownership into features/core/Witch_Dock_Styles.css behind the bounded privileged host. During its live gate, a cold-page Booth blocker was also confirmed: a current-session Booth View request could exist while native HeroForge BT was absent. Booth_Runtime_Bootstrap v0.1.2 now recognizes that existing session request, loads HeroForge's own version-matched booth.js when needed, and delegates activation to BT.setBoothMode so HeroForge retains character-readiness and maker-enable ownership.",
-      "paths": ["Witch_Dock_DEV.user.js", "manifest.json", "features/core/Witch_Dock_Styles.css", "features/booth/Booth_Runtime_Bootstrap.js"],
+      "reason": "Stage C architecture work on wd/10-modular-bootstrap moves bounded presentation ownership out of the Stable-derived monolith while preserving contracts. v1.3.6 externalized core CSS; Booth_Runtime_Bootstrap v0.1.2 repaired the cold-session Booth prerequisite and passed its native lifecycle gate; v1.3.7 adds a GitHub-owned About/Disclaimer module loaded/configured by the bounded bootstrap and replaces only the guarded legacy modal implementations with thin wrappers.",
+      "paths": ["Witch_Dock_DEV.user.js", "manifest.json", "features/core/Witch_Dock_Styles.css", "features/core/Witch_Dock_Modals.js", "features/booth/Booth_Runtime_Bootstrap.js"],
       "acceptance": [
-        "Task launcher and manifest identify v1.3.6 / build 1.3.6-extracted-core-css consistently.",
-        "The witch-dock-styles registry entry is v0.1.0 / build 0.1.0-extracted-core-css and is bootstrap-owned rather than manifest-module-loaded.",
-        "Tampermonkey @name remains fixed as WITCH DOCK - DEV while the visible Dock title is WITCH DOCK - DEV v1.3.6.",
-        "The launcher fetches core source and the external core stylesheet in parallel through PRIVILEGED_HOST.requestText and applies CSS before core UI construction.",
-        "The launcher guards exactly one legacy addStyles seam, compares the extracted stylesheet to the inline legacy CSS contract with only the validated 40px-to-48px compact-icon delta, and fails visibly on mismatch.",
-        "Runtime Dev state reports coreStylesMode external-bootstrap-css and coreStylesApplied true; KWWitchDockStylesInfo identifies the v0.1.0 stylesheet and privileged-bootstrap owner.",
-        "The correct inline compact emblem remains unchanged and renders at 48x48 inside the existing compact button.",
-        "booth-runtime-bootstrap is v0.1.2 / build 0.1.2-session-cold-start in both source and manifest, with a deterministic matching cache key.",
-        "When KW_WD_BOOTH reports sessionBoothView on a cold page and native BT is absent, the bootstrap loads one version-matched HeroForge /gated/booth.js and calls BT.setBoothMode rather than directly forcing maker.enable().",
-        "HeroForge remains owner of _characterReady(), CharacterFinishedChanging deferral, _resumePendingMode, and maker.enable(); the task branch must not bypass that lifecycle.",
-        "A clean ready-state cold-start live gate must show one Booth script, native maker enabled, 4K/8K/WebP ready, and no bootstrap error before integration to canonical Dev.",
-        "Module loader still completes 23/23 with zero failures and existing cache/order/enablement behavior is unchanged.",
-        "Raw GM_* privileges remain unexposed page-side.",
-        "No storage, registration, drag/minimize, hotkey, bone-HUD, or unrelated feature lifecycle ownership moves in these bounded changes.",
-        "Checked-in Witch_Dock.user.js remains Stable-derived during this bounded migration seam; physical deletion of duplicated legacy CSS belongs to the later core split, not this validation step.",
-        "Before integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated."
+        "Task launcher/manifest identify v1.3.7 / build 1.3.7-extracted-core-modals; Tampermonkey @name remains fixed WITCH DOCK - DEV.",
+        "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
+        "booth-runtime-bootstrap remains v0.1.2 / build 0.1.2-session-cold-start; one native Booth script, no duplicate, native lifecycle ownership, 4K/8K/WebP ready, and no bootstrap error remain proven.",
+        "witch-dock-modals is v0.1.0 / build 0.1.0-extracted-about-disclaimer and is fetched as a bootstrap module through bounded requestText.",
+        "The modal module receives only script metadata plus the existing GitHub and Ko-fi URLs; raw GM_* privileges remain unexposed page-side.",
+        "The launcher finds exactly one guarded legacy modal block containing each of the six legacy modal functions exactly once and replaces only those implementations with wrappers to KWWitchDockModals.",
+        "About/Disclaimer preserve existing DOM ids/classes/content, mutual exclusion, close-button/overlay/Escape behavior, links, and version display; reopen creates no duplicate overlays.",
+        "Module loader remains 23/23 with zero failures and existing cache/order/enablement behavior is unchanged.",
+        "No storage, registration, drag/minimize, hotkey, undo/redo, bone-HUD, or unrelated feature lifecycle ownership moves in v1.3.7.",
+        "Checked-in Witch_Dock.user.js remains Stable-derived during this guarded migration seam; physical source deletion waits for the later true core split.",
+        "Before eventual integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated."
       ]
     }
   ],

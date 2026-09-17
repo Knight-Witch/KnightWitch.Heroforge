@@ -2,138 +2,48 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
-## DOCK-2026-09-17-011 — Repair cold-page Booth activation during v1.3.6 validation
+## DOCK-2026-09-17-012 — Extract About/Disclaimer UI behind bootstrap module
 
 Date: 2026-09-17
 
-### Summary
-
-During the issue #10 v1.3.6 live gate, a separate Booth lifecycle defect surfaced on a cold HeroForge page: Witch Dock could show Booth View enabled while HeroForge's native Booth runtime (`BT`) had never been loaded, leaving the 4K, 8K, and WebP capture surfaces unavailable.
-
-- Diagnosed the failure to `features/booth/Booth_Runtime_Bootstrap.js` v0.1.1: it could bootstrap from a saved/persistent Booth setup, but it did not treat the current-session `KW_WD_BOOTH.getState().sessionBoothView` request as a reason to cold-start native Booth when persistence was off.
-- Bumped `booth-runtime-bootstrap` to v0.1.2 / build `0.1.2-session-cold-start` and added a deterministic manifest cache key.
-- v0.1.2 watches the existing session Booth request, loads HeroForge's version-matched `/gated/booth.js` only when native `BT` is absent, and reuses HeroForge's own script/status conventions so later native lazy-loading can recognize the same resource.
-- Once `BT` exists, the bootstrap delegates mode activation to HeroForge's own `BT.setBoothMode(mode)` and waits for the native engine to report enabled; it does not retain a direct `maker.enable()` bypass.
-- Runtime inspection confirmed HeroForge's ownership contract: `setBoothMode()` defers through `CharacterFinishedChanging` when `_characterReady()` is false, then re-enters native mode activation and calls `maker.enable()` itself when the character/display state is ready.
-- A temporary direct `maker.enable()` probe proved why bypassing that readiness guard is unsafe: HeroForge threw `Cannot convert undefined or null to object` while the character was still loading. That probe code was discarded.
-- The earlier ready-state probe demonstrated the target downstream result once the native engine is enabled: `BT.currentMode=portrait`, `maker.enabled=true`, 4K/8K/WebP controls enabled, and module loader 23/23 with 0 failures.
-- The final clean-path live gate remains pending because the last Bridge-driven page reload stayed in HeroForge's own `character.isLoading()` / missing display-data state for the observation window. The candidate intentionally leaves HeroForge in control rather than forcing through that state.
+- Completed the Booth v0.1.2 blocker live gate after a normal manual HeroForge refresh: one version-matched native Booth script, native maker/runtime ready, 4K/8K/WebP enabled, no bootstrap error, and off/on cycle preserved one script plus existing persistence/default values.
+- Bumped the task launcher to v1.3.7 / build `1.3.7-extracted-core-modals` while preserving fixed Tampermonkey `@name WITCH DOCK - DEV`.
+- Added `features/core/Witch_Dock_Modals.js`, registry id `witch-dock-modals`, v0.1.0 / build `0.1.0-extracted-about-disclaimer`.
+- Launcher now fetches core, CSS, and modal JS in parallel through bounded `PRIVILEGED_HOST.requestText`; modal JS receives only bounded script metadata and the existing GitHub/Ko-fi URLs.
+- Added guarded runtime extraction for the exact legacy About/Disclaimer block: all six legacy modal functions must exist exactly once, then their implementations are replaced with thin wrappers to `UW.KWWitchDockModals`.
+- `getScriptMeta()` remains in core because bone HUD still consumes it. Header handlers, modal DOM ids/classes/content, mutual exclusion, close/Escape/overlay behavior, links, and version display are preserved.
+- Checked-in `Witch_Dock.user.js` remains unchanged/Stable-derived; no storage, registry, drag/minimize, hotkey, undo/redo, bone-HUD, loader, or unrelated feature ownership moved.
+- The Bridge helper used for pre-install static fetch did not execute candidate code because its nested helper config JSON failed to parse; this is recorded as probe-transport failure, not candidate failure. Installed v1.3.7 is the required syntax/runtime gate.
 - Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
 
-**Runtime/module/manifest/public behavior changed:** task-branch Booth runtime bootstrap behavior and module version/cache key changed; public Stable unchanged.
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/modal ownership and registry changed; public Stable unchanged.
+
+---
+
+## DOCK-2026-09-17-011 — Repair cold-page Booth activation during v1.3.6 validation
+
+- Bumped `booth-runtime-bootstrap` to v0.1.2 / build `0.1.2-session-cold-start` with deterministic cache key.
+- Current-session Booth View now cold-starts HeroForge's version-matched `/gated/booth.js` when native `BT` is absent, then delegates activation to native `BT.setBoothMode()`; no direct `maker.enable()` bypass remains.
+- Final live PASS: native `BT.maker.enabled=true`, runtime/engine ready, one Booth script / zero duplicates, 4K/8K/WebP enabled, no error; off/on cycle preserved defaults and persistence. Bridge: `hf-20260917-wd10-booth-final-activate-001`, `hf-20260917-wd10-media-controls-final-001`, `hf-20260917-wd10-booth-cycle-final-001`.
 
 ---
 
 ## DOCK-2026-09-17-010 — Extract core Dock CSS behind privileged bootstrap
 
-Date: 2026-09-17
-
-### Summary
-
-Advanced issue #10 after v1.3.5 passed both live runtime checks and Amanda's human compact-icon gate.
-
-- v1.3.5 live PASS: Dev state running/error null, correct inline emblem at 48x48, and module loader 23/23 with 0 failures in 294.8 ms.
-- Bumped the task launcher to v1.3.6 / build `1.3.6-extracted-core-css`.
-- Added `features/core/Witch_Dock_Styles.css`, registry id `witch-dock-styles`, v0.1.0 / build `0.1.0-extracted-core-css`.
-- Launcher now fetches the legacy core and extracted stylesheet in parallel through `PRIVILEGED_HOST.requestText`, then injects styles through bounded `PRIVILEGED_HOST.styles.add` before UI construction.
-- Added a guarded parity check: the external stylesheet must match the legacy inline CSS exactly except for the already-human-approved compact-icon size change from 40px to 48px.
-- Runtime source transformation replaces the legacy `addStyles()` implementation with a no-op so only the externally owned stylesheet is applied.
-- Removed the temporary v1.3.5 post-core 48px override; 48px is now owned by the extracted stylesheet.
-- Static parser/manifest check passed: launcher v1.3.6, styles v0.1.0, 28 registry entries, 1 bootstrap tool, 23 normal modules; old size-override block absent.
-- Checked-in `Witch_Dock.user.js` remains Stable-derived during this bounded migration seam; physical deletion of duplicated legacy CSS waits for the later true core split.
-- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
-
-**Runtime/module/manifest/public behavior changed:** task-branch style ownership, launcher v1.3.6, and new registered core-style v0.1.0 changed; public Stable unchanged.
-
----
-
-## DOCK-2026-09-17-009 — Enlarge compact emblem inside existing button
-
-Date: 2026-09-17
-
-### Summary
-
-Applied Amanda's requested compact-button presentation adjustment after the v1.3.4 known-good emblem was visually confirmed restored.
-
-- Human gate for v1.3.4 passed: the original Witch Dock emblem is visibly correct again.
-- Bumped the task launcher to v1.3.5 / build `1.3.5-larger-compact-emblem`.
-- Preserved the compact button at 54x54 and increased only `#kwWDCompactIcon` from 40x40 to 48x48.
-- Applied the 48px size as a narrow post-core style override through the already-validated bounded host `styles.add` capability; this avoids rewriting the Stable-derived monolith before the dedicated CSS extraction step.
-- Added `compactIconSizePx: 48` to Dev diagnostics for live verification.
-- The known-good inline emblem source remains unchanged; `ASSETS/emblem.png` remains excluded from runtime compact-icon ownership.
-- No storage, registration, drag/minimize, hotkey, bone-HUD, module-loader, or feature lifecycle behavior changed.
-- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
-
-**Runtime/module/manifest/public behavior changed:** task-branch compact-icon presentation size and launcher/manifest version changed; public Stable unchanged.
-
----
-
-## DOCK-2026-09-17-008 — Restore known-good compact emblem after visual failure
-
-Date: 2026-09-17
-
-### Summary
-
-Corrected the first presentation-asset extraction after the external compact emblem failed its required human visual gate.
-
-- Dev v1.3.3 passed runtime validation: correct task provenance/title, privileged-host boundary intact, `status: running`, `error: null`, and module loader 23/23 with 0 failures in 167.9 ms.
-- Human compact-button validation failed: the button rendered as a dark square with only a short white line instead of the Witch Dock emblem.
-- HF-Chat-Bridge confirmed the external image loaded successfully at 256x256 and rendered at 40x40, ruling out a missing-resource/CSP failure.
-- A pixel probe proved `ASSETS/emblem.png` itself is the wrong visual asset for compact mode: only 156 non-transparent pixels, almost all bright, bounded to x=41..255 and y=23..24.
-- Bumped the task launcher to v1.3.4 / build `1.3.4-restore-inline-compact-emblem`.
-- Removed the runtime substitution of `ASSETS/emblem.png` and restored the exact known-good inline `COMPACT_EMBLEM_URL` data URL already present in the Stable-derived core.
-- Retained the validated privileged-host/bootstrap work and exact guarded inline-emblem declaration check.
-- No CSS or other application ownership moved in this repair; checked-in `Witch_Dock.user.js` remains unchanged.
-- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
-
-**Runtime/module/manifest/public behavior changed:** task-branch compact-emblem source ownership was rolled back to the known-good inline core data URL and launcher/manifest version advanced to v1.3.4; public Stable unchanged.
-
----
-
-## DOCK-2026-09-17-007 — Stabilize Tampermonkey Dev identity
-
-Date: 2026-09-17
-
-### Summary
-
-Corrected the Dev userscript identity contract after confirming versioned Tampermonkey `@name` values were causing repeated raw installs to appear as new scripts instead of normal updates.
-
-- Bumped the task launcher to v1.3.3 / build `1.3.3-stable-tampermonkey-identity`.
-- Fixed Tampermonkey `@name` as `WITCH DOCK - DEV`; `@namespace` remains `KnightWitch`.
-- Kept version reporting in `@version`, runtime `DEV_VERSION`, manifest registry, and visible Dock title `WITCH DOCK - DEV v1.3.3`.
-- Updated `PROJECT_CONTRACT.md`, `MODULE_VERSIONING.md`, `DEV_DIVERGENCES.json`, ACTIVE_CONTEXT, and issue #19 so future work cannot reintroduce versioned Tampermonkey names.
-- Preserved the v1.3.2 external compact-emblem extraction unchanged; no CSS or additional monolith ownership moved in this correction.
-- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
-
-**Runtime/module/manifest/public behavior changed:** task-branch Dev launcher metadata/version and identity contract changed; public Stable unchanged.
-
----
-
-## DOCK-2026-09-17-006 — Externalize compact emblem ownership
-
-Date: 2026-09-17
-
-### Summary
-
-Advanced issue #10 after Stage C passed live validation.
-
-- Stage C passed on Dev v1.3.1: host-owned bootstrap confirmed, correct task provenance/title, `status: running`, `error: null`, and module loader 23/23 with 0 failures in 458 ms.
-- Bumped task launcher to v1.3.2 / build `1.3.2-external-compact-emblem`.
-- Reused existing `ASSETS/emblem.png` rather than creating a duplicate asset.
-- Added an exact guarded runtime seam that replaces the single legacy inline base64 `COMPACT_EMBLEM_URL` declaration with the task-branch asset URL; unexpected seam counts fail visibly.
-- Added Dev diagnostics for compact-emblem URL and `presentationAssetMode: external-compact-emblem`.
-- No CSS, storage, registry, interaction, hotkey, bone-HUD, or module-loader ownership moved in this step.
-- Checked-in `Witch_Dock.user.js` remains unchanged; this is a bounded runtime-ownership extraction through the temporary migration seam.
-- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
-
-**Runtime/module/manifest/public behavior changed:** task-branch Dev presentation-asset ownership and launcher/manifest version changed; public Stable unchanged.
+- v1.3.6 / build `1.3.6-extracted-core-css`; added `features/core/Witch_Dock_Styles.css` v0.1.0.
+- Core + stylesheet fetched in parallel through the bounded host; guarded CSS parity permits only the approved compact-icon 40px→48px delta; legacy `addStyles()` is no-op'd at runtime to prevent duplicate insertion.
+- Live automated and Amanda visual gates passed; one effective stylesheet, correct 48px emblem, normal Dock appearance, loader 23/23 / 0 failed.
 
 ---
 
 ## Current prior milestones
 
-- **DOCK-2026-09-17-005:** Dev v1.3.1 made `PRIVILEGED_HOST.requestText` own bootstrap core fetching; monolith unchanged.
-- **DOCK-2026-09-17-004:** Dev v1.3.0 introduced bounded privileged host seam; monolith unchanged.
-- **DOCK-2026-09-17-003:** froze monolith contracts in `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
-- **DOCK-2026-09-17-002:** established canonical Dev identity/routing and automatic post-Stable-smoke cleanup rules.
-- **DOCK-2026-09-17-001:** established clean Stable-derived `WITCH_DEV_MAIN` governance baseline.
+- **009:** enlarged correct compact emblem to 48px inside unchanged 54px button; human gate PASS.
+- **008:** restored known-good inline emblem after external asset failed visual gate.
+- **007:** stabilized Tampermonkey identity as fixed `WITCH DOCK - DEV`.
+- **006:** external compact-emblem experiment; runtime pass / visual fail.
+- **005:** v1.3.1 host-owned bootstrap core fetch.
+- **004:** v1.3.0 bounded privileged-host seam.
+- **003:** issue #10 core contract freeze.
+- **002:** canonical Dev identity/routing and cleanup rules.
+- **001:** clean Stable-derived `WITCH_DEV_MAIN` governance baseline.
