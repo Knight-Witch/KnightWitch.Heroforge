@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "devBranch": "WITCH_DEV_MAIN",
+  "stableBranch": "Witch_Scripts",
+  "stableBaseline": "273b2dc2bbb7a38ea1591abf7c7723d23800e4a4",
+  "runtimeDivergences": [],
+  "notes": [
+    "New Dev was created directly from the Stable baseline above.",
+    "Governance/documentation files on Dev are intentionally Dev-specific and are not runtime divergences.",
+    "Add a runtime divergence only when an open issue/task intentionally requires Dev behavior or module source to differ from Stable."
+  ]
+}

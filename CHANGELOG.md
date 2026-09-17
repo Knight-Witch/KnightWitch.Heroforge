@@ -1,28 +1,25 @@
 # Changelog
 
-This active Stable changelog is intentionally compact. Older detailed Stable entries remain durable in Git history.
+This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
-## DOCK-2026-09-16-039 — Promote parallel module loading to public Stable
+## DOCK-2026-09-17-001 — Establish clean Stable-derived Dev baseline
 
-Date: 2026-09-16
+Date: 2026-09-17
 
 ### Summary
 
-Narrowly promote the issue #9 module-loading repair after committed Dev candidate `547b86462f122cd67e96c861486d129a4cfdb3d5` passed live runtime and human gates in the already-degraded Chrome session.
+Created the governance baseline for the new canonical Dev lane after branching `WITCH_DEV_MAIN` directly from public Stable commit `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
 
-- Added public `witch-dock-module-loader` v0.1.1 / build `0.1.1-stable-page-fetch-ordered-exec`.
-- Public `Witch_Dock.user.js` remains byte-for-byte unchanged at v1.2.1.
-- Public manifest now lets the existing core shell fetch one hidden bootstrap; the bootstrap then starts all 23 enabled module requests concurrently and executes them in the exact prior manifest order.
-- Public bootstrap and every module URL point only to `Witch_Scripts`; no WITCH_DEV_UI or HF-Chat-Bridge runtime dependency is introduced.
-- Deterministic module cache keys, ordered execution, failure isolation, and Utilities' `kw.witchDock.toolEnabled.*` localStorage enablement mirror are preserved.
-- No request timeout, retry, readiness, ownership, polling, or feature-module behavior is changed.
+- Added a New Dev project contract and compact active-context router.
+- Added `DEV_WORKFLOW.md` defining Stable parity, issue-scoped divergence, short-lived task branches, validation, narrow promotion, and mandatory post-promotion cleanup.
+- Added `DEV_DIVERGENCES.json` with zero runtime divergences at baseline.
+- Legacy `WITCH_DEV_UI` / `WITCH_DEV` remain reference-only pending migration audit #12; no legacy runtime code was merged.
+- Tracking: #11 Dev baseline, #12 legacy harvest, #13 branch retirement, #14 promotion janitorial gate.
 
-Dev validation evidence: 23/23 fetched, 23/23 executed, 0 failures, total loader duration 432.8 ms; Amanda reported the Dock appeared noticeably faster in the same degraded browser session.
-
-**Runtime behavior changed:** yes — public Stable module network fetches now overlap while module execution order remains unchanged.
+**Runtime/module/manifest/public behavior changed:** no. Documentation/governance only.
 
 ---
 
-## DOCK-2026-09-15-038 — Close public Texture Quality lifecycle/projected-host rollout
+## Stable baseline inherited at branch creation
 
-Public Texture Quality lifecycle/projected-host promotion passed its narrow Stable smoke and was closed. Detailed evidence remains in Git history.
+Public Stable commit `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4` contains the validated parallel module-loading promotion. Detailed Stable evidence remains in Git history.
