@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-013 — Explicit Booth session handoff candidate
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #10 task branch: remove the proven dependency of an explicit Booth View request on the bootstrap's 200 ms polling timer while preserving HeroForge's native Booth ownership contract.
+
+### Evidence / candidate
+
+- v1.3.7 modal baseline passed: running/error null; modal v0.1.0 configured; no overlays before first use; loader 23/23, 0 failed in 499.8 ms.
+- About/Disclaimer automated lifecycle passed: one overlay each, expected title/footer/content/links, mutual exclusion, no duplicate creation, and final closed state.
+- Ready HeroForge page with native BT absent: explicit Booth session request remained pending for both 2.5 s and 10 s while bootstrap attempts stayed at 0; 4K/8K/WebP remained disabled. The timer-only trigger did not execute on that page.
+- `booth-runtime-bootstrap` is v0.2.0 / build `0.2.0-explicit-session-handoff` and exposes bounded `requestSession()`.
+- Booth is v27.0.5 / build `v27.0.5-explicit-session-handoff`; its source-local/public API version fields are also synchronized at 27.0.5.
+- The source-sync correction uses a fresh deterministic build/cache identity so validation cannot reuse the earlier stale branch-ref response.
+- `onUserBoothToggle(true)` invokes the optional bootstrap handoff after updating current-session state; the existing 200 ms poll remains a fallback.
+- Bootstrap still loads at most one version-matched HeroForge `/gated/booth.js`, delegates activation to native `BT.setBoothMode()`, and does not directly force `maker.enable()`.
+- Manifest registry and deterministic module URL cache keys are synchronized. Static syntax checks passed for both changed modules and manifest JSON.
+
+### Required live gate
+
+1. Fresh-load v27.0.5 / bootstrap v0.2.0.
+2. From a ready page with BT absent, request Booth once; `directSessionRequests` and `attempts` must increment.
+3. Confirm one Booth script, BT/maker ready, bootstrap error null, and 4K/8K/WebP enabled.
+4. Loader remains 23/23 with zero failures.
+5. Booth off/on creates no duplicate script and leaves saved/default settings unchanged.
+6. Human gate: About and Disclaimer look/behave normal.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth activation handoff and module/cache-key versions changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-012 — Extracted About/Disclaimer candidate
 
 Date: 2026-09-17

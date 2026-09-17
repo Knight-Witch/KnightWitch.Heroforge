@@ -2,6 +2,26 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-013 — Make explicit Booth activation independent of timer polling
+
+Date: 2026-09-17
+
+### Summary
+
+- v1.3.7 modal extraction baseline passed: Dev running/error null, external modal module configured, lazy modal creation preserved, and loader 23/23 with 0 failures.
+- About/Disclaimer structural lifecycle passed automated validation: one overlay each, correct Dev name/version/footer/links/content, no duplicate creation, and mutual exclusion preserved.
+- A Booth regression check on the same page proved a separate reliability defect: an explicit session Booth request stayed pending for 10 seconds while `Booth_Runtime_Bootstrap` remained at attempts=0, showing its 200 ms timer-only trigger had not fired.
+- Added a direct optional handoff from Booth v27.0.5 / build `v27.0.5-explicit-session-handoff` to Booth Runtime Bootstrap v0.2.0 when a Booth session is turned on.
+- Synchronized Booth's source-local/public API version fields to 27.0.5 so runtime diagnostics match the manifest/build identity.
+- Gave the corrected Booth candidate a fresh deterministic build/cache identity so a prior task-branch CDN response cannot survive the source-sync rewrite.
+- The bootstrap still uses HeroForge-native `BT.setBoothMode()` and retains the existing polling path as fallback; no direct `maker.enable()` bypass was added.
+- Direct handoff is failure-isolated: Booth continues normally if the optional bootstrap capability is absent.
+- Public Stable and canonical Dev remain untouched; human modal visual gate and live direct-handoff regression are still required.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth tool/bootstrap integration and module/cache-key versions changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-012 — Extract About/Disclaimer UI behind bootstrap module
 
 Date: 2026-09-17
