@@ -2,6 +2,25 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-007 — Stabilize Tampermonkey Dev identity
+
+Date: 2026-09-17
+
+### Summary
+
+Corrected the Dev userscript identity contract after confirming versioned Tampermonkey `@name` values were causing repeated raw installs to appear as new scripts instead of normal updates.
+
+- Bumped the task launcher to v1.3.3 / build `1.3.3-stable-tampermonkey-identity`.
+- Fixed Tampermonkey `@name` as `WITCH DOCK - DEV`; `@namespace` remains `KnightWitch`.
+- Kept version reporting in `@version`, runtime `DEV_VERSION`, manifest registry, and visible Dock title `WITCH DOCK - DEV v1.3.3`.
+- Updated `PROJECT_CONTRACT.md`, `MODULE_VERSIONING.md`, `DEV_DIVERGENCES.json`, ACTIVE_CONTEXT, and issue #19 so future work cannot reintroduce versioned Tampermonkey names.
+- Preserved the v1.3.2 external compact-emblem extraction unchanged; no CSS or additional monolith ownership moved in this correction.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Dev launcher metadata/version and identity contract changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-006 — Externalize compact emblem ownership
 
 Date: 2026-09-17

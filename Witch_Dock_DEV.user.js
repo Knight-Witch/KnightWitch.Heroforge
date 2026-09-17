@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WITCH DOCK - DEV v1.3.2
+// @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.2
+// @version      1.3.3
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,8 +22,9 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.2";
-  const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
+  const DEV_VERSION = "1.3.3";
+  const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
+  const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const CORE_URL = `${REPO_RAW}/${DEV_BRANCH}/Witch_Dock.user.js`;
@@ -143,12 +144,12 @@
         const info = typeof GM_info !== "undefined" ? GM_info : null;
         const script = info && info.script ? info.script : null;
         return Object.freeze({
-          name: script && typeof script.name === "string" ? script.name : DEV_NAME,
+          name: script && typeof script.name === "string" ? script.name : DEV_SCRIPT_NAME,
           version: script && typeof script.version === "string" ? script.version : DEV_VERSION,
           description: script && typeof script.description === "string" ? script.description : ""
         });
       } catch {
-        return Object.freeze({ name: DEV_NAME, version: DEV_VERSION, description: "" });
+        return Object.freeze({ name: DEV_SCRIPT_NAME, version: DEV_VERSION, description: "" });
       }
     }
 

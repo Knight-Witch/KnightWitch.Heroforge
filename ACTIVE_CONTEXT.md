@@ -5,12 +5,12 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 presentation/static extraction. Stage C passed live; v1.3.2 external compact-emblem candidate is the next gate.
+**Current phase:** issue #10 presentation/static extraction with issue #19 identity correction. Stage C passed live; v1.3.3 keeps the v1.3.2 external compact-emblem candidate while stabilizing Tampermonkey identity so future updates replace the existing Dev install.
 
 ## Current priorities
 
-1. #10 — validate v1.3.2 / build `1.3.2-external-compact-emblem`; then extract core CSS separately.
-2. #19 — canonical Dev identity/routing remains protected; task-branch self-routing must normalize to `WITCH_DEV_MAIN` before integration.
+1. #10 — validate v1.3.3 / build `1.3.3-stable-tampermonkey-identity`; this includes the existing external compact-emblem gate, then extract core CSS separately.
+2. #19 — Dev Tampermonkey identity is fixed as `WITCH DOCK - DEV`; changing version belongs in `@version` and the visible Dock title, never in `@name`.
 3. #12 — harvest only still-relevant legacy fragments; never bulk-merge legacy Dev.
 4. #7 / #8 — preserve and re-test open bug/backlog surfaces against fresh Dev.
 5. #13 — retire obsolete branches only after harvest proves nothing useful is stranded.
@@ -35,13 +35,14 @@
 
 - Public `Witch_Scripts` remains untouched absent explicit narrow promotion approval.
 - Canonical `WITCH_DEV_MAIN` remains untouched by this task branch until task validation passes.
-- Checked-in `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith through the v1.3.2 candidate; temporary guarded source seams move runtime ownership without rewriting unrelated behavior.
+- Checked-in `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith through the v1.3.3 candidate; temporary guarded source seams move runtime ownership without rewriting unrelated behavior.
 - Existing storage keys, `WitchDock` public seams, cache-key behavior, module ordering/performance, enablement, Dock interactions, and feature lifecycle remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
 - HF-Chat-Bridge is development infrastructure only and must never become a Dock runtime dependency.
+- Tampermonkey `@name` is a stable script identity. Future Dev versions must not embed their changing version in `@name`.
 
-## v1.3.2 live gate — external compact emblem
+## v1.3.3 live gate — stable userscript identity + external compact emblem
 
-1. Update/reload the raw task-branch `Witch_Dock_DEV.user.js`; identity must show `WITCH DOCK - DEV v1.3.2`.
+1. Existing task-branch Dev install should update to v1.3.3 rather than create another script entry. Tampermonkey name must be `WITCH DOCK - DEV`; visible Dock title must be `WITCH DOCK - DEV v1.3.3`.
 2. Bridge-read `KWWitchDockDevChannel`: `presentationAssetMode === "external-compact-emblem"`, expected task `ASSETS/emblem.png` URL, `status: running`, `error: null`.
 3. Bridge-read `#kwWDCompactIcon`: `src` must resolve to task-branch `ASSETS/emblem.png`.
 4. Confirm module loader still completes 23/23 with 0 failures.
@@ -50,6 +51,6 @@
 
 ## Minimum continuation set
 
-Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
+Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, issue #19, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
 
 Do not preload MASTER, full old logs, unrelated HISTORY files, or HeroForge.Compatibility unless current evidence requires them.

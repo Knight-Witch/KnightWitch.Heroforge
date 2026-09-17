@@ -8,7 +8,7 @@
 - **Short-lived task branches** isolate risky or parallel experiments.
 - **Git history** is the archive; old branches are not filing cabinets.
 
-The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and load only `WITCH_DEV_MAIN` runtime sources.
+The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and load only `WITCH_DEV_MAIN` runtime sources. Tampermonkey script identity stays fixed as `WITCH DOCK - DEV`; the changing version belongs in `@version` and the visible Dock title, not in `@name`, so updates replace the existing Dev install instead of creating duplicates.
 
 ## 1. Starting work
 
@@ -47,7 +47,7 @@ Use the narrowest meaningful gates:
 - targeted regression checks;
 - Amanda's visual confirmation when appearance/interaction is part of acceptance.
 
-A parse success is not runtime proof. For Dev startup specifically, verify the visible title says Dev, the Tampermonkey entry says Dev with the same version, `KWWitchDockManifestURL` points to `WITCH_DEV_MAIN`, and module-loader requests do not silently resolve to Stable.
+A parse success is not runtime proof. For Dev startup specifically, verify the visible title says `WITCH DOCK - DEV v<version>`, the Tampermonkey entry is the fixed `WITCH DOCK - DEV` identity with matching `@version`, `KWWitchDockManifestURL` points to `WITCH_DEV_MAIN`, and module-loader requests do not silently resolve to Stable.
 
 ## 4. Promotion to public
 

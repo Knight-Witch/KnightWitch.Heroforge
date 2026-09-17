@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history.
 
+## PFC-2026-09-17-007 — Stable Tampermonkey Dev identity
+
+Date: 2026-09-17
+
+### Scope
+
+Issue #19 correction carried on the active issue #10 task branch: stop changing Tampermonkey script identity on every Dev version while preserving the versioned visible Dock identity and the existing v1.3.2 compact-emblem extraction.
+
+### Static acceptance
+
+- `Witch_Dock_DEV.user.js` is v1.3.3 and uses fixed `@name WITCH DOCK - DEV` with stable `@namespace KnightWitch`.
+- The changing version remains synchronized through userscript `@version`, runtime `DEV_VERSION`, visible Dock title, and `manifest.json.moduleRegistry` launcher version/build.
+- Manifest launcher registry is v1.3.3 / build `1.3.3-stable-tampermonkey-identity`.
+- `PROJECT_CONTRACT.md` and `MODULE_VERSIONING.md` explicitly prohibit putting the changing version into Tampermonkey `@name`.
+- `DEV_DIVERGENCES.json` and issue #19 acceptance criteria reflect fixed Tampermonkey identity plus versioned Dock title.
+- v1.3.2 compact-emblem source seam and external `ASSETS/emblem.png` routing are otherwise unchanged.
+- No CSS, storage, registry, drag/minimize, hotkey, bone-HUD, module-loader, or public Stable behavior moved in this correction.
+- Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched.
+
+### Required live gate
+
+1. Existing task-branch Dev install should update to v1.3.3 instead of producing another distinct Dev script entry.
+2. Tampermonkey entry should display `WITCH DOCK - DEV`; visible Dock title should display `WITCH DOCK - DEV v1.3.3`.
+3. Dev state remains `running` / `error: null`, reports `presentationAssetMode: external-compact-emblem`, and retains task-branch provenance.
+4. `#kwWDCompactIcon.src` resolves to task `ASSETS/emblem.png` and the compact emblem looks unchanged.
+5. Module loader remains 23/23 with zero failures.
+
+Do not begin CSS extraction until this combined identity/emblem gate passes.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher metadata/version and identity contract changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-006 — External compact-emblem candidate
 
 Date: 2026-09-17

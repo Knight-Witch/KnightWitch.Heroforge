@@ -7,10 +7,12 @@
     {
       "issue": 19,
       "status": "canonical-main-protected",
-      "reason": "Canonical Dev must have a distinct installed launcher/visible identity and route normal runtime to WITCH_DEV_MAIN rather than silently executing Stable while appearing to be Dev. Issue-scoped task branches may temporarily self-route for isolated validation, but must normalize before canonical integration.",
+      "reason": "Canonical Dev must have a distinct installed launcher/visible identity and route normal runtime to WITCH_DEV_MAIN rather than silently executing Stable while appearing to be Dev. Tampermonkey identity must remain stable across versions so updates replace the existing Dev install instead of creating duplicates. Issue-scoped task branches may temporarily self-route for isolated validation, but must normalize before canonical integration.",
       "paths": ["Witch_Dock_DEV.user.js", "manifest.json"],
       "acceptance": [
-        "Canonical Tampermonkey name and Dock title report the same DEV version identity.",
+        "Canonical Tampermonkey @name is the fixed WITCH DOCK - DEV identity and @namespace remains stable.",
+        "Canonical userscript @version, runtime DEV_VERSION, manifest launcher version/build, and visible Dock title version remain synchronized.",
+        "Visible Dock title is formatted WITCH DOCK - DEV v<version>; the changing version is not embedded in Tampermonkey @name.",
         "Canonical update/download URLs, manifest URL, and manifest-loaded runtime URLs resolve to WITCH_DEV_MAIN.",
         "A Dev bootstrap/channel-seam failure is visible rather than silently falling back to Stable."
       ]
@@ -18,16 +20,17 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. v1.3.2 externalizes only the compact emblem payload through an exact guarded source seam while preserving all other core behavior.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. v1.3.2 externalizes only the compact emblem payload through an exact guarded source seam while preserving all other core behavior; v1.3.3 only corrects the Dev userscript identity/update contract and does not expand the extraction scope.",
       "paths": ["Witch_Dock_DEV.user.js", "manifest.json", "ASSETS/emblem.png"],
       "acceptance": [
-        "Task launcher and manifest identify v1.3.2 / build 1.3.2-external-compact-emblem consistently.",
+        "Task launcher and manifest identify v1.3.3 / build 1.3.3-stable-tampermonkey-identity consistently.",
+        "Tampermonkey @name is fixed as WITCH DOCK - DEV while the Dock title remains versioned as WITCH DOCK - DEV v1.3.3.",
         "The launcher finds exactly one legacy inline compact-emblem declaration and fails visibly if that seam changes unexpectedly.",
         "Runtime Dev state reports presentationAssetMode external-compact-emblem and the task-branch ASSETS/emblem.png URL.",
         "#kwWDCompactIcon resolves to the task-branch ASSETS/emblem.png resource and remains visually unchanged.",
         "Module loader still completes 23/23 with zero failures and existing cache/order/enablement behavior is unchanged.",
         "Raw GM_* privileges remain unexposed page-side.",
-        "No CSS, storage, registration, drag/minimize, hotkey, bone-HUD, or module-loader ownership moves in the v1.3.2 step.",
+        "No CSS, storage, registration, drag/minimize, hotkey, bone-HUD, or module-loader ownership moves in the v1.3.2/v1.3.3 step.",
         "Before integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated."
       ]
     }
