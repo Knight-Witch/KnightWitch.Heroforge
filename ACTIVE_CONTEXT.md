@@ -4,57 +4,52 @@
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
-**Stable baseline used to create this branch:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C candidate — Stage B privileged-host seam passed live; bootstrap core fetching now routes through the host before any monolith extraction.
+**Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
+**Current phase:** issue #10 presentation/static extraction. Stage C passed live; v1.3.2 external compact-emblem candidate is the next gate.
 
 ## Current priorities
 
-1. #10 — validate `Witch_Dock_DEV.user.js` v1.3.1 / build `1.3.1-host-owned-core-fetch` on `wd/10-modular-bootstrap`, then begin the first physical extraction from `Witch_Dock.user.js`.
-2. #19 — canonical Dev identity remains protected. Task-branch self-routing is temporary and must normalize back to `WITCH_DEV_MAIN` before integration.
-3. #12 — audit legacy `WITCH_DEV_UI` / `WITCH_DEV` only for still-useful unresolved fragments; do not bulk merge.
-4. #7 / #8 — preserve open bug/backlog items and re-test them against the new Stable-derived Dev before migrating any old patch.
-5. #13 — retire obsolete branches only after the harvest audit proves nothing useful is stranded there.
-6. #14 — enforce Dev -> Stable post-rollout cleanup automatically once Stable smoke passes; do not ask Amanda for a separate cleanup approval.
+1. #10 — validate v1.3.2 / build `1.3.2-external-compact-emblem`; then extract core CSS separately.
+2. #19 — canonical Dev identity/routing remains protected; task-branch self-routing must normalize to `WITCH_DEV_MAIN` before integration.
+3. #12 — harvest only still-relevant legacy fragments; never bulk-merge legacy Dev.
+4. #7 / #8 — preserve and re-test open bug/backlog surfaces against fresh Dev.
+5. #13 — retire obsolete branches only after harvest proves nothing useful is stranded.
+6. #14 — Stable-smoke success automatically triggers Dev janitorial reconciliation; no second cleanup approval.
 
-## Completed live milestone — Stage B PASS
+## Completed live milestones
 
-On task branch v1.3.0:
+### Stage B — privileged host seam PASS
 
-- human gate: Tampermonkey/Dock identity presented correctly and basic Dock behavior appeared normal;
-- Bridge v0.3.2 was healthy and page context available;
-- `KWWitchDockDevChannel` reported branch `wd/10-modular-bootstrap`, host API v0.1.0, correct task core/manifest URLs;
-- `KWWitchDockHostInfo` reported `rawPrivilegesExposed: false` and all expected privileged capabilities available;
-- visible `#kwWDTitle` was `WITCH DOCK - DEV v1.3.0` with task-branch provenance;
-- module loader completed from the task manifest: 23 enabled / 23 started / 23 fetched / 23 executed / 0 failed in 505.7 ms;
-- Dev state reported `running` with `error: null`.
+- Dev v1.3.0 identity/provenance correct and basic Dock behavior normal.
+- Host API v0.1.0 present; `rawPrivilegesExposed: false`; expected capabilities available.
+- Module loader: 23/23 fetched/executed, 0 failed, 505.7 ms.
+
+### Stage C — host-owned bootstrap fetch PASS
+
+- Dev v1.3.1 reported `bootstrapTransport: "host.requestText"`, `status: running`, `error: null`.
+- Visible title/provenance correct.
+- Module loader: 23/23 fetched/executed, 0 failed, 458 ms.
+- HF-Chat-Bridge request: `hf-20260917-wd10-stagec-verify-001`.
 
 ## Protected state
 
-- Public `Witch_Scripts` remains untouched unless Amanda explicitly authorizes a narrow promotion.
-- `WITCH_DEV_MAIN` remains the canonical integration branch; `wd/10-modular-bootstrap` is short-lived issue-scoped work.
-- `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolithic core through Stage C.
-- The task branch launcher/manifest self-route to `wd/10-modular-bootstrap` only so isolated live tests exercise the task branch accurately.
-- Existing storage keys, public `WitchDock` seams, cache-key behavior, loader ordering/performance, module enablement, Dock appearance/interactions, and feature lifecycle behavior remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
-- The privileged host is launcher-local. Raw `GM_*` functions are not exposed as a page-global API; only `KWWitchDockHostInfo` diagnostic metadata is page-visible.
+- Public `Witch_Scripts` remains untouched absent explicit narrow promotion approval.
+- Canonical `WITCH_DEV_MAIN` remains untouched by this task branch until task validation passes.
+- Checked-in `Witch_Dock.user.js` remains byte-identical to the Stable-derived monolith through the v1.3.2 candidate; temporary guarded source seams move runtime ownership without rewriting unrelated behavior.
+- Existing storage keys, `WitchDock` public seams, cache-key behavior, module ordering/performance, enablement, Dock interactions, and feature lifecycle remain protected by `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`.
+- HF-Chat-Bridge is development infrastructure only and must never become a Dock runtime dependency.
+
+## v1.3.2 live gate — external compact emblem
+
+1. Update/reload the raw task-branch `Witch_Dock_DEV.user.js`; identity must show `WITCH DOCK - DEV v1.3.2`.
+2. Bridge-read `KWWitchDockDevChannel`: `presentationAssetMode === "external-compact-emblem"`, expected task `ASSETS/emblem.png` URL, `status: running`, `error: null`.
+3. Bridge-read `#kwWDCompactIcon`: `src` must resolve to task-branch `ASSETS/emblem.png`.
+4. Confirm module loader still completes 23/23 with 0 failures.
+5. Human visual gate: collapse Dock to compact icon and confirm the emblem looks unchanged.
+6. Only after this pass begin core CSS extraction as a separate versioned commit.
 
 ## Minimum continuation set
 
-1. `PROJECT_CONTRACT.md`;
-2. this file;
-3. `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`;
-4. issue #10;
-5. `Witch_Dock_DEV.user.js`;
-6. `manifest.json`;
-7. `DEV_DIVERGENCES.json`;
-8. `Witch_Dock.user.js` only for the responsibility currently being extracted;
-9. `MODULE_VERSIONING.md` when runtime/version changes are made.
+Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, and the exact `Witch_Dock.user.js` responsibility being extracted. Read `MODULE_VERSIONING.md` for runtime/version changes.
 
-Do not preload `MASTER.md`, full historical logs, unrelated `HISTORY/BULLSHIT/*`, or HeroForge.Compatibility unless current evidence specifically requires them.
-
-## Immediate next technical sequence
-
-1. Install/update the raw task-branch `Witch_Dock_DEV.user.js` and confirm `WITCH DOCK - DEV v1.3.1`.
-2. Use HF-Chat-Bridge to confirm `KWWitchDockHostInfo.bootstrapTransport === "host.requestText"` and Dev state reports the same bootstrap transport with `status: running` / no error.
-3. Confirm module loader still completes 23/23 with zero failures from the task manifest and basic Dock interaction remains unchanged.
-4. After Stage C passes, begin the first physical extraction: externalize presentation/static payload first (CSS and compact emblem), leaving storage, registration, interaction, and module-loader contracts unchanged.
-5. Validate each extraction before proceeding to application-shell/state extraction.
+Do not preload MASTER, full old logs, unrelated HISTORY files, or HeroForge.Compatibility unless current evidence requires them.

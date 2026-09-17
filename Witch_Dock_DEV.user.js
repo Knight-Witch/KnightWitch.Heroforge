@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WITCH DOCK - DEV v1.3.1
+// @name         WITCH DOCK - DEV v1.3.2
 // @namespace    KnightWitch
-// @version      1.3.1
+// @version      1.3.2
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,14 +22,16 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.1";
+  const DEV_VERSION = "1.3.2";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const CORE_URL = `${REPO_RAW}/${DEV_BRANCH}/Witch_Dock.user.js`;
   const DEV_MANIFEST_URL = `${REPO_RAW}/${DEV_BRANCH}/manifest.json`;
+  const COMPACT_EMBLEM_ASSET_URL = `${REPO_RAW}/${DEV_BRANCH}/ASSETS/emblem.png?kwasset=4a9fb6d772adbf884ed29cd1234999ba6e4e0db5`;
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
   const DEV_MANIFEST_DECL = `const MANIFEST_URL = "${DEV_MANIFEST_URL}";`;
+  const INLINE_EMBLEM_DECL_RE = /^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/m;
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -41,7 +43,9 @@
     name: DEV_NAME,
     coreUrl: CORE_URL,
     manifestUrl: DEV_MANIFEST_URL,
+    compactEmblemUrl: COMPACT_EMBLEM_ASSET_URL,
     bootstrapTransport: "host.requestText",
+    presentationAssetMode: "external-compact-emblem",
     status: "initializing",
     error: null
   };
@@ -186,6 +190,7 @@
     name: state.name,
     coreUrl: state.coreUrl,
     manifestUrl: state.manifestUrl,
+    compactEmblemUrl: state.compactEmblemUrl,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -239,17 +244,28 @@
     const source = await PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" });
     if (!source) throw new Error("core fetch returned empty source");
 
-    const matches = source.split(STABLE_MANIFEST_DECL).length - 1;
-    if (matches !== 1) {
-      throw new Error(`expected exactly one Stable manifest seam in core; found ${matches}`);
+    const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
+    if (manifestMatches !== 1) {
+      throw new Error(`expected exactly one Stable manifest seam in core; found ${manifestMatches}`);
     }
 
-    const devSource = source.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
+    const emblemMatches = source.match(/^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/gm) || [];
+    if (emblemMatches.length !== 1) {
+      throw new Error(`expected exactly one inline compact emblem seam in core; found ${emblemMatches.length}`);
+    }
+
+    let devSource = source.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
+    devSource = devSource.replace(
+      INLINE_EMBLEM_DECL_RE,
+      `const COMPACT_EMBLEM_URL = ${JSON.stringify(COMPACT_EMBLEM_ASSET_URL)};`
+    );
+
     state.status = "loading-core";
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // PRIVILEGED_HOST remains launcher-local and is now the actual bootstrap network owner.
+    // PRIVILEGED_HOST remains launcher-local; presentation payload ownership is being
+    // migrated in bounded source seams before the legacy monolith is retired.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;
