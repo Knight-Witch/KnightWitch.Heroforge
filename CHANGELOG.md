@@ -2,6 +2,30 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-026 — Stabilize compact close/open Dock geometry
+
+Date: 2026-09-18
+
+### v1.4.5 live finding
+
+- Compact DOM extraction itself passed startup and interaction parity: one root/compact/icon, correct 54x54 / 48x48 structure, loader 23/23 / 0 failed, normal collapse and no-drag reopen both worked.
+- The full gate exposed an existing lifecycle bug: 382x522 rendered outer geometry reopened as 384x524.
+- Root CSS uses content-box sizing with a border. Legacy `snapshotCurrentDockPositionToPrefs()` saves border-inclusive `getBoundingClientRect()` dimensions into values later applied as CSS content-box width/height, producing +2 px growth each cycle.
+- Test-induced persisted geometry was restored to the original 380x520 CSS values with position unchanged.
+
+### Candidate
+
+- Dev launcher -> v1.4.6 / build `1.4.6-compact-geometry-stability`.
+- No shell-module version/API change.
+- Guarded transform changes only last-open width/height snapshot math to use computed CSS dimensions, with bounding-box values retained only as fallback.
+- No close/open, compact DOM, drag, minimize, size-enforcement, storage ownership, loader or public-seam logic moves.
+- Checked-in `Witch_Dock.user.js` remains unchanged; normal manifest module count remains 23.
+- After live PASS, pause issue #10 for the planned HF-Chat-Bridge upgrade.
+
+**Runtime/module/manifest/public behavior changed:** task-branch legacy geometry snapshot correction + launcher version only; public Stable and canonical Dev unchanged.
+
+---
+
 ## DOCK-2026-09-18-025 — Externalize compact launcher DOM factory
 
 Date: 2026-09-18

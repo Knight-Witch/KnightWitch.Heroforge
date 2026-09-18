@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.5
+// @version      1.4.6
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.5";
+  const DEV_VERSION = "1.4.6";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -83,6 +83,8 @@
   const SHELL_ROOT_END = '\n\n    initBoneFooterAndDetection();';
   const COMPACT_DOM_START = '    state.compact = el("div", { id: "kwWDCompact", title: "Open Witch Dock", onpointerdown: startCompactDrag }, [';
   const COMPACT_DOM_END = '\n    state.compactExpandBtn = null;';
+  const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
+  const DOCK_SNAPSHOT_END = '\n\n  function applyPositionAndSize() {';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -653,6 +655,40 @@
       '    });'
     ].join('\n');
     devSource = devSource.slice(0, compactDomStart) + compactDomReplacement + devSource.slice(compactDomEnd);
+
+    const dockSnapshotStart = devSource.indexOf(DOCK_SNAPSHOT_START);
+    const duplicateDockSnapshotStart = dockSnapshotStart >= 0 ? devSource.indexOf(DOCK_SNAPSHOT_START, dockSnapshotStart + DOCK_SNAPSHOT_START.length) : -1;
+    if (dockSnapshotStart < 0 || duplicateDockSnapshotStart >= 0) {
+      throw new Error(`expected exactly one Dock snapshot block; found ${dockSnapshotStart < 0 ? 0 : 2}`);
+    }
+    const dockSnapshotEnd = devSource.indexOf(DOCK_SNAPSHOT_END, dockSnapshotStart + DOCK_SNAPSHOT_START.length);
+    if (dockSnapshotEnd < 0) throw new Error("Dock snapshot block end was not found");
+    const legacyDockSnapshot = devSource.slice(dockSnapshotStart, dockSnapshotEnd);
+    for (const required of [
+      'const r = state.root.getBoundingClientRect();',
+      'prefs.lastOpenWidth = Math.round(r.width);',
+      'prefs.lastOpenHeight = Math.round(r.height);',
+      'savePrefs(prefs);'
+    ]) {
+      if (!legacyDockSnapshot.includes(required)) throw new Error(`Dock snapshot contract changed: missing ${required}`);
+    }
+    const stableDockSnapshot = legacyDockSnapshot
+      .replace(
+        'prefs.lastOpenWidth = Math.round(r.width);',
+        [
+          'const computed = getComputedStyle(state.root);',
+          '    const cssWidth = Number.parseFloat(computed.width);',
+          '    prefs.lastOpenWidth = Number.isFinite(cssWidth) ? Math.round(cssWidth) : Math.round(r.width);'
+        ].join('\n')
+      )
+      .replace(
+        'prefs.lastOpenHeight = Math.round(r.height);',
+        [
+          'const cssHeight = Number.parseFloat(computed.height);',
+          '    prefs.lastOpenHeight = Number.isFinite(cssHeight) ? Math.round(cssHeight) : Math.round(r.height);'
+        ].join('\n')
+      );
+    devSource = devSource.slice(0, dockSnapshotStart) + stableDockSnapshot + devSource.slice(dockSnapshotEnd);
 
     const prefsIoStart = devSource.indexOf(PREFS_IO_START);
     const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;

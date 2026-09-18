@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.4 main Dock root DOM factory is live-PASS. v1.4.5 candidate moves only compact-launcher DOM construction into the shell module; compact lifecycle/drag, minimize/close/expand, layout sizing, hotkeys and undo/redo remain legacy-owned.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.5 compact DOM startup parity passed, but its close→open gate exposed a pre-existing +2 px legacy geometry drift. v1.4.6 candidate fixes only that snapshot math. After the next completed v1.4.6 live gate, PAUSE issue #10 for the planned HF-Chat-Bridge upgrade; do not continue refactor extraction until explicitly resumed.
 
 ## Current priorities
 
-1. #10 — validate v1.4.5 compact-DOM parity, then continue Stage D.
+1. #10 — validate v1.4.6 compact geometry stability; once PASS is recorded, PAUSE the refactor for the HF-Chat-Bridge upgrade until explicitly resumed.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -148,6 +148,24 @@
 - Baseline `hf-20260918-wd10-v145-compact-baseline-read-001`: one `#kwWDCompact`, title `Open Witch Dock`, one `#kwWDCompactIcon`, 54x54 container, 48x48 icon, inline PNG data URL, alt `Witch Dock`, draggable false, hidden while Dock is open.
 - Required live gate: install/update v1.4.5, confirm shell v0.2.0 applied once; loader 23/23 / 0 failed; one compact launcher/icon with exact baseline attributes/sizes; Dock remains open with compact hidden; then perform one reversible normal Collapse-to-icon -> compact click-open cycle and confirm no duplicate roots/compact nodes and preserved Dock geometry.
 - Dragging the compact launcher is not part of this slice and must not be exercised as a mutation gate.
+
+## v1.4.5 live result — compact DOM good; lifecycle gate exposed legacy drift
+
+- Startup parity PASS: launcher v1.4.5 running/error-null; shell v0.2.0 created root and compact DOM exactly once; loader 23/23 / 0 failed; one root/compact/icon only; 54x54 compact + 48x48 inline icon contract preserved.
+- Normal Collapse-to-icon PASS: one root/compact/icon remained; Dock hid and compact displayed normally.
+- Normal no-drag compact reopen restored the Dock and hid compact with no duplicate nodes.
+- Full geometry criterion did not pass: pre-cycle outer box was 382x522; post-cycle outer box became 384x524.
+- Diagnosis confirmed this is legacy lifecycle math, not the v1.4.5 constructor extraction: root is content-box with a border; legacy snapshot stores border-inclusive `getBoundingClientRect().width/height` as future CSS `width/height`, causing +2 px growth.
+- Test-induced persisted width/height and lastOpenWidth/lastOpenHeight were restored from 382x522 to the original 380x520 CSS values through the bounded preferences API; x/y and all other state were preserved. Evidence: `hf-20260918-wd10-v146-geometry-verify-read-001`.
+
+## v1.4.6 candidate — compact close/open geometry stability
+
+- Dev launcher v1.4.6 / build `1.4.6-compact-geometry-stability`.
+- No shell-module API/version change; compact DOM extraction from v1.4.5 remains intact.
+- Guarded runtime patch changes only `snapshotCurrentDockPositionToPrefs()`: preserve the Dock's computed CSS width/height values instead of copying border-inclusive bounding-box dimensions into future CSS dimensions.
+- Snapshot x/y, anchored-state detection, close/open lifecycle, compact DOM, drag threshold, minimize/expand, size enforcement, persistence owner, loader and public seams remain unchanged.
+- Required live gate: install/update v1.4.6, reload to restored 380x520 persisted CSS baseline, verify rendered outer box 382x522; perform one normal Collapse-to-icon -> no-drag compact reopen cycle; verify persisted CSS geometry remains exactly 380x520, rendered outer box remains 382x522, node counts remain 1/1/1, loader remains 23/23 / 0 failed.
+- After that live gate is recorded PASS, PAUSE issue #10 for the HF-Chat-Bridge upgrade. Do not begin another extraction slice until explicitly resumed.
 
 ## Minimum continuation set
 

@@ -2,6 +2,47 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-026 — Compact geometry stability candidate
+
+Date: 2026-09-18
+
+### Confirmed cause
+
+- Pre-cycle rendered outer box: 382x522 from persisted 380x520 CSS dimensions.
+- Legacy snapshot captured the outer box and saved 382x522 as future CSS width/height.
+- Reopen therefore rendered 384x524.
+- Root is content-box; borders are outside the declared CSS width/height.
+- Persisted test geometry has been restored to 380x520 before this candidate gate.
+
+### Protected behavior
+
+- Preserve x/y and anchored-state snapshot behavior.
+- Preserve compact constructor and icon contract from v1.4.5.
+- Preserve close/open lifecycle, compact drag threshold, minimize, expand, size constraints, preference ownership, loader and public seams.
+- Change only width/height snapshot source from outer bounding box to computed CSS dimensions, falling back to bounding dimensions only if computed values are not finite.
+
+### Static evidence
+
+- Launcher v1.4.6 parses.
+- Guard requires one exact `snapshotCurrentDockPositionToPrefs()` block and the two legacy bounding-box assignments before replacement.
+- Transformed Stable-derived core parses and no longer contains the legacy width/height snapshot assignments.
+- Manifest launcher registry is synchronized; normal manifest module count remains 23.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.6 and reload.
+2. Confirm launcher running/error null; loader 23/23 / 0 failed; shell v0.2.0 still applies once.
+3. Confirm persisted CSS width/height and last-open dimensions start at 380x520; rendered outer Dock box is 382x522.
+4. Normal Collapse-to-icon once; read back hidden Dock + visible compact with one root/compact/icon.
+5. Normal no-drag compact reopen once.
+6. Confirm persisted width/height and last-open dimensions remain exactly 380x520; rendered outer Dock box remains 382x522; compact hides; node counts remain 1/1/1.
+7. Record PASS, then PAUSE issue #10 for the HF-Chat-Bridge upgrade. Do not begin another refactor slice.
+
+**Runtime/module/manifest/public behavior changed:** task-branch geometry snapshot correction only; public Stable and canonical Dev unchanged.
+
+---
+
 ## PFC-2026-09-18-025 — Compact launcher DOM extraction candidate
 
 Date: 2026-09-18
