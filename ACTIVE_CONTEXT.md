@@ -9,7 +9,7 @@
 
 ## Current priorities
 
-1. #10 — validate Booth v27.0.6 / bootstrap v0.2.1 media-readiness handoff, then complete the already-passing v1.3.8 modal human visual gate; continue Stage C only after both pass.
+1. #10 — Booth v27.0.6 / bootstrap v0.2.1 media-readiness handoff is live PASS; complete the currently open v1.3.8 About human visual gate, then continue Stage C.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -56,7 +56,8 @@
 - Manual existing named seams immediately fixed the controls: TRUE-resolution readiness `sync()` returned true and WebP `readCapabilities()` returned Ready / UI `refresh()` returned true.
 - Booth v27.0.6 now refreshes those optional named seams on session transitions; bootstrap v0.2.1 refreshes them after async native Booth bootstrap completion/failure.
 - Existing timers remain fallback; no capture service/UI implementation or private HeroForge internals changed.
-- Required next gate: fresh-load new module cache identities and prove ON enables media without manual sync, OFF refreshes state, second ON reuses BT with zero duplicates.
+- Live gate PASS on manual reload: loader 23/23 / 0 failed in 221.9 ms; first ON enabled 4K/8K/WebP after a single native Booth bootstrap; OFF disabled them; second ON reused live BT with one Booth script / zero duplicates and re-enabled them; final state Booth OFF.
+- Remaining gate: human visual confirmation of the currently open About modal. Automated v1.3.8 modal lifecycle is already PASS.
 
 ## v1.3.8 modal lazy-open repair
 

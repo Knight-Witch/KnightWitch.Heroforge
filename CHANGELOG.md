@@ -15,6 +15,8 @@ Date: 2026-09-17
 - Booth Runtime Bootstrap v0.2.1 invokes the same optional named seams when asynchronous native Booth bootstrap completes or fails, so media controls refresh when the native runtime actually becomes ready.
 - Existing timer polling remains unchanged as fallback. Optional media failures are isolated; no media module source or HeroForge private internals changed.
 - Public Stable and canonical Dev remain untouched.
+- Live manual-reload gate PASS: loader 23/23 / 0 failed in 221.9 ms; first Booth ON booted native runtime with one Booth script / zero duplicates and enabled 4K/8K/WebP without manual readiness calls; OFF disabled them; second ON reused live BT with one script / zero duplicates and re-enabled all three; final state returned Booth OFF.
+- v1.3.8 About modal was then opened successfully for the remaining human visual gate.
 
 **Runtime/module/manifest/public behavior changed:** task-branch Booth tool/bootstrap versions and deterministic cache keys changed; public Stable unchanged.
 

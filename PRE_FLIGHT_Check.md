@@ -34,6 +34,17 @@ Date: 2026-09-17
 7. Leave Booth OFF.
 8. Human modal visual gate remains required after automated regressions pass.
 
+### Live result
+
+PASS on a manual HeroForge reload:
+- loader 23/23 / 0 failed in 221.9 ms;
+- Booth v27.0.6 + bootstrap v0.2.1 loaded from the task branch;
+- first ON bootstrapped native Booth, one matching Booth script / zero duplicates / no bootstrap error, and 4K/8K/WebP enabled without manual `sync()` / `refresh()`;
+- OFF disabled all three media surfaces;
+- second ON reused live BT, retained one Booth script / zero duplicates, and re-enabled all three;
+- final state returned Booth OFF;
+- About modal v0.1.1 is open for the remaining human visual gate.
+
 **Runtime/module/manifest/public behavior changed:** task-branch Booth tool/bootstrap and cache identities changed; public Stable unchanged.
 
 ---

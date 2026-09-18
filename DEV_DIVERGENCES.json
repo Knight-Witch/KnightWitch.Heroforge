@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is moving runtime ownership out of the Stable-derived monolith. v1.3.8 + modal v0.1.1 pass automated modal lifecycle checks. Regression testing proved timer-only media readiness can remain stale even after native Booth is ready; Booth v27.0.6 + bootstrap v0.2.1 now call existing optional named media readiness seams on explicit state transitions/completion while preserving all polling as fallback.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is moving runtime ownership out of the Stable-derived monolith. v1.3.8 + modal v0.1.1 pass automated modal lifecycle checks. Booth v27.0.6 + bootstrap v0.2.1 now call existing optional named media readiness seams on explicit state transitions/completion while preserving polling as fallback; the live manual-reload ON/OFF/ON gate passed with loader 23/23, one Booth script, zero duplicates, and 4K/8K/WebP following Booth state without manual readiness calls. Remaining gate is human visual confirmation of the About modal.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -47,7 +47,8 @@
         "Fresh-page About/Disclaimer lifecycle and human visual parity must pass before Stage C continues.",
         "booth-tool is v27.0.6 / build v27.0.6-media-readiness-handoff and booth-runtime-bootstrap is v0.2.1 / build 0.2.1-media-readiness-handoff with synchronized deterministic cache keys.",
         "Booth session transitions and bootstrap completion use existing optional named media readiness seams so 4K/8K/WebP readiness does not depend solely on page timers; polling remains fallback.",
-        "No media module source or HeroForge private runtime contract is changed by the readiness handoff."
+        "No media module source or HeroForge private runtime contract is changed by the readiness handoff.",
+        "Manual-reload live gate passes: loader 23/23 / 0 failed; first Booth ON enables 4K/8K/WebP without manual readiness calls; OFF disables them; second ON reuses live BT with one Booth script / zero duplicates and re-enables them."
       ]
     }
   ],
