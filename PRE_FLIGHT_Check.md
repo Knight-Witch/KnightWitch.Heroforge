@@ -2,6 +2,25 @@
 
 This is the rolling current Dev pre-flight log for `WITCH_DEV_MAIN`. Older Stable/legacy records remain durable in Git history.
 
+## PFC-2026-09-17-003 — Task/mode router governance
+
+Date: 2026-09-17
+
+### Scope
+
+Documentation/governance only. Add a low-token mode-selection checkpoint that can be updated as backlog tasks change.
+
+### Acceptance
+
+- `TASK_MODE_ROUTER.md` defines Chat / Sol High as the default and bounded triggers for Work / High, Extra High, and Max.
+- The project contract points to the router only at meaningful task/phase/risk checkpoints, not every message.
+- New substantial backlog tasks update the router only when their recommended mode/trigger is not already covered by an existing category.
+- No userscript, module, manifest, cache key, Stable file, or runtime behavior changed.
+
+**Runtime/module/manifest/public behavior changed:** no.
+
+---
+
 ## PFC-2026-09-17-002 — Canonical Dev launcher/channel identity
 
 Date: 2026-09-17

@@ -15,6 +15,12 @@ Before material Witch Dock architecture/runtime work:
 
 Do not preload full history, old changelogs/preflight logs, session logs, or legacy branch history. Legacy `WITCH_DEV_UI` / `WITCH_DEV` are reference sources only during migration audit #12.
 
+## Task/mode checkpoint
+
+Use `TASK_MODE_ROUTER.md` only at meaningful checkpoints: active task changes, phase changes, unresolved diagnostics after multiple evidence passes, large repetitive multi-fixture work, unresolved engine behavior, final high-risk architecture/release review, or an explicit mode question.
+
+Do not re-evaluate model/mode on ordinary messages or routine implementation steps. Default to Chat / Sol High unless the router identifies a material benefit from Work, Extra High, or Max. Finish any bounded in-progress mutation/test before recommending a switch.
+
 ## Branch roles
 
 - `Witch_Scripts` is public Stable. Never use it as an experimental branch.

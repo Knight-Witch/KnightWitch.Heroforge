@@ -2,6 +2,24 @@
 
 This is the rolling current Dev changelog for `WITCH_DEV_MAIN`. Older Stable/legacy-Dev detail remains durable in Git history and issues.
 
+## DOCK-2026-09-17-003 — Add low-overhead task/mode router
+
+Date: 2026-09-17
+
+### Summary
+
+Added `TASK_MODE_ROUTER.md` as a compact advisory map from current Witch Dock tasks/phases to Chat / Sol High, Work / High, Extra High, or Max.
+
+- Mode checks occur only at explicit checkpoints: task/phase change, unresolved multi-pass diagnosis, large repetitive fixture work, unresolved engine behavior, final high-risk review, or Amanda asking.
+- Ordinary messages, routine edits, Bridge reads, version bumps, and normal regression steps do not trigger repeated mode evaluation.
+- Current backlog recommendations are seeded for #7, #10, #20–#25, long-session slowdown, Extra Characters, Spin/WebP, bug-report workflow, migration/cleanup, and Discord triage.
+- Default remains Chat / Sol High; escalation is evidence-driven and should be downgraded after the difficult phase.
+- Public Stable and runtime behavior are unchanged.
+
+**Runtime/module/manifest/public behavior changed:** no. Documentation/governance only.
+
+---
+
 ## DOCK-2026-09-17-002 — Make canonical Dev identity/routing explicit
 
 Date: 2026-09-17
