@@ -34,6 +34,16 @@ Date: 2026-09-17
 6. Confirm compact/minimize/tabs and unrelated modal/Booth behavior show no regression.
 7. Human visual gate only if the shell visibly differs; otherwise this is persistence/behavioral, not a redesign.
 
+### Live result
+
+PASS:
+- v1.4.0 / preferences v0.1.0 healthy; loader 23/23 / 0 failed.
+- Pre-existing 368/157/660x914 open geometry survived initial update/reload.
+- Minimize action persisted through bounded storage with no error.
+- Exact post-reload module snapshot proves startup loaded `minimized:true`, width 660, height 92, last-open 660x914, activeTab Booth, firstRun false.
+- Amanda confirmed the reloaded Dock looked good and then returned it to an expanded state through normal UI behavior.
+- No persistence regression observed.
+
 **Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap preference ownership and registry changed; public Stable unchanged.
 
 ---

@@ -9,7 +9,7 @@
 
 ## Current priorities
 
-1. #10 — validate v1.4.0 / preferences v0.1.0 live persistence parity, including one write + reload survival, then continue Stage D.
+1. #10 — v1.4.0 main preference-store extraction PASS; continue Stage D with the next bounded preference/application-shell unit.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -61,7 +61,8 @@
 - Core call sites remain `loadPrefs()/savePrefs()` wrappers so drag/resize/minimize/compact/tab logic is unchanged.
 - Section collapse/order and tool enablement storage remain legacy for later slices.
 - Baseline Bridge request: `hf-20260917-wd10-stageD-prefs-baseline-001`.
-- Required live gate: v1.4.0 fresh load, same position/size state, one preference mutation, reload persistence.
+- Live PASS: v1.4.0 running/error-null; loader 23/23; prior geometry preserved; controlled minimize saved successfully; manual reload startup snapshot loaded minimized=true from the same store; Amanda visual check good.
+- Main preference-store extraction is closed.
 
 ## Protected state
 

@@ -19,6 +19,15 @@ Date: 2026-09-17
 - Checked-in `Witch_Dock.user.js` remains unchanged.
 - Public Stable and canonical Dev remain untouched.
 
+### Live result
+
+- v1.4.0 launcher running / error null; preferences v0.1.0 configured; loader 23/23 / 0 failed.
+- Existing Dock geometry survived the update unchanged at startup: left 368 / top 157 / width 660 / height 914; compact launcher remained hidden.
+- Controlled normal minimize action changed the Dock to minimized and advanced bounded preference saves with lastError null.
+- Manual HeroForge reload then loaded the exact persisted startup snapshot with `minimized:true`, width 660, height 92, last-open width/height 660x914, active tab Booth, and firstRun false.
+- Amanda visually confirmed the reloaded Dock looked good, then expanded/resized it normally; subsequent saves remained error-free.
+- Main preference-store extraction PASS.
+
 **Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap preference ownership and registry changed; public Stable unchanged.
 
 ---
