@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D v1.4.2 tool-enablement persistence is live-PASS with exact bootstrap/page/Utilities precedence and mirrored writes preserved. Stage D continues with registry/application-shell ownership diagnosis. A confirmed moving-branch bootstrap skew remains queued inside #10 for Stage E hardening: an older installed launcher can fetch newer incompatible task-branch bootstrap modules before its own userscript update takes effect.",
+      "reason": "Issue #10 Stage D v1.4.2 tool-enablement persistence is live-PASS. v1.4.3 externalizes only the legacy tab/tool/pending backing containers into a bootstrap-owned registry module; DOM creation/mounting, section lifecycle, ordering/drag, sizing, public WitchDock seams and loader behavior remain legacy-owned.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -33,7 +33,8 @@
         "features/core/Witch_Dock_Bone_HUD.js",
         "features/core/Witch_Dock_Preferences.js",
         "features/core/Witch_Dock_Module_Loader.js",
-        "tools/Utilities.js"
+        "tools/Utilities.js",
+        "features/core/Witch_Dock_Registry.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -71,7 +72,10 @@
         "Utilities enablement writes continue mirroring page localStorage string true/false and bounded host boolean writes; no scheduling/order/concurrency behavior moves.",
         "v1.4.2 live gate must prove 23/23 startup parity plus one reversible normal Utility toggle write and reload persistence before the next Stage D slice.",
         "v1.4.2 tool-enablement live gate PASS: clean 23/23 / 0 failed baseline; reversible Decals Scroll Guards OFF persisted as the only disabled module across reload at 22/22 / 0 failed; mirrored page+host writes were proven; ON restore returned the final startup to 23/23 / 0 failed.",
-        "Confirmed bootstrap skew is retained as an issue #10 Stage E hardening requirement: moving task-branch bootstrap source URLs must not allow an older installed launcher to ingest newer incompatible module content."
+        "Confirmed bootstrap skew is retained as an issue #10 Stage E hardening requirement: moving task-branch bootstrap source URLs must not allow an older installed launcher to ingest newer incompatible module content.",
+        "v1.4.3 launcher/manifest identify 1.4.3 / build 1.4.3-registry-state-containers and new witch-dock-registry v0.1.0 / build 0.1.0-tab-tool-state-containers.",
+        "Registry extraction redirects exactly state.tabs, state.toolsById and state.pending; section DOM lifecycle is explicitly not treated as a registry and remains unchanged.",
+        "Live gate must retain loader 23/23 / 0 failed, six-tab visual order and active tab, nine mounted tool containers, 12 sections, and callable registerTool/ensureDock/downloadBlob seams."
       ]
     }
   ],

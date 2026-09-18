@@ -2,6 +2,29 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-021 — Externalize tab/tool registry backing state
+
+Date: 2026-09-18
+
+### Diagnosis
+
+- Current core has no independent section registry. Sections are created through `api.ui.createSection(...)` and discovered from rendered DOM by `finalizeToolSections()`.
+- The actual registry backing state is exactly `state.tabs`, `state.toolsById`, and pre-UI `state.pending`.
+- Existing tab DOM/order/activation, tool mounting/rendering/replacement, section creation/finalization/order/drag, sizing and public `UW.WitchDock` seams remain coupled to the legacy core and are intentionally not moved in this slice.
+
+### Candidate
+
+- Dev launcher -> v1.4.3 / build `1.4.3-registry-state-containers`.
+- New `witch-dock-registry` -> v0.1.0 / build `0.1.0-tab-tool-state-containers`.
+- The bootstrap fetches and validates the registry module through the existing bounded repository-text transport.
+- The guarded core transform replaces exactly three legacy allocations with the external backing containers; all consumers continue using `state.tabs`, `state.toolsById`, and `state.pending` exactly as before.
+- Normal manifest-loaded module count remains 23. Checked-in `Witch_Dock.user.js` remains unchanged.
+- Baseline Bridge evidence `hf-20260918-wd10-v143-registry-baseline-compact-read-001`: 23/23 / 0 failed; tabs Body Editor, Pose(active), Decals, Booth, JSON, Utilities; nine mounted tool IDs; 12 sections; all three public seams are functions.
+
+**Runtime/module/manifest/public behavior changed:** task-branch registry backing-state ownership and launcher/module versions changed; public Stable and canonical Dev unchanged.
+
+---
+
 ## DOCK-2026-09-18-020 — Close v1.4.2 tool-enablement live gate
 
 Date: 2026-09-18

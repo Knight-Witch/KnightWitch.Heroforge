@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.2
+// @version      1.4.3
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.2";
+  const DEV_VERSION = "1.4.3";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -41,6 +41,9 @@
   const CORE_PREFERENCES_VERSION = "0.3.0";
   const CORE_PREFERENCES_BUILD = "0.3.0-tool-enablement-store";
   const CORE_PREFERENCES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Preferences.js?v=${CORE_PREFERENCES_VERSION}-${CORE_PREFERENCES_BUILD}`;
+  const CORE_REGISTRY_VERSION = "0.1.0";
+  const CORE_REGISTRY_BUILD = "0.1.0-tab-tool-state-containers";
+  const CORE_REGISTRY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Registry.js?v=${CORE_REGISTRY_VERSION}-${CORE_REGISTRY_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -72,6 +75,7 @@
   const SECTION_ORDER_STORAGE_END = '\n\nfunction saveSectionOrderFromDom(toolId, container) {';
   const TOOL_ENABLE_STORAGE_START = 'function getToolEnabled(toolId, enabledByDefault) {';
   const TOOL_ENABLE_STORAGE_END = '\n\nasync function loadManifestAndTools() {';
+  const REGISTRY_STATE_BLOCK = '    tabs: new Map(),\n    toolsById: new Map(),\n    pending: [],';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -106,6 +110,11 @@
     corePreferencesBuild: CORE_PREFERENCES_BUILD,
     corePreferencesMode: "external-bootstrap-module",
     corePreferencesApplied: false,
+    coreRegistryUrl: CORE_REGISTRY_URL,
+    coreRegistryVersion: CORE_REGISTRY_VERSION,
+    coreRegistryBuild: CORE_REGISTRY_BUILD,
+    coreRegistryMode: "external-bootstrap-module",
+    coreRegistryApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -266,6 +275,9 @@
     corePreferencesUrl: state.corePreferencesUrl,
     corePreferencesVersion: state.corePreferencesVersion,
     corePreferencesBuild: state.corePreferencesBuild,
+    coreRegistryUrl: state.coreRegistryUrl,
+    coreRegistryVersion: state.coreRegistryVersion,
+    coreRegistryBuild: state.coreRegistryBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -325,18 +337,21 @@
     const modalRequestUrl = `${CORE_MODALS_URL}&kwdev=${nonce}`;
     const boneHudRequestUrl = `${CORE_BONE_HUD_URL}&kwdev=${nonce}`;
     const preferencesRequestUrl = `${CORE_PREFERENCES_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences] = await Promise.all([
+    const registryRequestUrl = `${CORE_REGISTRY_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
     if (!coreModals) throw new Error("core modal module fetch returned empty source");
     if (!coreBoneHud) throw new Error("core bone HUD module fetch returned empty source");
     if (!corePreferences) throw new Error("core preferences module fetch returned empty source");
+    if (!coreRegistry) throw new Error("core registry module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -463,6 +478,30 @@
       contract: "kw.witchDock-main-section-tool-preferences"
     });
 
+    state.status = "loading-core-registry";
+    eval(`${coreRegistry}\n//# sourceURL=${CORE_REGISTRY_URL}`);
+    const registryApi = UW.KWWitchDockRegistry;
+    if (!registryApi || registryApi.version !== CORE_REGISTRY_VERSION || registryApi.build !== CORE_REGISTRY_BUILD) {
+      throw new Error("external core registry module did not register the expected API/version");
+    }
+    if (
+      !(registryApi.tabs instanceof Map) ||
+      !(registryApi.toolsById instanceof Map) ||
+      !Array.isArray(registryApi.pending) ||
+      typeof registryApi.getState !== "function"
+    ) {
+      throw new Error("external core registry module is missing required state containers");
+    }
+    state.coreRegistryApplied = true;
+    UW.KWWitchDockRegistryInfo = Object.freeze({
+      version: CORE_REGISTRY_VERSION,
+      build: CORE_REGISTRY_BUILD,
+      url: CORE_REGISTRY_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-tab-tool-pending-state-containers"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
 
@@ -484,6 +523,16 @@
       '  const state = {'
     ].join('\n');
     devSource = devSource.slice(0, prefsDeclStart) + prefsDeclReplacement + devSource.slice(prefsDeclEnd + PREFS_DECL_END.length);
+
+    const registryStateMatches = devSource.split(REGISTRY_STATE_BLOCK).length - 1;
+    if (registryStateMatches !== 1) {
+      throw new Error(`expected exactly one legacy registry state block; found ${registryStateMatches}`);
+    }
+    devSource = devSource.replace(REGISTRY_STATE_BLOCK, [
+      '    tabs: UW.KWWitchDockRegistry.tabs,',
+      '    toolsById: UW.KWWitchDockRegistry.toolsById,',
+      '    pending: UW.KWWitchDockRegistry.pending,'
+    ].join('\n'));
 
     const prefsIoStart = devSource.indexOf(PREFS_IO_START);
     const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;
@@ -635,7 +684,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section preferences, and tool-enablement persistence ownership have moved to bootstrap-hosted GitHub components while
+    // CSS, modal, bone-HUD, main/section/tool preferences, and tab/tool registry-container ownership have moved to bootstrap-hosted GitHub components while
     // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 

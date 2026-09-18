@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-021 — Registry backing-container extraction candidate
+
+Date: 2026-09-18
+
+### Protected behavior
+
+- Preserve `UW.WitchDock.registerTool`, `UW.WitchDock.ensureDock`, and `UW.WitchDock.downloadBlob`.
+- Preserve duplicate tool replacement, pending-before-UI queue semantics, tab creation/order/active-tab persistence, module render calls, section DOM lifecycle, section order/drag, and sizing.
+- Do not introduce a synthetic section registry where none exists.
+- Preserve loader order/concurrency/failure isolation and all v1.4.2 preference/storage behavior.
+
+### Static evidence
+
+- New `Witch_Dock_Registry.js` v0.1.0 parses and owns only one tabs Map, one toolsById Map, and one pending Array, with diagnostic `getState()`.
+- Launcher v1.4.3 parses, fetches/validates the registry module, and guards the exact legacy three-allocation state block before redirecting only those fields.
+- The exact raw-core registry allocation seam occurs once; the transformed core parses with the legacy allocation block absent.
+- Manifest registry includes the new bootstrap module and synchronized launcher version; normal manifest module count remains 23.
+- Checked-in `Witch_Dock.user.js` is unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.3 and reload HeroForge.
+2. Confirm launcher running/error null and `KWWitchDockRegistry` v0.1.0 applied.
+3. Confirm loader remains 23 total / 23 enabled / 23 executed / 0 failed.
+4. Confirm registry reports six tabs, nine tools, zero pending after startup.
+5. Confirm rendered tab order and Pose active state match baseline; rendered tool IDs and 12-section count match baseline.
+6. Confirm `registerTool`, `ensureDock`, and `downloadBlob` remain callable.
+7. No human visual gate is required unless the Dock appearance differs.
+
+**Runtime/module/manifest/public behavior changed:** task-branch registry backing-state ownership only; public Stable and canonical Dev unchanged.
+
+---
+
 ## PFC-2026-09-18-020 — v1.4.2 tool-enablement live PASS
 
 Date: 2026-09-18
