@@ -22,14 +22,15 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is moving runtime ownership out of the Stable-derived monolith. v1.3.8 + modal v0.1.1 pass automated modal lifecycle checks. Booth v27.0.6 + bootstrap v0.2.1 now call existing optional named media readiness seams on explicit state transitions/completion while preserving polling as fallback; the live manual-reload ON/OFF/ON gate passed with loader 23/23, one Booth script, zero duplicates, and 4K/8K/WebP following Booth state without manual readiness calls. Remaining gate is human visual confirmation of the About modal.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is moving runtime ownership out of the Stable-derived monolith. CSS, About/Disclaimer, Booth/media readiness, and the v1.3.8 human modal + real 4K gates are passing. v1.3.9 extracts the bone HUD/detection feature into a bootstrap-owned GitHub module while preserving its DOM/detection/timing/retry contracts and routing privileged copy through the bounded clipboard host.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
         "features/core/Witch_Dock_Styles.css",
         "features/core/Witch_Dock_Modals.js",
         "features/booth/Booth_Runtime_Bootstrap.js",
-        "tools/Booth.js"
+        "tools/Booth.js",
+        "features/core/Witch_Dock_Bone_HUD.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -44,11 +45,14 @@
         "Direct handoff still loads at most one version-matched HeroForge /gated/booth.js and delegates activation to BT.setBoothMode without directly forcing maker.enable().",
         "Task launcher/manifest identify v1.3.8 / build 1.3.8-modal-lazy-about-fix; Tampermonkey @name remains fixed WITCH DOCK - DEV.",
         "witch-dock-modals is v0.1.1 / build 0.1.1-lazy-about-open; openAbout performs its own lazy ensureAbout creation on a fresh page.",
-        "Fresh-page About/Disclaimer lifecycle and human visual parity must pass before Stage C continues.",
         "booth-tool is v27.0.6 / build v27.0.6-media-readiness-handoff and booth-runtime-bootstrap is v0.2.1 / build 0.2.1-media-readiness-handoff with synchronized deterministic cache keys.",
         "Booth session transitions and bootstrap completion use existing optional named media readiness seams so 4K/8K/WebP readiness does not depend solely on page timers; polling remains fallback.",
         "No media module source or HeroForge private runtime contract is changed by the readiness handoff.",
-        "Manual-reload live gate passes: loader 23/23 / 0 failed; first Booth ON enables 4K/8K/WebP without manual readiness calls; OFF disables them; second ON reuses live BT with one Booth script / zero duplicates and re-enables them."
+        "Manual-reload live gate passes: loader 23/23 / 0 failed; first Booth ON enables 4K/8K/WebP without manual readiness calls; OFF disables them; second ON reuses live BT with one Booth script / zero duplicates and re-enables them.",
+        "v1.3.8 About/Disclaimer automated lifecycle and human visual parity are PASS; a real 4K capture also completed successfully after the media-readiness repair.",
+        "Task launcher/manifest identify v1.3.9 / build 1.3.9-extracted-bone-hud and witch-dock-bone-hud v0.1.0 / build 0.1.0-extracted-bone-hud.",
+        "Bone HUD extraction preserves legacy footer DOM/text, detection candidate/scoring/timing/retry behavior, and copy toast semantics while receiving clipboard access only through the bounded host.",
+        "Live bone gate requires actual body-bone detection and exact clipboard-copy confirmation before Stage C proceeds."
       ]
     }
   ],

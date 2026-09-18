@@ -2,6 +2,30 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-016 — Extract bone HUD/detection behind bounded bootstrap module
+
+Date: 2026-09-17
+
+### Prior gate closure
+
+- v1.3.8 About modal human visual gate PASS.
+- User completed a real 4K capture successfully after the Booth/media readiness repair; the control was not merely enabled.
+- Booth remained returned to OFF after automated validation.
+
+### Candidate
+
+- Dev launcher -> v1.3.9 / build `1.3.9-extracted-bone-hud`.
+- Added `features/core/Witch_Dock_Bone_HUD.js`, registry id `witch-dock-bone-hud`, v0.1.0 / build `0.1.0-extracted-bone-hud`.
+- The module is derived directly from the guarded Stable-derived `initBoneFooterAndDetection()` body. Detection candidate paths, scoring, 35 ms click delay, 60-try readiness loop, retry timing, DOM classes/text, capture listeners, and navigator clipboard fallback are preserved.
+- Raw bone-copy `GM_setClipboard` use is removed from the extracted feature; it receives only the bounded host clipboard capability plus script metadata.
+- Launcher fetches core/CSS/modals/bone HUD concurrently, validates the external API/version, and replaces the exact legacy bone HUD + `getScriptMeta()` block with a thin wrapper. Checked-in `Witch_Dock.user.js` remains unchanged.
+- Baseline before extraction: one visible `.kwWDBoneRow`, idle text `No bone detected (click a body bone)`, disabled copy button, and the existing Dock/Undo/Redo footer hotkey line.
+- Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap bone-HUD ownership and registry changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-015 — Make media readiness follow explicit Booth transitions
 
 Date: 2026-09-17

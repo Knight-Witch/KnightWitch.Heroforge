@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction. v1.3.8 modal v0.1.1 automated lifecycle is PASS. Regression testing exposed stale timer-only media readiness, now repaired by Booth v27.0.6 + bootstrap v0.2.1 named readiness handoffs.
+**Current phase:** issue #10 Stage C presentation extraction. v1.3.8 modal human gate + real 4K capture are PASS; Booth/media handoff is PASS. v1.3.9 now extracts bone HUD/detection behind a bounded bootstrap module.
 
 ## Current priorities
 
-1. #10 — Booth v27.0.6 / bootstrap v0.2.1 media-readiness handoff is live PASS; complete the currently open v1.3.8 About human visual gate, then continue Stage C.
+1. #10 — validate v1.3.9 / bone HUD v0.1.0 live parity: footer DOM, actual bone detection, clipboard copy/toast, loader 23/23, and human visual parity.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -42,6 +42,15 @@
 - No direct maker-enable bypass is reintroduced.
 - Final normal-refresh validation passed: cold activation, native maker/media readiness, off/on reuse, zero duplicates, and preserved defaults/persistence.
 
+## v1.3.9 candidate — extracted bone HUD/detection
+
+- New `features/core/Witch_Dock_Bone_HUD.js`, v0.1.0 / build `0.1.0-extracted-bone-hud`.
+- Derived directly from the guarded legacy `initBoneFooterAndDetection()` body; detection paths/scoring/timing/retries/listeners and footer DOM/text are preserved.
+- Bone copy now receives only bounded host clipboard capability; the extracted module contains no raw `GM_setClipboard`.
+- Launcher fetches the bone module in parallel with core/CSS/modals and replaces the exact legacy bone + script-meta block with a thin wrapper.
+- Baseline Bridge request: `hf-20260917-wd10-bone-baseline-001`.
+- Required next gate: fixed-name v1.3.9 update, manual refresh past HeroForge splash, actual bone click + copy test, visual parity.
+
 ## Protected state
 
 - Public `Witch_Scripts` and canonical `WITCH_DEV_MAIN` remain untouched during task-branch validation.
@@ -57,7 +66,7 @@
 - Booth v27.0.6 now refreshes those optional named seams on session transitions; bootstrap v0.2.1 refreshes them after async native Booth bootstrap completion/failure.
 - Existing timers remain fallback; no capture service/UI implementation or private HeroForge internals changed.
 - Live gate PASS on manual reload: loader 23/23 / 0 failed in 221.9 ms; first ON enabled 4K/8K/WebP after a single native Booth bootstrap; OFF disabled them; second ON reused live BT with one Booth script / zero duplicates and re-enabled them; final state Booth OFF.
-- Remaining gate: human visual confirmation of the currently open About modal. Automated v1.3.8 modal lifecycle is already PASS.
+- About modal human visual gate PASS. User also completed a real 4K capture successfully. Booth/media repair remains PASS.
 
 ## v1.3.8 modal lazy-open repair
 
@@ -65,7 +74,7 @@
 - Root cause: missing `ensureAbout()` at the start of `openAbout()`; Disclaimer already had the correct lazy-create pattern.
 - `Witch_Dock_Modals.js` v0.1.1 / build `0.1.1-lazy-about-open` adds only that missing call.
 - Launcher v1.3.8 pins modal v0.1.1 with a new deterministic cache identity.
-- Required next gate: update v1.3.8 in place, fresh refresh, About first-open/reopen, Disclaimer mutual exclusion/reopen, then human visual confirmation.
+- v1.3.8 modal lifecycle and human visual gate PASS.
 
 ## v1.3.8 live gate
 
@@ -74,8 +83,8 @@
 3. About button creates exactly one `#kwWDAboutOverlay`; title/footer/links match prior behavior; close button, overlay click, and Escape work; reopen creates no duplicate.
 4. Disclaimer creates exactly one `#kwWDDisclaimerOverlay`, closes About when opened, preserves exact content/footer, and closes via button/overlay/Escape without duplicates.
 5. Loader remains 23/23 with 0 failures; v1.3.6 CSS remains healthy; Booth v27.0.6 + bootstrap v0.2.1 must pass the media-readiness handoff regression.
-6. Human visual gate: About and Disclaimer look normal/unchanged.
-7. Only after pass continue to bone HUD/detection extraction; do not integrate/promote Stable yet.
+6. Human visual gate: PASS; About looked normal/unchanged.
+7. Bone HUD/detection extraction is now the active Stage C slice; do not integrate/promote Stable yet.
 
 ## Minimum continuation set
 

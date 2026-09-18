@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-016 — Bone HUD/detection extraction candidate
+
+Date: 2026-09-17
+
+### Baseline / protected behavior
+
+- Current in-core baseline captured through Bridge: one visible bone row; label `Bone:`; value `No bone detected (click a body bone)`; copy button disabled; footer hotkey text preserved; no toast until copy.
+- Preserve exact detection candidate paths/scoring, pointerup + click capture listeners, 35 ms post-click sample delay, 60 readiness tries, 250/1000 ms retry cadence, 750 ms post-start rebuild check, failure/retry UI, and copy toast behavior.
+- Preserve CSS ownership in already-extracted `Witch_Dock_Styles.css`.
+
+### Candidate checks
+
+- `Witch_Dock_Bone_HUD.js` v0.1.0 / build `0.1.0-extracted-bone-hud` parses successfully.
+- Extracted module contains no direct `GM_setClipboard`; bounded launcher host clipboard is injected via `configure()`.
+- Launcher v1.3.9 parses successfully and fetches core/CSS/modals/bone HUD in parallel.
+- Guarded transform requires exactly one legacy bone init and one legacy `getScriptMeta()` seam before replacing them with a wrapper to `KWWitchDockBoneHUD.init()`.
+- Manifest registry adds only the bootstrap-owned bone module; manifest-loaded module count remains 23.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev install to v1.3.9 and manually refresh past HeroForge's promotional splash.
+2. Confirm launcher running/error null, bone module v0.1.0 configured/initialized, loader 23/23 / 0 failed.
+3. Confirm one bone row and exact baseline footer text/layout; no duplicate row/toast/listener symptom.
+4. Click a known body bone and confirm the HUD detects a `*_bind_jnt` bone name.
+5. Click copy and confirm clipboard receives that exact bone name and the `Copied bone name` toast appears.
+6. Retry/failure behavior remains available; no change to Dock hotkey, undo/redo, modal, Booth/media, drag/minimize, or storage behavior.
+7. Human visual gate: bone footer looks unchanged.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap bone-HUD ownership and registry changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-015 — Event-driven media readiness handoff
 
 Date: 2026-09-17

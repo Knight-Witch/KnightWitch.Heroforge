@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.8
+// @version      1.3.9
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.8";
+  const DEV_VERSION = "1.3.9";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -35,6 +35,9 @@
   const CORE_MODALS_VERSION = "0.1.1";
   const CORE_MODALS_BUILD = "0.1.1-lazy-about-open";
   const CORE_MODALS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Modals.js?v=${CORE_MODALS_VERSION}-${CORE_MODALS_BUILD}`;
+  const CORE_BONE_HUD_VERSION = "0.1.0";
+  const CORE_BONE_HUD_BUILD = "0.1.0-extracted-bone-hud";
+  const CORE_BONE_HUD_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Bone_HUD.js?v=${CORE_BONE_HUD_VERSION}-${CORE_BONE_HUD_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -54,6 +57,8 @@
     "openDisclaimerModal",
     "ensureDisclaimerModal"
   ]);
+  const BONE_BLOCK_START = 'function initBoneFooterAndDetection() {';
+  const BONE_BLOCK_END = '\n\n  function closeAboutModal() {';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -78,6 +83,11 @@
     coreModalsBuild: CORE_MODALS_BUILD,
     coreModalsMode: "external-bootstrap-module",
     coreModalsApplied: false,
+    coreBoneHudUrl: CORE_BONE_HUD_URL,
+    coreBoneHudVersion: CORE_BONE_HUD_VERSION,
+    coreBoneHudBuild: CORE_BONE_HUD_BUILD,
+    coreBoneHudMode: "external-bootstrap-module",
+    coreBoneHudApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -232,6 +242,9 @@
     coreModalsUrl: state.coreModalsUrl,
     coreModalsVersion: state.coreModalsVersion,
     coreModalsBuild: state.coreModalsBuild,
+    coreBoneHudUrl: state.coreBoneHudUrl,
+    coreBoneHudVersion: state.coreBoneHudVersion,
+    coreBoneHudBuild: state.coreBoneHudBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -284,19 +297,22 @@
   }
 
   async function boot() {
-    state.status = "fetching-core-styles-and-modals";
+    state.status = "fetching-core-components";
     const nonce = `${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
     const coreRequestUrl = `${CORE_URL}?kwdev=${nonce}`;
     const styleRequestUrl = `${CORE_STYLES_URL}&kwdev=${nonce}`;
     const modalRequestUrl = `${CORE_MODALS_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals] = await Promise.all([
+    const boneHudRequestUrl = `${CORE_BONE_HUD_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
     if (!coreModals) throw new Error("core modal module fetch returned empty source");
+    if (!coreBoneHud) throw new Error("core bone HUD module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -361,8 +377,59 @@
       contract: "legacy-about-disclaimer-dom-and-behavior"
     });
 
+    state.status = "loading-core-bone-hud";
+    eval(`${coreBoneHud}\n//# sourceURL=${CORE_BONE_HUD_URL}`);
+    const boneApi = UW.KWWitchDockBoneHUD;
+    if (!boneApi || boneApi.version !== CORE_BONE_HUD_VERSION || boneApi.build !== CORE_BONE_HUD_BUILD) {
+      throw new Error("external core bone HUD module did not register the expected API/version");
+    }
+    if (typeof boneApi.configure !== "function" || typeof boneApi.init !== "function" || typeof boneApi.getState !== "function") {
+      throw new Error("external core bone HUD module is missing required methods");
+    }
+    boneApi.configure({
+      scriptMeta: PRIVILEGED_HOST.scriptMeta(),
+      copyText: PRIVILEGED_HOST.clipboard.writeText
+    });
+    state.coreBoneHudApplied = true;
+    UW.KWWitchDockBoneHUDInfo = Object.freeze({
+      version: CORE_BONE_HUD_VERSION,
+      build: CORE_BONE_HUD_BUILD,
+      url: CORE_BONE_HUD_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-bone-footer-detection-and-copy"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
+
+    const boneStart = devSource.indexOf(BONE_BLOCK_START);
+    const duplicateBoneStart = boneStart >= 0 ? devSource.indexOf(BONE_BLOCK_START, boneStart + BONE_BLOCK_START.length) : -1;
+    if (boneStart < 0 || duplicateBoneStart >= 0) {
+      throw new Error(`expected exactly one legacy bone HUD block start; found ${boneStart < 0 ? 0 : 2}`);
+    }
+    const boneEnd = devSource.indexOf(BONE_BLOCK_END, boneStart + BONE_BLOCK_START.length);
+    if (boneEnd < 0) throw new Error("legacy bone HUD block end was not found");
+    const legacyBoneBlock = devSource.slice(boneStart, boneEnd);
+    if ((legacyBoneBlock.split("function initBoneFooterAndDetection(").length - 1) !== 1) {
+      throw new Error("legacy bone HUD init function contract changed");
+    }
+    if ((legacyBoneBlock.split("function getScriptMeta(").length - 1) !== 1) {
+      throw new Error("legacy bone HUD script-meta seam contract changed");
+    }
+
+    const boneReplacement = [
+      'function initBoneFooterAndDetection() {',
+      '  if (state.boneInit) return;',
+      '  if (!state.footer) return;',
+      '  state.boneInit = true;',
+      '  const handle = UW.KWWitchDockBoneHUD.init({ footer: state.footer, hotkeyText: BONE_FOOTER_HOTKEY_TEXT });',
+      '  state.__kwBoneDetect = handle || null;',
+      '}',
+      '',
+      '  function closeAboutModal() {'
+    ].join('\n');
+    devSource = devSource.slice(0, boneStart) + boneReplacement + devSource.slice(boneEnd + BONE_BLOCK_END.length);
 
     const modalStart = devSource.indexOf(MODAL_BLOCK_START);
     const duplicateModalStart = modalStart >= 0 ? devSource.indexOf(MODAL_BLOCK_START, modalStart + MODAL_BLOCK_START.length) : -1;
@@ -394,7 +461,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS and modal ownership have moved to bootstrap-hosted GitHub components while
+    // CSS, modal, and bone-HUD ownership have moved to bootstrap-hosted GitHub components while
     // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
