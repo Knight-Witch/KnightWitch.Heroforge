@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.0.5-explicit-session-handoff';
+  const BUILD_TAG = 'v27.0.6-media-readiness-handoff';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -2207,6 +2207,17 @@
     return state.consent;
   }
 
+  function refreshOptionalMediaReadiness() {
+    try {
+      const readiness = UW.KWPhotoBoothTrueResolutionReadiness;
+      if (readiness && typeof readiness.sync === 'function') readiness.sync();
+    } catch {}
+    try {
+      const webpUI = UW.KWSpinnyMiniWebPUI;
+      if (webpUI && typeof webpUI.refresh === 'function') webpUI.refresh();
+    } catch {}
+  }
+
   function onUserBoothToggle(v, options) {
     const opts = options && typeof options === 'object' ? options : {};
     const previousDefaultSource = !!state.defaultSessionBooth;
@@ -2260,6 +2271,7 @@
 
     reconcileLoop();
     updateUI();
+    refreshOptionalMediaReadiness();
   }
 
   function onComponentToggle(kind, value) {
@@ -2398,7 +2410,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.5',
+      version: '27.0.6',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2432,7 +2444,7 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.5',
+      version: '27.0.6',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,

@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction. Booth v27.0.5 + bootstrap v0.2.0 final live regression passed; fresh-page v1.3.7 modal visual gating exposed an About lazy-create bug, patched in launcher v1.3.8 + modal v0.1.1.
+**Current phase:** issue #10 Stage C presentation extraction. v1.3.8 modal v0.1.1 automated lifecycle is PASS. Regression testing exposed stale timer-only media readiness, now repaired by Booth v27.0.6 + bootstrap v0.2.1 named readiness handoffs.
 
 ## Current priorities
 
-1. #10 — validate launcher v1.3.8 / modal v0.1.1 fresh-page About/Disclaimer lifecycle + human visual gate; Booth v27.0.5 / bootstrap v0.2.0 is already final-live PASS.
+1. #10 — validate Booth v27.0.6 / bootstrap v0.2.1 media-readiness handoff, then complete the already-passing v1.3.8 modal human visual gate; continue Stage C only after both pass.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -50,6 +50,14 @@
 - HeroForge retains native Booth character-readiness and maker-enable ownership.
 - HF-Chat-Bridge remains development infrastructure only.
 
+## Current blocker repair — media readiness handoff
+
+- Booth/runtime capability is healthy, but 4K/8K/WebP polling timers failed to refresh controls even after 6 seconds.
+- Manual existing named seams immediately fixed the controls: TRUE-resolution readiness `sync()` returned true and WebP `readCapabilities()` returned Ready / UI `refresh()` returned true.
+- Booth v27.0.6 now refreshes those optional named seams on session transitions; bootstrap v0.2.1 refreshes them after async native Booth bootstrap completion/failure.
+- Existing timers remain fallback; no capture service/UI implementation or private HeroForge internals changed.
+- Required next gate: fresh-load new module cache identities and prove ON enables media without manual sync, OFF refreshes state, second ON reuses BT with zero duplicates.
+
 ## v1.3.8 modal lazy-open repair
 
 - Fresh-page visual-gate setup proved `openAbout()` did not create its overlay unless `ensureAbout()` had already been called.
@@ -64,7 +72,7 @@
 2. `KWWitchDockModalsInfo` and `KWWitchDockModals.getState()` report v0.1.1 / build `0.1.1-lazy-about-open` and configured=true; no modal overlays exist before first use.
 3. About button creates exactly one `#kwWDAboutOverlay`; title/footer/links match prior behavior; close button, overlay click, and Escape work; reopen creates no duplicate.
 4. Disclaimer creates exactly one `#kwWDDisclaimerOverlay`, closes About when opened, preserves exact content/footer, and closes via button/overlay/Escape without duplicates.
-5. Loader remains 23/23 with 0 failures; v1.3.6 CSS remains healthy; Booth v27.0.5 + bootstrap v0.2.0 remains unchanged from its final PASS.
+5. Loader remains 23/23 with 0 failures; v1.3.6 CSS remains healthy; Booth v27.0.6 + bootstrap v0.2.1 must pass the media-readiness handoff regression.
 6. Human visual gate: About and Disclaimer look normal/unchanged.
 7. Only after pass continue to bone HUD/detection extraction; do not integrate/promote Stable yet.
 

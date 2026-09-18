@@ -2,6 +2,24 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-015 — Make media readiness follow explicit Booth transitions
+
+Date: 2026-09-17
+
+### Summary
+
+- v1.3.8 modal repair passed fresh-page automated lifecycle validation: About lazy-creates on first open, About/Disclaimer remain single-instance and mutually exclusive, and close button/backdrop/Escape all pass.
+- The accompanying Booth/media smoke exposed a separate timer-delivery defect: Booth reached native runtime/engine ready, but 4K/8K/WebP controls remained disabled after 6 seconds because their existing polling intervals did not refresh the UI.
+- Capability diagnosis proved the media services themselves were healthy: `KWPhotoBoothTrueResolutionReadiness.sync()` returned true and immediately enabled 4K/8K; `KWSpinnyMiniWebP.readCapabilities()` returned Ready and `KWSpinnyMiniWebPUI.refresh()` immediately enabled WebP.
+- Booth v27.0.6 now invokes those existing optional named readiness seams after each explicit/default Booth session transition, so OFF immediately refreshes media readiness without depending on timers.
+- Booth Runtime Bootstrap v0.2.1 invokes the same optional named seams when asynchronous native Booth bootstrap completes or fails, so media controls refresh when the native runtime actually becomes ready.
+- Existing timer polling remains unchanged as fallback. Optional media failures are isolated; no media module source or HeroForge private internals changed.
+- Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth tool/bootstrap versions and deterministic cache keys changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-014 — Fix fresh-page About lazy creation
 
 Date: 2026-09-17

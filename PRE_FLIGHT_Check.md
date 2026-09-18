@@ -2,6 +2,42 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-015 — Event-driven media readiness handoff
+
+Date: 2026-09-17
+
+### Diagnosis
+
+- v1.3.8 launcher/modal baseline: running/error null; modal v0.1.1 configured; loader 23/23 / 0 failed in 345.1 ms.
+- Fresh modal lifecycle: About first-open/reopen and Disclaimer mutual exclusion/reopen passed with one overlay each; all six close paths (button/backdrop/Escape for both) passed.
+- Booth v27.0.5 / bootstrap v0.2.0 remained native-ready/error-null with one Booth script, but 4K/8K/WebP stayed disabled after 2.5 s and 6 s.
+- Manual existing readiness seams immediately corrected UI: TRUE-resolution readiness `sync()` returned true; WebP capability returned Ready; WebP UI `refresh()` returned true; all three capture surfaces became enabled.
+- This confirms stale timer-driven UI synchronization, not unavailable capture capability.
+
+### Candidate
+
+- Booth -> v27.0.6 / build `v27.0.6-media-readiness-handoff`.
+- Booth Runtime Bootstrap -> v0.2.1 / build `0.2.1-media-readiness-handoff`.
+- Booth transition invokes optional `KWPhotoBoothTrueResolutionReadiness.sync()` and `KWSpinnyMiniWebPUI.refresh()`.
+- Bootstrap completion/failure invokes the same optional capability seams after clearing in-flight state.
+- Polling timers remain as fallback; no capture service/UI source changed.
+- Manifest registry and deterministic URLs/cache keys synchronized.
+
+### Required live gate
+
+1. Fresh-load the new Booth/bootstrap module identities.
+2. With HeroForge ready and Booth OFF, turn Booth ON once.
+3. Confirm native Booth ready, one Booth script / zero duplicates / bootstrap error null.
+4. Without manual media sync calls, confirm 4K/8K/WebP become enabled.
+5. Turn Booth OFF; confirm media controls refresh/disable without relying on interval polling.
+6. Turn Booth ON again; confirm live-BT reuse, zero duplicates, and media controls enable again.
+7. Leave Booth OFF.
+8. Human modal visual gate remains required after automated regressions pass.
+
+**Runtime/module/manifest/public behavior changed:** task-branch Booth tool/bootstrap and cache identities changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-013 — Explicit Booth session handoff candidate
 
 Date: 2026-09-17

@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap is incrementally moving runtime ownership out of the Stable-derived monolith. Booth v27.0.5 + bootstrap v0.2.0 direct session handoff has passed final normal-refresh validation. v1.3.7 modal extraction exposed a fresh-page About lazy-create defect; launcher v1.3.8 + modal v0.1.1 repair only that modal seam.",
+      "reason": "Architecture work on wd/10-modular-bootstrap is moving runtime ownership out of the Stable-derived monolith. v1.3.8 + modal v0.1.1 pass automated modal lifecycle checks. Regression testing proved timer-only media readiness can remain stale even after native Booth is ready; Booth v27.0.6 + bootstrap v0.2.1 now call existing optional named media readiness seams on explicit state transitions/completion while preserving all polling as fallback.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -40,13 +40,14 @@
         "No storage, registration, drag/minimize, hotkey, undo/redo, bone-HUD, or unrelated feature lifecycle ownership moves in v1.3.7.",
         "Checked-in Witch_Dock.user.js remains Stable-derived during this guarded migration seam; physical source deletion waits for the later true core split.",
         "Before eventual integration to WITCH_DEV_MAIN, task-specific URLs are normalized to canonical Dev and revalidated.",
-        "booth-tool is v27.0.5 / build v27.0.5-explicit-session-handoff and booth-runtime-bootstrap is v0.2.0 / build 0.2.0-explicit-session-handoff with synchronized deterministic cache keys.",
         "An explicit Booth session request invokes the optional bootstrap requestSession handoff immediately; the 200 ms poll remains fallback rather than the sole trigger.",
         "Direct handoff still loads at most one version-matched HeroForge /gated/booth.js and delegates activation to BT.setBoothMode without directly forcing maker.enable().",
-        "Booth v27.0.5 source-local/public API identity matches its manifest/build identity; no stale 27.0.4 diagnostic remains.",
         "Task launcher/manifest identify v1.3.8 / build 1.3.8-modal-lazy-about-fix; Tampermonkey @name remains fixed WITCH DOCK - DEV.",
         "witch-dock-modals is v0.1.1 / build 0.1.1-lazy-about-open; openAbout performs its own lazy ensureAbout creation on a fresh page.",
-        "Fresh-page About/Disclaimer lifecycle and human visual parity must pass before Stage C continues."
+        "Fresh-page About/Disclaimer lifecycle and human visual parity must pass before Stage C continues.",
+        "booth-tool is v27.0.6 / build v27.0.6-media-readiness-handoff and booth-runtime-bootstrap is v0.2.1 / build 0.2.1-media-readiness-handoff with synchronized deterministic cache keys.",
+        "Booth session transitions and bootstrap completion use existing optional named media readiness seams so 4K/8K/WebP readiness does not depend solely on page timers; polling remains fallback.",
+        "No media module source or HeroForge private runtime contract is changed by the readiness handoff."
       ]
     }
   ],

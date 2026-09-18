@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.runtime-bootstrap';
-  const VERSION = '0.2.0';
-  const BUILD = '0.2.0-explicit-session-handoff';
+  const VERSION = '0.2.1';
+  const BUILD = '0.2.1-media-readiness-handoff';
   const API_KEY = 'KW_WD_BOOTH_BOOTSTRAP';
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const POLL_MS = 200;
@@ -338,6 +338,17 @@
     }
   }
 
+  function refreshOptionalMediaReadiness() {
+    try {
+      const readiness = UW.KWPhotoBoothTrueResolutionReadiness;
+      if (readiness && typeof readiness.sync === 'function') readiness.sync();
+    } catch {}
+    try {
+      const webpUI = UW.KWSpinnyMiniWebPUI;
+      if (webpUI && typeof webpUI.refresh === 'function') webpUI.refresh();
+    } catch {}
+  }
+
   async function bootstrap(saved, trigger) {
     if (!saved || state.inFlight || !state.enabled) return false;
     state.inFlight = true;
@@ -379,6 +390,7 @@
       return false;
     } finally {
       state.inFlight = false;
+      refreshOptionalMediaReadiness();
     }
   }
 
