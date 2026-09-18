@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.3
+// @version      1.4.4
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.3";
+  const DEV_VERSION = "1.4.4";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -44,6 +44,9 @@
   const CORE_REGISTRY_VERSION = "0.1.0";
   const CORE_REGISTRY_BUILD = "0.1.0-tab-tool-state-containers";
   const CORE_REGISTRY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Registry.js?v=${CORE_REGISTRY_VERSION}-${CORE_REGISTRY_BUILD}`;
+  const CORE_SHELL_VERSION = "0.1.0";
+  const CORE_SHELL_BUILD = "0.1.0-main-root-dom";
+  const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -76,6 +79,8 @@
   const TOOL_ENABLE_STORAGE_START = 'function getToolEnabled(toolId, enabledByDefault) {';
   const TOOL_ENABLE_STORAGE_END = '\n\nasync function loadManifestAndTools() {';
   const REGISTRY_STATE_BLOCK = '    tabs: new Map(),\n    toolsById: new Map(),\n    pending: [],';
+  const SHELL_ROOT_START = '    state.root = el("div", { id: "kwWitchDock" }, [';
+  const SHELL_ROOT_END = '\n\n    initBoneFooterAndDetection();';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -115,6 +120,11 @@
     coreRegistryBuild: CORE_REGISTRY_BUILD,
     coreRegistryMode: "external-bootstrap-module",
     coreRegistryApplied: false,
+    coreShellUrl: CORE_SHELL_URL,
+    coreShellVersion: CORE_SHELL_VERSION,
+    coreShellBuild: CORE_SHELL_BUILD,
+    coreShellMode: "external-bootstrap-module",
+    coreShellApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -278,6 +288,9 @@
     coreRegistryUrl: state.coreRegistryUrl,
     coreRegistryVersion: state.coreRegistryVersion,
     coreRegistryBuild: state.coreRegistryBuild,
+    coreShellUrl: state.coreShellUrl,
+    coreShellVersion: state.coreShellVersion,
+    coreShellBuild: state.coreShellBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -338,13 +351,15 @@
     const boneHudRequestUrl = `${CORE_BONE_HUD_URL}&kwdev=${nonce}`;
     const preferencesRequestUrl = `${CORE_PREFERENCES_URL}&kwdev=${nonce}`;
     const registryRequestUrl = `${CORE_REGISTRY_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry] = await Promise.all([
+    const shellRequestUrl = `${CORE_SHELL_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
@@ -352,6 +367,7 @@
     if (!coreBoneHud) throw new Error("core bone HUD module fetch returned empty source");
     if (!corePreferences) throw new Error("core preferences module fetch returned empty source");
     if (!coreRegistry) throw new Error("core registry module fetch returned empty source");
+    if (!coreShell) throw new Error("core shell module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -502,6 +518,25 @@
       contract: "legacy-tab-tool-pending-state-containers"
     });
 
+    state.status = "loading-core-shell";
+    eval(`${coreShell}\n//# sourceURL=${CORE_SHELL_URL}`);
+    const shellApi = UW.KWWitchDockShell;
+    if (!shellApi || shellApi.version !== CORE_SHELL_VERSION || shellApi.build !== CORE_SHELL_BUILD) {
+      throw new Error("external core shell module did not register the expected API/version");
+    }
+    if (typeof shellApi.createRoot !== "function" || typeof shellApi.getState !== "function") {
+      throw new Error("external core shell module is missing required methods");
+    }
+    state.coreShellApplied = true;
+    UW.KWWitchDockShellInfo = Object.freeze({
+      version: CORE_SHELL_VERSION,
+      build: CORE_SHELL_BUILD,
+      url: CORE_SHELL_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-main-root-dom-factory"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
 
@@ -533,6 +568,61 @@
       '    toolsById: UW.KWWitchDockRegistry.toolsById,',
       '    pending: UW.KWWitchDockRegistry.pending,'
     ].join('\n'));
+
+    const shellRootStart = devSource.indexOf(SHELL_ROOT_START);
+    const duplicateShellRootStart = shellRootStart >= 0 ? devSource.indexOf(SHELL_ROOT_START, shellRootStart + SHELL_ROOT_START.length) : -1;
+    if (shellRootStart < 0 || duplicateShellRootStart >= 0) {
+      throw new Error(`expected exactly one legacy shell-root block; found ${shellRootStart < 0 ? 0 : 2}`);
+    }
+    const shellRootEnd = devSource.indexOf(SHELL_ROOT_END, shellRootStart + SHELL_ROOT_START.length);
+    if (shellRootEnd < 0) throw new Error("legacy shell-root block end was not found");
+    const legacyShellRoot = devSource.slice(shellRootStart, shellRootEnd);
+    for (const required of [
+      'id: "kwWDHeader", onpointerdown: startDockDrag',
+      'id: "kwWDDisclaimerBtn"',
+      'id: "kwWDAboutBtn"',
+      'title: "Minimize / Expand"',
+      'title: "Collapse to icon"',
+      'id: "kwWDUndoBtn"',
+      'id: "kwWDRedoBtn"',
+      'id: "kwWDResizeHandleBottom", onpointerdown: startResizeBottom',
+      'id: "kwWDResizeHandleCorner", onpointerdown: startResizeCorner',
+      'state.footer = state.root.querySelector("#kwWDFooter");'
+    ]) {
+      if (!legacyShellRoot.includes(required)) throw new Error(`legacy shell-root contract changed: missing ${required}`);
+    }
+    const shellRootReplacement = [
+      '    const dockShell = UW.KWWitchDockShell.createRoot({',
+      '      el,',
+      '      handlers: Object.freeze({',
+      '        startDockDrag,',
+      '        openDisclaimerModal,',
+      '        ensureAboutModal,',
+      '        openAboutModal,',
+      '        toggleMinimize,',
+      '        closeDock,',
+      '        triggerUndo,',
+      '        triggerRedo,',
+      '        startResizeBottom,',
+      '        startResizeCorner',
+      '      })',
+      '    });',
+      '    state.root = dockShell.root;',
+      '    state.header = dockShell.header;',
+      '    state.aboutBtn = dockShell.aboutBtn;',
+      '    state.tabsContainer = dockShell.tabsContainer;',
+      '    state.tabsBar = dockShell.tabsBar;',
+      '    state.tabsBarRight = dockShell.tabsBarRight;',
+      '    state.footer = dockShell.footer;',
+      '    state.undoBtn = dockShell.undoBtn;',
+      '    state.redoBtn = dockShell.redoBtn;',
+      '    state.body = dockShell.body;',
+      '    state.resizeBottom = dockShell.resizeBottom;',
+      '    state.resizeCorner = dockShell.resizeCorner;',
+      '    state.minimizeBtn = dockShell.minimizeBtn;',
+      '    state.closeBtn = dockShell.closeBtn;'
+    ].join('\n');
+    devSource = devSource.slice(0, shellRootStart) + shellRootReplacement + devSource.slice(shellRootEnd);
 
     const prefsIoStart = devSource.indexOf(PREFS_IO_START);
     const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;

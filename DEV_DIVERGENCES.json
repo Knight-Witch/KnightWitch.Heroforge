@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D v1.4.3 registry backing-container extraction is live-PASS. Next bounded slice is shell/layout ownership diagnosis; drag/resize/minimize/compact, hotkeys and undo/redo remain legacy-owned until separately extracted.",
+      "reason": "Issue #10 Stage D v1.4.3 registry backing-container extraction is live-PASS. v1.4.4 externalizes only the main Dock root DOM factory; positioning/sizing, compact mode, drag/resize/minimize, hotkeys, undo/redo, tab/tool/section behavior and public seams remain legacy-owned.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -34,7 +34,8 @@
         "features/core/Witch_Dock_Preferences.js",
         "features/core/Witch_Dock_Module_Loader.js",
         "tools/Utilities.js",
-        "features/core/Witch_Dock_Registry.js"
+        "features/core/Witch_Dock_Registry.js",
+        "features/core/Witch_Dock_Shell.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -76,7 +77,10 @@
         "v1.4.3 launcher/manifest identify 1.4.3 / build 1.4.3-registry-state-containers and new witch-dock-registry v0.1.0 / build 0.1.0-tab-tool-state-containers.",
         "Registry extraction redirects exactly state.tabs, state.toolsById and state.pending; section DOM lifecycle is explicitly not treated as a registry and remains unchanged.",
         "Live gate must retain loader 23/23 / 0 failed, six-tab visual order and active tab, nine mounted tool containers, 12 sections, and callable registerTool/ensureDock/downloadBlob seams.",
-        "v1.4.3 live gate PASS: launcher running/error null; registry v0.1.0 applied; loader 23/23 / 0 failed; registry 6 tabs / 9 tools / 0 pending; rendered six-tab order with Pose active, nine mounted tools and 12 sections preserved; registerTool/ensureDock/downloadBlob remain functions."
+        "v1.4.3 live gate PASS: launcher running/error null; registry v0.1.0 applied; loader 23/23 / 0 failed; registry 6 tabs / 9 tools / 0 pending; rendered six-tab order with Pose active, nine mounted tools and 12 sections preserved; registerTool/ensureDock/downloadBlob remain functions.",
+        "v1.4.4 launcher/manifest identify 1.4.4 / build 1.4.4-main-shell-dom and new witch-dock-shell v0.1.0 / build 0.1.0-main-root-dom.",
+        "Shell extraction replaces only the guarded main #kwWitchDock root construction/state-ref block and preserves existing callbacks/state consumers.",
+        "Live gate must preserve one Dock root, exact root/control/tab-frame structure, compact launcher presence, loader 23/23 / 0 failed and normal shell geometry."
       ]
     }
   ],

@@ -2,6 +2,40 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-023 — Main-shell DOM factory extraction candidate
+
+Date: 2026-09-18
+
+### Protected behavior
+
+- Preserve exactly one `#kwWitchDock` root with the same direct child order and IDs.
+- Preserve existing header drag, Disclaimer/About/minimize/close callbacks, tab frame, Undo/Redo callbacks, body/footer, and resize-handle callbacks.
+- Preserve position/sizing, compact mode, main/compact drag, minimize/close/expand, tab overflow, hotkeys, undo/redo implementation, tabs/tools/sections, registry containers, storage and loader behavior.
+- Do not move compact launcher DOM in this slice.
+
+### Static evidence
+
+- New `Witch_Dock_Shell.js` v0.1.0 parses and exposes only `createRoot()` plus diagnostics.
+- Shell module requires the existing legacy `el()` helper and existing callbacks rather than duplicating their behavior.
+- Launcher v1.4.4 parses, fetches/validates the shell module, and guards the exact legacy root-construction/state-ref block before replacing only that block.
+- The raw-core shell-root seam is unique and the transformed core parses.
+- Manifest registry includes `witch-dock-shell` v0.1.0 and synchronized launcher v1.4.4; normal module count remains 23.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.4 and reload HeroForge.
+2. Confirm launcher running/error null and shell v0.1.0 applied exactly once.
+3. Confirm loader remains 23/23 / 0 failed.
+4. Confirm exactly one `#kwWitchDock` exists and direct child order remains Header/Tabs/Body/Footer/BottomResize/CornerResize.
+5. Confirm header controls, tab-frame/right controls, body/footer/resizer references and compact launcher all remain present.
+6. Confirm current size/position remains normal and no visual difference appears.
+7. Human visual gate only if appearance differs.
+
+**Runtime/module/manifest/public behavior changed:** task-branch main-shell DOM ownership only; public Stable and canonical Dev unchanged.
+
+---
+
 ## PFC-2026-09-18-022 — v1.4.3 registry-container live PASS
 
 Date: 2026-09-18

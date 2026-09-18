@@ -2,6 +2,30 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-023 — Externalize main Dock root DOM factory
+
+Date: 2026-09-18
+
+### Diagnosis
+
+- The safest next Stage D shell seam is the main `#kwWitchDock` root tree only.
+- Compact launcher DOM and all position/size/minimize/close/expand/drag/resize behavior remain coupled and are intentionally not moved with this slice.
+- Tabs/tools/sections remain under their existing legacy consumers; registry containers remain owned by the v1.4.3 registry module.
+
+### Candidate
+
+- Dev launcher -> v1.4.4 / build `1.4.4-main-shell-dom`.
+- New `witch-dock-shell` -> v0.1.0 / build `0.1.0-main-root-dom`.
+- Shell module creates the existing root/header/title/disclaimer/About/minimize/close/tab-frame/undo/redo/body/footer/resizer DOM using the existing legacy `el()` helper and injected legacy callbacks.
+- Launcher guards the exact legacy root-construction + state-reference block before replacing only that block with `KWWitchDockShell.createRoot(...)`.
+- Position/sizing, compact launcher creation, minimize/close/expand, drag/resize, tab overflow, hotkeys, undo/redo implementation, tabs/tools/sections and public `WitchDock` seams remain unchanged.
+- Baseline `hf-20260918-wd10-v144-shell-baseline-read-001`: root children Header/Tabs/Body/Footer/BottomResize/CornerResize; legacy control/tab-frame IDs present; compact launcher present; current rendered box 382x522.
+- Normal manifest-loaded module count remains 23. Checked-in `Witch_Dock.user.js` remains unchanged.
+
+**Runtime/module/manifest/public behavior changed:** task-branch main-shell DOM ownership and launcher/module versions changed; public Stable and canonical Dev unchanged.
+
+---
+
 ## DOCK-2026-09-18-022 — Close v1.4.3 registry-container live gate
 
 Date: 2026-09-18
