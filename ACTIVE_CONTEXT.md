@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction. v1.3.9 bone HUD extraction has automated legacy-parity PASS; current HeroForge broke the legacy detector anchors independently (#26). Human footer visual parity is the remaining gate for this slice.
+**Current phase:** issue #10 Stage C presentation extraction COMPLETE. v1.3.9 bone HUD extraction passed automated legacy parity + human visual parity; current HeroForge's stale bone anchors remain separate #26. Begin Stage D application-shell extraction in bounded units.
 
 ## Current priorities
 
-1. #10 — complete v1.3.9 bone HUD human visual parity, then continue Stage C. Functional bone detection repair is separated to #26 after the refactor.
+1. #10 — begin Stage D application-shell extraction. Diagnose the smallest safe first unit from the contract before editing; keep #26 out of scope.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -51,7 +51,8 @@
 - Baseline Bridge request: `hf-20260917-wd10-bone-baseline-001`.
 - Live automated parity PASS: v1.3.9 running/error-null, module v0.1.0 applied, loader 23/23 / 0 failed, exact baseline footer DOM/text/layout preserved.
 - Current HeroForge compatibility finding: `HF.summonCircle` is ready but all seven legacy fixed anchor paths are absent; the same legacy detector logic was already stale before extraction. Tracked as #26 for post-refactor repair.
-- Remaining gate for this extraction slice: human footer visual parity only.
+- Human footer visual parity PASS. Stage C presentation extraction is complete.
+- #26 remains queued after #10 and is not part of the architecture migration.
 
 ## Protected state
 

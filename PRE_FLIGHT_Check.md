@@ -37,7 +37,8 @@ Date: 2026-09-17
 - `HF.summonCircle` exists and reports ready, but every legacy anchor candidate used by both Stable-derived core and extracted module is absent on current HeroForge.
 - Detector therefore remains stopped/unattached exactly because the preserved legacy candidate builder returns no paths. This is not extraction-caused.
 - Opened #26 for post-refactor reconstruction of a current stable bone-selection seam.
-- Remaining #10 gate for this slice is human visual confirmation of footer parity.
+- Human visual gate PASS: Amanda confirmed the Bone footer looks normal/unchanged.
+- Stage C is complete; proceed to Stage D application-shell extraction without pulling #26 repair into the refactor.
 
 **Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap bone-HUD ownership and registry changed; public Stable unchanged.
 

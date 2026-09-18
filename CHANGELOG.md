@@ -28,6 +28,7 @@ Date: 2026-09-17
 - Footer DOM/text/layout matches the pre-extraction baseline: one bone row, exact idle label/value, disabled copy button, and unchanged Dock/Undo/Redo hotkey line.
 - Functional detector validation exposed a **pre-existing HeroForge compatibility bug**, not an extraction regression: current `HF.summonCircle` exists/ready, but all seven legacy fixed anchor paths resolve missing, so the preserved legacy detector cannot build candidates or attach listeners.
 - Tracked separately as #26 and queued after #10; v1.3.9 is therefore gated on exact legacy parity plus human visual parity, not on pretending the already-broken detector works.
+- Human visual gate PASS: Amanda confirmed the extracted Bone footer looks normal/unchanged.
 
 **Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap bone-HUD ownership and registry changed; public Stable unchanged.
 
