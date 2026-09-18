@@ -2,6 +2,40 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-019 — Tool-enablement persistence extraction candidate
+
+Date: 2026-09-17
+
+### Protected behavior
+
+- Preserve exact `kw.witchDock.toolEnabled.<id>` keys.
+- Preserve bootstrap Tampermonkey-only reads, module-loader page-local-only reads, Utilities page-first/host-fallback reads, and mirrored Utility page+host writes.
+- Preserve all manifest scheduling, deterministic cache identity, parallel fetch, ordered execution, failure isolation, and Utility live enable/disable behavior.
+- No tab/registry/drag/resize/minimize/hotkey/undo/redo ownership moves.
+
+### Static evidence
+
+- Preferences v0.3.0 parses and exposes explicit host-only, page-only, page→host, and mirrored-write tool-enablement methods.
+- Launcher v1.4.2 parses, injects only bounded host storage plus bounded page getItem/setItem capability, and guards the exact legacy bootstrap `getToolEnabled()` block before replacing it with the host-only preference read.
+- Module loader v0.1.2 parses and no longer directly reads `localStorage` for tool enablement; it uses the page-only preference method.
+- Utilities source parses and no longer directly reads/writes localStorage or GM storage for `kw.witchDock.toolEnabled.*`; its existing read/write helpers delegate to preferences.
+- Manifest remains valid with 23 normal modules and synchronized launcher/preferences/loader/Utilities versions.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.2 and refresh HeroForge.
+2. Confirm launcher running/error null; preferences v0.3.0; loader v0.1.2 complete with 23/23 / 0 failed.
+3. Confirm the two Utilities HeroForge UI toggles remain checked/enabled and existing page keys remain `"true"`.
+4. Toggle `expanded-ui-scroll-guards` OFF once through its normal Utility checkbox; confirm page key becomes `"false"`, preference page+host write diagnostics increment, and the feature disables normally.
+5. Reload once; confirm loader records that module disabled from page storage while unrelated modules retain order/failure isolation.
+6. Restore the Utility ON through normal UI, verify mirrored write diagnostics/page key `"true"`, then reload or otherwise confirm restored startup parity before leaving the gate.
+7. Human visual gate only if appearance changes; this slice is persistence ownership only.
+
+**Runtime/module/manifest/public behavior changed:** task-branch tool-enablement persistence ownership and module/launcher versions changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-018 — Section preference-store extraction candidate
 
 Date: 2026-09-17

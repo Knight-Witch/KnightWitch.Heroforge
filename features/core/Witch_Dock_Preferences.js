@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-preferences";
-  const VERSION = "0.2.0";
-  const BUILD = "0.2.0-section-state-host";
+  const VERSION = "0.3.0";
+  const BUILD = "0.3.0-tool-enablement-store";
   const STORE_KEY = "kw.witchDock.v1";
   const DEFAULTS = Object.freeze({
     x: null,
@@ -24,6 +24,7 @@
   });
 
   let STORAGE = null;
+  let PAGE_STORAGE = null;
   const STATE = {
     configured: false,
     loads: 0,
@@ -37,6 +38,12 @@
     sectionOrderWrites: 0,
     lastSectionKey: null,
     lastSectionOrderKey: null,
+    toolEnableHostReads: 0,
+    toolEnablePageReads: 0,
+    toolEnablePageWrites: 0,
+    toolEnableHostWrites: 0,
+    lastToolEnableKey: null,
+    lastToolEnableSource: null,
     lastError: null
   };
 
@@ -48,10 +55,15 @@
   function configure(options) {
     const opts = options && typeof options === "object" ? options : {};
     const storage = opts.storage;
+    const pageStorage = opts.pageStorage;
     if (!storage || typeof storage.get !== "function" || typeof storage.set !== "function") {
       throw new Error("Witch Dock Preferences requires bounded storage.get/storage.set.");
     }
+    if (!pageStorage || typeof pageStorage.getItem !== "function" || typeof pageStorage.setItem !== "function") {
+      throw new Error("Witch Dock Preferences requires bounded pageStorage.getItem/pageStorage.setItem.");
+    }
     STORAGE = storage;
+    PAGE_STORAGE = pageStorage;
     STATE.configured = true;
     STATE.lastError = null;
     return true;
@@ -60,6 +72,11 @@
   function requireStorage() {
     if (!STORAGE) throw new Error("Witch Dock Preferences is not configured.");
     return STORAGE;
+  }
+
+  function requirePageStorage() {
+    if (!PAGE_STORAGE) throw new Error("Witch Dock Preferences page storage is not configured.");
+    return PAGE_STORAGE;
   }
 
   function recordLoaded(value) {
@@ -174,6 +191,91 @@
     }
   }
 
+
+  function toolEnabledKey(toolId) {
+    return `kw.witchDock.toolEnabled.${toolId}`;
+  }
+
+  function getToolEnabledFromHost(toolId, enabledByDefault) {
+    const key = toolEnabledKey(toolId);
+    STATE.toolEnableHostReads += 1;
+    STATE.lastToolEnableKey = key;
+    STATE.lastToolEnableSource = "host";
+    try {
+      const value = requireStorage().get(key, null);
+      STATE.lastError = null;
+      if (value === null || value === undefined) return !!enabledByDefault;
+      return !!value;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "tool enable host read failed");
+      return !!enabledByDefault;
+    }
+  }
+
+  function getToolEnabledFromPage(toolId, enabledByDefault) {
+    const key = toolEnabledKey(toolId);
+    STATE.toolEnablePageReads += 1;
+    STATE.lastToolEnableKey = key;
+    STATE.lastToolEnableSource = "page";
+    try {
+      const raw = requirePageStorage().getItem(key);
+      STATE.lastError = null;
+      if (raw !== null && raw !== undefined && raw !== "") return raw === "true" || raw === "1";
+      return !!enabledByDefault;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "tool enable page read failed");
+      return !!enabledByDefault;
+    }
+  }
+
+  function getToolEnabled(toolId, enabledByDefault) {
+    const key = toolEnabledKey(toolId);
+    STATE.toolEnablePageReads += 1;
+    STATE.lastToolEnableKey = key;
+    STATE.lastToolEnableSource = "page";
+    try {
+      const raw = requirePageStorage().getItem(key);
+      if (raw !== null && raw !== undefined && raw !== "") {
+        STATE.lastError = null;
+        return raw === "true" || raw === "1";
+      }
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "tool enable page read failed");
+    }
+    STATE.toolEnableHostReads += 1;
+    STATE.lastToolEnableSource = "host";
+    try {
+      const value = requireStorage().get(key, null);
+      STATE.lastError = null;
+      if (value !== null && value !== undefined) return !!value;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "tool enable host read failed");
+    }
+    return !!enabledByDefault;
+  }
+
+  function setToolEnabled(toolId, value) {
+    const key = toolEnabledKey(toolId);
+    const enabled = !!value;
+    const errors = [];
+    STATE.lastToolEnableKey = key;
+    try {
+      requirePageStorage().setItem(key, enabled ? "true" : "false");
+      STATE.toolEnablePageWrites += 1;
+    } catch (error) {
+      errors.push(error && error.message ? error.message : String(error || "tool enable page write failed"));
+    }
+    try {
+      requireStorage().set(key, enabled);
+      STATE.toolEnableHostWrites += 1;
+    } catch (error) {
+      errors.push(error && error.message ? error.message : String(error || "tool enable host write failed"));
+    }
+    STATE.lastToolEnableSource = "page+host";
+    STATE.lastError = errors.length ? errors.join("; ") : null;
+    return errors.length === 0;
+  }
+
   function getState() {
     return {
       featureId: FEATURE_ID,
@@ -192,6 +294,12 @@
       sectionOrderWrites: STATE.sectionOrderWrites,
       lastSectionKey: STATE.lastSectionKey,
       lastSectionOrderKey: STATE.lastSectionOrderKey,
+      toolEnableHostReads: STATE.toolEnableHostReads,
+      toolEnablePageReads: STATE.toolEnablePageReads,
+      toolEnablePageWrites: STATE.toolEnablePageWrites,
+      toolEnableHostWrites: STATE.toolEnableHostWrites,
+      lastToolEnableKey: STATE.lastToolEnableKey,
+      lastToolEnableSource: STATE.lastToolEnableSource,
       lastError: STATE.lastError
     };
   }
@@ -212,6 +320,11 @@
     sectionOrderKey,
     getSectionOrder,
     setSectionOrder,
+    toolEnabledKey,
+    getToolEnabledFromHost,
+    getToolEnabledFromPage,
+    getToolEnabled,
+    setToolEnabled,
     getState
   });
 })();

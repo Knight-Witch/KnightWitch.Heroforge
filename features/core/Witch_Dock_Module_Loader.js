@@ -3,9 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWModuleLoader";
-  const VERSION = "0.1.1";
-  const BUILD = "0.1.1-stable-page-fetch-ordered-exec";
-  const TOOL_ENABLE_PREFIX = "kw.witchDock.toolEnabled.";
+  const VERSION = "0.1.2";
+  const BUILD = "0.1.2-preferences-enablement-read";
   const FALLBACK_MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
   const SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
@@ -90,13 +89,9 @@
   }
 
   function getToolEnabled(toolId, enabledByDefault) {
-    try {
-      const raw = UW.localStorage.getItem(TOOL_ENABLE_PREFIX + toolId);
-      if (raw !== null && raw !== undefined && raw !== "") {
-        return raw === "true" || raw === "1";
-      }
-    } catch {}
-    return !!enabledByDefault;
+    const preferences = UW.KWWitchDockPreferences;
+    if (!preferences || typeof preferences.getToolEnabledFromPage !== "function") return !!enabledByDefault;
+    return preferences.getToolEnabledFromPage(toolId, enabledByDefault);
   }
 
   function markFailure(record, phase, error) {

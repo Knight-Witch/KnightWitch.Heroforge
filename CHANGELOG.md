@@ -2,6 +2,32 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-019 — Centralize tool-enablement persistence without changing precedence
+
+Date: 2026-09-17
+
+### Prior gate closure
+
+- v1.4.1 section collapse/order persistence PASS.
+- Normal Booth header click recorded exactly one bounded write to `kw.witchDock.ui.booth-tool.booth.collapsed`; reload restored collapsed state; normal click restored expanded.
+- Loader remained 23/23 / 0 failed and all 12 observed sections remained present in the same order.
+- Evidence: `hf-20260917-wd10-v141-collapse-readback-001`, `hf-20260917-wd10-v141-postreload-001`, `hf-20260917-wd10-v141-restore-readback-001`.
+
+### Candidate
+
+- Dev launcher -> v1.4.2 / build `1.4.2-tool-enablement-preferences`.
+- `witch-dock-preferences` -> v0.3.0 / build `0.3.0-tool-enablement-store`.
+- `witch-dock-module-loader` -> v0.1.2 / build `0.1.2-preferences-enablement-read`.
+- Utilities registry -> v1.2.2 / build `1.2.2-tool-enablement-preferences`.
+- Centralizes only `kw.witchDock.toolEnabled.<id>` persistence. Existing precedence is preserved exactly: bootstrap host-only read; module loader page-only read; Utilities page-first then host fallback; Utility writes still mirror page string + host boolean.
+- Module scheduling, fetch concurrency/order, execution order, enable/disable actions, and tool registration remain unchanged.
+- Baseline before candidate: loader 23/23 / 0 failed; page keys for `expanded-ui-scroll-guards` and `hf-ui-slot-bridge` are `"true"`; both Utilities toggles are checked/enabled; module-loader page key is absent.
+- Checked-in `Witch_Dock.user.js` remains unchanged. Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch persistence ownership and launcher/preferences/loader/Utilities registry versions changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-018 — Route section collapse/order preferences through bounded host
 
 Date: 2026-09-17

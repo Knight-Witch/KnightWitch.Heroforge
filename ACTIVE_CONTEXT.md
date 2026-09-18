@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.0 main store is live-PASS. v1.4.1 candidate extends the same bounded preferences module to section collapse/order state only; section DOM/drag/click behavior remains legacy.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.1 section collapse/order persistence is live-PASS. v1.4.2 candidate centralizes the existing tool-enablement storage contract in the preferences module while preserving bootstrap/page/Utilities precedence and mirror semantics.
 
 ## Current priorities
 
-1. #10 — validate v1.4.1 / preferences v0.2.0 section-collapse/order persistence parity, then continue Stage D.
+1. #10 — validate v1.4.2 tool-enablement persistence parity, then continue Stage D application-shell extraction.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -64,13 +64,24 @@
 - Live PASS: v1.4.0 running/error-null; loader 23/23; prior geometry preserved; controlled minimize saved successfully; manual reload startup snapshot loaded minimized=true from the same store; Amanda visual check good.
 - Main preference-store extraction is closed.
 
-## v1.4.1 candidate — section collapse/order preferences
+## v1.4.1 live PASS — section collapse/order preferences
 
 - `Witch_Dock_Preferences.js` v0.2.0 / build `0.2.0-section-state-host`.
-- Owns existing section collapsed and section-order persistence through bounded host storage.
-- Core section creation, click handling, pointer drag/reorder algorithm and DOM behavior remain unchanged.
-- Baseline: Booth section id `booth` is first/expanded; 12 observed sections were expanded.
-- Required live gate: toggle Booth collapsed, prove exact bounded key/write, reload persistence, restore expanded.
+- Normal Booth header click changed `data-collapsed` 0→1 and recorded exactly one bounded write to `kw.witchDock.ui.booth-tool.booth.collapsed`.
+- Bridge-driven normal page reload restored Booth collapsed from the same key; launcher remained running/error-null and loader remained 23/23 / 0 failed.
+- All 12 observed Dock sections remained present in the same order with no duplicate/missing symptoms.
+- Booth was restored expanded through the same normal header click; bounded write diagnostics remained error-free.
+- Evidence: `hf-20260917-wd10-v141-collapse-readback-001`, `hf-20260917-wd10-v141-postreload-001`, `hf-20260917-wd10-v141-restore-readback-001`.
+
+## v1.4.2 candidate — tool-enablement persistence
+
+- Dev launcher v1.4.2 / build `1.4.2-tool-enablement-preferences`.
+- Preferences v0.3.0 / build `0.3.0-tool-enablement-store`.
+- Module loader v0.1.2 / build `0.1.2-preferences-enablement-read`; Utilities registry v1.2.2.
+- Preserves the existing three-path contract exactly: initial bootstrap reads Tampermonkey storage only; module loader reads page localStorage only; Utilities reads page localStorage first then Tampermonkey fallback and writes both stores.
+- Only persistence ownership moves. Manifest scheduling, module execution order/concurrency, utility enable/disable behavior, and public registration remain unchanged.
+- Baseline: loader 23/23 / 0 failed; `expanded-ui-scroll-guards` and `hf-ui-slot-bridge` page keys are `"true"` and both Utilities toggles are checked/enabled; module-loader page key is absent.
+- Required live gate: install v1.4.2, prove startup parity, toggle one reversible Utility OFF/ON through normal UI and verify both preference write diagnostics plus page key, then reload once to prove loader/Utility persistence semantics.
 
 ## Protected state
 
@@ -109,6 +120,6 @@
 
 ## Minimum continuation set
 
-Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.
+Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/core/Witch_Dock_Preferences.js`, `features/core/Witch_Dock_Module_Loader.js`, `tools/Utilities.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.
 
 Do not preload MASTER, full old logs, unrelated HISTORY files, or HeroForge.Compatibility unless current evidence requires them.

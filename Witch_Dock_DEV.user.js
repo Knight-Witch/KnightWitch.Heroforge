@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.1
+// @version      1.4.2
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.1";
+  const DEV_VERSION = "1.4.2";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -38,8 +38,8 @@
   const CORE_BONE_HUD_VERSION = "0.1.0";
   const CORE_BONE_HUD_BUILD = "0.1.0-extracted-bone-hud";
   const CORE_BONE_HUD_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Bone_HUD.js?v=${CORE_BONE_HUD_VERSION}-${CORE_BONE_HUD_BUILD}`;
-  const CORE_PREFERENCES_VERSION = "0.2.0";
-  const CORE_PREFERENCES_BUILD = "0.2.0-section-state-host";
+  const CORE_PREFERENCES_VERSION = "0.3.0";
+  const CORE_PREFERENCES_BUILD = "0.3.0-tool-enablement-store";
   const CORE_PREFERENCES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Preferences.js?v=${CORE_PREFERENCES_VERSION}-${CORE_PREFERENCES_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
@@ -70,6 +70,8 @@
   const SECTION_COLLAPSE_STORAGE_END = '\n\n  function createSection(toolId, opts) {';
   const SECTION_ORDER_STORAGE_START = 'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";';
   const SECTION_ORDER_STORAGE_END = '\n\nfunction saveSectionOrderFromDom(toolId, container) {';
+  const TOOL_ENABLE_STORAGE_START = 'function getToolEnabled(toolId, enabledByDefault) {';
+  const TOOL_ENABLE_STORAGE_END = '\n\nasync function loadManifestAndTools() {';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -436,11 +438,21 @@
       typeof preferencesApi.setSectionCollapsed !== "function" ||
       typeof preferencesApi.getSectionOrder !== "function" ||
       typeof preferencesApi.setSectionOrder !== "function" ||
+      typeof preferencesApi.getToolEnabledFromHost !== "function" ||
+      typeof preferencesApi.getToolEnabledFromPage !== "function" ||
+      typeof preferencesApi.getToolEnabled !== "function" ||
+      typeof preferencesApi.setToolEnabled !== "function" ||
       typeof preferencesApi.getState !== "function"
     ) {
       throw new Error("external core preferences module is missing required methods");
     }
-    preferencesApi.configure({ storage: PRIVILEGED_HOST.storage });
+    preferencesApi.configure({
+      storage: PRIVILEGED_HOST.storage,
+      pageStorage: Object.freeze({
+        getItem: (key) => UW.localStorage.getItem(key),
+        setItem: (key, value) => UW.localStorage.setItem(key, String(value))
+      })
+    });
     state.corePreferencesApplied = true;
     UW.KWWitchDockPreferencesInfo = Object.freeze({
       version: CORE_PREFERENCES_VERSION,
@@ -448,7 +460,7 @@
       url: CORE_PREFERENCES_URL,
       applied: true,
       owner: "bootstrap-module",
-      contract: "kw.witchDock.v1-main-preference-store"
+      contract: "kw.witchDock-main-section-tool-preferences"
     });
 
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
@@ -491,6 +503,30 @@
       '  const prefs = loadPrefs();'
     ].join('\n');
     devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
+
+    const toolEnableStart = devSource.indexOf(TOOL_ENABLE_STORAGE_START);
+    const duplicateToolEnableStart = toolEnableStart >= 0 ? devSource.indexOf(TOOL_ENABLE_STORAGE_START, toolEnableStart + TOOL_ENABLE_STORAGE_START.length) : -1;
+    if (toolEnableStart < 0 || duplicateToolEnableStart >= 0) {
+      throw new Error(`expected exactly one legacy tool-enablement storage block; found ${toolEnableStart < 0 ? 0 : 2}`);
+    }
+    const toolEnableEnd = devSource.indexOf(TOOL_ENABLE_STORAGE_END, toolEnableStart + TOOL_ENABLE_STORAGE_START.length);
+    if (toolEnableEnd < 0) throw new Error("legacy tool-enablement storage block end was not found");
+    const legacyToolEnable = devSource.slice(toolEnableStart, toolEnableEnd);
+    for (const required of [
+      'GM_getValue(TOOL_ENABLE_PREFIX + toolId, null)',
+      'if (v === null || v === undefined) return !!enabledByDefault',
+      'return !!v'
+    ]) {
+      if (!legacyToolEnable.includes(required)) throw new Error(`legacy tool-enablement storage contract changed: missing ${required}`);
+    }
+    const toolEnableReplacement = [
+      'function getToolEnabled(toolId, enabledByDefault) {',
+      '  return UW.KWWitchDockPreferences.getToolEnabledFromHost(toolId, enabledByDefault);',
+      '}',
+      '',
+      'async function loadManifestAndTools() {'
+    ].join('\n');
+    devSource = devSource.slice(0, toolEnableStart) + toolEnableReplacement + devSource.slice(toolEnableEnd + TOOL_ENABLE_STORAGE_END.length);
 
     const sectionCollapseStart = devSource.indexOf(SECTION_COLLAPSE_STORAGE_START);
     const duplicateSectionCollapseStart = sectionCollapseStart >= 0 ? devSource.indexOf(SECTION_COLLAPSE_STORAGE_START, sectionCollapseStart + SECTION_COLLAPSE_STORAGE_START.length) : -1;
@@ -599,7 +635,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main preference-store, and section preference ownership have moved to bootstrap-hosted GitHub components while
+    // CSS, modal, bone-HUD, main/section preferences, and tool-enablement persistence ownership have moved to bootstrap-hosted GitHub components while
     // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
