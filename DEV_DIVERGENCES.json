@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Architecture work on wd/10-modular-bootstrap has completed Stage C presentation extraction: CSS, About/Disclaimer, Booth/media readiness compatibility handoffs, and bone-HUD presentation are live-parity clean with required human gates. Current HeroForge's stale bone detector anchors are tracked separately as #26. Stage D application-shell extraction now begins in bounded units.",
+      "reason": "Issue #10 Stage C presentation extraction is complete. Stage D begins with v1.4.0 moving only the main kw.witchDock.v1 preference store/default/load/save orchestration into a bootstrap-owned module that receives the bounded host storage capability; all shell interaction behavior remains in the Stable-derived core for this slice.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -30,7 +30,8 @@
         "features/core/Witch_Dock_Modals.js",
         "features/booth/Booth_Runtime_Bootstrap.js",
         "tools/Booth.js",
-        "features/core/Witch_Dock_Bone_HUD.js"
+        "features/core/Witch_Dock_Bone_HUD.js",
+        "features/core/Witch_Dock_Preferences.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -54,7 +55,10 @@
         "Bone HUD extraction preserves legacy footer DOM/text, detection candidate/scoring/timing/retry behavior, and copy toast semantics while receiving clipboard access only through the bounded host.",
         "v1.3.9 live automated parity passes: launcher running/error null, bone HUD v0.1.0 configured/initialized, loader 23/23 / 0 failed, one exact baseline footer row, no duplicate/toast symptom.",
         "Current HF.summonCircle is ready but all seven legacy detector anchor paths are missing; this pre-existing functional break is tracked in #26 and does not block architecture parity after human footer visual confirmation.",
-        "v1.3.9 bone HUD human visual parity PASS; Stage C presentation extraction complete."
+        "v1.3.9 bone HUD human visual parity PASS; Stage C presentation extraction complete.",
+        "Task launcher/manifest identify v1.4.0 / build 1.4.0-extracted-main-preferences and witch-dock-preferences v0.1.0 / build 0.1.0-main-store-host.",
+        "kw.witchDock.v1 key/default/first-run/JSON semantics are preserved while raw main-store GM_getValue/GM_setValue access is replaced by bounded host storage wrappers.",
+        "Live gate must prove existing Dock preference state survives update plus a new write survives reload before the next Stage D slice."
       ]
     }
   ],

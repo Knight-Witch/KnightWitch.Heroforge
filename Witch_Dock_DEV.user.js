@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.3.9
+// @version      1.4.0
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.3.9";
+  const DEV_VERSION = "1.4.0";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -38,6 +38,9 @@
   const CORE_BONE_HUD_VERSION = "0.1.0";
   const CORE_BONE_HUD_BUILD = "0.1.0-extracted-bone-hud";
   const CORE_BONE_HUD_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Bone_HUD.js?v=${CORE_BONE_HUD_VERSION}-${CORE_BONE_HUD_BUILD}`;
+  const CORE_PREFERENCES_VERSION = "0.1.0";
+  const CORE_PREFERENCES_BUILD = "0.1.0-main-store-host";
+  const CORE_PREFERENCES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Preferences.js?v=${CORE_PREFERENCES_VERSION}-${CORE_PREFERENCES_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -59,6 +62,10 @@
   ]);
   const BONE_BLOCK_START = 'function initBoneFooterAndDetection() {';
   const BONE_BLOCK_END = '\n\n  function closeAboutModal() {';
+  const PREFS_DECL_START = '  const STORE_KEY = "kw.witchDock.v1";';
+  const PREFS_DECL_END = '\n\n  const state = {';
+  const PREFS_IO_START = '  function loadPrefs() {';
+  const PREFS_IO_END = '\n\n  const prefs = loadPrefs();';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -88,6 +95,11 @@
     coreBoneHudBuild: CORE_BONE_HUD_BUILD,
     coreBoneHudMode: "external-bootstrap-module",
     coreBoneHudApplied: false,
+    corePreferencesUrl: CORE_PREFERENCES_URL,
+    corePreferencesVersion: CORE_PREFERENCES_VERSION,
+    corePreferencesBuild: CORE_PREFERENCES_BUILD,
+    corePreferencesMode: "external-bootstrap-module",
+    corePreferencesApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -245,6 +257,9 @@
     coreBoneHudUrl: state.coreBoneHudUrl,
     coreBoneHudVersion: state.coreBoneHudVersion,
     coreBoneHudBuild: state.coreBoneHudBuild,
+    corePreferencesUrl: state.corePreferencesUrl,
+    corePreferencesVersion: state.corePreferencesVersion,
+    corePreferencesBuild: state.corePreferencesBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -303,16 +318,19 @@
     const styleRequestUrl = `${CORE_STYLES_URL}&kwdev=${nonce}`;
     const modalRequestUrl = `${CORE_MODALS_URL}&kwdev=${nonce}`;
     const boneHudRequestUrl = `${CORE_BONE_HUD_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud] = await Promise.all([
+    const preferencesRequestUrl = `${CORE_PREFERENCES_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
     if (!coreModals) throw new Error("core modal module fetch returned empty source");
     if (!coreBoneHud) throw new Error("core bone HUD module fetch returned empty source");
+    if (!corePreferences) throw new Error("core preferences module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -400,8 +418,66 @@
       contract: "legacy-bone-footer-detection-and-copy"
     });
 
+    state.status = "loading-core-preferences";
+    eval(`${corePreferences}\n//# sourceURL=${CORE_PREFERENCES_URL}`);
+    const preferencesApi = UW.KWWitchDockPreferences;
+    if (!preferencesApi || preferencesApi.version !== CORE_PREFERENCES_VERSION || preferencesApi.build !== CORE_PREFERENCES_BUILD) {
+      throw new Error("external core preferences module did not register the expected API/version");
+    }
+    if (typeof preferencesApi.configure !== "function" || typeof preferencesApi.load !== "function" || typeof preferencesApi.save !== "function" || typeof preferencesApi.getState !== "function") {
+      throw new Error("external core preferences module is missing required methods");
+    }
+    preferencesApi.configure({ storage: PRIVILEGED_HOST.storage });
+    state.corePreferencesApplied = true;
+    UW.KWWitchDockPreferencesInfo = Object.freeze({
+      version: CORE_PREFERENCES_VERSION,
+      build: CORE_PREFERENCES_BUILD,
+      url: CORE_PREFERENCES_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "kw.witchDock.v1-main-preference-store"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
+
+    const prefsDeclStart = devSource.indexOf(PREFS_DECL_START);
+    const duplicatePrefsDeclStart = prefsDeclStart >= 0 ? devSource.indexOf(PREFS_DECL_START, prefsDeclStart + PREFS_DECL_START.length) : -1;
+    if (prefsDeclStart < 0 || duplicatePrefsDeclStart >= 0) {
+      throw new Error(`expected exactly one legacy preference declaration block; found ${prefsDeclStart < 0 ? 0 : 2}`);
+    }
+    const prefsDeclEnd = devSource.indexOf(PREFS_DECL_END, prefsDeclStart + PREFS_DECL_START.length);
+    if (prefsDeclEnd < 0) throw new Error("legacy preference declaration block end was not found");
+    const legacyPrefsDecl = devSource.slice(prefsDeclStart, prefsDeclEnd);
+    for (const required of ["width: 380", "height: 520", "lastOpenAnchored: true", "compactX: 16", "firstRun: false"]) {
+      if (!legacyPrefsDecl.includes(required)) throw new Error(`legacy preference defaults contract changed: missing ${required}`);
+    }
+    const prefsDeclReplacement = [
+      '  const STORE_KEY = UW.KWWitchDockPreferences.storeKey;',
+      '  const DEFAULTS = UW.KWWitchDockPreferences.defaults;',
+      '',
+      '  const state = {'
+    ].join('\n');
+    devSource = devSource.slice(0, prefsDeclStart) + prefsDeclReplacement + devSource.slice(prefsDeclEnd + PREFS_DECL_END.length);
+
+    const prefsIoStart = devSource.indexOf(PREFS_IO_START);
+    const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;
+    if (prefsIoStart < 0 || duplicatePrefsIoStart >= 0) {
+      throw new Error(`expected exactly one legacy preference IO block; found ${prefsIoStart < 0 ? 0 : 2}`);
+    }
+    const prefsIoEnd = devSource.indexOf(PREFS_IO_END, prefsIoStart + PREFS_IO_START.length);
+    if (prefsIoEnd < 0) throw new Error("legacy preference IO block end was not found");
+    const legacyPrefsIo = devSource.slice(prefsIoStart, prefsIoEnd + PREFS_IO_END.length);
+    if ((legacyPrefsIo.split("GM_getValue(STORE_KEY").length - 1) !== 1 || (legacyPrefsIo.split("GM_setValue(STORE_KEY").length - 1) !== 1) {
+      throw new Error("legacy main preference GM storage contract changed");
+    }
+    const prefsIoReplacement = [
+      '  function loadPrefs() { return UW.KWWitchDockPreferences.load(); }',
+      '  function savePrefs(p) { UW.KWWitchDockPreferences.save(p); }',
+      '',
+      '  const prefs = loadPrefs();'
+    ].join('\n');
+    devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
 
     const boneStart = devSource.indexOf(BONE_BLOCK_START);
     const duplicateBoneStart = boneStart >= 0 ? devSource.indexOf(BONE_BLOCK_START, boneStart + BONE_BLOCK_START.length) : -1;
@@ -461,7 +537,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, and bone-HUD ownership have moved to bootstrap-hosted GitHub components while
+    // CSS, modal, bone-HUD, and main preference-store ownership have moved to bootstrap-hosted GitHub components while
     // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 

@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction COMPLETE. v1.3.9 bone HUD extraction passed automated legacy parity + human visual parity; current HeroForge's stale bone anchors remain separate #26. Begin Stage D application-shell extraction in bounded units.
+**Current phase:** issue #10 Stage D application-shell extraction. Stage C is complete. v1.4.0 candidate moves only the main `kw.witchDock.v1` preference store behind the bounded host; shell interactions remain legacy for this slice.
 
 ## Current priorities
 
-1. #10 — begin Stage D application-shell extraction. Diagnose the smallest safe first unit from the contract before editing; keep #26 out of scope.
+1. #10 — validate v1.4.0 / preferences v0.1.0 live persistence parity, including one write + reload survival, then continue Stage D.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -53,6 +53,15 @@
 - Current HeroForge compatibility finding: `HF.summonCircle` is ready but all seven legacy fixed anchor paths are absent; the same legacy detector logic was already stale before extraction. Tracked as #26 for post-refactor repair.
 - Human footer visual parity PASS. Stage C presentation extraction is complete.
 - #26 remains queued after #10 and is not part of the architecture migration.
+
+## v1.4.0 candidate — bounded main preference store
+
+- New `features/core/Witch_Dock_Preferences.js` v0.1.0 / build `0.1.0-main-store-host`.
+- Owns only `kw.witchDock.v1` defaults/load/save through bounded host storage.
+- Core call sites remain `loadPrefs()/savePrefs()` wrappers so drag/resize/minimize/compact/tab logic is unchanged.
+- Section collapse/order and tool enablement storage remain legacy for later slices.
+- Baseline Bridge request: `hf-20260917-wd10-stageD-prefs-baseline-001`.
+- Required live gate: v1.4.0 fresh load, same position/size state, one preference mutation, reload persistence.
 
 ## Protected state
 

@@ -2,6 +2,42 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-017 — Stage D main preference-store extraction candidate
+
+Date: 2026-09-17
+
+### Protected behavior
+
+- Storage key remains exactly `kw.witchDock.v1`.
+- Defaults remain x/y null, 380x520, open/not minimized, remembered last-open values, activeTab null, compactX 16, compactY null, firstRun false.
+- Legacy load behavior remains: missing/falsy/invalid/non-object data -> defaults + firstRun true; valid object -> defaults merged with stored object + firstRun false.
+- Legacy save behavior remains JSON stringify to the same userscript storage namespace with errors swallowed by the core wrapper.
+- No shell interaction ownership moves in this candidate.
+
+### Static evidence
+
+- Preferences module v0.1.0 parses and receives only bounded `storage.get/storage.set`; it contains no raw `GM_getValue` / `GM_setValue`.
+- Launcher v1.4.0 parses and fetches core/CSS/modals/bone/preferences concurrently.
+- Guarded transform requires one exact legacy preference declaration block and one exact main preference IO block before replacing them with wrappers to `KWWitchDockPreferences`.
+- Full candidate CSS -> preferences -> bone -> modal -> manifest transform parses.
+- Main-store raw `GM_getValue(STORE_KEY...)` / `GM_setValue(STORE_KEY...)` calls are absent after transformation.
+- Manifest-loaded module count remains 23; preferences is bootstrap-owned, not another normal module.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.0 and manually refresh HeroForge.
+2. Confirm launcher running/error null, preferences v0.1.0 configured, loader 23/23 / 0 failed.
+3. Confirm the pre-existing Dock position/size/open state survives the update/reload.
+4. Exercise one normal preference write (bounded move/resize/minimize cycle) and confirm `KWWitchDockPreferences.getState()` records saves with no error.
+5. Reload once and confirm the changed preference survives through the same `kw.witchDock.v1` store.
+6. Confirm compact/minimize/tabs and unrelated modal/Booth behavior show no regression.
+7. Human visual gate only if the shell visibly differs; otherwise this is persistence/behavioral, not a redesign.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap preference ownership and registry changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-016 — Bone HUD/detection extraction candidate
 
 Date: 2026-09-17

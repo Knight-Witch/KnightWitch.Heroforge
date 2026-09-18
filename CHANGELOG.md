@@ -2,6 +2,27 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-017 — Begin Stage D with bounded main preference store
+
+Date: 2026-09-17
+
+### Candidate
+
+- Stage C is complete after v1.3.9 bone-footer human visual parity PASS.
+- Dev launcher -> v1.4.0 / build `1.4.0-extracted-main-preferences`.
+- Added `features/core/Witch_Dock_Preferences.js`, registry id `witch-dock-preferences`, v0.1.0 / build `0.1.0-main-store-host`.
+- Moves only `kw.witchDock.v1` load/save/default orchestration out of the Stable-derived core and routes storage through the existing bounded host `storage.get/storage.set` capability.
+- Preserves the exact storage key, defaults, JSON serialization, first-run fallback semantics, and existing mutable `prefs` object used by drag/resize/minimize/tab behavior.
+- Core wrappers keep `loadPrefs()` / `savePrefs()` call sites unchanged; no drag/resize/minimize/compact/tab/section/undo/redo behavior moved in this slice.
+- Existing section-collapse/order and manifest tool-enable storage are intentionally still legacy responsibilities for later bounded slices.
+- Baseline before change: Dock open at left 368px / top 157px, width ~662px / height ~916px; compact launcher hidden; control set unchanged.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+- Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap preference ownership and registry changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-016 — Extract bone HUD/detection behind bounded bootstrap module
 
 Date: 2026-09-17
