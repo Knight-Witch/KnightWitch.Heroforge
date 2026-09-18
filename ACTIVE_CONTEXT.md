@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage C presentation extraction. v1.3.8 modal human gate + real 4K capture are PASS; Booth/media handoff is PASS. v1.3.9 now extracts bone HUD/detection behind a bounded bootstrap module.
+**Current phase:** issue #10 Stage C presentation extraction. v1.3.9 bone HUD extraction has automated legacy-parity PASS; current HeroForge broke the legacy detector anchors independently (#26). Human footer visual parity is the remaining gate for this slice.
 
 ## Current priorities
 
-1. #10 — validate v1.3.9 / bone HUD v0.1.0 live parity: footer DOM, actual bone detection, clipboard copy/toast, loader 23/23, and human visual parity.
+1. #10 — complete v1.3.9 bone HUD human visual parity, then continue Stage C. Functional bone detection repair is separated to #26 after the refactor.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -49,7 +49,9 @@
 - Bone copy now receives only bounded host clipboard capability; the extracted module contains no raw `GM_setClipboard`.
 - Launcher fetches the bone module in parallel with core/CSS/modals and replaces the exact legacy bone + script-meta block with a thin wrapper.
 - Baseline Bridge request: `hf-20260917-wd10-bone-baseline-001`.
-- Required next gate: fixed-name v1.3.9 update, manual refresh past HeroForge splash, actual bone click + copy test, visual parity.
+- Live automated parity PASS: v1.3.9 running/error-null, module v0.1.0 applied, loader 23/23 / 0 failed, exact baseline footer DOM/text/layout preserved.
+- Current HeroForge compatibility finding: `HF.summonCircle` is ready but all seven legacy fixed anchor paths are absent; the same legacy detector logic was already stale before extraction. Tracked as #26 for post-refactor repair.
+- Remaining gate for this extraction slice: human footer visual parity only.
 
 ## Protected state
 

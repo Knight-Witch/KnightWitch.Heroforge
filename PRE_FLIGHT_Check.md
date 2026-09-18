@@ -26,10 +26,18 @@ Date: 2026-09-17
 1. Update fixed-name Dev install to v1.3.9 and manually refresh past HeroForge's promotional splash.
 2. Confirm launcher running/error null, bone module v0.1.0 configured/initialized, loader 23/23 / 0 failed.
 3. Confirm one bone row and exact baseline footer text/layout; no duplicate row/toast/listener symptom.
-4. Click a known body bone and confirm the HUD detects a `*_bind_jnt` bone name.
-5. Click copy and confirm clipboard receives that exact bone name and the `Copied bone name` toast appears.
-6. Retry/failure behavior remains available; no change to Dock hotkey, undo/redo, modal, Booth/media, drag/minimize, or storage behavior.
-7. Human visual gate: bone footer looks unchanged.
+4. Compare current detector readiness against the legacy source contract. If current HeroForge no longer satisfies the legacy anchors, record that as a separate compatibility bug rather than expanding #10.
+5. Confirm no extraction-specific duplicate row/listener/toast symptom and preserve retry/failure behavior.
+6. Human visual gate: bone footer looks unchanged.
+
+### Live result
+
+- Launcher v1.3.9: running / error null; bone module v0.1.0 configured+initialized; loader 23/23 / 0 failed in 504 ms.
+- One bone row with exact pre-extraction idle text/layout and disabled copy button; no toast present.
+- `HF.summonCircle` exists and reports ready, but every legacy anchor candidate used by both Stable-derived core and extracted module is absent on current HeroForge.
+- Detector therefore remains stopped/unattached exactly because the preserved legacy candidate builder returns no paths. This is not extraction-caused.
+- Opened #26 for post-refactor reconstruction of a current stable bone-selection seam.
+- Remaining #10 gate for this slice is human visual confirmation of footer parity.
 
 **Runtime/module/manifest/public behavior changed:** task-branch launcher/bootstrap bone-HUD ownership and registry changed; public Stable unchanged.
 
