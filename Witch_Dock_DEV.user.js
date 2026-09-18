@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.4
+// @version      1.4.5
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.4";
+  const DEV_VERSION = "1.4.5";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -44,8 +44,8 @@
   const CORE_REGISTRY_VERSION = "0.1.0";
   const CORE_REGISTRY_BUILD = "0.1.0-tab-tool-state-containers";
   const CORE_REGISTRY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Registry.js?v=${CORE_REGISTRY_VERSION}-${CORE_REGISTRY_BUILD}`;
-  const CORE_SHELL_VERSION = "0.1.0";
-  const CORE_SHELL_BUILD = "0.1.0-main-root-dom";
+  const CORE_SHELL_VERSION = "0.2.0";
+  const CORE_SHELL_BUILD = "0.2.0-main-and-compact-dom";
   const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
@@ -81,6 +81,8 @@
   const REGISTRY_STATE_BLOCK = '    tabs: new Map(),\n    toolsById: new Map(),\n    pending: [],';
   const SHELL_ROOT_START = '    state.root = el("div", { id: "kwWitchDock" }, [';
   const SHELL_ROOT_END = '\n\n    initBoneFooterAndDetection();';
+  const COMPACT_DOM_START = '    state.compact = el("div", { id: "kwWDCompact", title: "Open Witch Dock", onpointerdown: startCompactDrag }, [';
+  const COMPACT_DOM_END = '\n    state.compactExpandBtn = null;';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -524,7 +526,7 @@
     if (!shellApi || shellApi.version !== CORE_SHELL_VERSION || shellApi.build !== CORE_SHELL_BUILD) {
       throw new Error("external core shell module did not register the expected API/version");
     }
-    if (typeof shellApi.createRoot !== "function" || typeof shellApi.getState !== "function") {
+    if (typeof shellApi.createRoot !== "function" || typeof shellApi.createCompact !== "function" || typeof shellApi.getState !== "function") {
       throw new Error("external core shell module is missing required methods");
     }
     state.coreShellApplied = true;
@@ -623,6 +625,34 @@
       '    state.closeBtn = dockShell.closeBtn;'
     ].join('\n');
     devSource = devSource.slice(0, shellRootStart) + shellRootReplacement + devSource.slice(shellRootEnd);
+
+    const compactDomStart = devSource.indexOf(COMPACT_DOM_START);
+    const duplicateCompactDomStart = compactDomStart >= 0 ? devSource.indexOf(COMPACT_DOM_START, compactDomStart + COMPACT_DOM_START.length) : -1;
+    if (compactDomStart < 0 || duplicateCompactDomStart >= 0) {
+      throw new Error(`expected exactly one legacy compact-DOM block; found ${compactDomStart < 0 ? 0 : 2}`);
+    }
+    const compactDomEnd = devSource.indexOf(COMPACT_DOM_END, compactDomStart + COMPACT_DOM_START.length);
+    if (compactDomEnd < 0) throw new Error("legacy compact-DOM block end was not found");
+    const legacyCompactDom = devSource.slice(compactDomStart, compactDomEnd);
+    for (const required of [
+      'id: "kwWDCompact"',
+      'title: "Open Witch Dock"',
+      'onpointerdown: startCompactDrag',
+      'id: "kwWDCompactIcon"',
+      'src: COMPACT_EMBLEM_URL',
+      'alt: "Witch Dock"',
+      'draggable: "false"'
+    ]) {
+      if (!legacyCompactDom.includes(required)) throw new Error(`legacy compact-DOM contract changed: missing ${required}`);
+    }
+    const compactDomReplacement = [
+      '    state.compact = UW.KWWitchDockShell.createCompact({',
+      '      el,',
+      '      emblemUrl: COMPACT_EMBLEM_URL,',
+      '      onPointerDown: startCompactDrag',
+      '    });'
+    ].join('\n');
+    devSource = devSource.slice(0, compactDomStart) + compactDomReplacement + devSource.slice(compactDomEnd);
 
     const prefsIoStart = devSource.indexOf(PREFS_IO_START);
     const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;

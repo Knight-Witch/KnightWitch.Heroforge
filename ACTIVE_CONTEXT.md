@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.4 main Dock root DOM factory is live-PASS. Next bounded slice is compact/minimize/layout lifecycle diagnosis; drag/resize/hotkeys/undo-redo remain legacy-owned until separately extracted.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.4 main Dock root DOM factory is live-PASS. v1.4.5 candidate moves only compact-launcher DOM construction into the shell module; compact lifecycle/drag, minimize/close/expand, layout sizing, hotkeys and undo/redo remain legacy-owned.
 
 ## Current priorities
 
-1. #10 — continue Stage D from the v1.4.4 PASS baseline; diagnose compact/minimize/layout lifecycle ownership before editing.
+1. #10 — validate v1.4.5 compact-DOM parity, then continue Stage D.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -139,6 +139,15 @@
 - Baseline evidence `hf-20260918-wd10-v144-shell-baseline-read-001`: root children are Header/Tabs/Body/Footer/BottomResize/CornerResize; controls and tab-frame child IDs match legacy; current rect 382x522 CSS box; compact launcher remains present.
 - Live gate PASS: launcher v1.4.4 running/error-null; shell v0.1.0 applied once with no error; loader 23/23 / 0 failed; exactly one Dock root exists; direct child order, header controls, tab-frame/right controls and body/footer/resizer references match baseline; compact launcher count remains one; rendered root geometry remains exactly 382x522 at the preserved position. Evidence: `hf-20260918-wd10-v144-live-gate-read-001`.
 - No human visual gate is required unless appearance differs.
+
+## v1.4.5 candidate — compact launcher DOM factory
+
+- Diagnosis separated compact DOM construction from compact lifecycle/interaction.
+- `Witch_Dock_Shell.js` advances to v0.2.0 / build `0.2.0-main-and-compact-dom` and adds only `createCompact(...)`.
+- Launcher v1.4.5 / build `1.4.5-compact-dom-factory` guards the exact legacy compact constructor and replaces it with the shell factory while leaving `state.compactExpandBtn`, append-to-body, show/hide/position, click-vs-drag threshold, persistence and expand/close logic unchanged.
+- Baseline `hf-20260918-wd10-v145-compact-baseline-read-001`: one `#kwWDCompact`, title `Open Witch Dock`, one `#kwWDCompactIcon`, 54x54 container, 48x48 icon, inline PNG data URL, alt `Witch Dock`, draggable false, hidden while Dock is open.
+- Required live gate: install/update v1.4.5, confirm shell v0.2.0 applied once; loader 23/23 / 0 failed; one compact launcher/icon with exact baseline attributes/sizes; Dock remains open with compact hidden; then perform one reversible normal Collapse-to-icon -> compact click-open cycle and confirm no duplicate roots/compact nodes and preserved Dock geometry.
+- Dragging the compact launcher is not part of this slice and must not be exercised as a mutation gate.
 
 ## Minimum continuation set
 

@@ -2,11 +2,12 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-shell";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-main-root-dom";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-main-and-compact-dom";
 
   const STATE = {
     createCalls: 0,
+    compactCreateCalls: 0,
     lastError: null
   };
 
@@ -129,12 +130,50 @@
     };
   }
 
+
+  function createCompact(options) {
+    const opts = options && typeof options === "object" ? options : {};
+    const el = opts.el;
+    const emblemUrl = typeof opts.emblemUrl === "string" ? opts.emblemUrl : "";
+    const onPointerDown = opts.onPointerDown;
+
+    if (typeof el !== "function") {
+      STATE.lastError = "missing el helper";
+      throw new Error("Witch Dock Shell requires the legacy el helper.");
+    }
+    if (typeof onPointerDown !== "function") {
+      STATE.lastError = "missing compact pointer handler";
+      throw new Error("Witch Dock Shell requires the compact pointer handler.");
+    }
+    if (!emblemUrl) {
+      STATE.lastError = "missing compact emblem";
+      throw new Error("Witch Dock Shell requires the compact emblem URL.");
+    }
+
+    STATE.compactCreateCalls += 1;
+    STATE.lastError = null;
+
+    return el("div", {
+      id: "kwWDCompact",
+      title: "Open Witch Dock",
+      onpointerdown: onPointerDown
+    }, [
+      el("img", {
+        id: "kwWDCompactIcon",
+        src: emblemUrl,
+        alt: "Witch Dock",
+        draggable: "false"
+      })
+    ]);
+  }
+
   function getState() {
     return {
       featureId: FEATURE_ID,
       version: VERSION,
       build: BUILD,
       createCalls: STATE.createCalls,
+      compactCreateCalls: STATE.compactCreateCalls,
       lastError: STATE.lastError
     };
   }
@@ -145,6 +184,7 @@
     version: VERSION,
     build: BUILD,
     createRoot,
+    createCompact,
     getState
   });
 })();

@@ -2,6 +2,38 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-025 — Compact launcher DOM extraction candidate
+
+Date: 2026-09-18
+
+### Protected behavior
+
+- Preserve one `#kwWDCompact` with title `Open Witch Dock`.
+- Preserve one `#kwWDCompactIcon`, inline emblem data URL, alt `Witch Dock`, draggable false, 48x48 icon inside the existing 54x54 compact button.
+- Preserve `showClosedCompact`, `startCompactDrag`, `closeDock`, `expandFromCompact`, compact position persistence and Dock hotkey behavior unchanged.
+- Preserve main Dock geometry and all loader/storage/tool behavior.
+
+### Static evidence
+
+- Shell v0.2.0 parses and adds only `createCompact()` plus one diagnostic counter.
+- Launcher v1.4.5 parses, validates the expanded shell API, guards the exact compact constructor block and replaces only that constructor.
+- The transformed Stable-derived core parses with legacy compact lifecycle/drag functions untouched.
+- Manifest versions are synchronized; normal module count remains 23.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.5 and reload.
+2. Confirm launcher running/error null; shell v0.2.0 applied once; loader 23/23 / 0 failed.
+3. Confirm one compact node/icon and exact baseline attributes/sizes.
+4. Use the normal Collapse-to-icon control once; confirm main Dock hides and compact appears.
+5. Click the compact launcher once without dragging; confirm main Dock returns, compact hides, geometry is preserved and no duplicate root/compact nodes exist.
+6. Do not drag the compact launcher in this slice.
+
+**Runtime/module/manifest/public behavior changed:** task-branch compact DOM ownership only; public Stable and canonical Dev unchanged.
+
+---
+
 ## PFC-2026-09-18-024 — v1.4.4 main-shell DOM live PASS
 
 Date: 2026-09-18

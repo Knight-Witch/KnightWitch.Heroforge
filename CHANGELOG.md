@@ -2,6 +2,28 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-025 — Externalize compact launcher DOM factory
+
+Date: 2026-09-18
+
+### Diagnosis
+
+- Compact launcher DOM construction is separable from its lifecycle and drag behavior.
+- `showClosedCompact()`, `startCompactDrag()`, `closeDock()`, `expandFromCompact()`, hotkey behavior and compact position persistence remain legacy-owned.
+
+### Candidate
+
+- Dev launcher -> v1.4.5 / build `1.4.5-compact-dom-factory`.
+- `witch-dock-shell` -> v0.2.0 / build `0.2.0-main-and-compact-dom`.
+- Adds only a compact DOM factory using the existing legacy `el()` helper, inline emblem URL and legacy pointerdown callback.
+- Launcher guards and replaces only the legacy compact constructor; append-to-body and all lifecycle consumers remain unchanged.
+- Baseline: one 54x54 `#kwWDCompact`, one 48x48 `#kwWDCompactIcon`, inline PNG data URL, title/alt preserved, draggable false, hidden while Dock is open.
+- Normal manifest-loaded module count remains 23. Checked-in `Witch_Dock.user.js` remains unchanged.
+
+**Runtime/module/manifest/public behavior changed:** task-branch compact DOM ownership and launcher/shell versions changed; public Stable and canonical Dev unchanged.
+
+---
+
 ## DOCK-2026-09-18-024 — Close v1.4.4 main-shell DOM live gate
 
 Date: 2026-09-18
