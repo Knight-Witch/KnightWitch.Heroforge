@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-027 — v1.4.6 geometry live PASS / refactor pause
+
+Date: 2026-09-18
+
+### Gate result
+
+- Launcher v1.4.6: `running`, `error:null`.
+- Shell v0.2.0: one root create + one compact create, no error.
+- Loader: 23/23 / 0 failed.
+- Baseline persisted geometry: 380x520 CSS, x=292, y=845; rendered outer box 382x522.
+- Collapse state: Dock hidden, compact visible, one root/compact/icon, persisted width/height and last-open width/height still 380x520.
+- Reopen state: Dock visible, compact hidden, one root/compact/icon, persisted geometry still 380x520, rendered outer box still 382x522, x/y unchanged.
+- No duplicate-node, loader, shell, or geometry regression remains.
+
+### Required next action
+
+- PAUSE issue #10 for the HF-Chat-Bridge upgrade.
+- Do not perform another refactor extraction or promotion step until explicit resume.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## PFC-2026-09-18-026 — Compact geometry stability candidate
 
 Date: 2026-09-18

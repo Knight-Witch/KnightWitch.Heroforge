@@ -2,6 +2,30 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-027 — Close v1.4.6 geometry gate and pause issue #10
+
+Date: 2026-09-18
+
+### Live PASS
+
+- Launcher v1.4.6 is running with `error:null`.
+- Shell v0.2.0 / build `0.2.0-main-and-compact-dom` remains applied once with no shell error.
+- Loader remains complete at 23 total / 23 enabled / 23 executed / 0 failed.
+- Pre-cycle persisted Dock geometry is exactly 380x520 CSS width/height and last-open width/height; rendered outer box is 382x522 at unchanged x/y.
+- Normal Collapse-to-icon kept the persisted geometry at 380x520 while hiding the Dock and showing the compact launcher.
+- One no-drag compact reopen restored the Dock, hid the compact launcher, preserved one root/compact/icon only, and kept persisted geometry exactly 380x520 with rendered outer box exactly 382x522.
+- The legacy +2 px growth is therefore fixed by the v1.4.6 snapshot correction.
+- Evidence: `hf-20260918-wd10-v146-baseline-read-001`, `hf-20260918-wd10-v146-after-collapse-read-001`, `hf-20260918-wd10-v146-final-read-001`.
+
+### Pause
+
+- Issue #10 is intentionally PAUSED here for the planned HF-Chat-Bridge upgrade.
+- Do not continue Stage D extraction, Stage E cleanup, integration, promotion, or Stable work until explicit resume after the Bridge upgrade.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## DOCK-2026-09-18-026 — Stabilize compact close/open Dock geometry
 
 Date: 2026-09-18

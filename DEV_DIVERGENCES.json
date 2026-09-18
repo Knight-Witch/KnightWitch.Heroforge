@@ -21,8 +21,8 @@
     },
     {
       "issue": 10,
-      "status": "task-branch-active",
-      "reason": "Issue #10 Stage D v1.4.5 compact DOM startup/interaction parity passed, but the close→open gate exposed a pre-existing legacy content-box snapshot drift (+2 px per cycle). v1.4.6 fixes only snapshot geometry math. After v1.4.6 live PASS is recorded, pause issue #10 for the planned HF-Chat-Bridge upgrade until explicitly resumed.",
+      "status": "task-branch-paused",
+      "reason": "Issue #10 Stage D is intentionally paused after v1.4.6 live PASS for the planned HF-Chat-Bridge upgrade. Compact DOM extraction and geometry-stability correction are validated; no further refactor/integration/promotion work should proceed until explicitly resumed.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -89,7 +89,9 @@
         "Test-induced persisted geometry restored to pre-gate 380x520 CSS width/height and last-open width/height, with x/y preserved.",
         "v1.4.6 launcher/manifest identify 1.4.6 / build 1.4.6-compact-geometry-stability; only Dock snapshot width/height math changes.",
         "v1.4.6 live gate must prove one close/open cycle preserves 380x520 CSS prefs and 382x522 rendered outer geometry, with one root/compact/icon and loader 23/23 / 0 failed.",
-        "After v1.4.6 live PASS is recorded, issue #10 is intentionally PAUSED for the HF-Chat-Bridge upgrade until explicit resume."
+        "After v1.4.6 live PASS is recorded, issue #10 is intentionally PAUSED for the HF-Chat-Bridge upgrade until explicit resume.",
+        "v1.4.6 live PASS: baseline 380x520 persisted CSS / 382x522 rendered outer geometry; normal collapse preserved 380x520; no-drag compact reopen restored the Dock with geometry still exactly 380x520 persisted / 382x522 rendered, x/y unchanged, one root/compact/icon and loader 23/23 / 0 failed.",
+        "Issue #10 is intentionally PAUSED after this gate for the HF-Chat-Bridge upgrade; resume only on explicit instruction."
       ]
     }
   ],

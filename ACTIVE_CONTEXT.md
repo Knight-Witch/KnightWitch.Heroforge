@@ -1,15 +1,15 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-17  
+**Updated:** 2026-09-18  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.5 compact DOM startup parity passed, but its close→open gate exposed a pre-existing +2 px legacy geometry drift. v1.4.6 candidate fixes only that snapshot math. After the next completed v1.4.6 live gate, PAUSE issue #10 for the planned HF-Chat-Bridge upgrade; do not continue refactor extraction until explicitly resumed.
+**Current phase:** issue #10 Stage D application-shell extraction is PAUSED for the planned HF-Chat-Bridge upgrade. v1.4.6 compact geometry stability is live-PASS. Do not continue refactor extraction, integration, promotion, or another task slice until explicitly resumed after the Bridge upgrade.
 
 ## Current priorities
 
-1. #10 — validate v1.4.6 compact geometry stability; once PASS is recorded, PAUSE the refactor for the HF-Chat-Bridge upgrade until explicitly resumed.
+1. #10 — PAUSED after v1.4.6 live PASS for the HF-Chat-Bridge upgrade. Resume only on explicit instruction.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -158,14 +158,14 @@
 - Diagnosis confirmed this is legacy lifecycle math, not the v1.4.5 constructor extraction: root is content-box with a border; legacy snapshot stores border-inclusive `getBoundingClientRect().width/height` as future CSS `width/height`, causing +2 px growth.
 - Test-induced persisted width/height and lastOpenWidth/lastOpenHeight were restored from 382x522 to the original 380x520 CSS values through the bounded preferences API; x/y and all other state were preserved. Evidence: `hf-20260918-wd10-v146-geometry-verify-read-001`.
 
-## v1.4.6 candidate — compact close/open geometry stability
+## v1.4.6 live PASS — compact close/open geometry stability
 
 - Dev launcher v1.4.6 / build `1.4.6-compact-geometry-stability`.
 - No shell-module API/version change; compact DOM extraction from v1.4.5 remains intact.
 - Guarded runtime patch changes only `snapshotCurrentDockPositionToPrefs()`: preserve the Dock's computed CSS width/height values instead of copying border-inclusive bounding-box dimensions into future CSS dimensions.
 - Snapshot x/y, anchored-state detection, close/open lifecycle, compact DOM, drag threshold, minimize/expand, size enforcement, persistence owner, loader and public seams remain unchanged.
-- Required live gate: install/update v1.4.6, reload to restored 380x520 persisted CSS baseline, verify rendered outer box 382x522; perform one normal Collapse-to-icon -> no-drag compact reopen cycle; verify persisted CSS geometry remains exactly 380x520, rendered outer box remains 382x522, node counts remain 1/1/1, loader remains 23/23 / 0 failed.
-- After that live gate is recorded PASS, PAUSE issue #10 for the HF-Chat-Bridge upgrade. Do not begin another extraction slice until explicitly resumed.
+- Live gate PASS: postreload baseline was 380x520 persisted CSS geometry / 382x522 rendered outer box with one root/compact/icon, shell v0.2.0 created once and loader 23/23 / 0 failed. Normal Collapse-to-icon preserved 380x520 persisted width/height and last-open dimensions while hiding Dock/showing compact. One no-drag compact reopen restored Dock and hid compact with persisted geometry still exactly 380x520, rendered outer box exactly 382x522, x/y unchanged, node counts 1/1/1 and loader still 23/23 / 0 failed. Evidence: `hf-20260918-wd10-v146-baseline-read-001`, `hf-20260918-wd10-v146-after-collapse-read-001`, `hf-20260918-wd10-v146-final-read-001`.
+- Issue #10 is now PAUSED for the HF-Chat-Bridge upgrade. Do not begin another extraction slice until explicitly resumed.
 
 ## Minimum continuation set
 
