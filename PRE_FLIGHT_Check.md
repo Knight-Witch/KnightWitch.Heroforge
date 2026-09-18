@@ -2,6 +2,30 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-024 — v1.4.4 main-shell DOM live PASS
+
+Date: 2026-09-18
+
+### Gate result
+
+- Launcher v1.4.4: `running`, `error:null`.
+- Shell v0.1.0 / build `0.1.0-main-root-dom`: applied exactly once, no shell error.
+- Loader v0.1.2: complete at 23/23 / 0 failed.
+- One Dock root only; exact root child order preserved.
+- Header controls and tab-frame/right control structure match baseline.
+- Body/footer/bottom-resizer/corner-resizer refs remain present.
+- Compact launcher remains present exactly once.
+- Rendered root box remains 382x522 at the preserved baseline position.
+- No human visual gate required because the automated DOM and geometry parity checks matched exactly.
+
+### Next action
+
+- Diagnose compact/minimize/layout lifecycle only. Do not broaden into drag/resize or hotkey/undo-redo extraction.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## PFC-2026-09-18-023 — Main-shell DOM factory extraction candidate
 
 Date: 2026-09-18

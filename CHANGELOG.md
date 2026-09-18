@@ -2,6 +2,31 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-024 — Close v1.4.4 main-shell DOM live gate
+
+Date: 2026-09-18
+
+### Live PASS
+
+- Dev launcher v1.4.4 is running with `error:null`.
+- `witch-dock-shell` v0.1.0 / build `0.1.0-main-root-dom` is applied exactly once; shell diagnostics report one create call and no error.
+- Loader remains complete at 23 total / 23 enabled / 23 started / 23 fetched / 23 executed / 0 failed.
+- Exactly one `#kwWitchDock` root exists.
+- Direct child order remains Header, Tabs, Body, Footer, Bottom Resize, Corner Resize.
+- Header controls remain About, Minimize/Expand, Collapse-to-icon with unchanged ids/text/titles/classes.
+- Tab frame remains Left/Shade/Right with unchanged cue, Undo and Redo controls.
+- Body/footer and both resizer references remain present; compact launcher count remains one.
+- Rendered root geometry remains exactly the baseline 382x522 box at the preserved position.
+- Evidence: `hf-20260918-wd10-v144-live-gate-read-001`.
+
+### Next bounded slice
+
+- Diagnose compact/minimize/layout lifecycle ownership before editing. Keep drag/resize and hotkey/undo-redo behavior isolated until their own bounded extraction.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## DOCK-2026-09-18-023 — Externalize main Dock root DOM factory
 
 Date: 2026-09-18

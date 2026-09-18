@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.3 registry backing-container extraction is live-PASS. v1.4.4 candidate externalizes only the main Dock root DOM factory; positioning, sizing, compact mode, drag/resize/minimize, hotkeys, undo/redo, tabs/tools/sections and public seams remain legacy-owned.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.4 main Dock root DOM factory is live-PASS. Next bounded slice is compact/minimize/layout lifecycle diagnosis; drag/resize/hotkeys/undo-redo remain legacy-owned until separately extracted.
 
 ## Current priorities
 
-1. #10 — validate v1.4.4 main-shell DOM parity, then continue Stage D.
+1. #10 — continue Stage D from the v1.4.4 PASS baseline; diagnose compact/minimize/layout lifecycle ownership before editing.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -130,14 +130,14 @@
 - Live gate PASS: launcher v1.4.3 running/error-null; registry v0.1.0 applied; loader 23/23 / 0 failed; registry reports 6 tabs / 9 tools / 0 pending; rendered order remains Body Editor, Pose(active), Decals, Booth, JSON, Utilities; nine mounted tool IDs and 12 sections match baseline; registerTool/ensureDock/downloadBlob remain functions. Evidence: `hf-20260918-wd10-v143-live-gate-read-001`.
 - Moving task-branch launcher/module skew remains a separate confirmed Stage E hardening requirement.
 
-## v1.4.4 candidate — main Dock root DOM factory
+## v1.4.4 live PASS — main Dock root DOM factory
 
 - Diagnosis isolated the smallest safe shell seam: the main `#kwWitchDock` root tree only.
 - New `features/core/Witch_Dock_Shell.js` v0.1.0 / build `0.1.0-main-root-dom` creates the existing header, title/disclaimer controls, About/minimize/close controls, tab frame, undo/redo controls, body/footer and bottom/corner resize handles using the existing legacy `el()` helper plus injected legacy callbacks.
 - Launcher v1.4.4 / build `1.4.4-main-shell-dom` fetches/validates the shell module and guards the exact legacy root-construction + state-ref assignment block before replacing only that block.
 - Position/size application, compact launcher DOM, minimize/close/expand behavior, main/compact drag, resize logic, active-tab logic, hotkeys, undo/redo implementation, tabs/tools/sections, registry containers and public `WitchDock` seams remain unchanged.
 - Baseline evidence `hf-20260918-wd10-v144-shell-baseline-read-001`: root children are Header/Tabs/Body/Footer/BottomResize/CornerResize; controls and tab-frame child IDs match legacy; current rect 382x522 CSS box; compact launcher remains present.
-- Required live gate: install/update v1.4.4, confirm shell v0.1.0 applied once, launcher running/error-null, loader 23/23 / 0 failed, exact root child/control/tab-frame IDs preserved, current shell geometry/prefs remain normal, compact launcher remains present, and no duplicate Dock root is created.
+- Live gate PASS: launcher v1.4.4 running/error-null; shell v0.1.0 applied once with no error; loader 23/23 / 0 failed; exactly one Dock root exists; direct child order, header controls, tab-frame/right controls and body/footer/resizer references match baseline; compact launcher count remains one; rendered root geometry remains exactly 382x522 at the preserved position. Evidence: `hf-20260918-wd10-v144-live-gate-read-001`.
 - No human visual gate is required unless appearance differs.
 
 ## Minimum continuation set
