@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.1 section collapse/order persistence is live-PASS. v1.4.2 candidate centralizes the existing tool-enablement storage contract in the preferences module while preserving bootstrap/page/Utilities precedence and mirror semantics.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.2 tool-enablement persistence is live-PASS. Next bounded slice is registry/application-shell ownership diagnosis; the moving task-branch bootstrap skew observed during the v1.4.2 install is a confirmed Stage E hardening requirement.
 
 ## Current priorities
 
-1. #10 — validate v1.4.2 tool-enablement persistence parity, then continue Stage D application-shell extraction.
+1. #10 — continue Stage D application-shell extraction from the now-PASS v1.4.2 baseline; diagnose tab/tool/section registry ownership before editing.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -73,15 +73,16 @@
 - Booth was restored expanded through the same normal header click; bounded write diagnostics remained error-free.
 - Evidence: `hf-20260917-wd10-v141-collapse-readback-001`, `hf-20260917-wd10-v141-postreload-001`, `hf-20260917-wd10-v141-restore-readback-001`.
 
-## v1.4.2 candidate — tool-enablement persistence
+## v1.4.2 live PASS — tool-enablement persistence
 
-- Dev launcher v1.4.2 / build `1.4.2-tool-enablement-preferences`.
-- Preferences v0.3.0 / build `0.3.0-tool-enablement-store`.
-- Module loader v0.1.2 / build `0.1.2-preferences-enablement-read`; Utilities registry v1.2.2.
-- Preserves the existing three-path contract exactly: initial bootstrap reads Tampermonkey storage only; module loader reads page localStorage only; Utilities reads page localStorage first then Tampermonkey fallback and writes both stores.
-- Only persistence ownership moves. Manifest scheduling, module execution order/concurrency, utility enable/disable behavior, and public registration remain unchanged.
-- Baseline: loader 23/23 / 0 failed; `expanded-ui-scroll-guards` and `hf-ui-slot-bridge` page keys are `"true"` and both Utilities toggles are checked/enabled; module-loader page key is absent.
-- Required live gate: install v1.4.2, prove startup parity, toggle one reversible Utility OFF/ON through normal UI and verify both preference write diagnostics plus page key, then reload once to prove loader/Utility persistence semantics.
+- Dev launcher v1.4.2 / build `1.4.2-tool-enablement-preferences`; preferences v0.3.0; module loader v0.1.2; Utilities registry v1.2.2.
+- Initial clean startup: launcher running/error-null, loader 23 enabled/started/fetched/executed, 0 failed, both Utility page keys `"true"`.
+- Normal Decals Scroll Guards checkbox OFF: page key became `"false"`, preferences recorded one page write + one host write with `lastError:null`, live scroll-guard style/classes were removed.
+- Reload while OFF: loader remained complete with 23 total / 22 enabled+executed / 0 failed; only `expanded-ui-scroll-guards` was `disabled`; Utilities restored its checkbox OFF.
+- Normal checkbox ON: page key returned `"true"`, mirrored page+host write diagnostics incremented, then async live re-enable restored the scroll-guard API/style and `Enabled for this session.` status.
+- Final reload restored 23/23 / 0 failed with the Utility ON and page key `"true"`.
+- Evidence: `hf-20260917-wd10-v142-scrollguards-off-read-001`, `hf-20260917-wd10-v142-off-postreload-read-001`, `hf-20260917-wd10-v142-scrollguards-on-read-001`, `hf-20260917-wd10-v142-scrollguards-on-settle-read-001`, `hf-20260917-wd10-v142-final-snapshot-read-001`.
+- Confirmed bootstrap hardening finding: before the cache-busted v1.4.2 install took effect, installed launcher v1.4.1 fetched the moving task branch's newer preferences v0.3.0 and rejected it against its v0.2.0 expectation. Stage E must remove this launcher/module skew hazard with an immutable or otherwise compatibility-safe bootstrap source strategy; do not paper over it by weakening current module validation without a deliberate contract.
 
 ## Protected state
 

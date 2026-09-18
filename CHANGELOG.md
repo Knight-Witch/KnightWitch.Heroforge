@@ -2,6 +2,29 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-020 — Close v1.4.2 tool-enablement live gate
+
+Date: 2026-09-18
+
+### Live PASS
+
+- v1.4.2 launcher running / error null; preferences v0.3.0 configured; loader v0.1.2 started clean at 23/23 / 0 failed.
+- Decals Scroll Guards OFF through the normal Utilities checkbox wrote `"false"` to `kw.witchDock.toolEnabled.expanded-ui-scroll-guards`, recorded one preference page write + one host write, and disabled the live scroll-guard style/classes.
+- Reload while OFF produced 23 total / 22 enabled+executed / 0 failed; only `expanded-ui-scroll-guards` was marked `disabled`; Utilities restored the checkbox OFF.
+- Normal checkbox ON restored page key `"true"`, mirrored page+host writes, and after async settle restored the scroll-guard API/style/status.
+- Final reload restored 23/23 / 0 failed, checkbox ON, page key `"true"`.
+- Evidence: `hf-20260917-wd10-v142-scrollguards-off-read-001`, `hf-20260917-wd10-v142-off-postreload-read-001`, `hf-20260917-wd10-v142-scrollguards-on-read-001`, `hf-20260917-wd10-v142-scrollguards-on-settle-read-001`, `hf-20260917-wd10-v142-final-snapshot-read-001`.
+
+### Confirmed bootstrap hardening finding
+
+- During installation, the page was still executing launcher v1.4.1 while its branch-relative preferences URL fetched current v0.3.0 source; v1.4.1 correctly rejected that newer build against its v0.2.0 expectation.
+- A cache-busted v1.4.2 userscript install plus reload resolved the immediate mismatch.
+- This is not a v1.4.2 preference API defect. It is a moving-task-branch bootstrap source skew hazard and remains an explicit issue #10 Stage E cleanup requirement.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit; task-branch live evidence/routing only.
+
+---
+
 ## DOCK-2026-09-17-019 — Centralize tool-enablement persistence without changing precedence
 
 Date: 2026-09-17

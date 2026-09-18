@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D v1.4.1 section collapse/order persistence is live-PASS. v1.4.2 moves the existing tool-enablement persistence contract behind the preferences module while preserving the exact legacy split: bootstrap host-only read, manifest-module page-only read, Utilities page-first/host-fallback read plus mirrored page+host writes.",
+      "reason": "Issue #10 Stage D v1.4.2 tool-enablement persistence is live-PASS with exact bootstrap/page/Utilities precedence and mirrored writes preserved. Stage D continues with registry/application-shell ownership diagnosis. A confirmed moving-branch bootstrap skew remains queued inside #10 for Stage E hardening: an older installed launcher can fetch newer incompatible task-branch bootstrap modules before its own userscript update takes effect.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -69,7 +69,9 @@
         "Task launcher/manifest identify v1.4.2 / build 1.4.2-tool-enablement-preferences; witch-dock-preferences v0.3.0 / build 0.3.0-tool-enablement-store; witch-dock-module-loader v0.1.2 / build 0.1.2-preferences-enablement-read; Utilities registry v1.2.2.",
         "Tool-enablement key remains exactly kw.witchDock.toolEnabled.<module-id> and legacy precedence remains exact: bootstrap reads bounded host storage only, module loader reads page storage only, Utilities reads page first then host fallback.",
         "Utilities enablement writes continue mirroring page localStorage string true/false and bounded host boolean writes; no scheduling/order/concurrency behavior moves.",
-        "v1.4.2 live gate must prove 23/23 startup parity plus one reversible normal Utility toggle write and reload persistence before the next Stage D slice."
+        "v1.4.2 live gate must prove 23/23 startup parity plus one reversible normal Utility toggle write and reload persistence before the next Stage D slice.",
+        "v1.4.2 tool-enablement live gate PASS: clean 23/23 / 0 failed baseline; reversible Decals Scroll Guards OFF persisted as the only disabled module across reload at 22/22 / 0 failed; mirrored page+host writes were proven; ON restore returned the final startup to 23/23 / 0 failed.",
+        "Confirmed bootstrap skew is retained as an issue #10 Stage E hardening requirement: moving task-branch bootstrap source URLs must not allow an older installed launcher to ingest newer incompatible module content."
       ]
     }
   ],

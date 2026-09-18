@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-020 — v1.4.2 tool-enablement live PASS
+
+Date: 2026-09-18
+
+### Gate result
+
+- Launcher v1.4.2: `running`, `error:null`.
+- Preferences v0.3.0: configured, no tool-enablement errors.
+- Loader v0.1.2 clean baseline/final: 23 total, 23 enabled, 23 started, 23 fetched, 23 executed, 0 failed.
+- OFF persistence test: normal Decals Scroll Guards checkbox produced exact page key `"false"`, one page + one host preference write, live disable, then reload with 22 enabled/executed, 0 failed and only that module disabled.
+- ON restore test: normal checkbox produced exact page key `"true"`, one page + one host write, async live API/style restoration, then final reload at 23/23 / 0 failed.
+- No human visual gate required; this slice moved persistence ownership only and the Utility control/state behavior remained normal.
+
+### Follow-up requirement retained
+
+- The pre-update v1.4.1 launcher/newer-v0.3.0 preferences mismatch proves branch-relative bootstrap payloads can skew against an older installed launcher.
+- Treat this as issue #10 Stage E bootstrap/orchestration hardening. Preserve strict module contracts while making launcher/runtime source identity immutable or otherwise compatibility-safe.
+- Do not alter Stable or canonical Dev for this finding during task-branch Stage D work.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## PFC-2026-09-17-019 — Tool-enablement persistence extraction candidate
 
 Date: 2026-09-17
