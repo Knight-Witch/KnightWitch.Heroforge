@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-preferences";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-main-store-host";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-section-state-host";
   const STORE_KEY = "kw.witchDock.v1";
   const DEFAULTS = Object.freeze({
     x: null,
@@ -31,6 +31,12 @@
     lastLoadFirstRun: null,
     lastLoaded: null,
     lastSaved: null,
+    sectionCollapsedReads: 0,
+    sectionCollapsedWrites: 0,
+    sectionOrderReads: 0,
+    sectionOrderWrites: 0,
+    lastSectionKey: null,
+    lastSectionOrderKey: null,
     lastError: null
   };
 
@@ -100,6 +106,74 @@
     }
   }
 
+
+  function sectionCollapsedKey(toolId, sectionId) {
+    return `kw.witchDock.ui.${toolId}.${sectionId}.collapsed`;
+  }
+
+  function getSectionCollapsed(toolId, sectionId, defaultCollapsed) {
+    const key = sectionCollapsedKey(toolId, sectionId);
+    STATE.sectionCollapsedReads += 1;
+    STATE.lastSectionKey = key;
+    try {
+      const value = requireStorage().get(key, null);
+      STATE.lastError = null;
+      if (value === null || value === undefined) return !!defaultCollapsed;
+      return !!value;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "section collapsed read failed");
+      return !!defaultCollapsed;
+    }
+  }
+
+  function setSectionCollapsed(toolId, sectionId, collapsed) {
+    const key = sectionCollapsedKey(toolId, sectionId);
+    STATE.lastSectionKey = key;
+    try {
+      requireStorage().set(key, !!collapsed);
+      STATE.sectionCollapsedWrites += 1;
+      STATE.lastError = null;
+      return true;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "section collapsed write failed");
+      return false;
+    }
+  }
+
+  function sectionOrderKey(toolId) {
+    return `kw.witchDock.sectionOrder.${toolId}`;
+  }
+
+  function getSectionOrder(toolId) {
+    const key = sectionOrderKey(toolId);
+    STATE.sectionOrderReads += 1;
+    STATE.lastSectionOrderKey = key;
+    try {
+      const raw = requireStorage().get(key, null);
+      STATE.lastError = null;
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "section order read failed");
+      return [];
+    }
+  }
+
+  function setSectionOrder(toolId, order) {
+    const key = sectionOrderKey(toolId);
+    STATE.lastSectionOrderKey = key;
+    try {
+      requireStorage().set(key, JSON.stringify(order));
+      STATE.sectionOrderWrites += 1;
+      STATE.lastError = null;
+      return true;
+    } catch (error) {
+      STATE.lastError = error && error.message ? error.message : String(error || "section order write failed");
+      return false;
+    }
+  }
+
   function getState() {
     return {
       featureId: FEATURE_ID,
@@ -112,6 +186,12 @@
       lastLoadFirstRun: STATE.lastLoadFirstRun,
       lastLoaded: clone(STATE.lastLoaded),
       lastSaved: clone(STATE.lastSaved),
+      sectionCollapsedReads: STATE.sectionCollapsedReads,
+      sectionCollapsedWrites: STATE.sectionCollapsedWrites,
+      sectionOrderReads: STATE.sectionOrderReads,
+      sectionOrderWrites: STATE.sectionOrderWrites,
+      lastSectionKey: STATE.lastSectionKey,
+      lastSectionOrderKey: STATE.lastSectionOrderKey,
       lastError: STATE.lastError
     };
   }
@@ -126,6 +206,12 @@
     configure,
     load,
     save,
+    sectionCollapsedKey,
+    getSectionCollapsed,
+    setSectionCollapsed,
+    sectionOrderKey,
+    getSectionOrder,
+    setSectionOrder,
     getState
   });
 })();

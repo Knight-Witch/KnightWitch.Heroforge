@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-17-018 — Section preference-store extraction candidate
+
+Date: 2026-09-17
+
+### Protected behavior
+
+- Preserve exact `kw.witchDock.ui.<tool>.<section>.collapsed` and `kw.witchDock.sectionOrder.<tool>` keys.
+- Preserve collapsed default/read-failure behavior, boolean writes, order JSON parse/filter/write behavior, DOM reorder algorithm, drag thresholds, and click semantics.
+- No tool-enable, tab, drag/resize/minimize, undo/redo, or HeroForge integration ownership moves.
+
+### Static evidence
+
+- Preferences v0.2.0 parses, exposes bounded section collapsed/order methods, and contains no raw GM storage calls.
+- Launcher v1.4.1 parses and requires the new preference API methods before evaluating the transformed core.
+- Guarded transforms verify exact legacy collapse/order storage markers before replacing only storage helpers.
+- Full transformed core parses; raw section-collapse/order GM storage calls are absent after transformation.
+- Normal manifest-loaded module count remains 23.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+
+### Required live gate
+
+1. Update fixed-name Dev to v1.4.1 and manually refresh HeroForge.
+2. Confirm launcher running/error null, preferences v0.2.0, loader 23/23 / 0 failed.
+3. Confirm Booth section remains first and expanded on initial load.
+4. Toggle Booth section collapsed once; confirm bounded collapsed-write diagnostic increments with exact key `kw.witchDock.ui.booth-tool.booth.collapsed`.
+5. Manually reload and confirm Booth section starts collapsed; restore it expanded and confirm no error.
+6. Preserve section order and no duplicate/missing section symptoms.
+7. Human visual gate only if section appearance changes; pure persistence extraction should be visually identical.
+
+**Runtime/module/manifest/public behavior changed:** task-branch section preference ownership and module/launcher versions changed; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-17-017 — Stage D main preference-store extraction candidate
 
 Date: 2026-09-17

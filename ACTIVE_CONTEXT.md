@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. Stage C is complete. v1.4.0 candidate moves only the main `kw.witchDock.v1` preference store behind the bounded host; shell interactions remain legacy for this slice.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.0 main store is live-PASS. v1.4.1 candidate extends the same bounded preferences module to section collapse/order state only; section DOM/drag/click behavior remains legacy.
 
 ## Current priorities
 
-1. #10 — v1.4.0 main preference-store extraction PASS; continue Stage D with the next bounded preference/application-shell unit.
+1. #10 — validate v1.4.1 / preferences v0.2.0 section-collapse/order persistence parity, then continue Stage D.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -63,6 +63,14 @@
 - Baseline Bridge request: `hf-20260917-wd10-stageD-prefs-baseline-001`.
 - Live PASS: v1.4.0 running/error-null; loader 23/23; prior geometry preserved; controlled minimize saved successfully; manual reload startup snapshot loaded minimized=true from the same store; Amanda visual check good.
 - Main preference-store extraction is closed.
+
+## v1.4.1 candidate — section collapse/order preferences
+
+- `Witch_Dock_Preferences.js` v0.2.0 / build `0.2.0-section-state-host`.
+- Owns existing section collapsed and section-order persistence through bounded host storage.
+- Core section creation, click handling, pointer drag/reorder algorithm and DOM behavior remain unchanged.
+- Baseline: Booth section id `booth` is first/expanded; 12 observed sections were expanded.
+- Required live gate: toggle Booth collapsed, prove exact bounded key/write, reload persistence, restore expanded.
 
 ## Protected state
 

@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage C is complete. Stage D main preference-store extraction v1.4.0 has passed live persistence validation: existing geometry survived, a normal minimize write persisted through reload via the same kw.witchDock.v1 store, and the user visually confirmed the reloaded Dock looked good. Continue with the next bounded application-shell unit.",
+      "reason": "Issue #10 Stage D main preference-store v1.4.0 is live-PASS. v1.4.1 extends the same bounded preferences module to existing section collapse/order persistence only; section DOM, click, drag/reorder, and unrelated shell behavior remain in the Stable-derived core.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -59,7 +59,10 @@
         "Task launcher/manifest identify v1.4.0 / build 1.4.0-extracted-main-preferences and witch-dock-preferences v0.1.0 / build 0.1.0-main-store-host.",
         "kw.witchDock.v1 key/default/first-run/JSON semantics are preserved while raw main-store GM_getValue/GM_setValue access is replaced by bounded host storage wrappers.",
         "Live gate must prove existing Dock preference state survives update plus a new write survives reload before the next Stage D slice.",
-        "v1.4.0 main preference-store live persistence gate PASS."
+        "v1.4.0 main preference-store live persistence gate PASS.",
+        "Task launcher/manifest identify v1.4.1 / build 1.4.1-section-preferences-host and witch-dock-preferences v0.2.0 / build 0.2.0-section-state-host.",
+        "Section collapse/order keys and legacy fallback/JSON semantics remain exact while raw section GM storage calls are replaced by bounded preference methods.",
+        "Live gate must prove one Booth section collapsed write survives reload and can be restored without section order/DOM regression."
       ]
     }
   ],

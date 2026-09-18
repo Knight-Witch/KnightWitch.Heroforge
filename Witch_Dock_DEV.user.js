@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.0
+// @version      1.4.1
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.0";
+  const DEV_VERSION = "1.4.1";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -38,8 +38,8 @@
   const CORE_BONE_HUD_VERSION = "0.1.0";
   const CORE_BONE_HUD_BUILD = "0.1.0-extracted-bone-hud";
   const CORE_BONE_HUD_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Bone_HUD.js?v=${CORE_BONE_HUD_VERSION}-${CORE_BONE_HUD_BUILD}`;
-  const CORE_PREFERENCES_VERSION = "0.1.0";
-  const CORE_PREFERENCES_BUILD = "0.1.0-main-store-host";
+  const CORE_PREFERENCES_VERSION = "0.2.0";
+  const CORE_PREFERENCES_BUILD = "0.2.0-section-state-host";
   const CORE_PREFERENCES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Preferences.js?v=${CORE_PREFERENCES_VERSION}-${CORE_PREFERENCES_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
@@ -66,6 +66,10 @@
   const PREFS_DECL_END = '\n\n  const state = {';
   const PREFS_IO_START = '  function loadPrefs() {';
   const PREFS_IO_END = '\n\n  const prefs = loadPrefs();';
+  const SECTION_COLLAPSE_STORAGE_START = 'function toolSectionKey(toolId, sectionId) {';
+  const SECTION_COLLAPSE_STORAGE_END = '\n\n  function createSection(toolId, opts) {';
+  const SECTION_ORDER_STORAGE_START = 'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";';
+  const SECTION_ORDER_STORAGE_END = '\n\nfunction saveSectionOrderFromDom(toolId, container) {';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -424,7 +428,16 @@
     if (!preferencesApi || preferencesApi.version !== CORE_PREFERENCES_VERSION || preferencesApi.build !== CORE_PREFERENCES_BUILD) {
       throw new Error("external core preferences module did not register the expected API/version");
     }
-    if (typeof preferencesApi.configure !== "function" || typeof preferencesApi.load !== "function" || typeof preferencesApi.save !== "function" || typeof preferencesApi.getState !== "function") {
+    if (
+      typeof preferencesApi.configure !== "function" ||
+      typeof preferencesApi.load !== "function" ||
+      typeof preferencesApi.save !== "function" ||
+      typeof preferencesApi.getSectionCollapsed !== "function" ||
+      typeof preferencesApi.setSectionCollapsed !== "function" ||
+      typeof preferencesApi.getSectionOrder !== "function" ||
+      typeof preferencesApi.setSectionOrder !== "function" ||
+      typeof preferencesApi.getState !== "function"
+    ) {
       throw new Error("external core preferences module is missing required methods");
     }
     preferencesApi.configure({ storage: PRIVILEGED_HOST.storage });
@@ -478,6 +491,55 @@
       '  const prefs = loadPrefs();'
     ].join('\n');
     devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
+
+    const sectionCollapseStart = devSource.indexOf(SECTION_COLLAPSE_STORAGE_START);
+    const duplicateSectionCollapseStart = sectionCollapseStart >= 0 ? devSource.indexOf(SECTION_COLLAPSE_STORAGE_START, sectionCollapseStart + SECTION_COLLAPSE_STORAGE_START.length) : -1;
+    if (sectionCollapseStart < 0 || duplicateSectionCollapseStart >= 0) {
+      throw new Error(`expected exactly one legacy section-collapse storage block; found ${sectionCollapseStart < 0 ? 0 : 2}`);
+    }
+    const sectionCollapseEnd = devSource.indexOf(SECTION_COLLAPSE_STORAGE_END, sectionCollapseStart + SECTION_COLLAPSE_STORAGE_START.length);
+    if (sectionCollapseEnd < 0) throw new Error("legacy section-collapse storage block end was not found");
+    const legacySectionCollapse = devSource.slice(sectionCollapseStart, sectionCollapseEnd);
+    for (const required of [
+      'kw.witchDock.ui.${toolId}.${sectionId}.collapsed',
+      'GM_getValue(toolSectionKey(toolId, sectionId), null)',
+      'GM_setValue(toolSectionKey(toolId, sectionId), !!collapsed)'
+    ]) {
+      if (!legacySectionCollapse.includes(required)) throw new Error(`legacy section-collapse storage contract changed: missing ${required}`);
+    }
+    const sectionCollapseReplacement = [
+      'function toolSectionKey(toolId, sectionId) { return UW.KWWitchDockPreferences.sectionCollapsedKey(toolId, sectionId); }',
+      '  function getSectionCollapsed(toolId, sectionId, defaultCollapsed) { return UW.KWWitchDockPreferences.getSectionCollapsed(toolId, sectionId, defaultCollapsed); }',
+      '  function setSectionCollapsed(toolId, sectionId, collapsed) { UW.KWWitchDockPreferences.setSectionCollapsed(toolId, sectionId, collapsed); }',
+      '',
+      '  function createSection(toolId, opts) {'
+    ].join('\n');
+    devSource = devSource.slice(0, sectionCollapseStart) + sectionCollapseReplacement + devSource.slice(sectionCollapseEnd + SECTION_COLLAPSE_STORAGE_END.length);
+
+    const sectionOrderStart = devSource.indexOf(SECTION_ORDER_STORAGE_START);
+    const duplicateSectionOrderStart = sectionOrderStart >= 0 ? devSource.indexOf(SECTION_ORDER_STORAGE_START, sectionOrderStart + SECTION_ORDER_STORAGE_START.length) : -1;
+    if (sectionOrderStart < 0 || duplicateSectionOrderStart >= 0) {
+      throw new Error(`expected exactly one legacy section-order storage block; found ${sectionOrderStart < 0 ? 0 : 2}`);
+    }
+    const sectionOrderEnd = devSource.indexOf(SECTION_ORDER_STORAGE_END, sectionOrderStart + SECTION_ORDER_STORAGE_START.length);
+    if (sectionOrderEnd < 0) throw new Error("legacy section-order storage block end was not found");
+    const legacySectionOrder = devSource.slice(sectionOrderStart, sectionOrderEnd);
+    for (const required of [
+      'kw.witchDock.sectionOrder.',
+      'GM_getValue(sectionOrderKey(toolId), null)',
+      'GM_setValue(sectionOrderKey(toolId), JSON.stringify(order))'
+    ]) {
+      if (!legacySectionOrder.includes(required)) throw new Error(`legacy section-order storage contract changed: missing ${required}`);
+    }
+    const sectionOrderReplacement = [
+      'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";',
+      'function sectionOrderKey(toolId) { return UW.KWWitchDockPreferences.sectionOrderKey(toolId); }',
+      'function getSectionOrder(toolId) { return UW.KWWitchDockPreferences.getSectionOrder(toolId); }',
+      'function setSectionOrder(toolId, order) { UW.KWWitchDockPreferences.setSectionOrder(toolId, order); }',
+      '',
+      'function saveSectionOrderFromDom(toolId, container) {'
+    ].join('\n');
+    devSource = devSource.slice(0, sectionOrderStart) + sectionOrderReplacement + devSource.slice(sectionOrderEnd + SECTION_ORDER_STORAGE_END.length);
 
     const boneStart = devSource.indexOf(BONE_BLOCK_START);
     const duplicateBoneStart = boneStart >= 0 ? devSource.indexOf(BONE_BLOCK_START, boneStart + BONE_BLOCK_START.length) : -1;
@@ -537,7 +599,7 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, and main preference-store ownership have moved to bootstrap-hosted GitHub components while
+    // CSS, modal, bone-HUD, main preference-store, and section preference ownership have moved to bootstrap-hosted GitHub components while
     // other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 

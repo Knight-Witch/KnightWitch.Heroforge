@@ -2,6 +2,26 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-17-018 — Route section collapse/order preferences through bounded host
+
+Date: 2026-09-17
+
+### Candidate
+
+- Dev launcher -> v1.4.1 / build `1.4.1-section-preferences-host`.
+- `witch-dock-preferences` -> v0.2.0 / build `0.2.0-section-state-host`.
+- Adds bounded ownership for existing section-collapse keys `kw.witchDock.ui.<tool>.<section>.collapsed` and section-order keys `kw.witchDock.sectionOrder.<tool>`.
+- Exact legacy fallback/serialization semantics are preserved: collapsed state defaults on null/undefined/read failure; section order returns [] on absent/invalid data and filters parsed values to strings; order writes remain JSON.
+- Core `createSection()`, click handling, section drag logic, DOM ordering and drag indicators remain unchanged; only their persistence helpers become thin wrappers.
+- Current Booth baseline before candidate: section `booth` present first and expanded; all 12 observed Dock sections report `data-collapsed="0"`.
+- Tool enablement storage remains legacy and is not part of this slice.
+- Checked-in `Witch_Dock.user.js` remains unchanged.
+- Public Stable and canonical Dev remain untouched.
+
+**Runtime/module/manifest/public behavior changed:** task-branch section preference ownership and module/launcher versions changed; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-17-017 — Begin Stage D with bounded main preference store
 
 Date: 2026-09-17
