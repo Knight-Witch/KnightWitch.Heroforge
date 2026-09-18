@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-022 — v1.4.3 registry-container live PASS
+
+Date: 2026-09-18
+
+### Gate result
+
+- Launcher v1.4.3: `running`, `error:null`.
+- Registry v0.1.0 / build `0.1.0-tab-tool-state-containers`: applied.
+- Registry state after startup: 6 tabs, 9 tools, 0 pending.
+- Loader v0.1.2: complete at 23/23 / 0 failed.
+- Rendered tabs: Body Editor, Pose(active), Decals, Booth, JSON, Utilities.
+- Rendered mounted tool IDs match the nine-tool baseline; 12 sections remain.
+- `registerTool`, `ensureDock`, and `downloadBlob` all remain callable functions.
+- No human visual gate required because this slice moved backing containers only and rendered layout/order matched baseline exactly.
+
+### Next action
+
+- Diagnose shell/layout ownership only. Keep drag/resize/minimize/compact, hotkeys and undo/redo outside the slice until their own bounded extraction.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## PFC-2026-09-18-021 — Registry backing-container extraction candidate
 
 Date: 2026-09-18

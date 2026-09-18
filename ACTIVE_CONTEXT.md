@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction. v1.4.2 tool-enablement persistence is live-PASS. v1.4.3 candidate externalizes only the tab/tool/pending backing containers; all tab DOM, tool mounting, section lifecycle, ordering, drag, sizing and public WitchDock seams remain legacy-owned.
+**Current phase:** issue #10 Stage D application-shell extraction. v1.4.3 registry backing-container extraction is live-PASS. Next bounded slice is shell/layout ownership diagnosis; tab DOM, tool mounting, section lifecycle, drag/resize/minimize/compact behavior, hotkeys and undo/redo remain legacy-owned until separately extracted.
 
 ## Current priorities
 
-1. #10 — validate v1.4.3 registry-container parity, then continue Stage D application-shell extraction.
+1. #10 — continue Stage D from the v1.4.3 PASS baseline; diagnose shell/layout ownership before editing.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -119,7 +119,7 @@
 6. Human visual gate: PASS; About looked normal/unchanged.
 7. Bone HUD/detection extraction is now the active Stage C slice; do not integrate/promote Stable yet.
 
-## v1.4.3 candidate — registry backing-container extraction
+## v1.4.3 live PASS — registry backing-container extraction
 
 - Diagnosis confirmed there is no independent section registry in the current core. Sections are created through `api.ui.createSection(...)`, then discovered from rendered DOM by `finalizeToolSections()`; section collapse/order/drag behavior remains legacy-owned.
 - The actual registry backing state is exactly `state.tabs`, `state.toolsById`, and pre-UI `state.pending`.
@@ -127,7 +127,7 @@
 - Launcher v1.4.3 / build `1.4.3-registry-state-containers` fetches/validates the registry module through the existing bounded bootstrap transport and guards the exact three-allocation legacy state block before redirecting the core state fields to the external containers.
 - `ensureTab()`, `setActiveTab()`, `mountTool()`, `registerTool()`, duplicate replacement, pending flush, tab ordering, tool rendering, section creation/finalization, drag/order behavior, sizing and all public `UW.WitchDock` seams are unchanged.
 - Baseline Bridge evidence `hf-20260918-wd10-v143-registry-baseline-compact-read-001`: loader 23/23 / 0 failed; tab order Body Editor, Pose(active), Decals, Booth, JSON, Utilities; nine mounted tool containers; 12 sections; `registerTool`, `ensureDock`, and `downloadBlob` all functions.
-- Required live gate: install/update v1.4.3, confirm registry module v0.1.0 applied, loader remains 23/23 / 0 failed, registry counts match the rendered Dock, exact tab order/active tab/tool IDs/section count remain unchanged, and public seams remain callable.
+- Live gate PASS: launcher v1.4.3 running/error-null; registry v0.1.0 applied; loader 23/23 / 0 failed; registry reports 6 tabs / 9 tools / 0 pending; rendered order remains Body Editor, Pose(active), Decals, Booth, JSON, Utilities; nine mounted tool IDs and 12 sections match baseline; registerTool/ensureDock/downloadBlob remain functions. Evidence: `hf-20260918-wd10-v143-live-gate-read-001`.
 - Moving task-branch launcher/module skew remains a separate confirmed Stage E hardening requirement.
 
 ## Minimum continuation set

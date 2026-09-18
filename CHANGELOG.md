@@ -2,6 +2,30 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-022 — Close v1.4.3 registry-container live gate
+
+Date: 2026-09-18
+
+### Live PASS
+
+- Dev launcher v1.4.3 is running with `error:null`.
+- `witch-dock-registry` v0.1.0 / build `0.1.0-tab-tool-state-containers` is applied.
+- Loader remains complete at 23 total / 23 enabled / 23 started / 23 fetched / 23 executed / 0 failed.
+- Registry diagnostics report 6 tabs, 9 tools and 0 pending after startup.
+- Rendered visual tab order remains Body Editor, Pose, Decals, Booth, JSON, Utilities with Pose active.
+- Rendered mounted tool IDs remain the same nine baseline tools and section count remains 12.
+- Public `WitchDock.registerTool`, `WitchDock.ensureDock`, and `WitchDock.downloadBlob` remain functions.
+- Registry Map insertion order differs from visual tab order by design because visual order is still owned by the legacy tab reorder logic; this is not a regression.
+- Evidence: `hf-20260918-wd10-v143-live-gate-read-001`.
+
+### Next bounded slice
+
+- Diagnose shell/layout ownership before editing. Do not move resize/drag/minimize/compact/hotkey/undo-redo behavior opportunistically.
+
+**Runtime/module/manifest/public behavior changed:** none in this record-only commit.
+
+---
+
 ## DOCK-2026-09-18-021 — Externalize tab/tool registry backing state
 
 Date: 2026-09-18

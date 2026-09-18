@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D v1.4.2 tool-enablement persistence is live-PASS. v1.4.3 externalizes only the legacy tab/tool/pending backing containers into a bootstrap-owned registry module; DOM creation/mounting, section lifecycle, ordering/drag, sizing, public WitchDock seams and loader behavior remain legacy-owned.",
+      "reason": "Issue #10 Stage D v1.4.3 registry backing-container extraction is live-PASS. Next bounded slice is shell/layout ownership diagnosis; drag/resize/minimize/compact, hotkeys and undo/redo remain legacy-owned until separately extracted.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -75,7 +75,8 @@
         "Confirmed bootstrap skew is retained as an issue #10 Stage E hardening requirement: moving task-branch bootstrap source URLs must not allow an older installed launcher to ingest newer incompatible module content.",
         "v1.4.3 launcher/manifest identify 1.4.3 / build 1.4.3-registry-state-containers and new witch-dock-registry v0.1.0 / build 0.1.0-tab-tool-state-containers.",
         "Registry extraction redirects exactly state.tabs, state.toolsById and state.pending; section DOM lifecycle is explicitly not treated as a registry and remains unchanged.",
-        "Live gate must retain loader 23/23 / 0 failed, six-tab visual order and active tab, nine mounted tool containers, 12 sections, and callable registerTool/ensureDock/downloadBlob seams."
+        "Live gate must retain loader 23/23 / 0 failed, six-tab visual order and active tab, nine mounted tool containers, 12 sections, and callable registerTool/ensureDock/downloadBlob seams.",
+        "v1.4.3 live gate PASS: launcher running/error null; registry v0.1.0 applied; loader 23/23 / 0 failed; registry 6 tabs / 9 tools / 0 pending; rendered six-tab order with Pose active, nine mounted tools and 12 sections preserved; registerTool/ensureDock/downloadBlob remain functions."
       ]
     }
   ],
