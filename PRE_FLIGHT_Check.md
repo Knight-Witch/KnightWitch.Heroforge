@@ -2,6 +2,33 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-030 — v1.4.8 main Dock drag candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- Interactions v0.2.0 parses and retains legacy drag calculations/listener lifecycle.
+- Launcher v1.4.8 parses, pins interactions v0.2.0, requires `startDockDrag`, passes bounded clamp/viewport/prefs helpers, and guards exactly one legacy drag block before replacing it with a thin wrapper.
+- Isolated transformed Stable-derived core parses.
+- Manifest JSON parses; launcher/interactions registry versions/builds are synchronized.
+- No resize, compact-drag, hotkey/undo-redo, CSS/DOM, storage-key, loader, or Stable change is included.
+
+### Baseline
+
+- Start DOM/prefs x=820, y=244.
+- +24/+18 drag -> DOM/prefs x=844, y=262.
+- Inverse drag -> DOM/prefs restored exactly to x=820, y=244.
+- Evidence: `hf-20260919-wd10-v148-drag-baseline-023`.
+
+### Required live gate
+
+Bridge-reload through the Dev auto-host, verify v1.4.8 and interactions v0.2.0, then repeat the reversible drag sequence and require exact DOM/prefs parity plus loader 23/23 / 0 failed.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-029 — v1.4.7 lifecycle extraction live PASS
 
 Date: 2026-09-19

@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-interactions";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-minimize-compact-lifecycle";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-main-dock-drag";
 
   let CONTEXT = null;
   const STATE = {
@@ -11,6 +11,9 @@
     toggleMinimizeCalls: 0,
     closeDockCalls: 0,
     expandFromCompactCalls: 0,
+    startDockDragCalls: 0,
+    dockDragMoveCalls: 0,
+    dockDragEndCalls: 0,
     lastError: null
   };
 
@@ -35,7 +38,8 @@
       getViewport: requireFunction(opts, "getViewport"),
       enforceSizeConstraints: requireFunction(opts, "enforceSizeConstraints"),
       applyMinimizedState: requireFunction(opts, "applyMinimizedState"),
-      showClosedCompact: requireFunction(opts, "showClosedCompact")
+      showClosedCompact: requireFunction(opts, "showClosedCompact"),
+      clamp: requireFunction(opts, "clamp")
     };
 
     STATE.configured = true;
@@ -49,6 +53,61 @@
       throw new Error("Witch Dock Interactions is not configured.");
     }
     return CONTEXT;
+  }
+
+  function startDockDrag(e) {
+    const ctx = requireContext();
+    const { state, prefs } = ctx;
+    STATE.startDockDragCalls += 1;
+
+    if (!state.root || prefs.closed) return;
+    const target = e && e.target;
+    if (target && (target.closest("#kwWDControls") || target.closest("#kwWDResizeHandleCorner") || target.closest("#kwWDResizeHandleBottom"))) return;
+
+    const rect = state.root.getBoundingClientRect();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startLeft = rect.left;
+    const startTop = rect.top;
+
+    state.root.style.right = "";
+    state.root.style.bottom = "";
+    state.root.style.left = `${startLeft}px`;
+    state.root.style.top = `${startTop}px`;
+
+    prefs.x = Math.round(startLeft);
+    prefs.y = Math.round(startTop);
+    ctx.savePrefs(prefs);
+
+    function move(ev) {
+      STATE.dockDragMoveCalls += 1;
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+
+      const { vw, vh } = ctx.getViewport();
+      const w = state.root.getBoundingClientRect().width;
+      const h = state.root.getBoundingClientRect().height;
+
+      const left = ctx.clamp(startLeft + dx, 0, Math.max(0, vw - w));
+      const top = ctx.clamp(startTop + dy, 0, Math.max(0, vh - h));
+
+      state.root.style.left = `${left}px`;
+      state.root.style.top = `${top}px`;
+
+      prefs.x = Math.round(left);
+      prefs.y = Math.round(top);
+      ctx.savePrefs(prefs);
+    }
+
+    function up() {
+      STATE.dockDragEndCalls += 1;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    }
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    STATE.lastError = null;
   }
 
   function toggleMinimize() {
@@ -145,6 +204,9 @@
       toggleMinimizeCalls: STATE.toggleMinimizeCalls,
       closeDockCalls: STATE.closeDockCalls,
       expandFromCompactCalls: STATE.expandFromCompactCalls,
+      startDockDragCalls: STATE.startDockDragCalls,
+      dockDragMoveCalls: STATE.dockDragMoveCalls,
+      dockDragEndCalls: STATE.dockDragEndCalls,
       lastError: STATE.lastError
     };
   }
@@ -155,6 +217,7 @@
     version: VERSION,
     build: BUILD,
     configure,
+    startDockDrag,
     toggleMinimize,
     closeDock,
     expandFromCompact,

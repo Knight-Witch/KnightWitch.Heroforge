@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D ACTIVE. v1.4.7 minimize / close / compact-reopen lifecycle extraction is live-PASS. Next bounded slice is main Dock drag ownership; resize, compact drag mechanics, and hotkey/undo-redo remain legacy-owned until their own gates.
+**Current phase:** issue #10 Stage D ACTIVE. v1.4.7 lifecycle extraction is live-PASS. v1.4.8 is the current bounded candidate: move only main Dock drag ownership into the interaction module; resize, compact drag mechanics, and hotkey/undo-redo remain legacy-owned.
 
 ## Current priorities
 
-1. #10 — ACTIVE. v1.4.7 lifecycle extraction passed; continue Stage D with one bounded interaction slice at a time, starting with main Dock drag.
+1. #10 — ACTIVE. Validate v1.4.8 main Dock drag extraction against the captured v1.4.7 reversible drag baseline before advancing.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -179,6 +179,16 @@
 - Live PASS: auto-host fetched v1.4.7 without a Tampermonkey update; launcher running/error-null; interactions v0.1.0 configured/error-null; loader 23/23 / 0 failed; minimize -> 92px, restore -> 520px, collapse -> compact visible at x=16/y=907, and no-drag compact reopen -> exact 380x520 CSS / 382x522 rendered geometry at x=820/y=244.
 - Interaction module telemetry after the gate: toggleMinimizeCalls=2, closeDockCalls=1, expandFromCompactCalls=1, lastError=null.
 - Evidence: `hf-20260919-wd10-v147-state-021`, `hf-20260919-wd10-v147-cycle-022`.
+
+
+## v1.4.8 candidate — main Dock drag extraction
+
+- `Witch_Dock_Interactions.js` advances to v0.2.0 / build `0.2.0-main-dock-drag`.
+- Moves only `startDockDrag(e)` and its temporary window pointermove/pointerup handlers. It preserves controls/resize-handle exclusion, right/bottom clearing, viewport clamping, per-move x/y persistence, and listener cleanup.
+- Existing shell still binds the header to a thin core wrapper; no DOM/CSS change.
+- Resize corner/bottom, compact pointer drag/click threshold, lifecycle methods, hotkey/undo-redo, tabs/sections, and loader remain unchanged.
+- Baseline: pointer delta +24/+18 moved DOM and prefs 820/244 -> 844/262; inverse drag restored both exactly to 820/244. Evidence: `hf-20260919-wd10-v148-drag-baseline-023`.
+- Required live gate: auto-host v1.4.8, launcher running/error-null, interactions v0.2.0 configured/error-null, loader 23/23 / 0 failed, repeat the reversible drag and require exact DOM/prefs parity plus drag telemetry.
 
 
 ## Minimum continuation set

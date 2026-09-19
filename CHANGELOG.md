@@ -2,6 +2,19 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-030 — v1.4.8 main Dock drag candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.8; interactions module advances to v0.2.0.
+- Main Dock header drag ownership moves behind the existing interaction module with exact legacy exclusions, viewport clamp, x/y writes, and pointer listener cleanup.
+- Resize, compact-drag mechanics, lifecycle behavior, hotkeys/undo-redo, loader contracts, storage keys, and Stable are unchanged.
+- Reversible baseline: 820/244 -> 844/262 for +24/+18 pointer delta, then exact restore to 820/244.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-029 — v1.4.7 lifecycle extraction live PASS
 
 Date: 2026-09-19
