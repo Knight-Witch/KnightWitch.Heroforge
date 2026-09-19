@@ -2,6 +2,30 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-037 — v1.4.11 Dock hotkey live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.11, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- Interactions: v0.5.0 / build `0.5.0-dock-hotkey`, configured=true, lastError=null.
+- Loader: 23/23 / 0 failed.
+- Ctrl+Backquote left Dock open and compact hidden.
+- Plain Backquote closed to compact.
+- Second plain Backquote restored exact 380x520 Dock and hid compact.
+- Telemetry: installDockHotkeyCalls=1, hotkeyToggleCalls=2, hotkeyIgnoredCalls=1.
+- Evidence: `hf-20260919-wd10-v1411-hotkey-gate-039`.
+
+### Next bounded slice
+
+Inspect and extract undo/redo ownership without widening scope.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-036 — v1.4.11 Dock hotkey candidate
 
 Date: 2026-09-19

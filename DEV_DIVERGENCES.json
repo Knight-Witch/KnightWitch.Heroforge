@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is active. v1.4.10 compact drag/click extraction passed. v1.4.11 is the bounded Dock hotkey ownership candidate; undo/redo remains legacy-owned.",
+      "reason": "Issue #10 Stage D is active. v1.4.11 Dock hotkey extraction passed live parity on 2026-09-19. Undo/redo is the next bounded interaction seam.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -111,7 +111,8 @@
         "v1.4.10 live PASS: auto-host delivered the revision, interactions v0.4.0 configured/error-null, loader 23/23 / 0 failed, compact real-drag/inverse/no-drag reopen reproduced the captured baseline exactly with extracted compact telemetry.",
         "v1.4.11 launcher/manifest identify 1.4.11 / build 1.4.11-extracted-dock-hotkey and witch-dock-interactions v0.5.0 / build 0.5.0-dock-hotkey.",
         "Dock hotkey extraction preserves repeat/modifier/editable-target/non-Backquote guards, capture listener, preventDefault, and close/expand dispatch.",
-        "v1.4.11 live gate must preserve Ctrl+Backquote ignore and plain Backquote close/open parity with loader 23/23 / 0 failed."
+        "v1.4.11 live gate must preserve Ctrl+Backquote ignore and plain Backquote close/open parity with loader 23/23 / 0 failed.",
+        "v1.4.11 live PASS: Ctrl+Backquote ignored, plain Backquote close/open parity preserved, interactions v0.5.0 telemetry matched expected 2 toggles + 1 ignored event, loader 23/23 / 0 failed."
       ]
     }
   ],

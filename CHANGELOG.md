@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-037 — v1.4.11 Dock hotkey live PASS
+
+Date: 2026-09-19
+
+- Auto-host delivered v1.4.11 without Tampermonkey intervention.
+- Launcher: running/error-null; interactions v0.5.0 configured/error-null; loader 23/23 / 0 failed.
+- Ctrl+Backquote remained ignored.
+- Plain Backquote closed the Dock to compact; a second plain Backquote restored exact 380x520 geometry.
+- Hotkey telemetry: install calls=1, toggles=2, ignored=1, lastError=null.
+- Evidence: `hf-20260919-wd10-v1411-hotkey-gate-039`.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-036 — v1.4.11 Dock hotkey candidate
 
 Date: 2026-09-19

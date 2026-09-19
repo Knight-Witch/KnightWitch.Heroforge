@@ -220,7 +220,7 @@
 - Undo/redo dispatch and buttons remain legacy-owned.
 - v1.4.10 baseline: Ctrl+Backquote ignored with Dock open; plain Backquote closes to compact; second plain Backquote reopens exact 380x520 Dock and hides compact.
 - Evidence: `hf-20260919-wd10-v1411-hotkey-baseline-037`.
-- Required live gate: auto-host v1.4.11; interactions v0.5.0 configured/error-null; loader 23/23 / 0 failed; repeat modifier-ignore + close/open sequence and require exact parity plus hotkey telemetry.
+- Live PASS: auto-host v1.4.11, launcher running/error-null, interactions v0.5.0 configured/error-null, loader 23/23 / 0 failed. Ctrl+Backquote was ignored; plain Backquote closed to compact; second plain Backquote restored the exact 380x520 Dock. Telemetry: installDockHotkeyCalls=1, hotkeyToggleCalls=2, hotkeyIgnoredCalls=1, lastError=null. Evidence: `hf-20260919-wd10-v1411-hotkey-gate-039`.
 
 
 ## Minimum continuation set
