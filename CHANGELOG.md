@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-19 — Dev auto-host live gate COMPLETE
+
+- Amanda confirmed the Dock looked normal/unchanged after the automated auto-host reload gate.
+- The isolated `WITCH DOCK - DEV AUTO HOST` v0.1.0 is now live-PASS end-to-end for the paused v1.4.6 payload.
+- Leave the auto-host enabled and the direct `WITCH DOCK - DEV` launcher disabled during this delivery mode.
+- Issue #10 remains paused; Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** none; this is a record-only final acceptance commit.
+
+---
+
 ## 2026-09-19 — Dev auto-host automated live gate PASS
 
 - One-time `WITCH DOCK - DEV AUTO HOST` install successfully fetched and executed the unchanged v1.4.6 Dev launcher from `wd/10-modular-bootstrap`.

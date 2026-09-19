@@ -20,7 +20,7 @@
 - The direct Dev launcher remains the canonical payload/source contract. During the candidate live gate, only the auto host is enabled in Tampermonkey; enabling both must fail visibly.
 - This helper does not resume Stage D/Stage E, alter v1.4.6, change the manifest/modules, touch Stable, or remove human visual gates.
 - Static execution test passes. Automated Tampermonkey/HeroForge live gate PASS on 2026-09-19: auto-host v0.1.0 fetched/executed payload v1.4.6 in one attempt, launcher was `running` / `error:null`, loader completed 23/23 with 0 failed, one Dock/compact/icon remained, and 380x520 CSS geometry at x=820/y=244 survived a Bridge-driven reload. The second load had a fresh auto-host fetch/execute timestamp and loader completed in 216.4 ms.
-- Human visual sanity is the only remaining acceptance item for this isolated helper. Direct `WITCH DOCK - DEV` stays disabled while the auto-host is enabled.
+- Human visual sanity PASS: Amanda confirmed the Dock looked normal/unchanged after the auto-host reload. The isolated Dev auto-host gate is complete. Direct `WITCH DOCK - DEV` stays disabled while the auto-host is enabled.
 - Next-session handoff: read `docs/HANDOFF_DEV_AUTO_HOST.md`; do not resume issue #10 unless Amanda explicitly says to.
 
 ## Completed live milestones

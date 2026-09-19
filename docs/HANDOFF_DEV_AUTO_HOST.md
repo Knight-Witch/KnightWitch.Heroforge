@@ -2,7 +2,7 @@
 
 **Branch:** `wd/dev-auto-host`  
 **Base:** `wd/10-modular-bootstrap` at `247d2da4da2056cfed9657ddae5a13a03eb7a549`  
-**Status:** automated live gate PASS on 2026-09-19; awaiting only Amanda's visual sanity confirmation.
+**Status:** COMPLETE / live PASS on 2026-09-19, including Amanda's visual sanity confirmation.
 
 ## Architecture and decision
 
@@ -33,4 +33,4 @@ This is delivery infrastructure only. It does not edit `Witch_Dock_DEV.user.js`,
 
 ## Exact next action
 
-Ask Amanda only for the human visual sanity check: confirm the Dock looks normal/unchanged after the auto-host reload. If yes, record final live PASS and leave issue #10 paused until Amanda explicitly resumes it. Do not touch Stable. A future real Dev launcher revision can then prove the moving-payload update path without another Tampermonkey install.
+No further auto-host validation is required. Leave the auto-host installed/enabled and the direct `WITCH DOCK - DEV` launcher disabled. Keep issue #10 paused until Amanda explicitly resumes it. Do not touch Stable. A future real Dev launcher revision can prove the moving-payload update path without another Tampermonkey install.
