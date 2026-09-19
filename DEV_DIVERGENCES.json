@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is active. v1.4.11 Dock hotkey extraction passed live parity on 2026-09-19. Undo/redo is the next bounded interaction seam.",
+      "reason": "Issue #10 Stage D is active. v1.4.11 hotkey passed. v1.4.12 is the bounded undo/redo History extraction candidate using the existing CK.UndoQueue/tryLoadCharacter contract; no synthetic HeroForge history will be created for testing.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -36,7 +36,8 @@
         "tools/Utilities.js",
         "features/core/Witch_Dock_Registry.js",
         "features/core/Witch_Dock_Shell.js",
-        "features/core/Witch_Dock_Interactions.js"
+        "features/core/Witch_Dock_Interactions.js",
+        "features/core/Witch_Dock_History.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -112,7 +113,10 @@
         "v1.4.11 launcher/manifest identify 1.4.11 / build 1.4.11-extracted-dock-hotkey and witch-dock-interactions v0.5.0 / build 0.5.0-dock-hotkey.",
         "Dock hotkey extraction preserves repeat/modifier/editable-target/non-Backquote guards, capture listener, preventDefault, and close/expand dispatch.",
         "v1.4.11 live gate must preserve Ctrl+Backquote ignore and plain Backquote close/open parity with loader 23/23 / 0 failed.",
-        "v1.4.11 live PASS: Ctrl+Backquote ignored, plain Backquote close/open parity preserved, interactions v0.5.0 telemetry matched expected 2 toggles + 1 ignored event, loader 23/23 / 0 failed."
+        "v1.4.11 live PASS: Ctrl+Backquote ignored, plain Backquote close/open parity preserved, interactions v0.5.0 telemetry matched expected 2 toggles + 1 ignored event, loader 23/23 / 0 failed.",
+        "v1.4.12 launcher/manifest identify 1.4.12 / build 1.4.12-extracted-undo-redo and witch-dock-history v0.1.0 / build 0.1.0-undo-redo-owner.",
+        "History extraction preserves CK.UndoQueue validation, native undo/redo preference, fallback currentIndex + tryLoadCharacter behavior, button-state sync, queue-method wrapping, and __kwDockWrapped.",
+        "Current safe live gate uses the genuine queue boundary (length 1/index 0): both buttons disabled and clicks no-op without fabricating history; real non-boundary undo/redo remains opportunistic."
       ]
     }
   ],

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.11
+// @version      1.4.12
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.11";
+  const DEV_VERSION = "1.4.12";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -50,6 +50,9 @@
   const CORE_INTERACTIONS_VERSION = "0.5.0";
   const CORE_INTERACTIONS_BUILD = "0.5.0-dock-hotkey";
   const CORE_INTERACTIONS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Interactions.js?v=${CORE_INTERACTIONS_VERSION}-${CORE_INTERACTIONS_BUILD}`;
+  const CORE_HISTORY_VERSION = "0.1.0";
+  const CORE_HISTORY_BUILD = "0.1.0-undo-redo-owner";
+  const CORE_HISTORY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_History.js?v=${CORE_HISTORY_VERSION}-${CORE_HISTORY_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -96,6 +99,8 @@
   const COMPACT_DRAG_END = '\n\n  function isEditableTarget(t) {';
   const DOCK_HOTKEY_START = '  function isEditableTarget(t) {';
   const DOCK_HOTKEY_END = '\n\n  const BONE_FOOTER_HOTKEY_TEXT';
+  const DOCK_HISTORY_START = '  function deepClone(obj) {';
+  const DOCK_HISTORY_END = '\n\n  function loadPrefs() {';
   const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
   const DOCK_SNAPSHOT_END = '\n\n  function applyPositionAndSize() {';
   const HOST_API_VERSION = "0.1.0";
@@ -147,6 +152,11 @@
     coreInteractionsBuild: CORE_INTERACTIONS_BUILD,
     coreInteractionsMode: "external-bootstrap-module",
     coreInteractionsApplied: false,
+    coreHistoryUrl: CORE_HISTORY_URL,
+    coreHistoryVersion: CORE_HISTORY_VERSION,
+    coreHistoryBuild: CORE_HISTORY_BUILD,
+    coreHistoryMode: "external-bootstrap-module",
+    coreHistoryApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -316,6 +326,9 @@
     coreInteractionsUrl: state.coreInteractionsUrl,
     coreInteractionsVersion: state.coreInteractionsVersion,
     coreInteractionsBuild: state.coreInteractionsBuild,
+    coreHistoryUrl: state.coreHistoryUrl,
+    coreHistoryVersion: state.coreHistoryVersion,
+    coreHistoryBuild: state.coreHistoryBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -378,7 +391,8 @@
     const registryRequestUrl = `${CORE_REGISTRY_URL}&kwdev=${nonce}`;
     const shellRequestUrl = `${CORE_SHELL_URL}&kwdev=${nonce}`;
     const interactionsRequestUrl = `${CORE_INTERACTIONS_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions] = await Promise.all([
+    const historyRequestUrl = `${CORE_HISTORY_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions, coreHistory] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
@@ -386,7 +400,8 @@
       PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(interactionsRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(interactionsRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(historyRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
@@ -396,6 +411,7 @@
     if (!coreRegistry) throw new Error("core registry module fetch returned empty source");
     if (!coreShell) throw new Error("core shell module fetch returned empty source");
     if (!coreInteractions) throw new Error("core interactions module fetch returned empty source");
+    if (!coreHistory) throw new Error("core history module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -595,6 +611,32 @@
       contract: "legacy-dock-interactions-through-hotkey"
     });
 
+    state.status = "loading-core-history";
+    eval(`${coreHistory}\n//# sourceURL=${CORE_HISTORY_URL}`);
+    const historyApi = UW.KWWitchDockHistory;
+    if (!historyApi || historyApi.version !== CORE_HISTORY_VERSION || historyApi.build !== CORE_HISTORY_BUILD) {
+      throw new Error("external core history module did not register the expected API/version");
+    }
+    if (
+      typeof historyApi.configure !== "function" ||
+      typeof historyApi.updateDockUndoRedoButtons !== "function" ||
+      typeof historyApi.triggerUndo !== "function" ||
+      typeof historyApi.triggerRedo !== "function" ||
+      typeof historyApi.hookUndoQueueForDockButtons !== "function" ||
+      typeof historyApi.getState !== "function"
+    ) {
+      throw new Error("external core history module is missing required methods");
+    }
+    state.coreHistoryApplied = true;
+    UW.KWWitchDockHistoryInfo = Object.freeze({
+      version: CORE_HISTORY_VERSION,
+      build: CORE_HISTORY_BUILD,
+      url: CORE_HISTORY_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-ck-undoqueue-dock-history"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
 
@@ -743,6 +785,37 @@
         ].join('\n')
       );
     devSource = devSource.slice(0, dockSnapshotStart) + stableDockSnapshot + devSource.slice(dockSnapshotEnd);
+
+    const dockHistoryStart = devSource.indexOf(DOCK_HISTORY_START);
+    const duplicateDockHistoryStart = dockHistoryStart >= 0 ? devSource.indexOf(DOCK_HISTORY_START, dockHistoryStart + DOCK_HISTORY_START.length) : -1;
+    if (dockHistoryStart < 0 || duplicateDockHistoryStart >= 0) {
+      throw new Error(`expected exactly one Dock history block; found ${dockHistoryStart < 0 ? 0 : 2}`);
+    }
+    const dockHistoryEnd = devSource.indexOf(DOCK_HISTORY_END, dockHistoryStart + DOCK_HISTORY_START.length);
+    if (dockHistoryEnd < 0) throw new Error("Dock history block end was not found");
+    const legacyDockHistory = devSource.slice(dockHistoryStart, dockHistoryEnd);
+    for (const required of [
+      'function deepClone(obj) {',
+      'const u = CK && CK.UndoQueue ? CK.UndoQueue : null;',
+      'CK.tryLoadCharacter(deepClone(json), "Witch Dock: invalid character data", function () {});',
+      'function updateDockUndoRedoButtons() {',
+      'function triggerUndo() {',
+      'function triggerRedo() {',
+      'function hookUndoQueueForDockButtons() {',
+      'obj[key].__kwDockWrapped = true;',
+      'wrap(u, "undo");',
+      'wrap(u, "redo");'
+    ]) {
+      if (!legacyDockHistory.includes(required)) throw new Error(`Dock history contract changed: missing ${required}`);
+    }
+    const dockHistoryReplacement = [
+      '  UW.KWWitchDockHistory.configure({ state });',
+      '  function updateDockUndoRedoButtons() { return UW.KWWitchDockHistory.updateDockUndoRedoButtons(); }',
+      '  function triggerUndo() { return UW.KWWitchDockHistory.triggerUndo(); }',
+      '  function triggerRedo() { return UW.KWWitchDockHistory.triggerRedo(); }',
+      '  function hookUndoQueueForDockButtons() { return UW.KWWitchDockHistory.hookUndoQueueForDockButtons(); }'
+    ].join('\n\n');
+    devSource = devSource.slice(0, dockHistoryStart) + dockHistoryReplacement + devSource.slice(dockHistoryEnd);
 
     const prefsIoStart = devSource.indexOf(PREFS_IO_START);
     const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;
@@ -1032,8 +1105,8 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, minimize/compact lifecycle, main Dock drag, Dock resize, compact drag/click, and Dock hotkey ownership have moved to bootstrap-hosted GitHub components while
-    // undo/redo and other legacy application responsibilities remain in the Stable-derived core.
+    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, Dock interactions/hotkey, and undo/redo ownership have moved to bootstrap-hosted GitHub components while
+    // remaining legacy application responsibilities stay in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

@@ -2,6 +2,34 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-038 — v1.4.12 undo/redo History candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- New History v0.1.0 source parses and preserves the live legacy CK.UndoQueue + CK.tryLoadCharacter behavior.
+- Launcher v1.4.12 parses, fetches/validates History through the existing bounded repo transport, guards exactly one early history block, and replaces it with configure + thin wrappers.
+- Isolated transformed Stable-derived core parses.
+- Manifest JSON parses; launcher/history versions and builds are synchronized.
+- History module receives no GM capability and HF-Chat-Bridge remains test infrastructure only.
+
+### Safe baseline
+
+- Genuine HeroForge queue: length=1, currentIndex=0.
+- Undo button disabled; Redo button disabled.
+- Clicking both at boundary leaves length/index exactly 1/0.
+- No synthetic queue entry or model mutation was created merely to obtain test coverage.
+- Evidence: `hf-20260919-wd10-v1412-undo-baseline-read-040`, `hf-20260919-wd10-v1412-history-boundary-041`.
+
+### Required live gate
+
+Bridge-reload through Dev auto-host, verify v1.4.12 / History v0.1.0 / loader 23/23, then require the same genuine boundary state and no-op behavior. Non-boundary undo/redo can be verified later when genuine history exists.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-037 — v1.4.11 Dock hotkey live PASS
 
 Date: 2026-09-19

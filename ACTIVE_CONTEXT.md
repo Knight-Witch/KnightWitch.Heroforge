@@ -223,6 +223,16 @@
 - Live PASS: auto-host v1.4.11, launcher running/error-null, interactions v0.5.0 configured/error-null, loader 23/23 / 0 failed. Ctrl+Backquote was ignored; plain Backquote closed to compact; second plain Backquote restored the exact 380x520 Dock. Telemetry: installDockHotkeyCalls=1, hotkeyToggleCalls=2, hotkeyIgnoredCalls=1, lastError=null. Evidence: `hf-20260919-wd10-v1411-hotkey-gate-039`.
 
 
+## v1.4.12 candidate — undo / redo History extraction
+
+- New `features/core/Witch_Dock_History.js` v0.1.0 / build `0.1.0-undo-redo-owner`.
+- Moves the actual live Dock history seam: `CK.UndoQueue` lookup, `CK.tryLoadCharacter` fallback, button enablement sync, triggerUndo/Redo, and queue-method wrapping. It preserves the existing named HeroForge contract and `__kwDockWrapped` marker.
+- The later duplicate keyboard-dispatch undo/redo functions lived inside the legacy minimize block and were already removed by the v1.4.7 lifecycle transform; they are not the live button implementation.
+- Baseline live queue currently has length=1/currentIndex=0; Undo and Redo are both disabled, and programmatic clicks leave queue/index unchanged. No synthetic history was injected.
+- Evidence: `hf-20260919-wd10-v1412-undo-baseline-read-040`, `hf-20260919-wd10-v1412-history-boundary-041`.
+- Required live gate: auto-host v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index remain 1/0; both buttons remain disabled; clicking both remains a no-op. A real non-boundary undo/redo remains opportunistic regression evidence when genuine HeroForge history exists.
+
+
 ## Minimum continuation set
 
 Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/core/Witch_Dock_Preferences.js`, `features/core/Witch_Dock_Module_Loader.js`, `tools/Utilities.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.

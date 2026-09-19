@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-038 — v1.4.12 undo/redo History candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.12.
+- Added `witch-dock-history` v0.1.0 / build `0.1.0-undo-redo-owner`.
+- Moves the live CK.UndoQueue-backed Dock undo/redo seam into a dedicated non-privileged module while preserving native undo/redo preference, fallback index/load behavior, button-state sync, queue wrapping, and `__kwDockWrapped`.
+- Confirmed the later keyboard-dispatch duplicates are inside the legacy minimize block already removed by the lifecycle transform and are not the current live button implementation.
+- Safe baseline at genuine queue boundary: length=1/index=0, both buttons disabled, clicks no-op; no synthetic HeroForge history created.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-037 — v1.4.11 Dock hotkey live PASS
 
 Date: 2026-09-19
