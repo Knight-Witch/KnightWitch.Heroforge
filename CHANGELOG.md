@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-19 — Dev auto-host automated live gate PASS
+
+- One-time `WITCH DOCK - DEV AUTO HOST` install successfully fetched and executed the unchanged v1.4.6 Dev launcher from `wd/10-modular-bootstrap`.
+- Initial and Bridge-driven reload states both reported host `launcher-executed`, payload v1.4.6, launcher `running/error:null`, loader 23/23 / 0 failed, and exactly one Dock/compact/icon.
+- Preserved Dock CSS geometry remained 380x520 at x=820/y=244 across the reload.
+- Direct `WITCH DOCK - DEV` remains disabled while the auto-host is enabled; Stable and the paused issue #10 payload/modules were not changed.
+- Human visual sanity confirmation remains the only open acceptance item.
+
+**Runtime/module/manifest/public behavior changed:** none; this commit records live validation only.
+
+---
+
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
 ## DOCK-2026-09-18-028 — Add isolated Dev auto-host candidate

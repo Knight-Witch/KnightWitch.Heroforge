@@ -2,7 +2,7 @@
 
 **Branch:** `wd/dev-auto-host`  
 **Base:** `wd/10-modular-bootstrap` at `247d2da4da2056cfed9657ddae5a13a03eb7a549`  
-**Status:** static candidate complete; no Tampermonkey/HeroForge install or live gate performed.
+**Status:** automated live gate PASS on 2026-09-19; awaiting only Amanda's visual sanity confirmation.
 
 ## Architecture and decision
 
@@ -21,8 +21,16 @@ This is delivery infrastructure only. It does not edit `Witch_Dock_DEV.user.js`,
 - `node --check devtools/Witch_Dock_DEV_Auto_Host.user.js`: PASS.
 - `node --check tests/dev-auto-host.test.cjs`: PASS.
 - `node tests/dev-auto-host.test.cjs`: PASS.
-- `git diff --check`: PASS before the local commit.
+- `git diff --check`: PASS before the original candidate commit.
+- One-time Tampermonkey install completed with the direct `WITCH DOCK - DEV` launcher disabled.
+- First live state: host v0.1.0 -> `launcher-executed`, payload v1.4.6, one fetch attempt, no error; launcher v1.4.6 -> `running` / `error:null`; loader -> 23 total/enabled/started/fetched/executed, 0 failed, 388 ms.
+- First DOM check: exactly one `#kwWitchDock`, one `#kwWDCompact`, and one `#kwWDCompactIcon`; Dock style remained 380x520 at x=820/y=244.
+- Bridge-driven query-free reload completed successfully.
+- Post-reload auto-host state had a fresh fetch/execute timestamp, still one attempt, payload v1.4.6, no error.
+- Post-reload launcher remained `running` / `error:null`; loader again completed 23/23 / 0 failed in 216.4 ms.
+- Post-reload DOM remained one Dock/compact/icon with the same 380x520 CSS geometry and x/y.
+- Evidence requests: `hf-20260919-wd-auto-host-state-011`, `hf-20260919-wd-auto-host-live-012`, `hf-20260919-wd-auto-host-loader-013`, `hf-20260919-wd-auto-host-reload-014`, `hf-20260919-wd-auto-host-postreload-015`.
 
 ## Exact next action
 
-Push/open the draft PR, then perform the one-time Tampermonkey install from the branch raw URL. Disable the direct Dev launcher, reload HeroForge through the Bridge, and verify host state `launcher-executed`, payload v1.4.6, launcher `running/error:null`, loader 23/23 / 0 failed, and one Dock/compact/icon with preserved geometry. Only after that should a real later Dev launcher revision be used to prove the automatic reload path.
+Ask Amanda only for the human visual sanity check: confirm the Dock looks normal/unchanged after the auto-host reload. If yes, record final live PASS and leave issue #10 paused until Amanda explicitly resumes it. Do not touch Stable. A future real Dev launcher revision can then prove the moving-payload update path without another Tampermonkey install.
