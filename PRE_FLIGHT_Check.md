@@ -2,6 +2,35 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-18-028 — Isolated Dev auto-host candidate
+
+Date: 2026-09-18
+
+### Scope
+
+- Add a separately installed development delivery helper without editing the paused v1.4.6 launcher, its modules, manifest, or Stable.
+- Fetch the current task-branch launcher on each reload so the Bridge can apply a pushed revision by reloading HeroForge instead of requiring Amanda to update Tampermonkey.
+
+### Static result
+
+- `node --check devtools/Witch_Dock_DEV_Auto_Host.user.js`: PASS.
+- `node --check tests/dev-auto-host.test.cjs`: PASS.
+- `node tests/dev-auto-host.test.cjs`: PASS.
+- Test proves the current launcher grants are covered, fetched launcher identity reaches `GM_info` as `WITCH DOCK - DEV` v1.4.6, execution occurs once, and normal success adds no failure UI.
+- `git diff --check`: PASS.
+
+### Required live gate
+
+1. Install the auto host once and disable the direct `WITCH DOCK - DEV` entry.
+2. Reload through the Bridge; confirm host `launcher-executed`, payload v1.4.6, Dev launcher running/error-null, and loader 23/23 / 0 failed.
+3. Confirm one Dock/compact/icon only and preserved 380x520 persisted / 382x522 rendered geometry.
+4. Bump only an isolated host-test marker or later real Dev launcher version, reload through the Bridge, and prove the new payload is used without a Tampermonkey update action.
+5. Preserve human visual gates for any future UI/render-affecting Dev change.
+
+**Runtime/module/manifest/public behavior changed:** new opt-in Dev delivery helper only; live candidate gate pending.
+
+---
+
 ## PFC-2026-09-18-027 — v1.4.6 geometry live PASS / refactor pause
 
 Date: 2026-09-18
