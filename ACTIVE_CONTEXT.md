@@ -198,7 +198,7 @@
 - Compact pointer drag/click mechanics and hotkey/undo-redo remain legacy-owned.
 - v1.4.8 baselines: corner 380x520 -> 402x537 then restored 380x520; bottom 380x520 -> 380x547 then restored 380x520; persisted width/height + lastOpenWidth/Height matched every DOM step.
 - Evidence: `hf-20260919-wd10-v149-corner-baseline-027`, `hf-20260919-wd10-v149-corner-restore-028`, `hf-20260919-wd10-v149-bottom-baseline-029`, `hf-20260919-wd10-v149-bottom-restore-030`.
-- Required live gate: auto-host v1.4.9; launcher running/error-null; interactions v0.3.0 configured/error-null; loader 23/23 / 0 failed; repeat both reversible resize sequences and require exact DOM/prefs parity plus resize telemetry.
+- Live PASS: auto-host v1.4.9, launcher running/error-null, interactions v0.3.0 configured/error-null, loader 23/23 / 0 failed. Corner sequence matched 380x520 -> 402x537 -> 380x520; bottom matched 380x520 -> 380x547 -> 380x520; persisted width/height and last-open fields matched each DOM step. Telemetry: corner start/move/end = 2/2/2, bottom start/move/end = 2/2/2, lastError=null. Evidence: `hf-20260919-wd10-v149-resize-gate-032`, `hf-20260919-wd10-v149-resize-telemetry-033`.
 
 
 ## Minimum continuation set

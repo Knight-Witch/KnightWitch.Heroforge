@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-033 — v1.4.9 Dock resize live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.9, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- Interactions: v0.3.0 / build `0.3.0-dock-resize`, configured=true, lastError=null.
+- Loader: 23/23 / 0 failed.
+- Corner: 380x520 -> 402x537 -> 380x520; all persisted width/height + last-open values matched.
+- Bottom: 380x520 -> 380x547 -> 380x520; width remained unchanged, height + lastOpenHeight matched.
+- Resize telemetry: corner 2/2/2 start/move/end; bottom 2/2/2.
+- Evidence: `hf-20260919-wd10-v149-resize-gate-032`, `hf-20260919-wd10-v149-resize-telemetry-033`.
+
+### Next bounded slice
+
+Extract compact launcher drag/click ownership. Keep hotkey/undo-redo outside this slice.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-032 — v1.4.9 Dock resize candidate
 
 Date: 2026-09-19

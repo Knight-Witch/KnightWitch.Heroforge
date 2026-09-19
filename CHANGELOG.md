@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-033 — v1.4.9 Dock resize live PASS
+
+Date: 2026-09-19
+
+- Auto-host delivered v1.4.9 without Tampermonkey intervention.
+- Launcher: running/error-null; interactions v0.3.0 configured/error-null; loader 23/23 / 0 failed.
+- Corner resize parity: 380x520 -> 402x537 -> 380x520, with persisted width/height + last-open fields matching every DOM state.
+- Bottom resize parity: 380x520 -> 380x547 -> 380x520, with width preserved and height + lastOpenHeight matching.
+- Extracted telemetry: corner start/move/end 2/2/2; bottom start/move/end 2/2/2; lastError=null.
+- Evidence: `hf-20260919-wd10-v149-resize-gate-032`, `hf-20260919-wd10-v149-resize-telemetry-033`.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-032 — v1.4.9 Dock resize candidate
 
 Date: 2026-09-19
