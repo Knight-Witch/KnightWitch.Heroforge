@@ -2,6 +2,28 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-031 — v1.4.8 main Dock drag live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.8, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- Interactions: v0.2.0 / build `0.2.0-main-dock-drag`, configured=true, lastError=null.
+- Loader: 23/23 / 0 failed.
+- Drag parity: 820/244 -> 844/262 for +24/+18, then exact inverse restore to 820/244 in both DOM and persisted prefs.
+- Telemetry: startDockDragCalls=2, dockDragMoveCalls=2, dockDragEndCalls=2.
+- Evidence: `hf-20260919-wd10-v148-state-025`, `hf-20260919-wd10-v148-drag-cycle-026`.
+
+### Next bounded slice
+
+Capture baseline and extract corner + bottom resize ownership only. Keep compact drag and hotkey/undo-redo out of that slice.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-030 — v1.4.8 main Dock drag candidate
 
 Date: 2026-09-19

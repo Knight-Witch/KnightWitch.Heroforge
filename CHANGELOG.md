@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-031 — v1.4.8 main Dock drag live PASS
+
+Date: 2026-09-19
+
+- Dev auto-host fetched launcher v1.4.8 on Bridge reload with no Tampermonkey update.
+- Launcher reached running/error-null; interactions v0.2.0 configured/error-null; loader remained 23/23 / 0 failed.
+- Reversible parity matched exactly: 820/244 -> 844/262 for +24/+18 pointer delta, then inverse drag restored both DOM and persisted prefs to 820/244.
+- Interaction telemetry proved extracted ownership: 2 drag starts, 2 move callbacks, 2 end callbacks.
+- Evidence: `hf-20260919-wd10-v148-state-025`, `hf-20260919-wd10-v148-drag-cycle-026`.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-030 — v1.4.8 main Dock drag candidate
 
 Date: 2026-09-19
