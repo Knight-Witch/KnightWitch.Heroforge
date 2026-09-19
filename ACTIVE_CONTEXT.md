@@ -201,6 +201,17 @@
 - Live PASS: auto-host v1.4.9, launcher running/error-null, interactions v0.3.0 configured/error-null, loader 23/23 / 0 failed. Corner sequence matched 380x520 -> 402x537 -> 380x520; bottom matched 380x520 -> 380x547 -> 380x520; persisted width/height and last-open fields matched each DOM step. Telemetry: corner start/move/end = 2/2/2, bottom start/move/end = 2/2/2, lastError=null. Evidence: `hf-20260919-wd10-v149-resize-gate-032`, `hf-20260919-wd10-v149-resize-telemetry-033`.
 
 
+## v1.4.10 candidate — compact drag/click extraction
+
+- `Witch_Dock_Interactions.js` advances to v0.4.0 / build `0.4.0-compact-drag-click`.
+- Moves the full compact pointer lifecycle: primary/left-button guards, preventDefault, pointer capture/release, 5 px drag threshold, viewport clamping, compactX/Y persistence, capture-phase window move/up/cancel listener cleanup, and no-drag reopen.
+- Existing compact DOM remains owned by the shell module and still calls a thin `startCompactDrag(e)` wrapper.
+- Hotkey and undo/redo remain legacy-owned.
+- v1.4.9 baseline: collapse shows compact at 16/907; +18/+14 real drag -> 34/921 and Dock remains closed; inverse drag -> exact 16/907; no-drag pointerdown/up reopens Dock at 380x520 and hides compact.
+- Evidence: `hf-20260919-wd10-v150-compact-baseline-034`.
+- Required live gate: auto-host v1.4.10; interactions v0.4.0 configured/error-null; loader 23/23 / 0 failed; repeat real drag, inverse drag, and no-drag reopen with exact DOM/prefs parity plus compact telemetry.
+
+
 ## Minimum continuation set
 
 Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/core/Witch_Dock_Preferences.js`, `features/core/Witch_Dock_Module_Loader.js`, `tools/Utilities.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.

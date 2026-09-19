@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-interactions";
-  const VERSION = "0.3.0";
-  const BUILD = "0.3.0-dock-resize";
+  const VERSION = "0.4.0";
+  const BUILD = "0.4.0-compact-drag-click";
 
   let CONTEXT = null;
   const STATE = {
@@ -20,6 +20,11 @@
     startResizeBottomCalls: 0,
     resizeBottomMoveCalls: 0,
     resizeBottomEndCalls: 0,
+    startCompactDragCalls: 0,
+    compactDragMoveCalls: 0,
+    compactDragEndCalls: 0,
+    compactDragCancelCalls: 0,
+    compactClickExpandCalls: 0,
     lastError: null
   };
 
@@ -219,6 +224,87 @@
     STATE.lastError = null;
   }
 
+  function startCompactDrag(e) {
+    const ctx = requireContext();
+    const { state, prefs } = ctx;
+    STATE.startCompactDragCalls += 1;
+
+    if (!state.compact) return;
+    if (e.isPrimary === false) return;
+    if (typeof e.button === "number" && e.button !== 0) return;
+
+    e.preventDefault();
+
+    state.compact.style.right = "";
+    state.compact.style.bottom = "";
+
+    const pointerId = e.pointerId;
+    const rect = state.compact.getBoundingClientRect();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startLeft = rect.left;
+    const startTop = rect.top;
+    let dragging = false;
+
+    try { state.compact.setPointerCapture(pointerId); } catch {}
+
+    function move(ev) {
+      if (ev.pointerId !== pointerId) return;
+
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+
+      if (!dragging) {
+        if (Math.hypot(dx, dy) <= 5) return;
+        dragging = true;
+      }
+
+      STATE.compactDragMoveCalls += 1;
+
+      const { vw, vh } = ctx.getViewport();
+      const w = state.compact.getBoundingClientRect().width;
+      const h = state.compact.getBoundingClientRect().height;
+
+      const left = ctx.clamp(startLeft + dx, 0, Math.max(0, vw - w));
+      const top = ctx.clamp(startTop + dy, 0, Math.max(0, vh - h));
+
+      state.compact.style.left = `${left}px`;
+      state.compact.style.top = `${top}px`;
+
+      prefs.compactX = Math.round(left);
+      prefs.compactY = Math.round(top);
+      ctx.savePrefs(prefs);
+    }
+
+    function cleanup() {
+      window.removeEventListener("pointermove", move, true);
+      window.removeEventListener("pointerup", up, true);
+      window.removeEventListener("pointercancel", cancel, true);
+      try { state.compact.releasePointerCapture(pointerId); } catch {}
+    }
+
+    function up(ev) {
+      if (ev.pointerId !== pointerId) return;
+      cleanup();
+      STATE.compactDragEndCalls += 1;
+      if (!dragging) {
+        STATE.compactClickExpandCalls += 1;
+        expandFromCompact();
+      }
+    }
+
+    function cancel(ev) {
+      if (ev.pointerId !== pointerId) return;
+      STATE.compactDragCancelCalls += 1;
+      cleanup();
+    }
+
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", up, true);
+    window.addEventListener("pointercancel", cancel, true);
+    STATE.lastError = null;
+  }
+
   function toggleMinimize() {
     const ctx = requireContext();
     const { prefs, defaults } = ctx;
@@ -322,6 +408,11 @@
       startResizeBottomCalls: STATE.startResizeBottomCalls,
       resizeBottomMoveCalls: STATE.resizeBottomMoveCalls,
       resizeBottomEndCalls: STATE.resizeBottomEndCalls,
+      startCompactDragCalls: STATE.startCompactDragCalls,
+      compactDragMoveCalls: STATE.compactDragMoveCalls,
+      compactDragEndCalls: STATE.compactDragEndCalls,
+      compactDragCancelCalls: STATE.compactDragCancelCalls,
+      compactClickExpandCalls: STATE.compactClickExpandCalls,
       lastError: STATE.lastError
     };
   }
@@ -335,6 +426,7 @@
     startDockDrag,
     startResizeCorner,
     startResizeBottom,
+    startCompactDrag,
     toggleMinimize,
     closeDock,
     expandFromCompact,

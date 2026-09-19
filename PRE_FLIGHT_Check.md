@@ -2,6 +2,34 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-034 — v1.4.10 compact drag/click candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- Interactions v0.4.0 parses and owns the full compact pointer lifecycle.
+- Launcher v1.4.10 parses, pins interactions v0.4.0, requires `startCompactDrag`, guards exactly one legacy compact-drag block, and replaces it with a thin wrapper.
+- Isolated transformed Stable-derived core parses.
+- Manifest JSON parses and launcher/interactions registry versions/builds are synchronized.
+- Hotkey/undo-redo, DOM/CSS, storage keys, loader, and Stable are outside this slice.
+
+### Baseline
+
+- Collapse -> compact visible at x=16/y=907; Dock hidden.
+- +18/+14 pointer movement crosses threshold -> compact x=34/y=921, prefs match, Dock stays hidden.
+- Inverse drag -> exact x=16/y=907.
+- No-drag pointerdown/up -> compact hidden; Dock reopens at 380x520.
+- Evidence: `hf-20260919-wd10-v150-compact-baseline-034`.
+
+### Required live gate
+
+Bridge-reload through Dev auto-host, verify v1.4.10 / interactions v0.4.0 / loader 23/23, repeat drag/inverse/no-drag sequence, and require exact DOM/prefs parity plus compact interaction telemetry.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-033 — v1.4.9 Dock resize live PASS
 
 Date: 2026-09-19

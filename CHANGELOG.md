@@ -2,6 +2,19 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-034 — v1.4.10 compact drag/click candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.10; interactions module advances to v0.4.0.
+- Compact icon pointer ownership moves behind the interaction module with the exact legacy primary/button guards, pointer capture, 5 px threshold, viewport clamping, compact position persistence, capture-phase listener cleanup/cancel, and no-drag reopen behavior.
+- Shell DOM, hotkey/undo-redo, loader contracts, storage keys, and Stable remain unchanged.
+- Baseline: compact 16/907 -> 34/921 on +18/+14 drag while Dock stays closed; inverse drag restores 16/907; no-drag release reopens 380x520 Dock and hides compact.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-033 — v1.4.9 Dock resize live PASS
 
 Date: 2026-09-19
