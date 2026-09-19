@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-18-028 — Add isolated Dev auto-host candidate
+
+Date: 2026-09-18
+
+- Added `devtools/Witch_Dock_DEV_Auto_Host.user.js` v0.1.0 on isolated branch `wd/dev-auto-host`.
+- The host fetches the unchanged `wd/10-modular-bootstrap/Witch_Dock_DEV.user.js` with a fresh cache key on every HeroForge reload, validates its identity/version/branch/permission contract, and executes it once with synthetic payload-correct `GM_info`.
+- Added bounded three-attempt fetch retry, visible failure UI, duplicate-host protection, direct-launcher conflict rejection, and `KWWitchDockDevAutoHost.getState()` diagnostics.
+- Added a Node execution test proving grant coverage and payload metadata identity.
+- Issue #10 remains paused at validated v1.4.6. No launcher, core, module, manifest, public Stable, UI, storage, or HeroForge behavior changed.
+
+**Runtime/module/manifest/public behavior changed:** new opt-in Dev delivery helper only; live candidate gate pending.
+
+---
+
 ## DOCK-2026-09-18-027 — Close v1.4.6 geometry gate and pause issue #10
 
 Date: 2026-09-18
