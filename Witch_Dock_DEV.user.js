@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.10
+// @version      1.4.11
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.10";
+  const DEV_VERSION = "1.4.11";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -47,8 +47,8 @@
   const CORE_SHELL_VERSION = "0.2.0";
   const CORE_SHELL_BUILD = "0.2.0-main-and-compact-dom";
   const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
-  const CORE_INTERACTIONS_VERSION = "0.4.0";
-  const CORE_INTERACTIONS_BUILD = "0.4.0-compact-drag-click";
+  const CORE_INTERACTIONS_VERSION = "0.5.0";
+  const CORE_INTERACTIONS_BUILD = "0.5.0-dock-hotkey";
   const CORE_INTERACTIONS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Interactions.js?v=${CORE_INTERACTIONS_VERSION}-${CORE_INTERACTIONS_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
@@ -94,6 +94,8 @@
   const DOCK_LIFECYCLE_END = '\n\n  function startCompactDrag(e) {';
   const COMPACT_DRAG_START = '  function startCompactDrag(e) {';
   const COMPACT_DRAG_END = '\n\n  function isEditableTarget(t) {';
+  const DOCK_HOTKEY_START = '  function isEditableTarget(t) {';
+  const DOCK_HOTKEY_END = '\n\n  const BONE_FOOTER_HOTKEY_TEXT';
   const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
   const DOCK_SNAPSHOT_END = '\n\n  function applyPositionAndSize() {';
   const HOST_API_VERSION = "0.1.0";
@@ -575,6 +577,7 @@
       typeof interactionsApi.startResizeCorner !== "function" ||
       typeof interactionsApi.startResizeBottom !== "function" ||
       typeof interactionsApi.startCompactDrag !== "function" ||
+      typeof interactionsApi.installDockHotkey !== "function" ||
       typeof interactionsApi.toggleMinimize !== "function" ||
       typeof interactionsApi.closeDock !== "function" ||
       typeof interactionsApi.expandFromCompact !== "function" ||
@@ -589,7 +592,7 @@
       url: CORE_INTERACTIONS_URL,
       applied: true,
       owner: "bootstrap-module",
-      contract: "legacy-dock-interactions-through-compact-drag"
+      contract: "legacy-dock-interactions-through-hotkey"
     });
 
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
@@ -974,6 +977,31 @@
     const compactDragReplacement = '  function startCompactDrag(e) { return UW.KWWitchDockInteractions.startCompactDrag(e); }';
     devSource = devSource.slice(0, compactDragStart) + compactDragReplacement + devSource.slice(compactDragEnd);
 
+    const dockHotkeyStart = devSource.indexOf(DOCK_HOTKEY_START);
+    const duplicateDockHotkeyStart = dockHotkeyStart >= 0 ? devSource.indexOf(DOCK_HOTKEY_START, dockHotkeyStart + DOCK_HOTKEY_START.length) : -1;
+    if (dockHotkeyStart < 0 || duplicateDockHotkeyStart >= 0) {
+      throw new Error(`expected exactly one Dock hotkey block; found ${dockHotkeyStart < 0 ? 0 : 2}`);
+    }
+    const dockHotkeyEnd = devSource.indexOf(DOCK_HOTKEY_END, dockHotkeyStart + DOCK_HOTKEY_START.length);
+    if (dockHotkeyEnd < 0) throw new Error("Dock hotkey block end was not found");
+    const legacyDockHotkey = devSource.slice(dockHotkeyStart, dockHotkeyEnd);
+    for (const required of [
+      'function isEditableTarget(t) {',
+      'tag === "input" || tag === "textarea" || tag === "select"',
+      'function installDockHotkey() {',
+      'if (e.repeat) return;',
+      'if (e.ctrlKey || e.altKey || e.metaKey) return;',
+      'if (isEditableTarget(e.target)) return;',
+      'if (e.code !== "Backquote") return;',
+      'if (prefs.closed) {',
+      'expandFromCompact();',
+      'closeDock();'
+    ]) {
+      if (!legacyDockHotkey.includes(required)) throw new Error(`Dock hotkey contract changed: missing ${required}`);
+    }
+    const dockHotkeyReplacement = '  function installDockHotkey() { return UW.KWWitchDockInteractions.installDockHotkey(); }';
+    devSource = devSource.slice(0, dockHotkeyStart) + dockHotkeyReplacement + devSource.slice(dockHotkeyEnd);
+
     const modalStart = devSource.indexOf(MODAL_BLOCK_START);
     const duplicateModalStart = modalStart >= 0 ? devSource.indexOf(MODAL_BLOCK_START, modalStart + MODAL_BLOCK_START.length) : -1;
     if (modalStart < 0 || duplicateModalStart >= 0) {
@@ -1004,8 +1032,8 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, minimize/compact lifecycle, main Dock drag, Dock resize, and compact drag/click ownership have moved to bootstrap-hosted GitHub components while
-    // hotkey/undo-redo and other legacy application responsibilities remain in the Stable-derived core.
+    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, minimize/compact lifecycle, main Dock drag, Dock resize, compact drag/click, and Dock hotkey ownership have moved to bootstrap-hosted GitHub components while
+    // undo/redo and other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

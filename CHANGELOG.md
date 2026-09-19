@@ -2,6 +2,19 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-036 — v1.4.11 Dock hotkey candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.11; interactions module advances to v0.5.0.
+- Grave-key Dock hotkey ownership moves behind the interaction module with the exact legacy repeat/modifier/editable-target/code guards, capture-phase document listener, preventDefault, and close/expand dispatch.
+- Undo/redo, loader contracts, storage keys, DOM/CSS, and Stable remain unchanged.
+- Baseline: Ctrl+Backquote ignored; plain Backquote closes to compact; second plain Backquote restores the exact 380x520 Dock.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-035 — v1.4.10 compact drag/click live PASS
 
 Date: 2026-09-19

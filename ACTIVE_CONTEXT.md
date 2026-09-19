@@ -212,6 +212,17 @@
 - Live PASS: auto-host v1.4.10, launcher running/error-null, interactions v0.4.0 configured/error-null, loader 23/23 / 0 failed. Compact 16/907 -> 34/921 -> 16/907 matched exactly; Dock remained closed during real drags; no-drag pointer cycle reopened the 380x520 Dock and hid compact. Telemetry: startCompactDragCalls=3, compactDragMoveCalls=2, compactDragEndCalls=3, compactDragCancelCalls=0, compactClickExpandCalls=1, lastError=null. Evidence: `hf-20260919-wd10-v1410-compact-gate-036`.
 
 
+## v1.4.11 candidate — Dock hotkey extraction
+
+- `Witch_Dock_Interactions.js` advances to v0.5.0 / build `0.5.0-dock-hotkey`.
+- Moves `isEditableTarget()` + `installDockHotkey()` into the interaction module while preserving repeat/modifier/editable-target/non-Backquote guards, capture-phase document listener, preventDefault, and closed/open dispatch to the already-extracted close/expand lifecycle.
+- The Stable-derived core keeps only a thin `installDockHotkey()` wrapper so its existing startup call remains unchanged.
+- Undo/redo dispatch and buttons remain legacy-owned.
+- v1.4.10 baseline: Ctrl+Backquote ignored with Dock open; plain Backquote closes to compact; second plain Backquote reopens exact 380x520 Dock and hides compact.
+- Evidence: `hf-20260919-wd10-v1411-hotkey-baseline-037`.
+- Required live gate: auto-host v1.4.11; interactions v0.5.0 configured/error-null; loader 23/23 / 0 failed; repeat modifier-ignore + close/open sequence and require exact parity plus hotkey telemetry.
+
+
 ## Minimum continuation set
 
 Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/core/Witch_Dock_Preferences.js`, `features/core/Witch_Dock_Module_Loader.js`, `tools/Utilities.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.

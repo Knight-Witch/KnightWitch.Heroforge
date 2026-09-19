@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-interactions";
-  const VERSION = "0.4.0";
-  const BUILD = "0.4.0-compact-drag-click";
+  const VERSION = "0.5.0";
+  const BUILD = "0.5.0-dock-hotkey";
 
   let CONTEXT = null;
   const STATE = {
@@ -25,6 +25,9 @@
     compactDragEndCalls: 0,
     compactDragCancelCalls: 0,
     compactClickExpandCalls: 0,
+    installDockHotkeyCalls: 0,
+    hotkeyToggleCalls: 0,
+    hotkeyIgnoredCalls: 0,
     lastError: null
   };
 
@@ -390,6 +393,50 @@
     STATE.lastError = null;
   }
 
+  function isEditableTarget(t) {
+    if (!t) return false;
+    const tag = (t.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return true;
+    if (t.isContentEditable) return true;
+    return false;
+  }
+
+  function installDockHotkey() {
+    const ctx = requireContext();
+    const { prefs } = ctx;
+    STATE.installDockHotkeyCalls += 1;
+
+    document.addEventListener("keydown", (e) => {
+      if (e.repeat) {
+        STATE.hotkeyIgnoredCalls += 1;
+        return;
+      }
+      if (e.ctrlKey || e.altKey || e.metaKey) {
+        STATE.hotkeyIgnoredCalls += 1;
+        return;
+      }
+      if (isEditableTarget(e.target)) {
+        STATE.hotkeyIgnoredCalls += 1;
+        return;
+      }
+      if (e.code !== "Backquote") {
+        STATE.hotkeyIgnoredCalls += 1;
+        return;
+      }
+
+      e.preventDefault();
+      STATE.hotkeyToggleCalls += 1;
+
+      if (prefs.closed) {
+        expandFromCompact();
+      } else {
+        closeDock();
+      }
+    }, true);
+
+    STATE.lastError = null;
+  }
+
   function getState() {
     return {
       featureId: FEATURE_ID,
@@ -413,6 +460,9 @@
       compactDragEndCalls: STATE.compactDragEndCalls,
       compactDragCancelCalls: STATE.compactDragCancelCalls,
       compactClickExpandCalls: STATE.compactClickExpandCalls,
+      installDockHotkeyCalls: STATE.installDockHotkeyCalls,
+      hotkeyToggleCalls: STATE.hotkeyToggleCalls,
+      hotkeyIgnoredCalls: STATE.hotkeyIgnoredCalls,
       lastError: STATE.lastError
     };
   }
@@ -427,6 +477,7 @@
     startResizeCorner,
     startResizeBottom,
     startCompactDrag,
+    installDockHotkey,
     toggleMinimize,
     closeDock,
     expandFromCompact,

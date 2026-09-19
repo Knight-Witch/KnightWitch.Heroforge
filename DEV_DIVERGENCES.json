@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is active. v1.4.10 compact drag/click extraction passed live parity on 2026-09-19. The next bounded slice is Dock hotkey ownership; undo/redo remains legacy-owned.",
+      "reason": "Issue #10 Stage D is active. v1.4.10 compact drag/click extraction passed. v1.4.11 is the bounded Dock hotkey ownership candidate; undo/redo remains legacy-owned.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -108,7 +108,10 @@
         "v1.4.10 launcher/manifest identify 1.4.10 / build 1.4.10-extracted-compact-drag-click and witch-dock-interactions v0.4.0 / build 0.4.0-compact-drag-click.",
         "Compact extraction preserves primary/left-button guards, pointer capture/release, 5px threshold, viewport clamp, compactX/Y persistence, capture-phase listener cleanup/cancel, and no-drag expand.",
         "v1.4.10 live gate must reproduce compact 16/907->34/921->16/907 real-drag parity and no-drag reopen while loader remains 23/23 / 0 failed.",
-        "v1.4.10 live PASS: auto-host delivered the revision, interactions v0.4.0 configured/error-null, loader 23/23 / 0 failed, compact real-drag/inverse/no-drag reopen reproduced the captured baseline exactly with extracted compact telemetry."
+        "v1.4.10 live PASS: auto-host delivered the revision, interactions v0.4.0 configured/error-null, loader 23/23 / 0 failed, compact real-drag/inverse/no-drag reopen reproduced the captured baseline exactly with extracted compact telemetry.",
+        "v1.4.11 launcher/manifest identify 1.4.11 / build 1.4.11-extracted-dock-hotkey and witch-dock-interactions v0.5.0 / build 0.5.0-dock-hotkey.",
+        "Dock hotkey extraction preserves repeat/modifier/editable-target/non-Backquote guards, capture listener, preventDefault, and close/expand dispatch.",
+        "v1.4.11 live gate must preserve Ctrl+Backquote ignore and plain Backquote close/open parity with loader 23/23 / 0 failed."
       ]
     }
   ],

@@ -2,6 +2,33 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-036 — v1.4.11 Dock hotkey candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- Interactions v0.5.0 parses and owns editable-target detection + the capture-phase Dock hotkey listener.
+- Launcher v1.4.11 parses, pins interactions v0.5.0, requires `installDockHotkey`, guards exactly one legacy hotkey block, and replaces it with a thin wrapper while preserving the existing startup call site.
+- Isolated transformed Stable-derived core parses.
+- Manifest JSON parses and launcher/interactions registry versions/builds are synchronized.
+- Undo/redo, DOM/CSS, storage keys, loader, and Stable are outside this slice.
+
+### Baseline
+
+- Ctrl+Backquote: ignored, Dock remains open.
+- Plain Backquote: Dock closes to compact.
+- Second plain Backquote: Dock reopens at exact 380x520, compact hidden.
+- Evidence: `hf-20260919-wd10-v1411-hotkey-baseline-037`.
+
+### Required live gate
+
+Bridge-reload through Dev auto-host, verify v1.4.11 / interactions v0.5.0 / loader 23/23, repeat modifier-ignore + close/open sequence, and require exact parity plus hotkey telemetry.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-035 — v1.4.10 compact drag/click live PASS
 
 Date: 2026-09-19
