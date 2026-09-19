@@ -1,17 +1,27 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-18  
+**Updated:** 2026-09-19  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active architecture branch:** `wd/10-modular-bootstrap`  
+**Isolated delivery candidate:** `wd/dev-auto-host` (does not alter the paused launcher/modules)
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction is PAUSED for the planned HF-Chat-Bridge upgrade. v1.4.6 compact geometry stability is live-PASS. Do not continue refactor extraction, integration, promotion, or another task slice until explicitly resumed after the Bridge upgrade.
+**Current phase:** issue #10 remains PAUSED. The planned HF-Chat-Bridge runtime-host upgrade is live-PASS, and the isolated Witch Dock Dev auto-host has now passed its automated live reload gate. Do not resume refactor extraction, integration, promotion, or Stable work until Amanda explicitly resumes issue #10.
 
 ## Current priorities
 
 1. #10 — PAUSED after v1.4.6 live PASS for the HF-Chat-Bridge upgrade. Resume only on explicit instruction.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
+
+## Dev auto-host candidate
+
+- `devtools/Witch_Dock_DEV_Auto_Host.user.js` is an isolated delivery helper for the Bridge-upgrade pause. It fetches and executes the unchanged `wd/10-modular-bootstrap/Witch_Dock_DEV.user.js` on each HeroForge reload so normal Dev revisions do not require repeated Tampermonkey installs.
+- The direct Dev launcher remains the canonical payload/source contract. During the candidate live gate, only the auto host is enabled in Tampermonkey; enabling both must fail visibly.
+- This helper does not resume Stage D/Stage E, alter v1.4.6, change the manifest/modules, touch Stable, or remove human visual gates.
+- Static execution test passes. Automated Tampermonkey/HeroForge live gate PASS on 2026-09-19: auto-host v0.1.0 fetched/executed payload v1.4.6 in one attempt, launcher was `running` / `error:null`, loader completed 23/23 with 0 failed, one Dock/compact/icon remained, and 380x520 CSS geometry at x=820/y=244 survived a Bridge-driven reload. The second load had a fresh auto-host fetch/execute timestamp and loader completed in 216.4 ms.
+- Human visual sanity PASS: Amanda confirmed the Dock looked normal/unchanged after the auto-host reload. The isolated Dev auto-host gate is complete. Direct `WITCH DOCK - DEV` stays disabled while the auto-host is enabled.
+- Next-session handoff: read `docs/HANDOFF_DEV_AUTO_HOST.md`; do not resume issue #10 unless Amanda explicitly says to.
 
 ## Completed live milestones
 

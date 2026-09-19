@@ -1,6 +1,43 @@
 # Changelog
 
+## 2026-09-19 — Dev auto-host live gate COMPLETE
+
+- Amanda confirmed the Dock looked normal/unchanged after the automated auto-host reload gate.
+- The isolated `WITCH DOCK - DEV AUTO HOST` v0.1.0 is now live-PASS end-to-end for the paused v1.4.6 payload.
+- Leave the auto-host enabled and the direct `WITCH DOCK - DEV` launcher disabled during this delivery mode.
+- Issue #10 remains paused; Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** none; this is a record-only final acceptance commit.
+
+---
+
+## 2026-09-19 — Dev auto-host automated live gate PASS
+
+- One-time `WITCH DOCK - DEV AUTO HOST` install successfully fetched and executed the unchanged v1.4.6 Dev launcher from `wd/10-modular-bootstrap`.
+- Initial and Bridge-driven reload states both reported host `launcher-executed`, payload v1.4.6, launcher `running/error:null`, loader 23/23 / 0 failed, and exactly one Dock/compact/icon.
+- Preserved Dock CSS geometry remained 380x520 at x=820/y=244 across the reload.
+- Direct `WITCH DOCK - DEV` remains disabled while the auto-host is enabled; Stable and the paused issue #10 payload/modules were not changed.
+- Human visual sanity confirmation remains the only open acceptance item.
+
+**Runtime/module/manifest/public behavior changed:** none; this commit records live validation only.
+
+---
+
 Rolling current Dev log. Older detail remains durable in Git history/issues.
+
+## DOCK-2026-09-18-028 — Add isolated Dev auto-host candidate
+
+Date: 2026-09-18
+
+- Added `devtools/Witch_Dock_DEV_Auto_Host.user.js` v0.1.0 on isolated branch `wd/dev-auto-host`.
+- The host fetches the unchanged `wd/10-modular-bootstrap/Witch_Dock_DEV.user.js` with a fresh cache key on every HeroForge reload, validates its identity/version/branch/permission contract, and executes it once with synthetic payload-correct `GM_info`.
+- Added bounded three-attempt fetch retry, visible failure UI, duplicate-host protection, direct-launcher conflict rejection, and `KWWitchDockDevAutoHost.getState()` diagnostics.
+- Added a Node execution test proving grant coverage and payload metadata identity.
+- Issue #10 remains paused at validated v1.4.6. No launcher, core, module, manifest, public Stable, UI, storage, or HeroForge behavior changed.
+
+**Runtime/module/manifest/public behavior changed:** new opt-in Dev delivery helper only; live candidate gate pending.
+
+---
 
 ## DOCK-2026-09-18-027 — Close v1.4.6 geometry gate and pause issue #10
 
