@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.6
+// @version      1.4.7
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.6";
+  const DEV_VERSION = "1.4.7";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -47,6 +47,9 @@
   const CORE_SHELL_VERSION = "0.2.0";
   const CORE_SHELL_BUILD = "0.2.0-main-and-compact-dom";
   const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
+  const CORE_INTERACTIONS_VERSION = "0.1.0";
+  const CORE_INTERACTIONS_BUILD = "0.1.0-minimize-compact-lifecycle";
+  const CORE_INTERACTIONS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Interactions.js?v=${CORE_INTERACTIONS_VERSION}-${CORE_INTERACTIONS_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -83,6 +86,8 @@
   const SHELL_ROOT_END = '\n\n    initBoneFooterAndDetection();';
   const COMPACT_DOM_START = '    state.compact = el("div", { id: "kwWDCompact", title: "Open Witch Dock", onpointerdown: startCompactDrag }, [';
   const COMPACT_DOM_END = '\n    state.compactExpandBtn = null;';
+  const DOCK_LIFECYCLE_START = '  function toggleMinimize() {';
+  const DOCK_LIFECYCLE_END = '\n\n  function startCompactDrag(e) {';
   const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
   const DOCK_SNAPSHOT_END = '\n\n  function applyPositionAndSize() {';
   const HOST_API_VERSION = "0.1.0";
@@ -129,6 +134,11 @@
     coreShellBuild: CORE_SHELL_BUILD,
     coreShellMode: "external-bootstrap-module",
     coreShellApplied: false,
+    coreInteractionsUrl: CORE_INTERACTIONS_URL,
+    coreInteractionsVersion: CORE_INTERACTIONS_VERSION,
+    coreInteractionsBuild: CORE_INTERACTIONS_BUILD,
+    coreInteractionsMode: "external-bootstrap-module",
+    coreInteractionsApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -295,6 +305,9 @@
     coreShellUrl: state.coreShellUrl,
     coreShellVersion: state.coreShellVersion,
     coreShellBuild: state.coreShellBuild,
+    coreInteractionsUrl: state.coreInteractionsUrl,
+    coreInteractionsVersion: state.coreInteractionsVersion,
+    coreInteractionsBuild: state.coreInteractionsBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -356,14 +369,16 @@
     const preferencesRequestUrl = `${CORE_PREFERENCES_URL}&kwdev=${nonce}`;
     const registryRequestUrl = `${CORE_REGISTRY_URL}&kwdev=${nonce}`;
     const shellRequestUrl = `${CORE_SHELL_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell] = await Promise.all([
+    const interactionsRequestUrl = `${CORE_INTERACTIONS_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(interactionsRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
@@ -372,6 +387,7 @@
     if (!corePreferences) throw new Error("core preferences module fetch returned empty source");
     if (!coreRegistry) throw new Error("core registry module fetch returned empty source");
     if (!coreShell) throw new Error("core shell module fetch returned empty source");
+    if (!coreInteractions) throw new Error("core interactions module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -541,6 +557,31 @@
       contract: "legacy-main-root-dom-factory"
     });
 
+    state.status = "loading-core-interactions";
+    eval(`${coreInteractions}\n//# sourceURL=${CORE_INTERACTIONS_URL}`);
+    const interactionsApi = UW.KWWitchDockInteractions;
+    if (!interactionsApi || interactionsApi.version !== CORE_INTERACTIONS_VERSION || interactionsApi.build !== CORE_INTERACTIONS_BUILD) {
+      throw new Error("external core interactions module did not register the expected API/version");
+    }
+    if (
+      typeof interactionsApi.configure !== "function" ||
+      typeof interactionsApi.toggleMinimize !== "function" ||
+      typeof interactionsApi.closeDock !== "function" ||
+      typeof interactionsApi.expandFromCompact !== "function" ||
+      typeof interactionsApi.getState !== "function"
+    ) {
+      throw new Error("external core interactions module is missing required methods");
+    }
+    state.coreInteractionsApplied = true;
+    UW.KWWitchDockInteractionsInfo = Object.freeze({
+      version: CORE_INTERACTIONS_VERSION,
+      build: CORE_INTERACTIONS_BUILD,
+      url: CORE_INTERACTIONS_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-minimize-close-expand-lifecycle"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
 
@@ -705,7 +746,18 @@
       '  function loadPrefs() { return UW.KWWitchDockPreferences.load(); }',
       '  function savePrefs(p) { UW.KWWitchDockPreferences.save(p); }',
       '',
-      '  const prefs = loadPrefs();'
+      '  const prefs = loadPrefs();',
+      '  UW.KWWitchDockInteractions.configure({',
+      '    state,',
+      '    prefs,',
+      '    defaults: DEFAULTS,',
+      '    savePrefs,',
+      '    snapshotCurrentDockPositionToPrefs,',
+      '    getViewport,',
+      '    enforceSizeConstraints,',
+      '    applyMinimizedState,',
+      '    showClosedCompact',
+      '  });'
     ].join('\n');
     devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
 
@@ -810,6 +862,34 @@
     ].join('\n');
     devSource = devSource.slice(0, boneStart) + boneReplacement + devSource.slice(boneEnd + BONE_BLOCK_END.length);
 
+    const dockLifecycleStart = devSource.indexOf(DOCK_LIFECYCLE_START);
+    const duplicateDockLifecycleStart = dockLifecycleStart >= 0 ? devSource.indexOf(DOCK_LIFECYCLE_START, dockLifecycleStart + DOCK_LIFECYCLE_START.length) : -1;
+    if (dockLifecycleStart < 0 || duplicateDockLifecycleStart >= 0) {
+      throw new Error(`expected exactly one Dock lifecycle block; found ${dockLifecycleStart < 0 ? 0 : 2}`);
+    }
+    const dockLifecycleEnd = devSource.indexOf(DOCK_LIFECYCLE_END, dockLifecycleStart + DOCK_LIFECYCLE_START.length);
+    if (dockLifecycleEnd < 0) throw new Error("Dock lifecycle block end was not found");
+    const legacyDockLifecycle = devSource.slice(dockLifecycleStart, dockLifecycleEnd);
+    for (const required of [
+      'function toggleMinimize() {',
+      'if (!prefs.minimized) snapshotCurrentDockPositionToPrefs();',
+      'function closeDock() {',
+      'prefs.closed = true;',
+      'function expandFromCompact() {',
+      'prefs.closed = false;',
+      'showClosedCompact();',
+      'enforceSizeConstraints();',
+      'applyMinimizedState();'
+    ]) {
+      if (!legacyDockLifecycle.includes(required)) throw new Error(`Dock lifecycle contract changed: missing ${required}`);
+    }
+    const dockLifecycleReplacement = [
+      '  function toggleMinimize() { return UW.KWWitchDockInteractions.toggleMinimize(); }',
+      '  function closeDock() { return UW.KWWitchDockInteractions.closeDock(); }',
+      '  function expandFromCompact() { return UW.KWWitchDockInteractions.expandFromCompact(); }'
+    ].join('\n\n');
+    devSource = devSource.slice(0, dockLifecycleStart) + dockLifecycleReplacement + devSource.slice(dockLifecycleEnd);
+
     const modalStart = devSource.indexOf(MODAL_BLOCK_START);
     const duplicateModalStart = modalStart >= 0 ? devSource.indexOf(MODAL_BLOCK_START, modalStart + MODAL_BLOCK_START.length) : -1;
     if (modalStart < 0 || duplicateModalStart >= 0) {
@@ -840,8 +920,8 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section/tool preferences, and tab/tool registry-container ownership have moved to bootstrap-hosted GitHub components while
-    // other legacy application responsibilities remain in the Stable-derived core.
+    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, and minimize/compact lifecycle ownership have moved to bootstrap-hosted GitHub components while
+    // drag/resize, hotkey/undo-redo, and other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

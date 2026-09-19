@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-028 — v1.4.7 minimize / compact lifecycle candidate
+
+Date: 2026-09-19
+
+- Issue #10 Stage D resumed after the Bridge runtime-host and Dev auto-host gates passed.
+- Added `witch-dock-interactions` v0.1.0 / build `0.1.0-minimize-compact-lifecycle`.
+- Launcher advances to v1.4.7 / build `1.4.7-extracted-minimize-compact-lifecycle`.
+- Only minimize, close-to-compact, and expand-from-compact lifecycle ownership moves; drag/resize, compact pointer mechanics, hotkeys/undo-redo, storage keys, loader behavior, and Stable remain unchanged.
+- Pre-change live baseline captured the exact v1.4.6 minimize/restore/collapse/reopen transitions for parity comparison.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-18-027 — Close v1.4.6 geometry gate and pause issue #10
 
 Date: 2026-09-18

@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-028 — v1.4.7 lifecycle extraction candidate
+
+Date: 2026-09-19
+
+### Protected behavior
+
+- Preserve 380x520 open CSS geometry and the v1.4.6 content-box snapshot correction.
+- Preserve minimize height/restore behavior, close-to-compact visibility, remembered compact position, no-drag compact reopen, one root/compact/icon, and all preference keys.
+- Keep compact pointer threshold/drag mechanics, main drag/resize, hotkey/undo-redo, tabs/sections, loader ordering/cache/failure isolation, and Stable outside this slice.
+
+### Static evidence
+
+- New interactions module parses and exposes only configured non-privileged lifecycle methods plus diagnostics.
+- Launcher v1.4.7 parses, fetches/validates the new module through the existing bounded host transport, configures it from the transformed core, and guards exactly one legacy lifecycle block before replacing it with thin wrappers.
+- Raw legacy lifecycle seam contains the expected minimize/close/expand contracts; the isolated transformed core parses.
+- Manifest JSON parses; launcher and module registry versions/builds are synchronized.
+
+### Pre-change live baseline
+
+- Open: 380x520 CSS / 382x522 rendered at x=820/y=244.
+- Minimized: 380x92 CSS; restored exactly to 380x520.
+- Collapsed: Dock hidden; compact visible at x=16/y=907.
+- No-drag compact pointer cycle: Dock restored to exact original geometry; compact hidden.
+- Evidence: `hf-20260919-wd10-v147-baseline-018`, `hf-20260919-wd10-v147-baseline-cycle-019`.
+
+### Required live gate
+
+Auto-host the pushed v1.4.7 revision, Bridge-reload HeroForge, then repeat the baseline sequence and require exact parity plus interactions module configured/error-null and loader 23/23 / 0 failed.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-18-027 — v1.4.6 geometry live PASS / refactor pause
 
 Date: 2026-09-18

@@ -1,15 +1,15 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-18  
+**Updated:** 2026-09-19  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D application-shell extraction is PAUSED for the planned HF-Chat-Bridge upgrade. v1.4.6 compact geometry stability is live-PASS. Do not continue refactor extraction, integration, promotion, or another task slice until explicitly resumed after the Bridge upgrade.
+**Current phase:** issue #10 Stage D RESUMED after the HF-Chat-Bridge/runtime-host and Dev auto-host upgrades passed. v1.4.7 is the current bounded candidate: extract minimize / close / compact-reopen lifecycle into a GitHub-owned interaction module while leaving drag/resize and hotkey/undo-redo ownership unchanged.
 
 ## Current priorities
 
-1. #10 — PAUSED after v1.4.6 live PASS for the HF-Chat-Bridge upgrade. Resume only on explicit instruction.
+1. #10 — ACTIVE. Validate v1.4.7 minimize/compact lifecycle extraction against the captured v1.4.6 parity baseline, then continue Stage D only if the gate passes.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -166,6 +166,18 @@
 - Snapshot x/y, anchored-state detection, close/open lifecycle, compact DOM, drag threshold, minimize/expand, size enforcement, persistence owner, loader and public seams remain unchanged.
 - Live gate PASS: postreload baseline was 380x520 persisted CSS geometry / 382x522 rendered outer box with one root/compact/icon, shell v0.2.0 created once and loader 23/23 / 0 failed. Normal Collapse-to-icon preserved 380x520 persisted width/height and last-open dimensions while hiding Dock/showing compact. One no-drag compact reopen restored Dock and hid compact with persisted geometry still exactly 380x520, rendered outer box exactly 382x522, x/y unchanged, node counts 1/1/1 and loader still 23/23 / 0 failed. Evidence: `hf-20260918-wd10-v146-baseline-read-001`, `hf-20260918-wd10-v146-after-collapse-read-001`, `hf-20260918-wd10-v146-final-read-001`.
 - Issue #10 is now PAUSED for the HF-Chat-Bridge upgrade. Do not begin another extraction slice until explicitly resumed.
+
+
+## v1.4.7 candidate — minimize / compact lifecycle extraction
+
+- New `features/core/Witch_Dock_Interactions.js` v0.1.0 / build `0.1.0-minimize-compact-lifecycle`.
+- Moves only `toggleMinimize()`, `closeDock()`, and `expandFromCompact()` behavior behind a configured non-privileged module. The existing shell button handlers and compact pointer-drag/click threshold remain wired through thin core wrappers.
+- The module receives existing mutable `state` / `prefs` references plus bounded legacy helpers; it receives no raw `GM_*` capability and does not depend on HF-Chat-Bridge.
+- Drag, resize, compact dragging mechanics, hotkey, undo/redo, tab/section behavior, storage keys, geometry snapshot fix, and loader behavior remain unchanged in this slice.
+- Captured v1.4.6 baseline before editing: open Dock 380x520 CSS / 382x522 rendered at x=820/y=244; minimize -> 92px CSS height and restore -> 520px; collapse -> compact visible at x=16/y=907; no-drag compact pointer cycle -> exact original open geometry.
+- Baseline evidence: `hf-20260919-wd10-v147-baseline-018`, `hf-20260919-wd10-v147-baseline-cycle-019`.
+- Required live gate: auto-host fetches v1.4.7 without Tampermonkey update; launcher running/error-null; interactions v0.1.0 configured; loader 23/23 / 0 failed; repeat the same minimize/restore/collapse/no-drag compact reopen sequence and require exact parity/no duplicate nodes.
+
 
 ## Minimum continuation set
 
