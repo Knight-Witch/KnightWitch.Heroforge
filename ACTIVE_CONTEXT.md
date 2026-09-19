@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D RESUMED after the HF-Chat-Bridge/runtime-host and Dev auto-host upgrades passed. v1.4.7 is the current bounded candidate: extract minimize / close / compact-reopen lifecycle into a GitHub-owned interaction module while leaving drag/resize and hotkey/undo-redo ownership unchanged.
+**Current phase:** issue #10 Stage D ACTIVE. v1.4.7 minimize / close / compact-reopen lifecycle extraction is live-PASS. Next bounded slice is main Dock drag ownership; resize, compact drag mechanics, and hotkey/undo-redo remain legacy-owned until their own gates.
 
 ## Current priorities
 
-1. #10 — ACTIVE. Validate v1.4.7 minimize/compact lifecycle extraction against the captured v1.4.6 parity baseline, then continue Stage D only if the gate passes.
+1. #10 — ACTIVE. v1.4.7 lifecycle extraction passed; continue Stage D with one bounded interaction slice at a time, starting with main Dock drag.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -176,7 +176,9 @@
 - Drag, resize, compact dragging mechanics, hotkey, undo/redo, tab/section behavior, storage keys, geometry snapshot fix, and loader behavior remain unchanged in this slice.
 - Captured v1.4.6 baseline before editing: open Dock 380x520 CSS / 382x522 rendered at x=820/y=244; minimize -> 92px CSS height and restore -> 520px; collapse -> compact visible at x=16/y=907; no-drag compact pointer cycle -> exact original open geometry.
 - Baseline evidence: `hf-20260919-wd10-v147-baseline-018`, `hf-20260919-wd10-v147-baseline-cycle-019`.
-- Required live gate: auto-host fetches v1.4.7 without Tampermonkey update; launcher running/error-null; interactions v0.1.0 configured; loader 23/23 / 0 failed; repeat the same minimize/restore/collapse/no-drag compact reopen sequence and require exact parity/no duplicate nodes.
+- Live PASS: auto-host fetched v1.4.7 without a Tampermonkey update; launcher running/error-null; interactions v0.1.0 configured/error-null; loader 23/23 / 0 failed; minimize -> 92px, restore -> 520px, collapse -> compact visible at x=16/y=907, and no-drag compact reopen -> exact 380x520 CSS / 382x522 rendered geometry at x=820/y=244.
+- Interaction module telemetry after the gate: toggleMinimizeCalls=2, closeDockCalls=1, expandFromCompactCalls=1, lastError=null.
+- Evidence: `hf-20260919-wd10-v147-state-021`, `hf-20260919-wd10-v147-cycle-022`.
 
 
 ## Minimum continuation set

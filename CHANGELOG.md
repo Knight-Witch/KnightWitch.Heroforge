@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-029 — v1.4.7 lifecycle extraction live PASS
+
+Date: 2026-09-19
+
+- Dev auto-host fetched launcher v1.4.7 on a Bridge-driven reload with no Tampermonkey update.
+- Launcher reached running/error-null; interactions v0.1.0 configured with lastError:null; loader remained 23/23 / 0 failed.
+- Minimize/restore matched the v1.4.6 baseline exactly: 380x520 -> 380x92 -> 380x520 CSS.
+- Collapse/reopen matched baseline exactly: Dock hidden + compact visible at x=16/y=907, then no-drag compact pointer cycle restored the Dock to 380x520 CSS / 382x522 rendered at x=820/y=244 with compact hidden.
+- Module telemetry proved extracted ownership: 2 minimize calls, 1 close call, 1 expand call.
+- Evidence: `hf-20260919-wd10-v147-state-021`, `hf-20260919-wd10-v147-cycle-022`.
+
+**Runtime/module/manifest/public behavior changed:** ownership moved on Dev task branch only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-028 — v1.4.7 minimize / compact lifecycle candidate
 
 Date: 2026-09-19

@@ -2,6 +2,33 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-029 — v1.4.7 lifecycle extraction live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.7, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- `witch-dock-interactions`: v0.1.0 / build `0.1.0-minimize-compact-lifecycle`, configured=true, lastError=null.
+- Loader: 23 total / 23 enabled / 23 executed / 0 failed.
+- Baseline parity:
+  - open 380x520 CSS at x=820/y=244;
+  - minimize 380x92;
+  - restore 380x520;
+  - collapse hides Dock and shows compact at x=16/y=907;
+  - no-drag compact reopen restores exact open geometry and hides compact.
+- Module counters: toggleMinimizeCalls=2, closeDockCalls=1, expandFromCompactCalls=1.
+- Evidence: `hf-20260919-wd10-v147-state-021`, `hf-20260919-wd10-v147-cycle-022`.
+
+### Next bounded slice
+
+Extract main Dock drag ownership only. Do not move resize, compact drag, hotkey, or undo/redo in the same slice.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-028 — v1.4.7 lifecycle extraction candidate
 
 Date: 2026-09-19
