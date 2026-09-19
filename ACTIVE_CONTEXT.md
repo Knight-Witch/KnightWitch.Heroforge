@@ -209,7 +209,7 @@
 - Hotkey and undo/redo remain legacy-owned.
 - v1.4.9 baseline: collapse shows compact at 16/907; +18/+14 real drag -> 34/921 and Dock remains closed; inverse drag -> exact 16/907; no-drag pointerdown/up reopens Dock at 380x520 and hides compact.
 - Evidence: `hf-20260919-wd10-v150-compact-baseline-034`.
-- Required live gate: auto-host v1.4.10; interactions v0.4.0 configured/error-null; loader 23/23 / 0 failed; repeat real drag, inverse drag, and no-drag reopen with exact DOM/prefs parity plus compact telemetry.
+- Live PASS: auto-host v1.4.10, launcher running/error-null, interactions v0.4.0 configured/error-null, loader 23/23 / 0 failed. Compact 16/907 -> 34/921 -> 16/907 matched exactly; Dock remained closed during real drags; no-drag pointer cycle reopened the 380x520 Dock and hid compact. Telemetry: startCompactDragCalls=3, compactDragMoveCalls=2, compactDragEndCalls=3, compactDragCancelCalls=0, compactClickExpandCalls=1, lastError=null. Evidence: `hf-20260919-wd10-v1410-compact-gate-036`.
 
 
 ## Minimum continuation set

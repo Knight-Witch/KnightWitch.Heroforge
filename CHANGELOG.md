@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-035 — v1.4.10 compact drag/click live PASS
+
+Date: 2026-09-19
+
+- Auto-host delivered v1.4.10 without Tampermonkey intervention.
+- Launcher: running/error-null; interactions v0.4.0 configured/error-null; loader 23/23 / 0 failed.
+- Compact drag parity: x/y 16/907 -> 34/921 for +18/+14, Dock remained closed; inverse drag restored exact 16/907.
+- No-drag pointerdown/up reopened the Dock at 380x520 and hid compact.
+- Telemetry: startCompactDragCalls=3, compactDragMoveCalls=2, compactDragEndCalls=3, compactDragCancelCalls=0, compactClickExpandCalls=1, lastError=null.
+- Evidence: `hf-20260919-wd10-v1410-compact-gate-036`.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-034 — v1.4.10 compact drag/click candidate
 
 Date: 2026-09-19

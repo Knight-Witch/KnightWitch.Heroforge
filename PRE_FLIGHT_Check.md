@@ -2,6 +2,30 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-035 — v1.4.10 compact drag/click live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.10, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- Interactions: v0.4.0 / build `0.4.0-compact-drag-click`, configured=true, lastError=null.
+- Loader: 23/23 / 0 failed.
+- Real drag: compact 16/907 -> 34/921, prefs match, Dock remains hidden.
+- Inverse real drag: compact restored exactly to 16/907.
+- No-drag pointer cycle: compact hidden; Dock restored at 380x520.
+- Telemetry: compact starts=3, moves=2, ends=3, cancels=0, click-expands=1.
+- Evidence: `hf-20260919-wd10-v1410-compact-gate-036`.
+
+### Next bounded slice
+
+Extract Dock hotkey ownership only. Keep undo/redo outside this slice.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-034 — v1.4.10 compact drag/click candidate
 
 Date: 2026-09-19
