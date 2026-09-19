@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-interactions";
-  const VERSION = "0.2.0";
-  const BUILD = "0.2.0-main-dock-drag";
+  const VERSION = "0.3.0";
+  const BUILD = "0.3.0-dock-resize";
 
   let CONTEXT = null;
   const STATE = {
@@ -14,6 +14,12 @@
     startDockDragCalls: 0,
     dockDragMoveCalls: 0,
     dockDragEndCalls: 0,
+    startResizeCornerCalls: 0,
+    resizeCornerMoveCalls: 0,
+    resizeCornerEndCalls: 0,
+    startResizeBottomCalls: 0,
+    resizeBottomMoveCalls: 0,
+    resizeBottomEndCalls: 0,
     lastError: null
   };
 
@@ -39,7 +45,8 @@
       enforceSizeConstraints: requireFunction(opts, "enforceSizeConstraints"),
       applyMinimizedState: requireFunction(opts, "applyMinimizedState"),
       showClosedCompact: requireFunction(opts, "showClosedCompact"),
-      clamp: requireFunction(opts, "clamp")
+      clamp: requireFunction(opts, "clamp"),
+      computeMinDockHeightCollapsed: requireFunction(opts, "computeMinDockHeightCollapsed")
     };
 
     STATE.configured = true;
@@ -103,6 +110,108 @@
       STATE.dockDragEndCalls += 1;
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+    }
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    STATE.lastError = null;
+  }
+
+  function startResizeCorner(e) {
+    const ctx = requireContext();
+    const { state, prefs } = ctx;
+    STATE.startResizeCornerCalls += 1;
+
+    if (!state.root || prefs.closed || prefs.minimized) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const rect = state.root.getBoundingClientRect();
+    state.isResizing = true;
+    state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "corner" };
+
+    function move(ev) {
+      if (!state.isResizing || !state.resizeStart) return;
+      STATE.resizeCornerMoveCalls += 1;
+
+      const dx = ev.clientX - state.resizeStart.x;
+      const dy = ev.clientY - state.resizeStart.y;
+
+      const minW = Math.max(260, state.minWidth || 260);
+      const minH = ctx.computeMinDockHeightCollapsed();
+
+      const { vw, vh } = ctx.getViewport();
+      const maxW = Math.max(minW, vw - 8);
+      const maxH = Math.max(minH, vh - 8);
+
+      const newW = ctx.clamp(state.resizeStart.w + dx, minW, maxW);
+      const newH = ctx.clamp(state.resizeStart.h + dy, minH, maxH);
+
+      state.root.style.width = `${newW}px`;
+      state.root.style.height = `${newH}px`;
+
+      prefs.width = Math.round(newW);
+      prefs.height = Math.round(newH);
+      prefs.lastOpenWidth = prefs.width;
+      prefs.lastOpenHeight = prefs.height;
+      ctx.savePrefs(prefs);
+    }
+
+    function up() {
+      STATE.resizeCornerEndCalls += 1;
+      state.isResizing = false;
+      state.resizeStart = null;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      ctx.enforceSizeConstraints();
+    }
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    STATE.lastError = null;
+  }
+
+  function startResizeBottom(e) {
+    const ctx = requireContext();
+    const { state, prefs } = ctx;
+    STATE.startResizeBottomCalls += 1;
+
+    if (!state.root || prefs.closed || prefs.minimized) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const rect = state.root.getBoundingClientRect();
+    state.isResizing = true;
+    state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "bottom" };
+
+    function move(ev) {
+      if (!state.isResizing || !state.resizeStart) return;
+      STATE.resizeBottomMoveCalls += 1;
+
+      const dy = ev.clientY - state.resizeStart.y;
+      const minH = ctx.computeMinDockHeightCollapsed();
+
+      const { vh } = ctx.getViewport();
+      const maxH = Math.max(minH, vh - 8);
+
+      const newH = ctx.clamp(state.resizeStart.h + dy, minH, maxH);
+
+      state.root.style.height = `${newH}px`;
+
+      prefs.height = Math.round(newH);
+      prefs.lastOpenHeight = prefs.height;
+      ctx.savePrefs(prefs);
+    }
+
+    function up() {
+      STATE.resizeBottomEndCalls += 1;
+      state.isResizing = false;
+      state.resizeStart = null;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      ctx.enforceSizeConstraints();
     }
 
     window.addEventListener("pointermove", move);
@@ -207,6 +316,12 @@
       startDockDragCalls: STATE.startDockDragCalls,
       dockDragMoveCalls: STATE.dockDragMoveCalls,
       dockDragEndCalls: STATE.dockDragEndCalls,
+      startResizeCornerCalls: STATE.startResizeCornerCalls,
+      resizeCornerMoveCalls: STATE.resizeCornerMoveCalls,
+      resizeCornerEndCalls: STATE.resizeCornerEndCalls,
+      startResizeBottomCalls: STATE.startResizeBottomCalls,
+      resizeBottomMoveCalls: STATE.resizeBottomMoveCalls,
+      resizeBottomEndCalls: STATE.resizeBottomEndCalls,
       lastError: STATE.lastError
     };
   }
@@ -218,6 +333,8 @@
     build: BUILD,
     configure,
     startDockDrag,
+    startResizeCorner,
+    startResizeBottom,
     toggleMinimize,
     closeDock,
     expandFromCompact,

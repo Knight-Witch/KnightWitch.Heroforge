@@ -2,6 +2,19 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-032 — v1.4.9 Dock resize candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.9; interactions module advances to v0.3.0.
+- Corner and bottom resize ownership move together behind the interaction module with the exact legacy guards, clamps, width/height persistence, last-open updates, resize state lifecycle, listener cleanup, and final size-constraint enforcement.
+- Compact drag mechanics, hotkey/undo-redo, loader contracts, storage keys, and Stable remain unchanged.
+- Reversible baselines: corner 380x520 -> 402x537 -> 380x520; bottom 380x520 -> 380x547 -> 380x520.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-031 — v1.4.8 main Dock drag live PASS
 
 Date: 2026-09-19

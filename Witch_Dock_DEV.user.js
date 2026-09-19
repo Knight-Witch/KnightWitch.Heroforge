@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.8
+// @version      1.4.9
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.8";
+  const DEV_VERSION = "1.4.9";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -47,8 +47,8 @@
   const CORE_SHELL_VERSION = "0.2.0";
   const CORE_SHELL_BUILD = "0.2.0-main-and-compact-dom";
   const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
-  const CORE_INTERACTIONS_VERSION = "0.2.0";
-  const CORE_INTERACTIONS_BUILD = "0.2.0-main-dock-drag";
+  const CORE_INTERACTIONS_VERSION = "0.3.0";
+  const CORE_INTERACTIONS_BUILD = "0.3.0-dock-resize";
   const CORE_INTERACTIONS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Interactions.js?v=${CORE_INTERACTIONS_VERSION}-${CORE_INTERACTIONS_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
@@ -88,6 +88,8 @@
   const COMPACT_DOM_END = '\n    state.compactExpandBtn = null;';
   const DOCK_DRAG_START = '  function startDockDrag(e) {';
   const DOCK_DRAG_END = '\n\n  function startResizeCorner(e) {';
+  const DOCK_RESIZE_START = '  function startResizeCorner(e) {';
+  const DOCK_RESIZE_END = '\n\n  function toggleMinimize() {';
   const DOCK_LIFECYCLE_START = '  function toggleMinimize() {';
   const DOCK_LIFECYCLE_END = '\n\n  function startCompactDrag(e) {';
   const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
@@ -568,6 +570,8 @@
     if (
       typeof interactionsApi.configure !== "function" ||
       typeof interactionsApi.startDockDrag !== "function" ||
+      typeof interactionsApi.startResizeCorner !== "function" ||
+      typeof interactionsApi.startResizeBottom !== "function" ||
       typeof interactionsApi.toggleMinimize !== "function" ||
       typeof interactionsApi.closeDock !== "function" ||
       typeof interactionsApi.expandFromCompact !== "function" ||
@@ -760,7 +764,8 @@
       '    enforceSizeConstraints,',
       '    applyMinimizedState,',
       '    showClosedCompact,',
-      '    clamp',
+      '    clamp,',
+      '    computeMinDockHeightCollapsed',
       '  });'
     ].join('\n');
     devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
@@ -889,6 +894,31 @@
     const dockDragReplacement = '  function startDockDrag(e) { return UW.KWWitchDockInteractions.startDockDrag(e); }';
     devSource = devSource.slice(0, dockDragStart) + dockDragReplacement + devSource.slice(dockDragEnd);
 
+    const dockResizeStart = devSource.indexOf(DOCK_RESIZE_START);
+    const duplicateDockResizeStart = dockResizeStart >= 0 ? devSource.indexOf(DOCK_RESIZE_START, dockResizeStart + DOCK_RESIZE_START.length) : -1;
+    if (dockResizeStart < 0 || duplicateDockResizeStart >= 0) {
+      throw new Error(`expected exactly one Dock resize block; found ${dockResizeStart < 0 ? 0 : 2}`);
+    }
+    const dockResizeEnd = devSource.indexOf(DOCK_RESIZE_END, dockResizeStart + DOCK_RESIZE_START.length);
+    if (dockResizeEnd < 0) throw new Error("Dock resize block end was not found");
+    const legacyDockResize = devSource.slice(dockResizeStart, dockResizeEnd);
+    for (const required of [
+      'function startResizeCorner(e) {',
+      'state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "corner" };',
+      'prefs.lastOpenWidth = prefs.width;',
+      'prefs.lastOpenHeight = prefs.height;',
+      'function startResizeBottom(e) {',
+      'state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "bottom" };',
+      'enforceSizeConstraints();'
+    ]) {
+      if (!legacyDockResize.includes(required)) throw new Error(`Dock resize contract changed: missing ${required}`);
+    }
+    const dockResizeReplacement = [
+      '  function startResizeCorner(e) { return UW.KWWitchDockInteractions.startResizeCorner(e); }',
+      '  function startResizeBottom(e) { return UW.KWWitchDockInteractions.startResizeBottom(e); }'
+    ].join('\n\n');
+    devSource = devSource.slice(0, dockResizeStart) + dockResizeReplacement + devSource.slice(dockResizeEnd);
+
     const dockLifecycleStart = devSource.indexOf(DOCK_LIFECYCLE_START);
     const duplicateDockLifecycleStart = dockLifecycleStart >= 0 ? devSource.indexOf(DOCK_LIFECYCLE_START, dockLifecycleStart + DOCK_LIFECYCLE_START.length) : -1;
     if (dockLifecycleStart < 0 || duplicateDockLifecycleStart >= 0) {
@@ -947,8 +977,8 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, minimize/compact lifecycle, and main Dock drag ownership have moved to bootstrap-hosted GitHub components while
-    // resize, compact-drag mechanics, hotkey/undo-redo, and other legacy application responsibilities remain in the Stable-derived core.
+    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, minimize/compact lifecycle, main Dock drag, and Dock resize ownership have moved to bootstrap-hosted GitHub components while
+    // compact-drag mechanics, hotkey/undo-redo, and other legacy application responsibilities remain in the Stable-derived core.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;

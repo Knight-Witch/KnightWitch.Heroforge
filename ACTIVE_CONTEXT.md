@@ -191,6 +191,16 @@
 - Live PASS: auto-host delivered v1.4.8; launcher running/error-null; interactions v0.2.0 configured/error-null; loader 23/23 / 0 failed. +24/+18 drag moved DOM/prefs 820/244 -> 844/262; inverse drag restored both exactly to 820/244. Telemetry: startDockDragCalls=2, dockDragMoveCalls=2, dockDragEndCalls=2, lastError=null. Evidence: `hf-20260919-wd10-v148-state-025`, `hf-20260919-wd10-v148-drag-cycle-026`.
 
 
+## v1.4.9 candidate — Dock resize extraction
+
+- `Witch_Dock_Interactions.js` advances to v0.3.0 / build `0.3.0-dock-resize`.
+- Moves both legacy resize handlers as one ownership seam: corner width+height and bottom height-only. Preserves closed/minimized guards, preventDefault/stopPropagation, `state.isResizing` + `resizeStart`, min/max viewport clamping, per-move width/height + last-open persistence, pointer listener cleanup, and final `enforceSizeConstraints()`.
+- Compact pointer drag/click mechanics and hotkey/undo-redo remain legacy-owned.
+- v1.4.8 baselines: corner 380x520 -> 402x537 then restored 380x520; bottom 380x520 -> 380x547 then restored 380x520; persisted width/height + lastOpenWidth/Height matched every DOM step.
+- Evidence: `hf-20260919-wd10-v149-corner-baseline-027`, `hf-20260919-wd10-v149-corner-restore-028`, `hf-20260919-wd10-v149-bottom-baseline-029`, `hf-20260919-wd10-v149-bottom-restore-030`.
+- Required live gate: auto-host v1.4.9; launcher running/error-null; interactions v0.3.0 configured/error-null; loader 23/23 / 0 failed; repeat both reversible resize sequences and require exact DOM/prefs parity plus resize telemetry.
+
+
 ## Minimum continuation set
 
 Read only: `PROJECT_CONTRACT.md`, this file, `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`, issue #10/#19, `MODULE_VERSIONING.md`, `Witch_Dock_DEV.user.js`, `manifest.json`, `DEV_DIVERGENCES.json`, `features/core/Witch_Dock_Styles.css`, `features/core/Witch_Dock_Modals.js`, `features/core/Witch_Dock_Preferences.js`, `features/core/Witch_Dock_Module_Loader.js`, `tools/Utilities.js`, `features/booth/Booth_Runtime_Bootstrap.js`, and the exact core responsibility being extracted.

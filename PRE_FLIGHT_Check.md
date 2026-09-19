@@ -2,6 +2,32 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-032 — v1.4.9 Dock resize candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- Interactions v0.3.0 parses and retains both legacy resize calculations and state/listener lifecycles.
+- Launcher v1.4.9 parses, pins interactions v0.3.0, requires both resize methods, passes bounded `computeMinDockHeightCollapsed`/clamp/viewport/prefs helpers, and guards exactly one legacy resize block before replacing it with thin wrappers.
+- Isolated transformed Stable-derived core parses.
+- Manifest JSON parses; launcher/interactions registry versions/builds are synchronized.
+- Compact drag, hotkey/undo-redo, CSS/DOM, storage keys, loader, and Stable are outside this slice.
+
+### Baselines
+
+- Corner: 380x520 -> 402x537, all width/height + last-open fields match; restored exactly to 380x520.
+- Bottom: 380x520 -> 380x547, width remains unchanged and height + lastOpenHeight track; restored exactly to 380x520.
+- Evidence: `hf-20260919-wd10-v149-corner-baseline-027`, `hf-20260919-wd10-v149-corner-restore-028`, `hf-20260919-wd10-v149-bottom-baseline-029`, `hf-20260919-wd10-v149-bottom-restore-030`.
+
+### Required live gate
+
+Bridge-reload through the Dev auto-host, verify v1.4.9 / interactions v0.3.0 / loader 23/23, then repeat both reversible resize sequences and require exact DOM/prefs parity plus module telemetry.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch interaction ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-031 — v1.4.8 main Dock drag live PASS
 
 Date: 2026-09-19
