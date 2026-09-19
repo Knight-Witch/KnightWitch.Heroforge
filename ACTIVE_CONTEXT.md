@@ -3,6 +3,7 @@
 **Updated:** 2026-09-18  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active architecture branch:** `wd/10-modular-bootstrap`  
+**Isolated delivery candidate:** `wd/dev-auto-host` (does not alter the paused launcher/modules)
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
 **Current phase:** issue #10 Stage D application-shell extraction is PAUSED for the planned HF-Chat-Bridge upgrade. v1.4.6 compact geometry stability is live-PASS. Do not continue refactor extraction, integration, promotion, or another task slice until explicitly resumed after the Bridge upgrade.
@@ -12,6 +13,14 @@
 1. #10 — PAUSED after v1.4.6 live PASS for the HF-Chat-Bridge upgrade. Resume only on explicit instruction.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
+
+## Dev auto-host candidate
+
+- `devtools/Witch_Dock_DEV_Auto_Host.user.js` is an isolated delivery helper for the Bridge-upgrade pause. It fetches and executes the unchanged `wd/10-modular-bootstrap/Witch_Dock_DEV.user.js` on each HeroForge reload so normal Dev revisions do not require repeated Tampermonkey installs.
+- The direct Dev launcher remains the canonical payload/source contract. During the candidate live gate, only the auto host is enabled in Tampermonkey; enabling both must fail visibly.
+- This helper does not resume Stage D/Stage E, alter v1.4.6, change the manifest/modules, touch Stable, or remove human visual gates.
+- Static execution test passes. Live Tampermonkey/HeroForge validation is pending.
+- Next-session handoff: read `docs/HANDOFF_DEV_AUTO_HOST.md` before installing or testing this helper.
 
 ## Completed live milestones
 
