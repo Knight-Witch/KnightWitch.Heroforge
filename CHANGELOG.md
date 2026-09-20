@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-20 — Issue #28 public v2.0.0 promotion COMPLETE
+
+- Promoted exact tested RC `95b5cdae4c8840d950d984c73bce101ba887011e` to `Witch_Scripts` by non-forced fast-forward.
+- Actual public Stable smoke PASS: launcher v2.0.0, Core v2.0.0, Loader v0.2.0, 23/23 executed, 0 failed, immutable=23/fallback=0, no legacy monolith/source transforms, one Dock/compact/icon.
+- Reconciled canonical Dev after release: all promoted runtime/core/tool blobs match Stable exactly; non-launcher registry entries match; issue #28 removed from `DEV_DIVERGENCES.json`.
+- Preserved intentional issue #19 Dev channel identity/routing, immutable public payload ref, and pre-modular rollback archive.
+- No runtime behavior changed by this reconciliation commit.
+
+**Runtime/module/manifest/public behavior changed:** no; post-release records/reconciliation only.
+
+---
+
 ## 2026-09-20 — Issue #28 RC host gate prepared
 
 - Added durable handoff state for temporary Public RC Host v0.1.0 at `wd/28-public-rc-host` commit `536b89c7747e0a2f1f0f31561b1194ea00f73f3f`.

@@ -18,6 +18,27 @@ Install the temporary RC host, disable normal Dev/Public Dock instances for the 
 
 # Pre-Flight Check Log
 
+## 2026-09-20 — Issue #28 Stable smoke + janitorial reconciliation
+
+### PASS
+
+- `Witch_Scripts` is exact tested commit `95b5cdae4c8840d950d984c73bce101ba887011e`.
+- Actual public Stable userscript smoke passed through HF-Chat-Bridge #2967.
+- Launcher v2.0.0 / Core v2.0.0 / Loader v0.2.0.
+- Loader: 23/23 fetched and executed; 0 failed; immutable resolution=23; fallback=0.
+- Legacy monolith/source transforms both false.
+- Temporary Public RC Host and Dev Auto Host absent from Stable smoke page.
+- Exactly one Dock, compact shell, and compact icon.
+- All promoted runtime/core/tool file blobs match canonical Dev exactly.
+- Non-launcher manifest registry entries match canonical Dev.
+- Dev launcher v1.5.1 and Dev Auto Host v0.1.1 still route to `WITCH_DEV_MAIN`; no Stable fallback.
+- Issue #28 divergence removed; issue #19 canonical Dev channel divergence retained.
+- Rollback archive and immutable public payload ref preserved.
+
+**Runtime behavior changed:** no; release closeout records only.
+
+---
+
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
 ## PFC-2026-09-20-051 — Public promotion handoff checkpoint

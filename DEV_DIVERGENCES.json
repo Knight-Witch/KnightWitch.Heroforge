@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "devBranch": "WITCH_DEV_MAIN",
   "stableBranch": "Witch_Scripts",
-  "stableBaseline": "273b2dc2bbb7a38ea1591abf7c7723d23800e4a4",
+  "stableBaseline": "95b5cdae4c8840d950d984c73bce101ba887011e",
   "runtimeDivergences": [
     {
       "issue": 19,
@@ -19,40 +19,11 @@
         "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
         "Bootstrap/channel failure remains visible."
       ]
-    },
-    {
-      "issue": 28,
-      "status": "release-prep",
-      "reason": "The issue #10 modular architecture is validated in Dev and intentionally differs from current public Stable while release candidate/publicization work proceeds. No Stable mutation is authorized until the explicit promotion gate.",
-      "paths": [
-        "manifest.json",
-        "features/core/Witch_Dock_Styles.css",
-        "features/core/Witch_Dock_Modals.js",
-        "features/booth/Booth_Runtime_Bootstrap.js",
-        "tools/Booth.js",
-        "features/core/Witch_Dock_Bone_HUD.js",
-        "features/core/Witch_Dock_Preferences.js",
-        "features/core/Witch_Dock_Module_Loader.js",
-        "tools/Utilities.js",
-        "features/core/Witch_Dock_Registry.js",
-        "features/core/Witch_Dock_Shell.js",
-        "features/core/Witch_Dock_Interactions.js",
-        "features/core/Witch_Dock_History.js",
-        "features/core/Witch_Dock_Application.js",
-        "features/core/Witch_Dock_Core.js",
-        "features/core/Witch_Dock_Assets.js"
-      ],
-      "acceptance": [
-        "Canonical Dev preserves the validated issue #10 architecture: Core v2.0.0, Loader v0.2.0, 23/23 runtime modules, zero failures.",
-        "Canonical launcher v1.5.1 pins immutable payload commit 6603911658b426c6b95367697bedcc4c7acf67eb.",
-        "Canonical Dev smoke must pass before public RC construction.",
-        "Public Stable remains untouched until Amanda explicitly approves the tested RC promotion.",
-        "After Stable smoke, issue #14 janitorial cleanup/reconciliation runs automatically."
-      ]
     }
   ],
   "notes": [
-    "Issue #10 is complete/closed; its current Stable divergence is tracked by release issue #28.",
+    "Issue #28 is complete: modular v2.0.0 is live on Witch_Scripts and passed the actual Stable smoke.",
+    "Promoted runtime/core/tool files are byte-identical between canonical Dev and Stable; only the intentional canonical Dev channel identity/routing remains divergent.",
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency."
   ]
