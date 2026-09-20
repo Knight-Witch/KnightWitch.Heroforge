@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-19 — Fix v0.1.1 auto-host test expectations
+
+- Corrected the static/runtime test assertions to expect host v0.1.1 and canonical target `WITCH_DEV_MAIN`.
+- No auto-host runtime source, launcher/module, or Stable behavior changed.
+
+**Runtime/module/manifest/public behavior changed:** none; test/log correction only.
+
+---
+
 ## 2026-09-19 — Auto-host v0.1.1 canonical Dev target
 
 - Release issue #28 moves normal Dev delivery from the completed task branch to canonical `WITCH_DEV_MAIN`.

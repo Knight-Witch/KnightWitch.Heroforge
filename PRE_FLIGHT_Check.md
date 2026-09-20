@@ -1,5 +1,17 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-19-030 — v0.1.1 test expectation correction
+
+Date: 2026-09-19
+
+- Test assertions now match host v0.1.1 and target `WITCH_DEV_MAIN`.
+- Runtime host source unchanged by this commit.
+- Live canonical-Dev gate remains pending.
+
+**Runtime/module/manifest/public behavior changed:** none.
+
+---
+
 ## PFC-2026-09-19-029 — Auto-host v0.1.1 canonical Dev target
 
 Date: 2026-09-19
