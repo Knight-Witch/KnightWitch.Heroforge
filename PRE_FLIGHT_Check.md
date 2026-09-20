@@ -18,6 +18,21 @@ Install the temporary RC host, disable normal Dev/Public Dock instances for the 
 
 # Pre-Flight Check Log
 
+## 2026-09-20 — Branch cleanup audit / legacy harvest
+
+### PASS
+
+- Full branch inventory: 55.
+- Required keep set: 6.
+- Planned delete set: 49.
+- Current public/Dev immutable payload refs and Dev Auto Host delivery branch explicitly protected.
+- Legacy #26 bone references copied into canonical Dev before `GPT_DEV` retirement.
+- Open issues #7 and #20-#26 cross-checked for branch dependencies.
+- `WITCH_DEV_UI` deletion correctly gated on updating the external ChatGPT project bootstrap pointer to `WITCH_DEV_MAIN`.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-20 — Issue #28 Stable smoke + janitorial reconciliation
 
 ### PASS

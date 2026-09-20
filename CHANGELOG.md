@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-20 — Complete branch-retirement audit / harvest #12
+
+- Audited all 55 repository branches against canonical Dev, public Stable, open Witch Dock issues, runtime payload refs, rollback state, and legacy migration rules.
+- Classified 6 branches as currently required and 49 as obsolete after stated prerequisites.
+- Harvested the only branch-specific open-bug evidence worth preserving: legacy bone-selection reference/probe files from `GPT_DEV` for issue #26.
+- Confirmed current canonical lighting docs supersede the old lighting checkpoint branches for issue #23.
+- Added `docs/BRANCH_CLEANUP_HANDOFF_2026-09-20.md` as the exact low-context deletion handoff for Work.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-20 — Issue #28 public v2.0.0 promotion COMPLETE
 
 - Promoted exact tested RC `95b5cdae4c8840d950d984c73bce101ba887011e` to `Witch_Scripts` by non-forced fast-forward.
