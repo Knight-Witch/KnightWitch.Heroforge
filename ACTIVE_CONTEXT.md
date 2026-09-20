@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage E AUTOMATED PASS. v1.5.0 immutable modular bootstrap is live-clean; only the final human visual gate remains before issue #10 can be closed.
+**Current phase:** issue #10 COMPLETE. Stage E v1.5.0 immutable modular bootstrap passed automated live regression and Amanda's final human visual gate on 2026-09-19.
 
 ## Current priorities
 
-1. #10 — ACTIVE only for final human visual gate. Automated Stage E architecture + regression suite passed; do not expand scope.
+1. #10 — COMPLETE. Do not resume architecture extraction. Preserve v1.5.0 / payload `6cbc7c5530391d3b8611374ce051bde080ea1a2d` as the validated architecture baseline.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -302,6 +302,14 @@ Automated result:
 - Utilities section order restored exactly to `booth-features, bound-decal-gizmo, heroforge-ui`; temporary collapsed sections re-expanded.
 - Interaction/Application/History states all report lastError=null.
 - Remaining requirement: Amanda human visual confirmation that the current v1.5.0 Dock looks normal.
+
+## Final human visual gate — PASS
+
+- Amanda reviewed the current live v1.5.0 Dock after the full automated Stage E regression and confirmed: **"looks normal"**.
+- This closes the appearance/UX acceptance requirement for issue #10.
+- Issue #10 is complete. No Stable promotion is authorized by this completion record.
+- Validated Dev baseline: launcher v1.5.0 / Core v2.0.0 / Loader v0.2.0 / immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d` / 23/23 modules / 0 failed.
+- Public `Witch_Scripts` remains untouched. Any public release must follow the separate RC/publicization + explicit narrow promotion workflow.
 
 ## Minimum continuation set
 

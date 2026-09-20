@@ -2,6 +2,26 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-045 — Issue #10 final human visual PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Automated Stage E regression was already PASS on v1.5.0.
+- Amanda performed the required subjective visual check and confirmed the current live Dock looks normal.
+- Issue #10 acceptance is complete.
+- Validated baseline remains launcher v1.5.0 / Core v2.0.0 / Loader v0.2.0 / payload `6cbc7c5530391d3b8611374ce051bde080ea1a2d` / 23/23 / 0 failed.
+- No Stable branch mutation is part of this closure.
+
+### Next boundary
+
+Do not resume #10. Public release work, if requested, should use an isolated release-candidate/publicization flow with current Stable preserved as an immutable rollback point and explicit promotion approval.
+
+**Runtime/module/manifest/public behavior changed:** documentation/acceptance state only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-044 — Stage E automated live PASS
 
 Date: 2026-09-19

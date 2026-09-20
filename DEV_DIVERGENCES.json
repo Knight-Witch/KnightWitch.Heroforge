@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage E automated architecture/regression gate passed on v1.5.0. Only the final human visual gate remains before closure.",
+      "reason": "Issue #10 COMPLETE. v1.5.0 immutable modular bootstrap passed the full automated live regression and Amanda's final human visual gate. This validated architecture remains an intentional Dev-vs-Stable divergence until a separately approved public promotion.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -130,7 +130,8 @@
         "Activation launcher must pin the payload commit SHA directly and must not fetch/transform/eval Witch_Dock.user.js.",
         "v1.5.0 activation launcher is approximately 11.6 KB, pins payload commit 6cbc7c5530391d3b8611374ce051bde080ea1a2d, and contains no legacy monolith fetch/source-transform tokens.",
         "Final live diagnostics must show immutablePayload=true, legacyMonolithFetched=false, legacySourceTransforms=false, Core v2.0.0 running, Loader v0.2.0 23/23/0 with immutable-payload-root source mode.",
-        "Stage E automated live PASS: v1.5.0 immutable SHA payload, Core v2.0.0 running, Loader v0.2.0 23/23/0 with immutableResolutionCount=23/fallbackResolutionCount=0, and the full bounded Stage C/D regression surface passed with restored state."
+        "Stage E automated live PASS: v1.5.0 immutable SHA payload, Core v2.0.0 running, Loader v0.2.0 23/23/0 with immutableResolutionCount=23/fallbackResolutionCount=0, and the full bounded Stage C/D regression surface passed with restored state.",
+        "Final human visual PASS: Amanda confirmed the live v1.5.0 Dock looks normal after the automated Stage E regression."
       ]
     }
   ],

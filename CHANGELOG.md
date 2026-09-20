@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-045 — Issue #10 COMPLETE / final human visual PASS
+
+Date: 2026-09-19
+
+- Amanda reviewed the live v1.5.0 Dock after the complete Stage E automated regression and confirmed it looks normal.
+- Stage E and issue #10 are complete.
+- Validated architecture baseline: Dev launcher v1.5.0, Core v2.0.0, Loader v0.2.0, immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d`, 23/23 modules executed, 0 failed.
+- The temporary Stable-monolith fetch/source-transform bootstrap is retired from Dev.
+- Public Stable remains unchanged; no promotion is implied or authorized by closing #10.
+
+**Runtime/module/manifest/public behavior changed:** documentation/acceptance state only in this commit; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-044 — Stage E automated live PASS
 
 Date: 2026-09-19
