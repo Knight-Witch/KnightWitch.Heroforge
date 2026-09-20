@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D ACTIVE. v1.4.12 undo/redo History extraction is live-PASS at the genuine HeroForge queue boundary. Reassess remaining application-shell ownership before entering Stage E.
+**Current phase:** issue #10 Stage D ACTIVE. v1.4.12 History is live-PASS. v1.4.13 is the final Stage D candidate: move the remaining contiguous application-shell block (shared helpers + tab/tool/section orchestration) into a GitHub-owned Application module.
 
 ## Current priorities
 
-1. #10 — ACTIVE. v1.4.12 History boundary gate passed; inventory the remaining ordinary application-shell ownership and close Stage D only when the contract is actually satisfied.
+1. #10 — ACTIVE. Validate v1.4.13 Application Shell parity; if it passes, Stage D is complete and Stage E final bootstrap reduction begins.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -231,6 +231,19 @@
 - Baseline live queue currently has length=1/currentIndex=0; Undo and Redo are both disabled, and programmatic clicks leave queue/index unchanged. No synthetic history was injected.
 - Evidence: `hf-20260919-wd10-v1412-undo-baseline-read-040`, `hf-20260919-wd10-v1412-history-boundary-041`.
 - Live PASS at the genuine queue boundary: auto-host v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index remained 1/0; canUndo/canRedo false; both buttons disabled; clicking both remained a no-op; fallbackLoadCalls=0; lastError=null. Evidence: `hf-20260919-wd10-v1412-history-gate-043`. A real non-boundary undo/redo remains opportunistic regression evidence when genuine HeroForge history exists.
+
+
+## v1.4.13 candidate — final Stage D Application Shell extraction
+
+- New `features/core/Witch_Dock_Application.js` v0.1.0 / build `0.1.0-shell-registry-orchestration`.
+- Moves the remaining contiguous ordinary application-shell block from `el()` through `registerTool()`: DOM helper, clamp/viewport/position/size/minimized/compact display helpers, active-tab sizing/switching/order, tab creation, section create/collapse/order/drag, tool API construction, mount and registration.
+- Uses the already-extracted Preferences API for section state/order and the History API for undo/redo button synchronization; contains no raw GM capability.
+- The v1.4.6 content-box geometry fix is now physical module code rather than a runtime source patch.
+- Existing Registry module remains the owner of tabs/tools/pending containers; Shell remains root/compact DOM owner; Interactions remains drag/resize/minimize/compact/hotkey owner; History remains CK.UndoQueue owner.
+- Pre-change baseline: one 380x520 Dock at x=820/y=244; rendered tabs Body/Pose/Decals/Booth/JSON/Utilities with Booth active; Registry 6 tabs / 9 tools / 0 pending; 12 sections; public registerTool/ensureDock/downloadBlob functions present. Tab switch Booth -> Utilities -> Booth persisted activeTab correctly and preserved geometry.
+- Utilities section baseline order: `booth-features`, `bound-decal-gizmo`, `heroforge-ui`.
+- Evidence: `hf-20260919-wd10-stageD-app-baseline-044`, `hf-20260919-wd10-stageD-app-interaction-baseline-045`, `hf-20260919-wd10-stageD-section-baseline-046`.
+- Required live gate: auto-host v1.4.13; Application v0.1.0 configured/error-null; loader 23/23 / 0 failed; exact tabs/tools/sections/public seams/geometry parity; reversible Booth<->Utilities tab switch; reversible Utilities section reorder/restore; no duplicates.
 
 
 ## Minimum continuation set

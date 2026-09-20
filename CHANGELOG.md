@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-040 — v1.4.13 final Stage D Application Shell candidate
+
+Date: 2026-09-19
+
+- Launcher advances to v1.4.13.
+- Added `witch-dock-application` v0.1.0 / build `0.1.0-shell-registry-orchestration`.
+- Moves the remaining contiguous ordinary application-shell block: shared DOM/layout helpers, active-tab/tab creation/order, section creation/collapse/order/drag, tool API/mount/registration.
+- Application uses existing Preferences + History APIs and Registry-owned containers; no raw GM capability is exposed.
+- The validated v1.4.6 content-box geometry correction now lives physically in the Application module instead of launcher source transformation.
+- Removed obsolete launcher source transforms for section collapse/order and Dock snapshot.
+- Baseline: 6 canonical tabs, Booth active, 9 tools, 12 sections, one 380x520 Dock at 820/244, public WitchDock seams intact; Booth->Utilities->Booth selection persistence passed; Utilities section order is booth-features / bound-decal-gizmo / heroforge-ui.
+
+**Runtime/module/manifest/public behavior changed:** Dev task-branch ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-039 — v1.4.12 History live boundary PASS
 
 Date: 2026-09-19

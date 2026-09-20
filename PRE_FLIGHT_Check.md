@@ -2,6 +2,39 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-040 — v1.4.13 final Stage D Application Shell candidate
+
+Date: 2026-09-19
+
+### Static / contract checks
+
+- Application v0.1.0 parses and contains the full guarded legacy el-through-registerTool application block with storage redirected to Preferences and history sync redirected to History.
+- Application contains no raw GM_* privilege.
+- v1.4.6 computed CSS width/height snapshot fix is physically present in Application.
+- Launcher v1.4.13 parses, fetches/validates/configures Application, guards exactly one application-shell block and replaces it with thin wrappers.
+- Obsolete source transforms for section collapse/order and Dock snapshot are removed.
+- Isolated application-block transformed core parses.
+- Manifest JSON parses and launcher/Application versions/builds are synchronized.
+
+### Baseline
+
+- Dock: 380x520 CSS at x=820/y=244.
+- Tabs rendered in canonical order: Body Editor, Pose, Decals, Booth, JSON, Utilities; Booth active.
+- Registry: 6 tabs / 9 tools / 0 pending.
+- Sections: 12 total.
+- Public WitchDock registerTool/ensureDock/downloadBlob all functions.
+- Booth -> Utilities -> Booth normal clicks persist activeTab correctly and preserve geometry.
+- Utilities sections: booth-features, bound-decal-gizmo, heroforge-ui.
+- Evidence: `hf-20260919-wd10-stageD-app-baseline-044`, `hf-20260919-wd10-stageD-app-interaction-baseline-045`, `hf-20260919-wd10-stageD-section-baseline-046`.
+
+### Required live gate
+
+Auto-host v1.4.13, require Application configured/error-null and loader 23/23 / 0 failed; compare exact counts/order/public seams/geometry; repeat tab switch; perform one reversible Utilities section reorder and restore it before closing Stage D.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-039 — v1.4.12 History live boundary PASS
 
 Date: 2026-09-19

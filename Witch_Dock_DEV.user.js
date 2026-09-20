@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.12
+// @version      1.4.13
 // @description  Witch Dock issue #10 architecture task channel.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,7 +22,7 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.12";
+  const DEV_VERSION = "1.4.13";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
@@ -53,6 +53,9 @@
   const CORE_HISTORY_VERSION = "0.1.0";
   const CORE_HISTORY_BUILD = "0.1.0-undo-redo-owner";
   const CORE_HISTORY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_History.js?v=${CORE_HISTORY_VERSION}-${CORE_HISTORY_BUILD}`;
+  const CORE_APPLICATION_VERSION = "0.1.0";
+  const CORE_APPLICATION_BUILD = "0.1.0-shell-registry-orchestration";
+  const CORE_APPLICATION_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Application.js?v=${CORE_APPLICATION_VERSION}-${CORE_APPLICATION_BUILD}`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
   const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
@@ -78,8 +81,6 @@
   const PREFS_DECL_END = '\n\n  const state = {';
   const PREFS_IO_START = '  function loadPrefs() {';
   const PREFS_IO_END = '\n\n  const prefs = loadPrefs();';
-  const SECTION_COLLAPSE_STORAGE_START = 'function toolSectionKey(toolId, sectionId) {';
-  const SECTION_COLLAPSE_STORAGE_END = '\n\n  function createSection(toolId, opts) {';
   const SECTION_ORDER_STORAGE_START = 'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";';
   const SECTION_ORDER_STORAGE_END = '\n\nfunction saveSectionOrderFromDom(toolId, container) {';
   const TOOL_ENABLE_STORAGE_START = 'function getToolEnabled(toolId, enabledByDefault) {';
@@ -101,8 +102,8 @@
   const DOCK_HOTKEY_END = '\n\n  const BONE_FOOTER_HOTKEY_TEXT';
   const DOCK_HISTORY_START = '  function deepClone(obj) {';
   const DOCK_HISTORY_END = '\n\n  function loadPrefs() {';
-  const DOCK_SNAPSHOT_START = '  function snapshotCurrentDockPositionToPrefs() {';
-  const DOCK_SNAPSHOT_END = '\n\n  function applyPositionAndSize() {';
+  const APPLICATION_BLOCK_START = '  function el(tag, attrs, children) {';
+  const APPLICATION_BLOCK_END = '\n\n  function startDockDrag(e) {';
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
@@ -157,6 +158,11 @@
     coreHistoryBuild: CORE_HISTORY_BUILD,
     coreHistoryMode: "external-bootstrap-module",
     coreHistoryApplied: false,
+    coreApplicationUrl: CORE_APPLICATION_URL,
+    coreApplicationVersion: CORE_APPLICATION_VERSION,
+    coreApplicationBuild: CORE_APPLICATION_BUILD,
+    coreApplicationMode: "external-bootstrap-module",
+    coreApplicationApplied: false,
     bootstrapTransport: "host.requestText",
     presentationAssetMode: "inline-core-emblem-restored",
     status: "initializing",
@@ -329,6 +335,9 @@
     coreHistoryUrl: state.coreHistoryUrl,
     coreHistoryVersion: state.coreHistoryVersion,
     coreHistoryBuild: state.coreHistoryBuild,
+    coreApplicationUrl: state.coreApplicationUrl,
+    coreApplicationVersion: state.coreApplicationVersion,
+    coreApplicationBuild: state.coreApplicationBuild,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
@@ -392,7 +401,8 @@
     const shellRequestUrl = `${CORE_SHELL_URL}&kwdev=${nonce}`;
     const interactionsRequestUrl = `${CORE_INTERACTIONS_URL}&kwdev=${nonce}`;
     const historyRequestUrl = `${CORE_HISTORY_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions, coreHistory] = await Promise.all([
+    const applicationRequestUrl = `${CORE_APPLICATION_URL}&kwdev=${nonce}`;
+    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions, coreHistory, coreApplication] = await Promise.all([
       PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
@@ -401,7 +411,8 @@
       PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" }),
       PRIVILEGED_HOST.requestText(interactionsRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(historyRequestUrl, { cacheControl: "no-cache" })
+      PRIVILEGED_HOST.requestText(historyRequestUrl, { cacheControl: "no-cache" }),
+      PRIVILEGED_HOST.requestText(applicationRequestUrl, { cacheControl: "no-cache" })
     ]);
     if (!source) throw new Error("core fetch returned empty source");
     if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
@@ -412,6 +423,7 @@
     if (!coreShell) throw new Error("core shell module fetch returned empty source");
     if (!coreInteractions) throw new Error("core interactions module fetch returned empty source");
     if (!coreHistory) throw new Error("core history module fetch returned empty source");
+    if (!coreApplication) throw new Error("core application module fetch returned empty source");
 
     const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
     if (manifestMatches !== 1) {
@@ -637,6 +649,42 @@
       contract: "legacy-ck-undoqueue-dock-history"
     });
 
+    state.status = "loading-core-application";
+    eval(`${coreApplication}\n//# sourceURL=${CORE_APPLICATION_URL}`);
+    const applicationApi = UW.KWWitchDockApplication;
+    if (!applicationApi || applicationApi.version !== CORE_APPLICATION_VERSION || applicationApi.build !== CORE_APPLICATION_BUILD) {
+      throw new Error("external core application module did not register the expected API/version");
+    }
+    for (const name of [
+      "configure",
+      "el",
+      "clamp",
+      "computeMinDockHeightCollapsed",
+      "getViewport",
+      "isAnchored",
+      "snapshotCurrentDockPositionToPrefs",
+      "applyPositionAndSize",
+      "applyMinimizedState",
+      "showClosedCompact",
+      "computeMinDockWidthForActiveTab",
+      "enforceSizeConstraints",
+      "setActiveTab",
+      "mountTool",
+      "registerTool",
+      "getState"
+    ]) {
+      if (typeof applicationApi[name] !== "function") throw new Error(`external core application module is missing required method: ${name}`);
+    }
+    state.coreApplicationApplied = true;
+    UW.KWWitchDockApplicationInfo = Object.freeze({
+      version: CORE_APPLICATION_VERSION,
+      build: CORE_APPLICATION_BUILD,
+      url: CORE_APPLICATION_URL,
+      applied: true,
+      owner: "bootstrap-module",
+      contract: "legacy-application-shell-through-register-tool"
+    });
+
     const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
     let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
 
@@ -752,40 +800,6 @@
     ].join('\n');
     devSource = devSource.slice(0, compactDomStart) + compactDomReplacement + devSource.slice(compactDomEnd);
 
-    const dockSnapshotStart = devSource.indexOf(DOCK_SNAPSHOT_START);
-    const duplicateDockSnapshotStart = dockSnapshotStart >= 0 ? devSource.indexOf(DOCK_SNAPSHOT_START, dockSnapshotStart + DOCK_SNAPSHOT_START.length) : -1;
-    if (dockSnapshotStart < 0 || duplicateDockSnapshotStart >= 0) {
-      throw new Error(`expected exactly one Dock snapshot block; found ${dockSnapshotStart < 0 ? 0 : 2}`);
-    }
-    const dockSnapshotEnd = devSource.indexOf(DOCK_SNAPSHOT_END, dockSnapshotStart + DOCK_SNAPSHOT_START.length);
-    if (dockSnapshotEnd < 0) throw new Error("Dock snapshot block end was not found");
-    const legacyDockSnapshot = devSource.slice(dockSnapshotStart, dockSnapshotEnd);
-    for (const required of [
-      'const r = state.root.getBoundingClientRect();',
-      'prefs.lastOpenWidth = Math.round(r.width);',
-      'prefs.lastOpenHeight = Math.round(r.height);',
-      'savePrefs(prefs);'
-    ]) {
-      if (!legacyDockSnapshot.includes(required)) throw new Error(`Dock snapshot contract changed: missing ${required}`);
-    }
-    const stableDockSnapshot = legacyDockSnapshot
-      .replace(
-        'prefs.lastOpenWidth = Math.round(r.width);',
-        [
-          'const computed = getComputedStyle(state.root);',
-          '    const cssWidth = Number.parseFloat(computed.width);',
-          '    prefs.lastOpenWidth = Number.isFinite(cssWidth) ? Math.round(cssWidth) : Math.round(r.width);'
-        ].join('\n')
-      )
-      .replace(
-        'prefs.lastOpenHeight = Math.round(r.height);',
-        [
-          'const cssHeight = Number.parseFloat(computed.height);',
-          '    prefs.lastOpenHeight = Number.isFinite(cssHeight) ? Math.round(cssHeight) : Math.round(r.height);'
-        ].join('\n')
-      );
-    devSource = devSource.slice(0, dockSnapshotStart) + stableDockSnapshot + devSource.slice(dockSnapshotEnd);
-
     const dockHistoryStart = devSource.indexOf(DOCK_HISTORY_START);
     const duplicateDockHistoryStart = dockHistoryStart >= 0 ? devSource.indexOf(DOCK_HISTORY_START, dockHistoryStart + DOCK_HISTORY_START.length) : -1;
     if (dockHistoryStart < 0 || duplicateDockHistoryStart >= 0) {
@@ -833,6 +847,14 @@
       '  function savePrefs(p) { UW.KWWitchDockPreferences.save(p); }',
       '',
       '  const prefs = loadPrefs();',
+      '  UW.KWWitchDockApplication.configure({',
+      '    state,',
+      '    prefs,',
+      '    defaults: DEFAULTS,',
+      '    savePrefs,',
+      '    preferences: UW.KWWitchDockPreferences,',
+      '    history: UW.KWWitchDockHistory',
+      '  });',
       '  UW.KWWitchDockInteractions.configure({',
       '    state,',
       '    prefs,',
@@ -873,82 +895,44 @@
     ].join('\n');
     devSource = devSource.slice(0, toolEnableStart) + toolEnableReplacement + devSource.slice(toolEnableEnd + TOOL_ENABLE_STORAGE_END.length);
 
-    const sectionCollapseStart = devSource.indexOf(SECTION_COLLAPSE_STORAGE_START);
-    const duplicateSectionCollapseStart = sectionCollapseStart >= 0 ? devSource.indexOf(SECTION_COLLAPSE_STORAGE_START, sectionCollapseStart + SECTION_COLLAPSE_STORAGE_START.length) : -1;
-    if (sectionCollapseStart < 0 || duplicateSectionCollapseStart >= 0) {
-      throw new Error(`expected exactly one legacy section-collapse storage block; found ${sectionCollapseStart < 0 ? 0 : 2}`);
+    const applicationBlockStart = devSource.indexOf(APPLICATION_BLOCK_START);
+    const duplicateApplicationBlockStart = applicationBlockStart >= 0 ? devSource.indexOf(APPLICATION_BLOCK_START, applicationBlockStart + APPLICATION_BLOCK_START.length) : -1;
+    if (applicationBlockStart < 0 || duplicateApplicationBlockStart >= 0) {
+      throw new Error(`expected exactly one application-shell block; found ${applicationBlockStart < 0 ? 0 : 2}`);
     }
-    const sectionCollapseEnd = devSource.indexOf(SECTION_COLLAPSE_STORAGE_END, sectionCollapseStart + SECTION_COLLAPSE_STORAGE_START.length);
-    if (sectionCollapseEnd < 0) throw new Error("legacy section-collapse storage block end was not found");
-    const legacySectionCollapse = devSource.slice(sectionCollapseStart, sectionCollapseEnd);
+    const applicationBlockEnd = devSource.indexOf(APPLICATION_BLOCK_END, applicationBlockStart + APPLICATION_BLOCK_START.length);
+    if (applicationBlockEnd < 0) throw new Error("application-shell block end was not found");
+    const legacyApplicationBlock = devSource.slice(applicationBlockStart, applicationBlockEnd);
     for (const required of [
-      'kw.witchDock.ui.${toolId}.${sectionId}.collapsed',
-      'GM_getValue(toolSectionKey(toolId, sectionId), null)',
-      'GM_setValue(toolSectionKey(toolId, sectionId), !!collapsed)'
+      'function el(tag, attrs, children) {',
+      'function snapshotCurrentDockPositionToPrefs() {',
+      'function applyPositionAndSize() {',
+      'function setActiveTab(name) {',
+      'function ensureTab(name) {',
+      'function createSection(toolId, opts) {',
+      'function startSectionPointerDrag(toolId, sectionRoot, header, container, e) {',
+      'function mountTool(def) {',
+      'function registerTool(def) {'
     ]) {
-      if (!legacySectionCollapse.includes(required)) throw new Error(`legacy section-collapse storage contract changed: missing ${required}`);
+      if (!legacyApplicationBlock.includes(required)) throw new Error(`application-shell contract changed: missing ${required}`);
     }
-    const sectionCollapseReplacement = [
-      'function toolSectionKey(toolId, sectionId) { return UW.KWWitchDockPreferences.sectionCollapsedKey(toolId, sectionId); }',
-      '  function getSectionCollapsed(toolId, sectionId, defaultCollapsed) { return UW.KWWitchDockPreferences.getSectionCollapsed(toolId, sectionId, defaultCollapsed); }',
-      '  function setSectionCollapsed(toolId, sectionId, collapsed) { UW.KWWitchDockPreferences.setSectionCollapsed(toolId, sectionId, collapsed); }',
-      '',
-      '  function createSection(toolId, opts) {'
-    ].join('\n');
-    devSource = devSource.slice(0, sectionCollapseStart) + sectionCollapseReplacement + devSource.slice(sectionCollapseEnd + SECTION_COLLAPSE_STORAGE_END.length);
-
-    const sectionOrderStart = devSource.indexOf(SECTION_ORDER_STORAGE_START);
-    const duplicateSectionOrderStart = sectionOrderStart >= 0 ? devSource.indexOf(SECTION_ORDER_STORAGE_START, sectionOrderStart + SECTION_ORDER_STORAGE_START.length) : -1;
-    if (sectionOrderStart < 0 || duplicateSectionOrderStart >= 0) {
-      throw new Error(`expected exactly one legacy section-order storage block; found ${sectionOrderStart < 0 ? 0 : 2}`);
-    }
-    const sectionOrderEnd = devSource.indexOf(SECTION_ORDER_STORAGE_END, sectionOrderStart + SECTION_ORDER_STORAGE_START.length);
-    if (sectionOrderEnd < 0) throw new Error("legacy section-order storage block end was not found");
-    const legacySectionOrder = devSource.slice(sectionOrderStart, sectionOrderEnd);
-    for (const required of [
-      'kw.witchDock.sectionOrder.',
-      'GM_getValue(sectionOrderKey(toolId), null)',
-      'GM_setValue(sectionOrderKey(toolId), JSON.stringify(order))'
-    ]) {
-      if (!legacySectionOrder.includes(required)) throw new Error(`legacy section-order storage contract changed: missing ${required}`);
-    }
-    const sectionOrderReplacement = [
-      'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";',
-      'function sectionOrderKey(toolId) { return UW.KWWitchDockPreferences.sectionOrderKey(toolId); }',
-      'function getSectionOrder(toolId) { return UW.KWWitchDockPreferences.getSectionOrder(toolId); }',
-      'function setSectionOrder(toolId, order) { UW.KWWitchDockPreferences.setSectionOrder(toolId, order); }',
-      '',
-      'function saveSectionOrderFromDom(toolId, container) {'
-    ].join('\n');
-    devSource = devSource.slice(0, sectionOrderStart) + sectionOrderReplacement + devSource.slice(sectionOrderEnd + SECTION_ORDER_STORAGE_END.length);
-
-    const boneStart = devSource.indexOf(BONE_BLOCK_START);
-    const duplicateBoneStart = boneStart >= 0 ? devSource.indexOf(BONE_BLOCK_START, boneStart + BONE_BLOCK_START.length) : -1;
-    if (boneStart < 0 || duplicateBoneStart >= 0) {
-      throw new Error(`expected exactly one legacy bone HUD block start; found ${boneStart < 0 ? 0 : 2}`);
-    }
-    const boneEnd = devSource.indexOf(BONE_BLOCK_END, boneStart + BONE_BLOCK_START.length);
-    if (boneEnd < 0) throw new Error("legacy bone HUD block end was not found");
-    const legacyBoneBlock = devSource.slice(boneStart, boneEnd);
-    if ((legacyBoneBlock.split("function initBoneFooterAndDetection(").length - 1) !== 1) {
-      throw new Error("legacy bone HUD init function contract changed");
-    }
-    if ((legacyBoneBlock.split("function getScriptMeta(").length - 1) !== 1) {
-      throw new Error("legacy bone HUD script-meta seam contract changed");
-    }
-
-    const boneReplacement = [
-      'function initBoneFooterAndDetection() {',
-      '  if (state.boneInit) return;',
-      '  if (!state.footer) return;',
-      '  state.boneInit = true;',
-      '  const handle = UW.KWWitchDockBoneHUD.init({ footer: state.footer, hotkeyText: BONE_FOOTER_HOTKEY_TEXT });',
-      '  state.__kwBoneDetect = handle || null;',
-      '}',
-      '',
-      '  function closeAboutModal() {'
-    ].join('\n');
-    devSource = devSource.slice(0, boneStart) + boneReplacement + devSource.slice(boneEnd + BONE_BLOCK_END.length);
+    const applicationBlockReplacement = [
+      '  function el(tag, attrs, children) { return UW.KWWitchDockApplication.el(tag, attrs, children); }',
+      '  function clamp(n, min, max) { return UW.KWWitchDockApplication.clamp(n, min, max); }',
+      '  function computeMinDockHeightCollapsed() { return UW.KWWitchDockApplication.computeMinDockHeightCollapsed(); }',
+      '  function getViewport() { return UW.KWWitchDockApplication.getViewport(); }',
+      '  function isAnchored() { return UW.KWWitchDockApplication.isAnchored(); }',
+      '  function snapshotCurrentDockPositionToPrefs() { return UW.KWWitchDockApplication.snapshotCurrentDockPositionToPrefs(); }',
+      '  function applyPositionAndSize() { return UW.KWWitchDockApplication.applyPositionAndSize(); }',
+      '  function applyMinimizedState() { return UW.KWWitchDockApplication.applyMinimizedState(); }',
+      '  function showClosedCompact() { return UW.KWWitchDockApplication.showClosedCompact(); }',
+      '  function computeMinDockWidthForActiveTab() { return UW.KWWitchDockApplication.computeMinDockWidthForActiveTab(); }',
+      '  function enforceSizeConstraints() { return UW.KWWitchDockApplication.enforceSizeConstraints(); }',
+      '  function setActiveTab(name) { return UW.KWWitchDockApplication.setActiveTab(name); }',
+      '  function mountTool(def) { return UW.KWWitchDockApplication.mountTool(def); }',
+      '  function registerTool(def) { return UW.KWWitchDockApplication.registerTool(def); }'
+    ].join('\n\n');
+    devSource = devSource.slice(0, applicationBlockStart) + applicationBlockReplacement + devSource.slice(applicationBlockEnd);
 
     const dockDragStart = devSource.indexOf(DOCK_DRAG_START);
     const duplicateDockDragStart = dockDragStart >= 0 ? devSource.indexOf(DOCK_DRAG_START, dockDragStart + DOCK_DRAG_START.length) : -1;
@@ -1105,8 +1089,8 @@
 
     // Temporary bounded migration seam for issue #19/#10. The fetched core executes
     // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // CSS, modal, bone-HUD, main/section/tool preferences, tab/tool registry containers, shell DOM, Dock interactions/hotkey, and undo/redo ownership have moved to bootstrap-hosted GitHub components while
-    // remaining legacy application responsibilities stay in the Stable-derived core.
+    // Stage D application ownership is now external: CSS/presentation, preferences, registry state, shell DOM, application-shell orchestration, interactions/hotkey, and undo/redo are bootstrap-hosted GitHub components.
+    // The remaining Stable-derived source is temporary Stage E bootstrap/application startup scaffolding only.
     eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
 
     UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;
