@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-20-050 — Public 2.0.0 immutable payload candidate
+
+Date: 2026-09-20
+
+- Release issue #28 public payload is derived from canonical Dev payload `6603911658b426c6b95367697bedcc4c7acf67eb`.
+- Runtime/core/module source bytes are unchanged from the canonical Dev-smoked architecture.
+- Manifest replaces the Dev launcher registry entry with public `witch-dock-launcher` v2.0.0 / `2.0.0-immutable-modular-bootstrap`.
+- All legacy fallback URLs resolve to public `Witch_Scripts`.
+- Core remains v2.0.0; Loader remains v0.2.0; runtime module count remains 23.
+- This payload commit is created before the public launcher so the RC can pin the exact immutable SHA.
+
+**Runtime/module/manifest/public behavior changed:** public release metadata/fallback routing only; Stable branch still untouched.
+
+---
+
 ## DOCK-2026-09-19-047 — Canonicalize payload fallback URLs
 
 Date: 2026-09-19

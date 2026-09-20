@@ -1,6 +1,28 @@
 # Pre-Flight Check Log
 
-Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
+Rolling current Dev pre-flight record. Older detail remains durable in Git history/issues.
+
+## PFC-2026-09-20-050 — Public 2.0.0 immutable payload candidate
+
+Date: 2026-09-20
+
+### PASS
+
+- Derived from canonical Dev-smoked payload `6603911658b426c6b95367697bedcc4c7acf67eb`.
+- 23 runtime modules retained.
+- No manifest URL references WITCH_DEV_MAIN, wd/10-modular-bootstrap, or legacy Dev branches.
+- Public launcher registry identity is v2.0.0.
+- Core v2.0.0 and Loader v0.2.0 unchanged.
+- Runtime/core/module source bytes unchanged from canonical Dev payload.
+- Stable branch remains untouched.
+
+### Next
+
+Create immutable payload commit/ref, then build the public RC launcher pinned to that SHA.
+
+**Runtime/module/manifest/public behavior changed:** public release metadata/fallback routing only.
+
+---
 
 ## PFC-2026-09-19-047 — Canonical payload fallback routing
 
