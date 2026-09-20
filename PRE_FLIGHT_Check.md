@@ -2,6 +2,25 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-20-051 — Public promotion handoff checkpoint
+
+Date: 2026-09-20
+
+### Confirmed durable state
+
+- Canonical Dev live PASS at v1.5.1 / Core v2.0.0 / Loader v0.2.0 / 23/23 / 0 failed.
+- Stable baseline preserved at `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- Rollback archive branch exists.
+- Public payload `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`.
+- Public RC `95b5cdae4c8840d950d984c73bce101ba887011e`.
+- RC live gate not yet run.
+- Bridge userscript grants are insufficient to faithfully execute the exact public launcher directly.
+- No Stable mutation has occurred.
+
+**Runtime/module/manifest/public behavior changed:** none.
+
+---
+
 ## PFC-2026-09-20-049 — Canonical Dev v1.5.1 smoke PASS
 
 Date: 2026-09-20

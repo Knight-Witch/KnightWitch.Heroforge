@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-20-051 — Public promotion handoff checkpoint
+
+Date: 2026-09-20
+
+- Persisted issue #28 release state after canonical Dev PASS and public RC construction.
+- Public RC is `wd/28-public-rc` @ `95b5cdae4c8840d950d984c73bce101ba887011e`.
+- Public immutable payload is `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`.
+- Stable remains `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`; rollback archive exists.
+- Exact RC live gate remains pending.
+- Recorded that HF-Chat-Bridge host lacks GM_addStyle/GM_setClipboard/GM_download and therefore cannot faithfully host the public launcher directly.
+- Exact next action is a temporary isolated Public RC Host followed by the explicit Stable-promotion approval gate.
+
+**Runtime/module/manifest/public behavior changed:** none; handoff/router only.
+
+---
+
 ## DOCK-2026-09-20-049 — Canonical Dev v1.5.1 smoke PASS
 
 Date: 2026-09-20
