@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV AUTO HOST
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.1.1
 // @description  Loads the current Witch Dock Dev launcher on every HeroForge page load.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,10 +22,10 @@
 (function () {
   "use strict";
 
-  const HOST_VERSION = "0.1.0";
+  const HOST_VERSION = "0.1.1";
   const TARGET_NAME = "WITCH DOCK - DEV";
   const TARGET_NAMESPACE = "KnightWitch";
-  const TARGET_BRANCH = "wd/10-modular-bootstrap";
+  const TARGET_BRANCH = "WITCH_DEV_MAIN";
   const TARGET_URL = `https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/${TARGET_BRANCH}/Witch_Dock_DEV.user.js`;
   const MAX_SOURCE_CHARS = 160000;
   const REQUIRED_GRANTS = Object.freeze([

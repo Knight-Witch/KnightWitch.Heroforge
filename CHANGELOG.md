@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-19 — Auto-host v0.1.1 canonical Dev target
+
+- Release issue #28 moves normal Dev delivery from the completed task branch to canonical `WITCH_DEV_MAIN`.
+- Auto-host advances to v0.1.1 and changes only its validated launcher target from `wd/10-modular-bootstrap` to `WITCH_DEV_MAIN`.
+- Identity/grant validation, retries, synthetic payload-correct `GM_info`, duplicate-host protection, and direct-launcher conflict rejection are unchanged.
+- Required live gate: install/update v0.1.1 once, Bridge reload, then confirm host target `WITCH_DEV_MAIN`, payload v1.5.1, canonical channel state, Core v2.0.0, Loader 23/23 / 0 failed.
+- Public Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** development delivery target only; public Stable unchanged.
+
+---
+
 ## 2026-09-19 — Dev auto-host live gate COMPLETE
 
 - Amanda confirmed the Dock looked normal/unchanged after the automated auto-host reload gate.

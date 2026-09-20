@@ -1,5 +1,25 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-19-029 — Auto-host v0.1.1 canonical Dev target
+
+Date: 2026-09-19
+
+### Static contract
+
+- Host metadata/runtime version synchronized at v0.1.1.
+- Target branch is exactly `WITCH_DEV_MAIN`.
+- Launcher identity/namespace/grant/connect validation is unchanged.
+- Updated test fixture represents canonical launcher v1.5.1 / branch `WITCH_DEV_MAIN`.
+- No Stable or Witch Dock runtime-module change is included.
+
+### Required live gate
+
+Update the installed auto-host once, reload through Bridge, then require canonical v1.5.1 + payload `660391...` + Core v2.0.0 + Loader 23/23/0.
+
+**Runtime/module/manifest/public behavior changed:** development delivery target only.
+
+---
+
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
 ## PFC-2026-09-18-028 — Isolated Dev auto-host candidate
