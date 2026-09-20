@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-20 — Route current work to branch-retirement execution
+
+- Updated `ACTIVE_CONTEXT.md` to issue #13 after completing the 55-branch audit and issue #12 harvest.
+- Routed Work directly to `docs/BRANCH_CLEANUP_HANDOFF_2026-09-20.md`.
+- Protected the exact six-branch keep set and recorded the external ChatGPT project-instruction prerequisite for deleting `WITCH_DEV_UI`.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-20 — Complete branch-retirement audit / harvest #12
 
 - Audited all 55 repository branches against canonical Dev, public Stable, open Witch Dock issues, runtime payload refs, rollback state, and legacy migration rules.

@@ -18,6 +18,17 @@ Install the temporary RC host, disable normal Dev/Public Dock instances for the 
 
 # Pre-Flight Check Log
 
+## 2026-09-20 — Branch-retirement execution router
+
+### PASS
+
+- Canonical Dev now routes directly to issue #13 and the completed branch cleanup handoff.
+- Exact six-branch protected set recorded.
+- Exact prerequisite for retiring `WITCH_DEV_UI` recorded.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-20 — Branch cleanup audit / legacy harvest
 
 ### PASS
