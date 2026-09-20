@@ -1,5 +1,25 @@
 # Pre-Flight Check Log
 
+## 2026-09-20 — Witch Dock 2.0.0 modular public RC
+
+### Static scope
+
+- Base is exact Stable `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- Public launcher v2.0.0 parses and contains no Dev/task-branch identifiers.
+- Launcher update/download URLs remain public `Witch_Scripts/Witch_Dock.user.js`.
+- Launcher pins immutable public payload `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`.
+- Payload manifest contains 23 runtime modules, public launcher registry v2.0.0, Core v2.0.0, Loader v0.2.0, and no WITCH_DEV_MAIN/task-branch fallback URLs.
+- Promoted runtime module source bytes are exact copies from the canonical Dev-smoked payload.
+- No unrelated Stable file is changed.
+
+### Required RC live gate
+
+Run the exact public launcher/payload in HeroForge without mutating `Witch_Scripts`. Require stable channel identity, Core v2.0.0 running, Loader 23/23 / 0 failed, immutable resolution=23/fallback=0, preserved Dock geometry/interactions/public seams, representative tools, and normal visual appearance.
+
+Do not promote until Amanda explicitly approves the tested RC.
+
+---
+
 This active Stable pre-flight log is intentionally compact. Older detailed Stable records remain durable in Git history.
 
 ## PFC-2026-09-16-039 — Issue #9 Stable module-loader promotion

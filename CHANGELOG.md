@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-20 — Witch Dock 2.0.0 modular public RC
+
+- Built isolated release candidate from exact current public Stable baseline `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- Replaced the monolithic public `Witch_Dock.user.js` with the small privileged public launcher v2.0.0 / build `2.0.0-immutable-modular-bootstrap`.
+- Public launcher pins immutable payload `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`.
+- Added the validated modular Core v2.0.0 and extracted Shell/Application/Preferences/Interactions/History/Modals/Bone HUD/Assets/Styles components.
+- Loader advances to v0.2.0 immutable payload-root resolution.
+- Included only the validated #10 runtime handoff changes required by the modular architecture: Booth Runtime Bootstrap, Booth tool, and Utilities.
+- Public payload retains 23 runtime modules, with normal loading from the immutable payload root and public `Witch_Scripts` fallback URLs.
+- This is an RC only. Public `Witch_Scripts` remains unchanged pending live RC validation and explicit promotion approval.
+
+**Runtime/module/manifest/public behavior changed:** isolated RC only; public Stable branch unchanged.
+
+---
+
 This active Stable changelog is intentionally compact. Older detailed Stable entries remain durable in Git history.
 
 ## DOCK-2026-09-16-039 — Promote parallel module loading to public Stable

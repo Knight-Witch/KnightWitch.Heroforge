@@ -2,14 +2,124 @@
   "version": 1,
   "moduleRegistry": [
     {
+      "id": "witch-dock-launcher",
+      "title": "Witch Dock Launcher",
+      "path": "Witch_Dock.user.js",
+      "kind": "bootstrap",
+      "load": "userscript",
+      "version": "2.0.0",
+      "build": "2.0.0-immutable-modular-bootstrap",
+      "versionOrigin": "issue-28-public-modular-promotion-2026-09-20"
+    },
+    {
       "id": "witch-dock-core",
       "title": "Witch Dock Core",
-      "path": "Witch_Dock.user.js",
-      "kind": "core",
-      "load": "userscript",
-      "version": "1.2.1",
-      "build": "1.2.1-stable-cache-keyed-loader",
-      "versionOrigin": "stable-loader-cache-repair-2026-09-07"
+      "path": "features/core/Witch_Dock_Core.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "2.0.0",
+      "build": "2.0.0-modular-orchestrator",
+      "versionOrigin": "issue-10-stage-e-modular-core-2026-09-19"
+    },
+    {
+      "id": "witch-dock-assets",
+      "title": "Witch Dock Core Assets",
+      "path": "features/core/Witch_Dock_Assets.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-known-good-compact-emblem",
+      "versionOrigin": "issue-10-stage-e-core-assets-2026-09-19"
+    },
+    {
+      "id": "witch-dock-styles",
+      "title": "Witch Dock Core Styles",
+      "path": "features/core/Witch_Dock_Styles.css",
+      "kind": "core-style",
+      "load": "bootstrap-style",
+      "version": "0.1.0",
+      "build": "0.1.0-extracted-core-css",
+      "versionOrigin": "issue-10-core-css-extraction-2026-09-17"
+    },
+    {
+      "id": "witch-dock-modals",
+      "title": "Witch Dock About/Disclaimer UI",
+      "path": "features/core/Witch_Dock_Modals.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.1",
+      "build": "0.1.1-lazy-about-open",
+      "versionOrigin": "issue-10-modal-lazy-open-fix-2026-09-17"
+    },
+    {
+      "id": "witch-dock-bone-hud",
+      "title": "Witch Dock Bone HUD / Detection",
+      "path": "features/core/Witch_Dock_Bone_HUD.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-extracted-bone-hud",
+      "versionOrigin": "issue-10-bone-hud-extraction-2026-09-17"
+    },
+    {
+      "id": "witch-dock-preferences",
+      "title": "Witch Dock Preferences",
+      "path": "features/core/Witch_Dock_Preferences.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.3.0",
+      "build": "0.3.0-tool-enablement-store",
+      "versionOrigin": "issue-10-stage-d-tool-enablement-2026-09-17"
+    },
+    {
+      "id": "witch-dock-registry",
+      "title": "Witch Dock Registry State",
+      "path": "features/core/Witch_Dock_Registry.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-tab-tool-state-containers",
+      "versionOrigin": "issue-10-stage-d-registry-containers-2026-09-18"
+    },
+    {
+      "id": "witch-dock-shell",
+      "title": "Witch Dock Main Shell DOM",
+      "path": "features/core/Witch_Dock_Shell.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.2.0",
+      "build": "0.2.0-main-and-compact-dom",
+      "versionOrigin": "issue-10-stage-d-compact-dom-2026-09-18"
+    },
+    {
+      "id": "witch-dock-interactions",
+      "title": "Witch Dock Minimize / Compact Lifecycle",
+      "path": "features/core/Witch_Dock_Interactions.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.5.0",
+      "build": "0.5.0-dock-hotkey",
+      "versionOrigin": "issue-10-stage-d-dock-hotkey-2026-09-19"
+    },
+    {
+      "id": "witch-dock-history",
+      "title": "Witch Dock Undo / Redo History",
+      "path": "features/core/Witch_Dock_History.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-undo-redo-owner",
+      "versionOrigin": "issue-10-stage-d-undo-redo-2026-09-19"
+    },
+    {
+      "id": "witch-dock-application",
+      "title": "Witch Dock Application Shell",
+      "path": "features/core/Witch_Dock_Application.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-shell-registry-orchestration",
+      "versionOrigin": "issue-10-stage-d-application-shell-2026-09-19"
     },
     {
       "id": "witch-dock-module-loader",
@@ -17,9 +127,9 @@
       "path": "features/core/Witch_Dock_Module_Loader.js",
       "kind": "core-feature",
       "load": "manifest-bootstrap",
-      "version": "0.1.1",
-      "build": "0.1.1-stable-page-fetch-ordered-exec",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-16"
+      "version": "0.2.0",
+      "build": "0.2.0-immutable-payload-root",
+      "versionOrigin": "issue-10-stage-e-immutable-payload-loader-2026-09-19"
     },
     {
       "id": "expanded-ui-scroll-guards",
@@ -112,9 +222,9 @@
       "path": "features/booth/Booth_Runtime_Bootstrap.js",
       "kind": "compatibility-feature",
       "load": "manifest",
-      "version": "0.1.1",
-      "build": "0.1.1-dev-native-loader-coordination",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-08"
+      "version": "0.2.1",
+      "build": "0.2.1-media-readiness-handoff",
+      "versionOrigin": "issue-10-media-readiness-handoff-2026-09-17"
     },
     {
       "id": "booth-tool",
@@ -122,9 +232,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.0.4",
-      "build": "v27.0.4",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-07"
+      "version": "27.0.6",
+      "build": "v27.0.6-media-readiness-handoff",
+      "versionOrigin": "issue-10-media-readiness-handoff-2026-09-17"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -251,8 +361,9 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.1",
-      "versionOrigin": "stable-promoted-booth-defaults-2026-09-07"
+      "version": "1.2.2",
+      "versionOrigin": "issue-10-stage-d-tool-enablement-2026-09-17",
+      "build": "1.2.2-tool-enablement-preferences"
     }
   ],
   "tools": [
@@ -260,7 +371,7 @@
       "id": "witch-dock-module-loader",
       "title": "Witch Dock Module Loader",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Module_Loader.js?v=0.1.1-stable-page-fetch-ordered-exec",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Module_Loader.js?v=0.2.0-immutable-payload-root",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -307,7 +418,7 @@
       "id": "corrected-bound-decal-gizmo",
       "title": "Corrected Bound Decal Gizmo",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js?v=1.1.1-dev-fresh-slot-normalization",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -337,7 +448,7 @@
       "id": "booth-runtime-bootstrap",
       "title": "Booth Runtime Bootstrap",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Booth_Runtime_Bootstrap.js?v=0.1.1-dev-native-loader-coordination",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Booth_Runtime_Bootstrap.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -346,14 +457,14 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js?v=27.0.4-v27.0.4",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
       "enabledByDefault": true
     },
     {
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js?v=0.1.5-dev-restore-before-booth-handoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -407,7 +518,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.5-preserve-native-source-floor",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -416,7 +527,7 @@
       "id": "texture-quality-same-figure-drift-guard",
       "title": "Texture Quality Same-Figure Drift Guard",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js?v=0.1.0-dev-stable-same-figure-repair",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -425,7 +536,7 @@
       "id": "texture-quality-active-decal-priority",
       "title": "Texture Quality Active Decal Priority",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Active_Decal_Priority.js?v=0.1.1-dev-projected-host-lifecycle-coordination",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Active_Decal_Priority.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -434,7 +545,7 @@
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -443,7 +554,7 @@
       "id": "texture-quality-beta-notice",
       "title": "Texture Quality Phase 1 Beta Notice",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Beta_Notice.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

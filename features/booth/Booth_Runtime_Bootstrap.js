@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.runtime-bootstrap';
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-dev-native-loader-coordination';
+  const VERSION = '0.2.1';
+  const BUILD = '0.2.1-media-readiness-handoff';
   const API_KEY = 'KW_WD_BOOTH_BOOTSTRAP';
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const POLL_MS = 200;
@@ -23,6 +23,7 @@
     completedForDataRef: null,
     attempts: 0,
     bootstrapCount: 0,
+    lastTrigger: null,
     lastMode: null,
     lastSignals: [],
     lastVersion: null,
@@ -31,7 +32,9 @@
     loaderStrategy: null,
     lastStartedAt: 0,
     lastCompletedAt: 0,
-    lastError: null
+    lastError: null,
+    directSessionRequests: 0,
+    lastDirectSessionRequestAt: 0
   };
 
   function recordError(where, error) {
@@ -65,6 +68,16 @@
       return UW.CK && UW.CK.data ? UW.CK.data : null;
     } catch {
       return null;
+    }
+  }
+
+  function nativeBoothReady() {
+    try {
+      const BT = UW.BT;
+      const engine = BT && (BT.liveEngine || BT.maker);
+      return !!(BT && typeof BT.setBoothMode === 'function' && engine && engine.enabled);
+    } catch {
+      return false;
     }
   }
 
@@ -125,6 +138,36 @@
       recordError('strongSavedConfig', error);
     }
     return null;
+  }
+
+  function sessionBoothRequest() {
+    try {
+      const api = UW.KW_WD_BOOTH;
+      if (!api || typeof api.getState !== 'function') return null;
+      const current = api.getState() || {};
+      if (!current.sessionBoothView) return null;
+
+      const dataRef = currentDataRef();
+      if (!dataRef) return null;
+
+      const saved = strongSavedConfig();
+      const mode = (saved && saved.mode)
+        || (typeof current.savedBoothMode === 'string' && current.savedBoothMode)
+        || 'portrait';
+      const signals = saved && Array.isArray(saved.signals) && saved.signals.length
+        ? saved.signals.slice()
+        : ['sessionBoothView'];
+
+      return {
+        dataRef,
+        mode,
+        signals,
+        signature: 'session|' + mode + '|' + signals.slice().sort().join(',')
+      };
+    } catch (error) {
+      recordError('sessionBoothRequest', error);
+      return null;
+    }
   }
 
   function deriveHeroForgeVersion() {
@@ -295,10 +338,22 @@
     }
   }
 
-  async function bootstrap(saved) {
+  function refreshOptionalMediaReadiness() {
+    try {
+      const readiness = UW.KWPhotoBoothTrueResolutionReadiness;
+      if (readiness && typeof readiness.sync === 'function') readiness.sync();
+    } catch {}
+    try {
+      const webpUI = UW.KWSpinnyMiniWebPUI;
+      if (webpUI && typeof webpUI.refresh === 'function') webpUI.refresh();
+    } catch {}
+  }
+
+  async function bootstrap(saved, trigger) {
     if (!saved || state.inFlight || !state.enabled) return false;
     state.inFlight = true;
     state.attempts += 1;
+    state.lastTrigger = trigger || 'saved-persistence';
     state.lastStartedAt = Date.now();
     state.lastMode = saved.mode;
     state.lastSignals = saved.signals.slice();
@@ -335,6 +390,7 @@
       return false;
     } finally {
       state.inFlight = false;
+      refreshOptionalMediaReadiness();
     }
   }
 
@@ -345,6 +401,17 @@
     state.stableCount = 0;
   }
 
+  function requestSession(trigger) {
+    if (!state.enabled || state.inFlight || nativeBoothReady()) return false;
+    const requested = sessionBoothRequest();
+    if (!requested) return false;
+
+    state.directSessionRequests += 1;
+    state.lastDirectSessionRequestAt = Date.now();
+    bootstrap(requested, typeof trigger === 'string' && trigger ? trigger : 'session-booth-direct');
+    return true;
+  }
+
   function poll() {
     if (!state.enabled) return;
     try {
@@ -352,6 +419,11 @@
       if (dataRef !== state.activeDataRef) {
         state.activeDataRef = dataRef;
         resetStable();
+      }
+
+      const sessionRequest = sessionBoothRequest();
+      if (sessionRequest && !nativeBoothReady() && !state.inFlight) {
+        bootstrap(sessionRequest, 'session-booth-view');
       }
 
       if (!persistenceEnabled()) {
@@ -376,7 +448,7 @@
           if (state.stableCount >= STABLE_REQUIRED &&
               state.completedForDataRef !== saved.dataRef &&
               !state.inFlight) {
-            bootstrap(saved);
+            bootstrap(saved, 'saved-persistence');
           }
         }
       }
@@ -394,11 +466,14 @@
       build: BUILD,
       enabled: !!state.enabled,
       persistenceEnabled: persistenceEnabled(),
+      sessionBoothRequested: !!sessionBoothRequest(),
+      nativeBoothReady: nativeBoothReady(),
       stableCount: state.stableCount,
       stableRequired: STABLE_REQUIRED,
       inFlight: !!state.inFlight,
       attempts: state.attempts,
       bootstrapCount: state.bootstrapCount,
+      lastTrigger: state.lastTrigger,
       lastMode: state.lastMode,
       lastSignals: state.lastSignals.slice(),
       lastHeroForgeVersion: state.lastVersion,
@@ -411,6 +486,8 @@
       lastStartedAt: state.lastStartedAt,
       lastCompletedAt: state.lastCompletedAt,
       lastError: state.lastError,
+      directSessionRequests: state.directSessionRequests,
+      lastDirectSessionRequestAt: state.lastDirectSessionRequestAt,
       btPresent: !!UW.BT,
       btSetBoothMode: !!(UW.BT && typeof UW.BT.setBoothMode === 'function')
     };
@@ -436,6 +513,7 @@
     version: VERSION,
     build: BUILD,
     getState,
+    requestSession,
     dispose
   };
 
