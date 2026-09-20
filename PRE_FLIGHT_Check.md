@@ -1,3 +1,21 @@
+## 2026-09-20 — Issue #28 RC host handoff refresh
+
+### Recorded evidence
+
+- Public RC host branch: `wd/28-public-rc-host` @ `536b89c7747e0a2f1f0f31561b1194ea00f73f3f`.
+- Host file blob: `a494af2fd74de66204789667e0fecdee111c8b40`.
+- RC source remains `wd/28-public-rc` @ `95b5cdae4c8840d950d984c73bce101ba887011e`.
+- Public Stable and archive remain `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
+- Bridge ping #2961: SUCCESS, userscript v0.4.0, page context available, pump healthy, DEV writes enabled.
+
+### Next live gate
+
+Install the temporary RC host, disable normal Dev/Public Dock instances for the gate, reload once, then run exact public-channel/loader/interactions/tool smoke through Bridge and obtain Amanda's visual confirmation. Do not mutate Stable before explicit promotion approval.
+
+**Runtime/module/manifest/public behavior changed:** no; handoff documentation only.
+
+---
+
 # Pre-Flight Check Log
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.

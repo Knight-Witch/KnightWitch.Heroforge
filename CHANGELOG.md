@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-20 — Issue #28 RC host gate prepared
+
+- Added durable handoff state for temporary Public RC Host v0.1.0 at `wd/28-public-rc-host` commit `536b89c7747e0a2f1f0f31561b1194ea00f73f3f`.
+- Recorded static PASS and healthy HF-Chat-Bridge v0.4.0 ping (#2961).
+- Exact next step is now the one-time Tampermonkey RC-host install/disable switch followed by Bridge-driven live validation.
+- No runtime/module/manifest/public Stable code changed on canonical Dev.
+
+**Runtime/module/manifest/public behavior changed:** no; documentation/handoff only.
+
+---
+
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
 ## DOCK-2026-09-20-051 — Public promotion handoff checkpoint
