@@ -2,6 +2,21 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-047 — Canonical payload fallback routing
+
+Date: 2026-09-19
+
+### PASS
+
+- Manifest retains exactly 23 runtime modules.
+- No payload manifest URL references `wd/10-modular-bootstrap`.
+- Legacy fallback module URLs now resolve to `WITCH_DEV_MAIN`.
+- Loader bootstrap fallback metadata points to Loader v0.2.0 / `0.2.0-immutable-payload-root`.
+- Primary immutable payload-root resolution behavior is unchanged.
+- No runtime module source bytes changed; public Stable untouched.
+
+---
+
 ## PFC-2026-09-19-046 — Canonical Dev payload identity v1.5.1
 
 Date: 2026-09-19

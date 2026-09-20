@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-047 — Canonicalize payload fallback URLs
+
+Date: 2026-09-19
+
+- Normalized the immutable v1.5.1 payload manifest's legacy fallback URLs from `wd/10-modular-bootstrap` to canonical `WITCH_DEV_MAIN`.
+- The primary Stage E loader path is unchanged: Loader v0.2.0 still resolves all runtime modules from the immutable payload root using registry paths.
+- Loader bootstrap fallback metadata is synchronized to v0.2.0 / `0.2.0-immutable-payload-root`.
+- No runtime module source bytes changed.
+- Public Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** canonical Dev fallback routing metadata only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-046 — Canonical Dev payload identity v1.5.1
 
 Date: 2026-09-19
