@@ -2,7 +2,6 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const STORE_PREFIX = "kw.witchDock.toolEnabled.";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
   const SLOT_URL = RAW_ROOT + "HeroForge_UI/HF_UI_Slot_Bridge.js";
@@ -53,34 +52,16 @@
     document.head.appendChild(style);
   }
 
-  function storageKey(id) {
-    return STORE_PREFIX + id;
-  }
-
   function readEnabled(id, fallback) {
-    try {
-      const raw = UW.localStorage.getItem(storageKey(id));
-      if (raw !== null && raw !== undefined && raw !== "") return raw === "true" || raw === "1";
-    } catch (e) {}
-
-    try {
-      if (typeof GM_getValue === "function") {
-        const value = GM_getValue(storageKey(id), null);
-        if (value !== null && value !== undefined) return !!value;
-      }
-    } catch (e) {}
-
-    return !!fallback;
+    const preferences = UW.KWWitchDockPreferences;
+    if (!preferences || typeof preferences.getToolEnabled !== "function") return !!fallback;
+    return preferences.getToolEnabled(id, fallback);
   }
 
   function writeEnabled(id, value) {
-    try {
-      UW.localStorage.setItem(storageKey(id), value ? "true" : "false");
-    } catch (e) {}
-
-    try {
-      if (typeof GM_setValue === "function") GM_setValue(storageKey(id), !!value);
-    } catch (e) {}
+    const preferences = UW.KWWitchDockPreferences;
+    if (!preferences || typeof preferences.setToolEnabled !== "function") return;
+    preferences.setToolEnabled(id, value);
   }
 
   function loadScript(url) {

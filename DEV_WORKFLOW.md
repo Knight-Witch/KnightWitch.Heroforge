@@ -8,7 +8,7 @@
 - **Short-lived task branches** isolate risky or parallel experiments.
 - **Git history** is the archive; old branches are not filing cabinets.
 
-The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and load only `WITCH_DEV_MAIN` runtime sources.
+The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and update from `WITCH_DEV_MAIN`. The completed modular architecture may load a pinned immutable payload commit for manifest/core/module bytes; that payload is the compatibility-safe runtime snapshot for the launcher revision, while fallback routing remains canonical `WITCH_DEV_MAIN`. Tampermonkey script identity stays fixed as `WITCH DOCK - DEV`; the changing version belongs in `@version` and the visible Dock title, not in `@name`, so updates replace the existing Dev install instead of creating duplicates.
 
 ## 1. Starting work
 
@@ -34,7 +34,7 @@ If a runtime file differs from Stable but is not represented by an open divergen
 
 When Stable receives an independent hotfix/change, mirror that new Stable state into Dev unless Dev has a tracked conflicting change for the same scope.
 
-Dev channel routing itself is an intentional infrastructure divergence: the Dev launcher/manifest must point at `WITCH_DEV_MAIN` so Dev actually tests Dev source. Unaffected module bytes should still match Stable until an issue changes them.
+Dev channel routing itself is an intentional infrastructure divergence: the installed launcher updates from `WITCH_DEV_MAIN`, while each validated launcher revision may pin an immutable payload commit containing its manifest/core/module snapshot. Any fallback URLs in that payload must point to `WITCH_DEV_MAIN`. Unaffected module bytes should still match Stable until an issue changes them.
 
 ## 3. Validation
 
@@ -47,7 +47,7 @@ Use the narrowest meaningful gates:
 - targeted regression checks;
 - Amanda's visual confirmation when appearance/interaction is part of acceptance.
 
-A parse success is not runtime proof. For Dev startup specifically, verify the visible title says Dev, the Tampermonkey entry says Dev with the same version, `KWWitchDockManifestURL` points to `WITCH_DEV_MAIN`, and module-loader requests do not silently resolve to Stable.
+A parse success is not runtime proof. For Dev startup specifically, verify the visible title says `WITCH DOCK - DEV v<version>`, the Tampermonkey entry is the fixed `WITCH DOCK - DEV` identity with matching `@version`, channel state reports `WITCH_DEV_MAIN`, `KWWitchDockManifestURL` points to the launcher's pinned immutable payload commit, loader requests resolve through that same immutable payload, fallback count is zero in the normal path, and no route silently resolves to Stable.
 
 ## 4. Promotion to public
 

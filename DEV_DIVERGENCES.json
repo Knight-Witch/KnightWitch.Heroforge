@@ -6,25 +6,54 @@
   "runtimeDivergences": [
     {
       "issue": 19,
-      "status": "active",
-      "reason": "Canonical Dev must have a distinct installed launcher/visible identity and must route its manifest-loaded runtime to WITCH_DEV_MAIN rather than silently executing Stable while appearing to be Dev.",
+      "status": "canonical-dev-channel",
+      "reason": "Canonical Dev must remain unmistakably Dev. The installed launcher updates from WITCH_DEV_MAIN and uses fixed Tampermonkey identity WITCH DOCK - DEV; each validated launcher revision may pin an immutable payload commit for runtime compatibility, with canonical WITCH_DEV_MAIN fallback routing and no Stable fallback.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json"
       ],
       "acceptance": [
-        "Tampermonkey name and Dock title both report WITCH DOCK - DEV v1.2.2.",
-        "Dev update/download URLs resolve to WITCH_DEV_MAIN.",
-        "KWWitchDockManifestURL resolves to WITCH_DEV_MAIN/manifest.json.",
-        "Every manifest-loaded runtime URL resolves to WITCH_DEV_MAIN.",
-        "Dev bootstrap fails visibly rather than silently falling back to Stable if its expected core seam disappears."
+        "Tampermonkey @name remains fixed WITCH DOCK - DEV and @namespace remains KnightWitch.",
+        "Launcher @version/runtime DEV_VERSION/manifest launcher version/build/visible Dock version stay synchronized.",
+        "Launcher update/download URLs resolve to WITCH_DEV_MAIN.",
+        "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
+        "Bootstrap/channel failure remains visible."
+      ]
+    },
+    {
+      "issue": 28,
+      "status": "release-prep",
+      "reason": "The issue #10 modular architecture is validated in Dev and intentionally differs from current public Stable while release candidate/publicization work proceeds. No Stable mutation is authorized until the explicit promotion gate.",
+      "paths": [
+        "manifest.json",
+        "features/core/Witch_Dock_Styles.css",
+        "features/core/Witch_Dock_Modals.js",
+        "features/booth/Booth_Runtime_Bootstrap.js",
+        "tools/Booth.js",
+        "features/core/Witch_Dock_Bone_HUD.js",
+        "features/core/Witch_Dock_Preferences.js",
+        "features/core/Witch_Dock_Module_Loader.js",
+        "tools/Utilities.js",
+        "features/core/Witch_Dock_Registry.js",
+        "features/core/Witch_Dock_Shell.js",
+        "features/core/Witch_Dock_Interactions.js",
+        "features/core/Witch_Dock_History.js",
+        "features/core/Witch_Dock_Application.js",
+        "features/core/Witch_Dock_Core.js",
+        "features/core/Witch_Dock_Assets.js"
+      ],
+      "acceptance": [
+        "Canonical Dev preserves the validated issue #10 architecture: Core v2.0.0, Loader v0.2.0, 23/23 runtime modules, zero failures.",
+        "Canonical launcher v1.5.1 pins immutable payload commit 6603911658b426c6b95367697bedcc4c7acf67eb.",
+        "Canonical Dev smoke must pass before public RC construction.",
+        "Public Stable remains untouched until Amanda explicitly approves the tested RC promotion.",
+        "After Stable smoke, issue #14 janitorial cleanup/reconciliation runs automatically."
       ]
     }
   ],
   "notes": [
-    "New Dev was created directly from the Stable baseline above.",
-    "Governance/documentation files on Dev are intentionally Dev-specific and are not runtime divergences.",
-    "Add a runtime divergence only when an open issue/task intentionally requires Dev behavior or module source to differ from Stable.",
-    "Channel routing may differ while unaffected module bytes remain Stable-equivalent."
+    "Issue #10 is complete/closed; its current Stable divergence is tracked by release issue #28.",
+    "Governance/documentation files are not runtime divergences.",
+    "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency."
   ]
 }

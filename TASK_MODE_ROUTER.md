@@ -37,7 +37,8 @@ After the difficult phase is resolved, downgrade back to Chat / Sol High or Work
 
 | Task / issue | Default | Escalate when |
 | --- | --- | --- |
-| #10 modular userscript/core refactor | **Chat / Sol High** | **Extra High** for a genuinely ambiguous ownership boundary; **Max** once for final adversarial architecture/release review if warranted. |
+| #10 modular userscript/core refactor | **COMPLETE** | No further implementation routing. |
+| #28 modular public promotion | **Chat / Sol High** for reconciliation, RC construction, and smoke | **Extra High/Max** only for a genuinely ambiguous final release-risk review after evidence collection. |
 | #7 intermittent connection-error toast | **Chat / Sol High** for targeted capture | **Extra High** if captured request/toast/runtime evidence still supports multiple causes. |
 | #20 Booth JSON import/export | **Chat / Sol High** | **Extra High** only if legacy serialization depends on undocumented HeroForge internals. |
 | #21 Kickstarter splash suppression | **Chat / Sol High** | Normally no escalation; inspect and suppress the specific promo lifecycle only. |

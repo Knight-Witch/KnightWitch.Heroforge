@@ -21,6 +21,7 @@ Use `TASK_MODE_ROUTER.md` only at meaningful checkpoints: active task changes, p
 
 Do not re-evaluate model/mode on ordinary messages or routine implementation steps. Default to Chat / Sol High unless the router identifies a material benefit from Work, Extra High, or Max. Finish any bounded in-progress mutation/test before recommending a switch.
 
+
 ## Branch roles
 
 - `Witch_Scripts` is public Stable. Never use it as an experimental branch.
@@ -39,10 +40,14 @@ Unexpected Dev-vs-Stable runtime drift is a defect until explained.
 ## Canonical Dev runtime identity
 
 - The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`, not the public `Witch_Dock.user.js` entrypoint.
-- Dev must identify itself clearly in Tampermonkey and in the visible Dock title bar using the same channel/version identity.
-- Dev update/download URLs, manifest routing, and manifest-loaded runtime URLs must resolve to `WITCH_DEV_MAIN`, never silently to `Witch_Scripts` or a legacy Dev branch.
+- Tampermonkey identity must remain stable across Dev versions: fixed `@name` `WITCH DOCK - DEV`, stable namespace, and stable channel-specific update/download URL.
+- The active version belongs in userscript `@version`, runtime `DEV_VERSION`, the module registry, and the visible Dock title `WITCH DOCK - DEV v<version>`.
+- Do not put the changing version into Tampermonkey `@name`; doing so can create duplicate Dev installs instead of updating the existing script.
+- Tampermonkey and the visible Dock must clearly identify the same Dev channel, but the Tampermonkey name is intentionally unversioned while the Dock title is versioned.
+- Dev `@updateURL` and `@downloadURL` resolve to `WITCH_DEV_MAIN` so the installed Dev launcher updates from the canonical channel.
+- The completed modular architecture may pin its manifest/core/runtime modules to an immutable payload commit SHA. That payload must be derived from canonical Dev, and any fallback URLs must resolve to `WITCH_DEV_MAIN`, never Stable or a retired task branch.
 - A Dev bootstrap/channel-seam failure must fail visibly rather than silently running Stable while appearing to be Dev.
-- Keep the Dev launcher narrow. It is a channel/bootstrap boundary and temporary migration seam toward issue #10, not a second application core.
+- Keep the Dev launcher narrow: privileged channel/bootstrap host only. Application/core behavior belongs in GitHub-owned modules; issue #10's migration is complete.
 
 ## Development flow
 

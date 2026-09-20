@@ -1,44 +1,58 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-17  
+**Updated:** 2026-09-19  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
-**Stable baseline used to create this branch:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** establish/validate the unmistakable Dev channel, harvest only still-relevant legacy work, then modularize the oversized userscript core.
+**Active release task:** issue #28 — modular architecture public promotion  
+**Validated source task:** issue #10 COMPLETE/CLOSED  
+**Canonical Dev candidate:** launcher v1.5.1 / build `1.5.1-canonical-dev-reconcile`  
+**Pinned immutable payload:** `6603911658b426c6b95367697bedcc4c7acf67eb`  
+**Public Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4` — protected and untouched.
 
-## Current priorities
+## Current phase
 
-1. #19 — validate the new canonical Dev launcher/channel identity: Tampermonkey name and Dock title must both say `WITCH DOCK - DEV v1.2.2`, manifest routing must resolve to `WITCH_DEV_MAIN`, and no runtime module request may silently fall back to Stable.
-2. #12 — audit legacy `WITCH_DEV_UI` / `WITCH_DEV` for useful unfinished fragments without bulk-merging branch history.
-3. #10 — reframe/implement the Dock architecture so Tampermonkey becomes a small privileged bootstrap/host and GitHub owns the application/core modules. The #19 launcher is a bounded temporary migration seam toward this target, not the final core architecture.
-4. #7 / #8 — preserve open bug/backlog items and re-test them against the new Stable-derived Dev before migrating any old patch.
-5. #13 — retire obsolete branches only after the harvest audit proves nothing useful is stranded there.
-6. #14 — enforce Dev -> Stable post-rollout cleanup automatically once Stable smoke passes; do not ask Amanda for a separate cleanup approval.
+Release preparation only. Reconcile the validated issue #10 architecture into canonical Dev, smoke that exact canonical channel, then build an isolated public RC. No new feature work.
+
+The canonical candidate differs from the validated v1.5.0 architecture only at the Dev channel/release boundary:
+- launcher advances to v1.5.1;
+- update/download URLs and channel state identify `WITCH_DEV_MAIN`;
+- runtime payload pins immutable commit `6603911658b426c6b95367697bedcc4c7acf67eb`;
+- payload fallback URLs are normalized to `WITCH_DEV_MAIN`;
+- Core remains v2.0.0, Loader remains v0.2.0, and feature/module source bytes remain the validated architecture.
+
+## Immediate sequence
+
+1. Complete the two-parent reconciliation merge into `WITCH_DEV_MAIN`, preserving the main-only task/mode governance commit and validated #10 history.
+2. Bridge-reload HeroForge through the installed Dev auto-host.
+3. Require canonical smoke: v1.5.1, branch `WITCH_DEV_MAIN`, pinned payload `660391...`, legacy monolith/source transforms false, Core v2.0.0 running, Loader 23/23 / 0 failed, immutable resolution count 23 / fallback 0, Dock normal.
+4. Preserve current Stable as an immutable rollback ref.
+5. Create an isolated public RC/publicization branch.
+6. Convert only explicit Dev/public channel identity and release metadata; remove migration-only scaffolding not appropriate for public.
+7. Test the exact public-ready RC on HeroForge.
+8. Stop at the explicit Stable-promotion approval gate.
+9. After approved promotion + Stable smoke, run issue #14 janitorial/reconciliation automatically.
 
 ## Protected state
 
-- Public `Witch_Scripts` remains untouched unless Amanda explicitly authorizes a narrow promotion.
-- New Dev began byte-for-byte from the current public Stable runtime before intentional Dev channel infrastructure was added.
-- `Witch_Dock.user.js` on New Dev remains the Stable-derived shared core source; install `Witch_Dock_DEV.user.js` for Dev testing.
-- `manifest.json` is intentionally Dev-routed so all manifest-loaded modules resolve to `WITCH_DEV_MAIN` while their bytes remain Stable-equivalent unless an issue records a divergence.
-- Legacy Dev branches are evidence/reference only; newer-looking code is not automatically preferred.
-- Closed/promoted legacy work should not be reintroduced merely because it exists in old branch history.
+- Do not reopen or resume issue #10.
+- Do not mutate `Witch_Scripts` before Amanda approves the tested public RC.
+- Preserve storage keys, module order/cache behavior, failure isolation, public `WitchDock` seams, layout/interactions, and immutable payload pairing.
+- Keep the fixed Tampermonkey Dev identity `WITCH DOCK - DEV`; version stays in `@version` and visible Dock title.
+- HF-Chat-Bridge remains validation infrastructure only.
+
+## Current divergences
+
+- #19: canonical Dev channel identity/runtime routing.
+- #28: validated modular architecture awaiting public RC/promotion.
 
 ## Minimum continuation set
 
-1. `PROJECT_CONTRACT.md`;
-2. this file;
-3. `DEV_WORKFLOW.md`;
-4. `DEV_DIVERGENCES.json`;
-5. the active GitHub issue(s) named above;
-6. only source files directly required by the current task.
+1. `PROJECT_CONTRACT.md`
+2. this file
+3. issue #28
+4. issue #14
+5. `DEV_DIVERGENCES.json`
+6. `Witch_Dock_DEV.user.js`
+7. `manifest.json`
+8. only files directly required by the release phase
 
-Do not preload `MASTER.md`, full historical logs, unrelated `HISTORY/BULLSHIT/*`, or HeroForge.Compatibility unless current evidence specifically requires them.
-
-## Immediate next technical sequence
-
-1. Install/update `Witch_Dock_DEV.user.js` from `WITCH_DEV_MAIN` with public Stable disabled for the Dev test.
-2. Validate issue #19: title/name/version identity, `KWWitchDockManifestURL`, Dev manifest/module-loader routing, normal Dock/module startup, and visible failure behavior if the Dev core seam cannot be found.
-3. Complete the legacy harvest classification for unresolved/open surfaces.
-4. Continue #10 by replacing the temporary source-transform seam with a true small privileged host + GitHub-owned core in bounded stages.
-5. Only after New Dev is healthy begin branch retirement #13.
+Do not preload old #10 logs/history unless a specific release discrepancy requires provenance.

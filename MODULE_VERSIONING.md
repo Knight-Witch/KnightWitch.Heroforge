@@ -43,14 +43,22 @@ New experimental modules may begin below `1.0.0` (for example `0.1.0`). Existing
 
 The canonical Dev entrypoint is `Witch_Dock_DEV.user.js`.
 
-Its user-visible identity is one contract, not three independent labels. When the Dev launcher version changes, update all of the following together:
+Tampermonkey script identity must remain stable across Dev versions so normal updates replace the existing install rather than creating another userscript entry:
+
+- userscript `@name` is fixed as `WITCH DOCK - DEV`;
+- userscript `@namespace` remains stable (`KnightWitch`);
+- userscript `@updateURL` and `@downloadURL` remain the canonical Dev launcher path for that channel.
+
+The version is carried separately. When the Dev launcher version changes, update all of the following together:
 
 - userscript `@version`;
-- userscript `@name`, formatted `WITCH DOCK - DEV v<version>`;
-- runtime `DEV_VERSION` / visible Dock title identity;
+- runtime `DEV_VERSION`;
+- visible Dock title, formatted `WITCH DOCK - DEV v<version>`;
 - `manifest.json.moduleRegistry` entry `witch-dock-dev-launcher` version/build.
 
-The visible Dock title and Tampermonkey script name must report the same Dev/version identity. Dev `@updateURL`, `@downloadURL`, manifest routing, and manifest-loaded URLs must remain on `WITCH_DEV_MAIN` unless a specifically documented migration changes the channel architecture.
+Do **not** put the changing version into Tampermonkey `@name`. A versioned `@name` changes the userscript identity and can cause raw install/update actions to create duplicate Dev installs instead of updating the existing one.
+
+Tampermonkey and the visible Dock must identify the same **Dev channel**, but they intentionally use different display strings: Tampermonkey shows the fixed `WITCH DOCK - DEV` identity while the Dock title shows the active version. Dev `@updateURL` and `@downloadURL` remain on `WITCH_DEV_MAIN`. A validated launcher may pin manifest/core/module loading to an immutable payload commit SHA for compatibility safety; that payload's fallback URLs must resolve to `WITCH_DEV_MAIN`, never Stable or a retired task branch.
 
 Do not bump the Stable core merely because the Dev channel wrapper changes. `witch-dock-core` tracks the shared core source; `witch-dock-dev-launcher` tracks the Dev-specific installed/bootstrap surface.
 
