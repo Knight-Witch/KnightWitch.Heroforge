@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-039 — v1.4.12 History live boundary PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload: v1.4.12, launcher-executed, one attempt, no error.
+- Launcher: running/error-null.
+- History: v0.1.0 / build `0.1.0-undo-redo-owner`, configured=true, queueAvailable=true, lastError=null.
+- Loader: 23/23 / 0 failed.
+- Genuine queue remained length=1 / currentIndex=0 / canUndo=false / canRedo=false.
+- Both Dock history buttons remained disabled and clicking both left queue/index unchanged.
+- No fallback character load occurred; no synthetic queue history was introduced.
+- Evidence: `hf-20260919-wd10-v1412-history-gate-043`.
+
+### Next bounded action
+
+Inventory remaining Stage D ownership against `ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md`. Do not begin Stage E until ordinary application-shell responsibilities are either externally owned or deliberately assigned to the final GitHub-owned application core.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-038 — v1.4.12 undo/redo History candidate
 
 Date: 2026-09-19

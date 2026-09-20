@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-039 — v1.4.12 History live boundary PASS
+
+Date: 2026-09-19
+
+- Auto-host delivered v1.4.12 without Tampermonkey intervention.
+- Launcher: running/error-null; History v0.1.0 configured/error-null; loader 23/23 / 0 failed.
+- Genuine HeroForge UndoQueue remained length=1/currentIndex=0 with canUndo=false/canRedo=false.
+- Undo and Redo buttons remained disabled; programmatic clicks were no-ops and did not alter queue/index.
+- History telemetry remained clean: fallbackLoadCalls=0, lastError=null. Queue hooks were installed only on methods actually present.
+- No synthetic HeroForge history was created merely to obtain a non-boundary test.
+- Evidence: `hf-20260919-wd10-v1412-history-gate-043`.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-038 — v1.4.12 undo/redo History candidate
 
 Date: 2026-09-19

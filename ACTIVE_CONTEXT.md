@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D ACTIVE. v1.4.8 main Dock drag extraction is live-PASS. Next bounded slice is resize ownership (corner + bottom); compact drag mechanics and hotkey/undo-redo remain legacy-owned.
+**Current phase:** issue #10 Stage D ACTIVE. v1.4.12 undo/redo History extraction is live-PASS at the genuine HeroForge queue boundary. Reassess remaining application-shell ownership before entering Stage E.
 
 ## Current priorities
 
-1. #10 — ACTIVE. v1.4.8 main Dock drag passed; capture and validate one bounded resize slice next.
+1. #10 — ACTIVE. v1.4.12 History boundary gate passed; inventory the remaining ordinary application-shell ownership and close Stage D only when the contract is actually satisfied.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -230,7 +230,7 @@
 - The later duplicate keyboard-dispatch undo/redo functions lived inside the legacy minimize block and were already removed by the v1.4.7 lifecycle transform; they are not the live button implementation.
 - Baseline live queue currently has length=1/currentIndex=0; Undo and Redo are both disabled, and programmatic clicks leave queue/index unchanged. No synthetic history was injected.
 - Evidence: `hf-20260919-wd10-v1412-undo-baseline-read-040`, `hf-20260919-wd10-v1412-history-boundary-041`.
-- Required live gate: auto-host v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index remain 1/0; both buttons remain disabled; clicking both remains a no-op. A real non-boundary undo/redo remains opportunistic regression evidence when genuine HeroForge history exists.
+- Live PASS at the genuine queue boundary: auto-host v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index remained 1/0; canUndo/canRedo false; both buttons disabled; clicking both remained a no-op; fallbackLoadCalls=0; lastError=null. Evidence: `hf-20260919-wd10-v1412-history-gate-043`. A real non-boundary undo/redo remains opportunistic regression evidence when genuine HeroForge history exists.
 
 
 ## Minimum continuation set

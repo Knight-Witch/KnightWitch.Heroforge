@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is active. v1.4.11 hotkey passed. v1.4.12 is the bounded undo/redo History extraction candidate using the existing CK.UndoQueue/tryLoadCharacter contract; no synthetic HeroForge history will be created for testing.",
+      "reason": "Issue #10 Stage D is active. v1.4.12 dedicated History extraction passed its genuine queue-boundary live gate. Remaining application-shell ownership is being inventoried before Stage D is closed and Stage E bootstrap reduction begins.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -116,7 +116,8 @@
         "v1.4.11 live PASS: Ctrl+Backquote ignored, plain Backquote close/open parity preserved, interactions v0.5.0 telemetry matched expected 2 toggles + 1 ignored event, loader 23/23 / 0 failed.",
         "v1.4.12 launcher/manifest identify 1.4.12 / build 1.4.12-extracted-undo-redo and witch-dock-history v0.1.0 / build 0.1.0-undo-redo-owner.",
         "History extraction preserves CK.UndoQueue validation, native undo/redo preference, fallback currentIndex + tryLoadCharacter behavior, button-state sync, queue-method wrapping, and __kwDockWrapped.",
-        "Current safe live gate uses the genuine queue boundary (length 1/index 0): both buttons disabled and clicks no-op without fabricating history; real non-boundary undo/redo remains opportunistic."
+        "Current safe live gate uses the genuine queue boundary (length 1/index 0): both buttons disabled and clicks no-op without fabricating history; real non-boundary undo/redo remains opportunistic.",
+        "v1.4.12 live PASS at genuine queue boundary: auto-host delivered v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index stayed 1/0; canUndo/canRedo false; disabled-button clicks were no-ops; no synthetic HeroForge history was created."
       ]
     }
   ],
