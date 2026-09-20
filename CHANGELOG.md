@@ -2,6 +2,20 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-046 — Canonical Dev payload identity v1.5.1
+
+Date: 2026-09-19
+
+- Release issue #28 begins with a canonical-Dev reconciliation only; no feature work.
+- Payload is derived from the validated v1.5.0 immutable payload without changing feature/core/module source bytes.
+- Only the manifest launcher registry identity advances to v1.5.1 / build `1.5.1-canonical-dev-reconcile` so the canonical `WITCH_DEV_MAIN` launcher can report a synchronized version while retaining the validated modular architecture.
+- Core remains v2.0.0; Loader remains v0.2.0; all 23 runtime module definitions and their source paths remain unchanged.
+- Public Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** Dev launcher registry identity only; runtime module behavior and public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-042 — Stage E immutable payload candidate
 
 Date: 2026-09-19

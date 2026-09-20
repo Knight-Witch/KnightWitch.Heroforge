@@ -2,6 +2,27 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-046 — Canonical Dev payload identity v1.5.1
+
+Date: 2026-09-19
+
+### PASS
+
+- Base payload: `6cbc7c5530391d3b8611374ce051bde080ea1a2d`.
+- Manifest retains 23 runtime modules and unchanged runtime module paths/versions/builds.
+- Core remains v2.0.0 / `2.0.0-modular-orchestrator`.
+- Loader remains v0.2.0 / `0.2.0-immutable-payload-root`.
+- Only `witch-dock-dev-launcher` registry identity changes to v1.5.1 / `1.5.1-canonical-dev-reconcile`.
+- No public Stable mutation.
+
+### Next gate
+
+Pin canonical `WITCH_DEV_MAIN/Witch_Dock_DEV.user.js` v1.5.1 to this payload commit SHA, then run canonical Dev smoke.
+
+**Runtime/module/manifest/public behavior changed:** Dev launcher registry identity only.
+
+---
+
 ## PFC-2026-09-19-042 — Stage E immutable payload candidate
 
 Date: 2026-09-19
