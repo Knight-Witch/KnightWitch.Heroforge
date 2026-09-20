@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.4.13
-// @description  Witch Dock issue #10 architecture task channel.
+// @version      1.5.0
+// @description  Witch Dock modular Dev bootstrap.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
@@ -22,151 +22,68 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.4.13";
+  const DEV_VERSION = "1.5.0";
+  const DEV_BUILD = "1.5.0-immutable-modular-bootstrap";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
-  const DEV_NAME = `${DEV_SCRIPT_NAME} v${DEV_VERSION}`;
+  const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "wd/10-modular-bootstrap";
+  const PAYLOAD_REF = "6cbc7c5530391d3b8611374ce051bde080ea1a2d";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
-  const CORE_URL = `${REPO_RAW}/${DEV_BRANCH}/Witch_Dock.user.js`;
-  const DEV_MANIFEST_URL = `${REPO_RAW}/${DEV_BRANCH}/manifest.json`;
-  const CORE_STYLES_VERSION = "0.1.0";
-  const CORE_STYLES_BUILD = "0.1.0-extracted-core-css";
-  const CORE_STYLES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Styles.css?v=${CORE_STYLES_VERSION}-${CORE_STYLES_BUILD}`;
-  const CORE_MODALS_VERSION = "0.1.1";
-  const CORE_MODALS_BUILD = "0.1.1-lazy-about-open";
-  const CORE_MODALS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Modals.js?v=${CORE_MODALS_VERSION}-${CORE_MODALS_BUILD}`;
-  const CORE_BONE_HUD_VERSION = "0.1.0";
-  const CORE_BONE_HUD_BUILD = "0.1.0-extracted-bone-hud";
-  const CORE_BONE_HUD_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Bone_HUD.js?v=${CORE_BONE_HUD_VERSION}-${CORE_BONE_HUD_BUILD}`;
-  const CORE_PREFERENCES_VERSION = "0.3.0";
-  const CORE_PREFERENCES_BUILD = "0.3.0-tool-enablement-store";
-  const CORE_PREFERENCES_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Preferences.js?v=${CORE_PREFERENCES_VERSION}-${CORE_PREFERENCES_BUILD}`;
-  const CORE_REGISTRY_VERSION = "0.1.0";
-  const CORE_REGISTRY_BUILD = "0.1.0-tab-tool-state-containers";
-  const CORE_REGISTRY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Registry.js?v=${CORE_REGISTRY_VERSION}-${CORE_REGISTRY_BUILD}`;
-  const CORE_SHELL_VERSION = "0.2.0";
-  const CORE_SHELL_BUILD = "0.2.0-main-and-compact-dom";
-  const CORE_SHELL_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Shell.js?v=${CORE_SHELL_VERSION}-${CORE_SHELL_BUILD}`;
-  const CORE_INTERACTIONS_VERSION = "0.5.0";
-  const CORE_INTERACTIONS_BUILD = "0.5.0-dock-hotkey";
-  const CORE_INTERACTIONS_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Interactions.js?v=${CORE_INTERACTIONS_VERSION}-${CORE_INTERACTIONS_BUILD}`;
-  const CORE_HISTORY_VERSION = "0.1.0";
-  const CORE_HISTORY_BUILD = "0.1.0-undo-redo-owner";
-  const CORE_HISTORY_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_History.js?v=${CORE_HISTORY_VERSION}-${CORE_HISTORY_BUILD}`;
-  const CORE_APPLICATION_VERSION = "0.1.0";
-  const CORE_APPLICATION_BUILD = "0.1.0-shell-registry-orchestration";
-  const CORE_APPLICATION_URL = `${REPO_RAW}/${DEV_BRANCH}/features/core/Witch_Dock_Application.js?v=${CORE_APPLICATION_VERSION}-${CORE_APPLICATION_BUILD}`;
-  const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
-  const KOFI_URL = "https://ko-fi.com/knightwitch";
-  const STABLE_MANIFEST_DECL = 'const MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";';
-  const DEV_MANIFEST_DECL = `const MANIFEST_URL = "${DEV_MANIFEST_URL}";`;
-  const INLINE_EMBLEM_DECL_RE = /^const COMPACT_EMBLEM_URL = "data:image\/png;base64,[A-Za-z0-9+/=]+";$/m;
-  const STYLE_FUNCTION_START = '  function addStyles() {\n    GM_addStyle(`\n';
-  const STYLE_FUNCTION_END = '\n`);\n  }\n\n  function el(';
-  const INLINE_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 40px;\n  height: 40px;';
-  const EXTRACTED_COMPACT_ICON_RULE = '#kwWDCompactIcon{\n  width: 48px;\n  height: 48px;';
-  const MODAL_BLOCK_START = '  function closeAboutModal() {';
-  const MODAL_BLOCK_END = '\nfunction buildUI() {';
-  const MODAL_FUNCTION_NAMES = Object.freeze([
-    "closeAboutModal",
-    "openAboutModal",
-    "ensureAboutModal",
-    "closeDisclaimerModal",
-    "openDisclaimerModal",
-    "ensureDisclaimerModal"
-  ]);
-  const BONE_BLOCK_START = 'function initBoneFooterAndDetection() {';
-  const BONE_BLOCK_END = '\n\n  function closeAboutModal() {';
-  const PREFS_DECL_START = '  const STORE_KEY = "kw.witchDock.v1";';
-  const PREFS_DECL_END = '\n\n  const state = {';
-  const PREFS_IO_START = '  function loadPrefs() {';
-  const PREFS_IO_END = '\n\n  const prefs = loadPrefs();';
-  const SECTION_ORDER_STORAGE_START = 'const SECTION_ORDER_PREFIX = "kw.witchDock.sectionOrder.";';
-  const SECTION_ORDER_STORAGE_END = '\n\nfunction saveSectionOrderFromDom(toolId, container) {';
-  const TOOL_ENABLE_STORAGE_START = 'function getToolEnabled(toolId, enabledByDefault) {';
-  const TOOL_ENABLE_STORAGE_END = '\n\nasync function loadManifestAndTools() {';
-  const REGISTRY_STATE_BLOCK = '    tabs: new Map(),\n    toolsById: new Map(),\n    pending: [],';
-  const SHELL_ROOT_START = '    state.root = el("div", { id: "kwWitchDock" }, [';
-  const SHELL_ROOT_END = '\n\n    initBoneFooterAndDetection();';
-  const COMPACT_DOM_START = '    state.compact = el("div", { id: "kwWDCompact", title: "Open Witch Dock", onpointerdown: startCompactDrag }, [';
-  const COMPACT_DOM_END = '\n    state.compactExpandBtn = null;';
-  const DOCK_DRAG_START = '  function startDockDrag(e) {';
-  const DOCK_DRAG_END = '\n\n  function startResizeCorner(e) {';
-  const DOCK_RESIZE_START = '  function startResizeCorner(e) {';
-  const DOCK_RESIZE_END = '\n\n  function toggleMinimize() {';
-  const DOCK_LIFECYCLE_START = '  function toggleMinimize() {';
-  const DOCK_LIFECYCLE_END = '\n\n  function startCompactDrag(e) {';
-  const COMPACT_DRAG_START = '  function startCompactDrag(e) {';
-  const COMPACT_DRAG_END = '\n\n  function isEditableTarget(t) {';
-  const DOCK_HOTKEY_START = '  function isEditableTarget(t) {';
-  const DOCK_HOTKEY_END = '\n\n  const BONE_FOOTER_HOTKEY_TEXT';
-  const DOCK_HISTORY_START = '  function deepClone(obj) {';
-  const DOCK_HISTORY_END = '\n\n  function loadPrefs() {';
-  const APPLICATION_BLOCK_START = '  function el(tag, attrs, children) {';
-  const APPLICATION_BLOCK_END = '\n\n  function startDockDrag(e) {';
+  const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
+  const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
   const HOST_API_VERSION = "0.1.0";
   const STORAGE_PREFIX = "kw.";
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
-  const COMPACT_ICON_SIZE_PX = 48;
+  const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
+  const KOFI_URL = "https://ko-fi.com/knightwitch";
+
+  const COMPONENTS = Object.freeze([
+    ["styles", "features/core/Witch_Dock_Styles.css", "text"],
+    ["modals", "features/core/Witch_Dock_Modals.js", "js"],
+    ["boneHud", "features/core/Witch_Dock_Bone_HUD.js", "js"],
+    ["preferences", "features/core/Witch_Dock_Preferences.js", "js"],
+    ["registry", "features/core/Witch_Dock_Registry.js", "js"],
+    ["shell", "features/core/Witch_Dock_Shell.js", "js"],
+    ["interactions", "features/core/Witch_Dock_Interactions.js", "js"],
+    ["history", "features/core/Witch_Dock_History.js", "js"],
+    ["application", "features/core/Witch_Dock_Application.js", "js"],
+    ["assets", "features/core/Witch_Dock_Assets.js", "js"],
+    ["core", "features/core/Witch_Dock_Core.js", "js"],
+    ["loader", "features/core/Witch_Dock_Module_Loader.js", "js"]
+  ]);
+
+  const EXPECTED = Object.freeze({
+    KWWitchDockModals: ["0.1.1", "0.1.1-lazy-about-open"],
+    KWWitchDockBoneHUD: ["0.1.0", "0.1.0-extracted-bone-hud"],
+    KWWitchDockPreferences: ["0.3.0", "0.3.0-tool-enablement-store"],
+    KWWitchDockRegistry: ["0.1.0", "0.1.0-tab-tool-state-containers"],
+    KWWitchDockShell: ["0.2.0", "0.2.0-main-and-compact-dom"],
+    KWWitchDockInteractions: ["0.5.0", "0.5.0-dock-hotkey"],
+    KWWitchDockHistory: ["0.1.0", "0.1.0-undo-redo-owner"],
+    KWWitchDockApplication: ["0.1.0", "0.1.0-shell-registry-orchestration"],
+    KWWitchDockAssets: ["0.1.0", "0.1.0-known-good-compact-emblem"],
+    KWWitchDockCore: ["2.0.0", "2.0.0-modular-orchestrator"],
+    KWModuleLoader: ["0.2.0", "0.2.0-immutable-payload-root"]
+  });
 
   const state = {
     channel: "dev",
     version: DEV_VERSION,
+    build: DEV_BUILD,
     branch: DEV_BRANCH,
     name: DEV_NAME,
-    coreUrl: CORE_URL,
-    manifestUrl: DEV_MANIFEST_URL,
-    compactEmblemUrl: "inline:data-url-from-core",
-    compactIconSizePx: COMPACT_ICON_SIZE_PX,
-    coreStylesUrl: CORE_STYLES_URL,
-    coreStylesVersion: CORE_STYLES_VERSION,
-    coreStylesBuild: CORE_STYLES_BUILD,
-    coreStylesMode: "external-bootstrap-css",
-    coreStylesApplied: false,
-    coreModalsUrl: CORE_MODALS_URL,
-    coreModalsVersion: CORE_MODALS_VERSION,
-    coreModalsBuild: CORE_MODALS_BUILD,
-    coreModalsMode: "external-bootstrap-module",
-    coreModalsApplied: false,
-    coreBoneHudUrl: CORE_BONE_HUD_URL,
-    coreBoneHudVersion: CORE_BONE_HUD_VERSION,
-    coreBoneHudBuild: CORE_BONE_HUD_BUILD,
-    coreBoneHudMode: "external-bootstrap-module",
-    coreBoneHudApplied: false,
-    corePreferencesUrl: CORE_PREFERENCES_URL,
-    corePreferencesVersion: CORE_PREFERENCES_VERSION,
-    corePreferencesBuild: CORE_PREFERENCES_BUILD,
-    corePreferencesMode: "external-bootstrap-module",
-    corePreferencesApplied: false,
-    coreRegistryUrl: CORE_REGISTRY_URL,
-    coreRegistryVersion: CORE_REGISTRY_VERSION,
-    coreRegistryBuild: CORE_REGISTRY_BUILD,
-    coreRegistryMode: "external-bootstrap-module",
-    coreRegistryApplied: false,
-    coreShellUrl: CORE_SHELL_URL,
-    coreShellVersion: CORE_SHELL_VERSION,
-    coreShellBuild: CORE_SHELL_BUILD,
-    coreShellMode: "external-bootstrap-module",
-    coreShellApplied: false,
-    coreInteractionsUrl: CORE_INTERACTIONS_URL,
-    coreInteractionsVersion: CORE_INTERACTIONS_VERSION,
-    coreInteractionsBuild: CORE_INTERACTIONS_BUILD,
-    coreInteractionsMode: "external-bootstrap-module",
-    coreInteractionsApplied: false,
-    coreHistoryUrl: CORE_HISTORY_URL,
-    coreHistoryVersion: CORE_HISTORY_VERSION,
-    coreHistoryBuild: CORE_HISTORY_BUILD,
-    coreHistoryMode: "external-bootstrap-module",
-    coreHistoryApplied: false,
-    coreApplicationUrl: CORE_APPLICATION_URL,
-    coreApplicationVersion: CORE_APPLICATION_VERSION,
-    coreApplicationBuild: CORE_APPLICATION_BUILD,
-    coreApplicationMode: "external-bootstrap-module",
-    coreApplicationApplied: false,
+    payloadRef: PAYLOAD_REF,
+    payloadRoot: PAYLOAD_ROOT,
+    manifestUrl: MANIFEST_URL,
+    immutablePayload: true,
     bootstrapTransport: "host.requestText",
-    presentationAssetMode: "inline-core-emblem-restored",
+    legacyMonolithFetched: false,
+    legacySourceTransforms: false,
     status: "initializing",
-    error: null
+    error: null,
+    componentCount: COMPONENTS.length,
+    fetchedComponents: 0,
+    evaluatedComponents: 0
   };
 
   function createPrivilegedHost() {
@@ -190,7 +107,6 @@
       const target = requireRepoRawUrl(url);
       const opts = options && typeof options === "object" ? options : {};
       const headers = { "Cache-Control": opts.cacheControl || "no-cache" };
-
       return new Promise((resolve, reject) => {
         try {
           GM_xmlhttpRequest({
@@ -216,7 +132,6 @@
       const name = String(filename || "download.bin");
       const opts = options && typeof options === "object" ? options : {};
       if (!target) return Promise.reject(new Error("Witch Dock host download requires a URL."));
-
       return new Promise((resolve, reject) => {
         try {
           GM_download({
@@ -235,13 +150,13 @@
     }
 
     const storage = Object.freeze({
-      get(key, fallback) {
-        return GM_getValue(requireStorageKey(key), fallback);
-      },
-      set(key, value) {
-        GM_setValue(requireStorageKey(key), value);
-        return true;
-      }
+      get(key, fallback) { return GM_getValue(requireStorageKey(key), fallback); },
+      set(key, value) { GM_setValue(requireStorageKey(key), value); return true; }
+    });
+
+    const pageStorage = Object.freeze({
+      getItem(key) { return UW.localStorage.getItem(requireStorageKey(key)); },
+      setItem(key, value) { UW.localStorage.setItem(requireStorageKey(key), String(value)); return true; }
     });
 
     const clipboard = Object.freeze({
@@ -252,9 +167,7 @@
     });
 
     const styles = Object.freeze({
-      add(cssText) {
-        return GM_addStyle(String(cssText == null ? "" : cssText));
-      }
+      add(cssText) { return GM_addStyle(String(cssText == null ? "" : cssText)); }
     });
 
     function scriptMeta() {
@@ -266,7 +179,7 @@
           version: script && typeof script.version === "string" ? script.version : DEV_VERSION,
           description: script && typeof script.description === "string" ? script.description : ""
         });
-      } catch {
+      } catch (_) {
         return Object.freeze({ name: DEV_SCRIPT_NAME, version: DEV_VERSION, description: "" });
       }
     }
@@ -276,826 +189,112 @@
       requestText,
       download,
       storage,
+      pageStorage,
       clipboard,
       styles,
       scriptMeta
     });
   }
 
-  const PRIVILEGED_HOST = createPrivilegedHost();
-
-  UW.KWWitchDockHostInfo = Object.freeze({
-    apiVersion: HOST_API_VERSION,
-    exposure: "diagnostic-only",
-    rawPrivilegesExposed: false,
-    storageNamespace: STORAGE_PREFIX,
-    requestScope: REPO_RAW_PREFIX,
-    bootstrapTransport: "host.requestText",
-    capabilities: Object.freeze({
-      requestText: typeof GM_xmlhttpRequest === "function",
-      download: typeof GM_download === "function",
-      storageGet: typeof GM_getValue === "function",
-      storageSet: typeof GM_setValue === "function",
-      clipboardWrite: typeof GM_setClipboard === "function",
-      addStyle: typeof GM_addStyle === "function",
-      scriptMeta: typeof GM_info !== "undefined"
-    })
-  });
+  const HOST = createPrivilegedHost();
 
   UW.KWWitchDockDevChannel = {
     channel: state.channel,
     version: state.version,
+    build: state.build,
     branch: state.branch,
-    name: state.name,
-    coreUrl: state.coreUrl,
+    payloadRef: state.payloadRef,
+    payloadRoot: state.payloadRoot,
     manifestUrl: state.manifestUrl,
-    compactEmblemUrl: state.compactEmblemUrl,
-    compactIconSizePx: state.compactIconSizePx,
-    coreStylesUrl: state.coreStylesUrl,
-    coreStylesVersion: state.coreStylesVersion,
-    coreStylesBuild: state.coreStylesBuild,
-    coreModalsUrl: state.coreModalsUrl,
-    coreModalsVersion: state.coreModalsVersion,
-    coreModalsBuild: state.coreModalsBuild,
-    coreBoneHudUrl: state.coreBoneHudUrl,
-    coreBoneHudVersion: state.coreBoneHudVersion,
-    coreBoneHudBuild: state.coreBoneHudBuild,
-    corePreferencesUrl: state.corePreferencesUrl,
-    corePreferencesVersion: state.corePreferencesVersion,
-    corePreferencesBuild: state.corePreferencesBuild,
-    coreRegistryUrl: state.coreRegistryUrl,
-    coreRegistryVersion: state.coreRegistryVersion,
-    coreRegistryBuild: state.coreRegistryBuild,
-    coreShellUrl: state.coreShellUrl,
-    coreShellVersion: state.coreShellVersion,
-    coreShellBuild: state.coreShellBuild,
-    coreInteractionsUrl: state.coreInteractionsUrl,
-    coreInteractionsVersion: state.coreInteractionsVersion,
-    coreInteractionsBuild: state.coreInteractionsBuild,
-    coreHistoryUrl: state.coreHistoryUrl,
-    coreHistoryVersion: state.coreHistoryVersion,
-    coreHistoryBuild: state.coreHistoryBuild,
-    coreApplicationUrl: state.coreApplicationUrl,
-    coreApplicationVersion: state.coreApplicationVersion,
-    coreApplicationBuild: state.coreApplicationBuild,
+    immutablePayload: true,
     hostApiVersion: HOST_API_VERSION,
     getState: () => ({ ...state })
   };
-
-  function applyDevIdentity() {
-    const title = document.getElementById("kwWDTitle");
-    if (!title) return false;
-    title.textContent = DEV_NAME;
-    title.setAttribute("data-kw-channel", "dev");
-    title.title = `Dev source · ${DEV_BRANCH}`;
-    return true;
-  }
-
-  const identityObserver = new MutationObserver(() => {
-    if (applyDevIdentity()) identityObserver.disconnect();
-  });
-  identityObserver.observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(() => identityObserver.disconnect(), 30000);
 
   function showBootError(error) {
     const message = error && error.message ? error.message : String(error || "unknown Dev bootstrap error");
     state.status = "error";
     state.error = message;
-    try { console.error("[Witch Dock Dev] Bootstrap failed:", error); } catch {}
-
+    try { console.error("[Witch Dock Dev] Bootstrap failed:", error); } catch (_) {}
     const existing = document.getElementById("kwWitchDockDevBootError");
     if (existing) existing.remove();
     const box = document.createElement("div");
     box.id = "kwWitchDockDevBootError";
     box.textContent = `WITCH DOCK - DEV failed to start: ${message}`;
     Object.assign(box.style, {
-      position: "fixed",
-      right: "16px",
-      bottom: "16px",
-      zIndex: "2147483647",
-      maxWidth: "520px",
-      padding: "10px 12px",
-      border: "1px solid rgba(255,90,90,0.65)",
-      borderRadius: "8px",
-      background: "rgba(24,12,14,0.96)",
-      color: "#fff",
+      position: "fixed", right: "16px", bottom: "16px", zIndex: "2147483647",
+      maxWidth: "520px", padding: "10px 12px",
+      border: "1px solid rgba(255,90,90,0.65)", borderRadius: "8px",
+      background: "rgba(24,12,14,0.96)", color: "#fff",
       font: "12px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif",
       boxShadow: "0 10px 30px rgba(0,0,0,0.55)"
     });
     document.body.appendChild(box);
   }
 
-  function normalizeStyleText(text) {
-    return String(text == null ? "" : text).replace(/\r\n/g, "\n").replace(/\n+$/, "");
+  function validateApi(name) {
+    const api = UW[name];
+    const expected = EXPECTED[name];
+    if (!api || !expected || api.version !== expected[0] || api.build !== expected[1]) {
+      throw new Error(`${name} did not register expected ${expected ? expected.join(" / ") : "API"}.`);
+    }
+    return api;
   }
 
   async function boot() {
-    state.status = "fetching-core-components";
-    const nonce = `${encodeURIComponent(DEV_VERSION)}-${Date.now()}`;
-    const coreRequestUrl = `${CORE_URL}?kwdev=${nonce}`;
-    const styleRequestUrl = `${CORE_STYLES_URL}&kwdev=${nonce}`;
-    const modalRequestUrl = `${CORE_MODALS_URL}&kwdev=${nonce}`;
-    const boneHudRequestUrl = `${CORE_BONE_HUD_URL}&kwdev=${nonce}`;
-    const preferencesRequestUrl = `${CORE_PREFERENCES_URL}&kwdev=${nonce}`;
-    const registryRequestUrl = `${CORE_REGISTRY_URL}&kwdev=${nonce}`;
-    const shellRequestUrl = `${CORE_SHELL_URL}&kwdev=${nonce}`;
-    const interactionsRequestUrl = `${CORE_INTERACTIONS_URL}&kwdev=${nonce}`;
-    const historyRequestUrl = `${CORE_HISTORY_URL}&kwdev=${nonce}`;
-    const applicationRequestUrl = `${CORE_APPLICATION_URL}&kwdev=${nonce}`;
-    const [source, coreStyles, coreModals, coreBoneHud, corePreferences, coreRegistry, coreShell, coreInteractions, coreHistory, coreApplication] = await Promise.all([
-      PRIVILEGED_HOST.requestText(coreRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(styleRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(modalRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(boneHudRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(preferencesRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(registryRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(shellRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(interactionsRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(historyRequestUrl, { cacheControl: "no-cache" }),
-      PRIVILEGED_HOST.requestText(applicationRequestUrl, { cacheControl: "no-cache" })
-    ]);
-    if (!source) throw new Error("core fetch returned empty source");
-    if (!coreStyles) throw new Error("core stylesheet fetch returned empty source");
-    if (!coreModals) throw new Error("core modal module fetch returned empty source");
-    if (!coreBoneHud) throw new Error("core bone HUD module fetch returned empty source");
-    if (!corePreferences) throw new Error("core preferences module fetch returned empty source");
-    if (!coreRegistry) throw new Error("core registry module fetch returned empty source");
-    if (!coreShell) throw new Error("core shell module fetch returned empty source");
-    if (!coreInteractions) throw new Error("core interactions module fetch returned empty source");
-    if (!coreHistory) throw new Error("core history module fetch returned empty source");
-    if (!coreApplication) throw new Error("core application module fetch returned empty source");
+    state.status = "fetching-immutable-payload";
 
-    const manifestMatches = source.split(STABLE_MANIFEST_DECL).length - 1;
-    if (manifestMatches !== 1) {
-      throw new Error(`expected exactly one Stable manifest seam in core; found ${manifestMatches}`);
+    const fetched = await Promise.all(COMPONENTS.map(async ([id, path, kind]) => {
+      const url = `${PAYLOAD_ROOT}${path}`;
+      const source = await HOST.requestText(url, { cacheControl: "no-cache" });
+      if (!source) throw new Error(`Empty Stage E payload component: ${id}`);
+      state.fetchedComponents += 1;
+      return { id, path, kind, url, source };
+    }));
+
+    const byId = new Map(fetched.map((item) => [item.id, item]));
+    const styleText = byId.get("styles").source;
+    if (!styleText.includes("#kwWitchDock") || !styleText.includes("#kwWDCompactIcon") || !styleText.includes("width: 48px") || !styleText.includes("height: 48px")) {
+      throw new Error("Immutable core stylesheet failed Stage E contract validation.");
     }
 
-    const emblemMatches = source.match(INLINE_EMBLEM_DECL_RE) || [];
-    if (emblemMatches.length !== 1) {
-      throw new Error(`expected exactly one inline compact emblem declaration in core; found ${emblemMatches.length}`);
+    state.status = "loading-modular-core";
+    for (const id of ["modals","boneHud","preferences","registry","shell","interactions","history","application","assets","core"]) {
+      const item = byId.get(id);
+      eval(`${item.source}\n//# sourceURL=${item.url}`);
+      state.evaluatedComponents += 1;
     }
 
-    const styleStart = source.indexOf(STYLE_FUNCTION_START);
-    const duplicateStyleStart = styleStart >= 0 ? source.indexOf(STYLE_FUNCTION_START, styleStart + STYLE_FUNCTION_START.length) : -1;
-    if (styleStart < 0 || duplicateStyleStart >= 0) {
-      throw new Error(`expected exactly one legacy addStyles seam in core; found ${styleStart < 0 ? 0 : 2}`);
-    }
-    const styleEnd = source.indexOf(STYLE_FUNCTION_END, styleStart + STYLE_FUNCTION_START.length);
-    if (styleEnd < 0) throw new Error("legacy addStyles seam end was not found");
-
-    const inlineStyles = source.slice(styleStart + STYLE_FUNCTION_START.length, styleEnd);
-    const compactRuleMatches = inlineStyles.split(INLINE_COMPACT_ICON_RULE).length - 1;
-    if (compactRuleMatches !== 1) {
-      throw new Error(`expected exactly one 40px compact-icon rule in legacy core styles; found ${compactRuleMatches}`);
-    }
-    const expectedExtractedStyles = inlineStyles.replace(INLINE_COMPACT_ICON_RULE, EXTRACTED_COMPACT_ICON_RULE);
-    if (normalizeStyleText(coreStyles) !== normalizeStyleText(expectedExtractedStyles)) {
-      throw new Error("extracted core stylesheet does not match the guarded legacy CSS contract");
+    for (const name of Object.keys(EXPECTED)) {
+      if (name === "KWModuleLoader") continue;
+      validateApi(name);
     }
 
-    PRIVILEGED_HOST.styles.add(coreStyles);
-    state.coreStylesApplied = true;
-    UW.KWWitchDockStylesInfo = Object.freeze({
-      version: CORE_STYLES_VERSION,
-      build: CORE_STYLES_BUILD,
-      url: CORE_STYLES_URL,
-      applied: true,
-      owner: "privileged-bootstrap",
-      parity: "legacy-core-css-plus-48px-compact-icon"
-    });
+    UW.KWWitchDockManifestURL = MANIFEST_URL;
+    UW.KWWitchDockPayloadRef = PAYLOAD_REF;
+    UW.KWWitchDockPayloadRoot = PAYLOAD_ROOT;
 
-    state.status = "loading-core-modals";
-    eval(`${coreModals}\n//# sourceURL=${CORE_MODALS_URL}`);
-    const modalApi = UW.KWWitchDockModals;
-    if (!modalApi || modalApi.version !== CORE_MODALS_VERSION || modalApi.build !== CORE_MODALS_BUILD) {
-      throw new Error("external core modal module did not register the expected API/version");
-    }
-    if (typeof modalApi.configure !== "function" || typeof modalApi.ensureAbout !== "function" || typeof modalApi.openDisclaimer !== "function") {
-      throw new Error("external core modal module is missing required methods");
-    }
-    modalApi.configure({
-      scriptMeta: PRIVILEGED_HOST.scriptMeta(),
+    state.status = "starting-core";
+    UW.KWWitchDockCore.start({
+      host: HOST,
+      styleText,
+      channel: "dev",
+      displayName: DEV_NAME,
+      sourceLabel: `Dev payload · ${PAYLOAD_REF.slice(0, 12)}`,
+      payloadRef: PAYLOAD_REF,
+      manifestUrl: MANIFEST_URL,
       githubRepoUrl: GITHUB_REPO_URL,
       kofiUrl: KOFI_URL
     });
-    state.coreModalsApplied = true;
-    UW.KWWitchDockModalsInfo = Object.freeze({
-      version: CORE_MODALS_VERSION,
-      build: CORE_MODALS_BUILD,
-      url: CORE_MODALS_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-about-disclaimer-dom-and-behavior"
-    });
 
-    state.status = "loading-core-bone-hud";
-    eval(`${coreBoneHud}\n//# sourceURL=${CORE_BONE_HUD_URL}`);
-    const boneApi = UW.KWWitchDockBoneHUD;
-    if (!boneApi || boneApi.version !== CORE_BONE_HUD_VERSION || boneApi.build !== CORE_BONE_HUD_BUILD) {
-      throw new Error("external core bone HUD module did not register the expected API/version");
-    }
-    if (typeof boneApi.configure !== "function" || typeof boneApi.init !== "function" || typeof boneApi.getState !== "function") {
-      throw new Error("external core bone HUD module is missing required methods");
-    }
-    boneApi.configure({
-      scriptMeta: PRIVILEGED_HOST.scriptMeta(),
-      copyText: PRIVILEGED_HOST.clipboard.writeText
-    });
-    state.coreBoneHudApplied = true;
-    UW.KWWitchDockBoneHUDInfo = Object.freeze({
-      version: CORE_BONE_HUD_VERSION,
-      build: CORE_BONE_HUD_BUILD,
-      url: CORE_BONE_HUD_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-bone-footer-detection-and-copy"
-    });
+    state.status = "starting-module-loader";
+    const loader = byId.get("loader");
+    eval(`${loader.source}\n//# sourceURL=${loader.url}`);
+    state.evaluatedComponents += 1;
+    validateApi("KWModuleLoader");
 
-    state.status = "loading-core-preferences";
-    eval(`${corePreferences}\n//# sourceURL=${CORE_PREFERENCES_URL}`);
-    const preferencesApi = UW.KWWitchDockPreferences;
-    if (!preferencesApi || preferencesApi.version !== CORE_PREFERENCES_VERSION || preferencesApi.build !== CORE_PREFERENCES_BUILD) {
-      throw new Error("external core preferences module did not register the expected API/version");
-    }
-    if (
-      typeof preferencesApi.configure !== "function" ||
-      typeof preferencesApi.load !== "function" ||
-      typeof preferencesApi.save !== "function" ||
-      typeof preferencesApi.getSectionCollapsed !== "function" ||
-      typeof preferencesApi.setSectionCollapsed !== "function" ||
-      typeof preferencesApi.getSectionOrder !== "function" ||
-      typeof preferencesApi.setSectionOrder !== "function" ||
-      typeof preferencesApi.getToolEnabledFromHost !== "function" ||
-      typeof preferencesApi.getToolEnabledFromPage !== "function" ||
-      typeof preferencesApi.getToolEnabled !== "function" ||
-      typeof preferencesApi.setToolEnabled !== "function" ||
-      typeof preferencesApi.getState !== "function"
-    ) {
-      throw new Error("external core preferences module is missing required methods");
-    }
-    preferencesApi.configure({
-      storage: PRIVILEGED_HOST.storage,
-      pageStorage: Object.freeze({
-        getItem: (key) => UW.localStorage.getItem(key),
-        setItem: (key, value) => UW.localStorage.setItem(key, String(value))
-      })
-    });
-    state.corePreferencesApplied = true;
-    UW.KWWitchDockPreferencesInfo = Object.freeze({
-      version: CORE_PREFERENCES_VERSION,
-      build: CORE_PREFERENCES_BUILD,
-      url: CORE_PREFERENCES_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "kw.witchDock-main-section-tool-preferences"
-    });
-
-    state.status = "loading-core-registry";
-    eval(`${coreRegistry}\n//# sourceURL=${CORE_REGISTRY_URL}`);
-    const registryApi = UW.KWWitchDockRegistry;
-    if (!registryApi || registryApi.version !== CORE_REGISTRY_VERSION || registryApi.build !== CORE_REGISTRY_BUILD) {
-      throw new Error("external core registry module did not register the expected API/version");
-    }
-    if (
-      !(registryApi.tabs instanceof Map) ||
-      !(registryApi.toolsById instanceof Map) ||
-      !Array.isArray(registryApi.pending) ||
-      typeof registryApi.getState !== "function"
-    ) {
-      throw new Error("external core registry module is missing required state containers");
-    }
-    state.coreRegistryApplied = true;
-    UW.KWWitchDockRegistryInfo = Object.freeze({
-      version: CORE_REGISTRY_VERSION,
-      build: CORE_REGISTRY_BUILD,
-      url: CORE_REGISTRY_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-tab-tool-pending-state-containers"
-    });
-
-    state.status = "loading-core-shell";
-    eval(`${coreShell}\n//# sourceURL=${CORE_SHELL_URL}`);
-    const shellApi = UW.KWWitchDockShell;
-    if (!shellApi || shellApi.version !== CORE_SHELL_VERSION || shellApi.build !== CORE_SHELL_BUILD) {
-      throw new Error("external core shell module did not register the expected API/version");
-    }
-    if (typeof shellApi.createRoot !== "function" || typeof shellApi.createCompact !== "function" || typeof shellApi.getState !== "function") {
-      throw new Error("external core shell module is missing required methods");
-    }
-    state.coreShellApplied = true;
-    UW.KWWitchDockShellInfo = Object.freeze({
-      version: CORE_SHELL_VERSION,
-      build: CORE_SHELL_BUILD,
-      url: CORE_SHELL_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-main-root-dom-factory"
-    });
-
-    state.status = "loading-core-interactions";
-    eval(`${coreInteractions}\n//# sourceURL=${CORE_INTERACTIONS_URL}`);
-    const interactionsApi = UW.KWWitchDockInteractions;
-    if (!interactionsApi || interactionsApi.version !== CORE_INTERACTIONS_VERSION || interactionsApi.build !== CORE_INTERACTIONS_BUILD) {
-      throw new Error("external core interactions module did not register the expected API/version");
-    }
-    if (
-      typeof interactionsApi.configure !== "function" ||
-      typeof interactionsApi.startDockDrag !== "function" ||
-      typeof interactionsApi.startResizeCorner !== "function" ||
-      typeof interactionsApi.startResizeBottom !== "function" ||
-      typeof interactionsApi.startCompactDrag !== "function" ||
-      typeof interactionsApi.installDockHotkey !== "function" ||
-      typeof interactionsApi.toggleMinimize !== "function" ||
-      typeof interactionsApi.closeDock !== "function" ||
-      typeof interactionsApi.expandFromCompact !== "function" ||
-      typeof interactionsApi.getState !== "function"
-    ) {
-      throw new Error("external core interactions module is missing required methods");
-    }
-    state.coreInteractionsApplied = true;
-    UW.KWWitchDockInteractionsInfo = Object.freeze({
-      version: CORE_INTERACTIONS_VERSION,
-      build: CORE_INTERACTIONS_BUILD,
-      url: CORE_INTERACTIONS_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-dock-interactions-through-hotkey"
-    });
-
-    state.status = "loading-core-history";
-    eval(`${coreHistory}\n//# sourceURL=${CORE_HISTORY_URL}`);
-    const historyApi = UW.KWWitchDockHistory;
-    if (!historyApi || historyApi.version !== CORE_HISTORY_VERSION || historyApi.build !== CORE_HISTORY_BUILD) {
-      throw new Error("external core history module did not register the expected API/version");
-    }
-    if (
-      typeof historyApi.configure !== "function" ||
-      typeof historyApi.updateDockUndoRedoButtons !== "function" ||
-      typeof historyApi.triggerUndo !== "function" ||
-      typeof historyApi.triggerRedo !== "function" ||
-      typeof historyApi.hookUndoQueueForDockButtons !== "function" ||
-      typeof historyApi.getState !== "function"
-    ) {
-      throw new Error("external core history module is missing required methods");
-    }
-    state.coreHistoryApplied = true;
-    UW.KWWitchDockHistoryInfo = Object.freeze({
-      version: CORE_HISTORY_VERSION,
-      build: CORE_HISTORY_BUILD,
-      url: CORE_HISTORY_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-ck-undoqueue-dock-history"
-    });
-
-    state.status = "loading-core-application";
-    eval(`${coreApplication}\n//# sourceURL=${CORE_APPLICATION_URL}`);
-    const applicationApi = UW.KWWitchDockApplication;
-    if (!applicationApi || applicationApi.version !== CORE_APPLICATION_VERSION || applicationApi.build !== CORE_APPLICATION_BUILD) {
-      throw new Error("external core application module did not register the expected API/version");
-    }
-    for (const name of [
-      "configure",
-      "el",
-      "clamp",
-      "computeMinDockHeightCollapsed",
-      "getViewport",
-      "isAnchored",
-      "snapshotCurrentDockPositionToPrefs",
-      "applyPositionAndSize",
-      "applyMinimizedState",
-      "showClosedCompact",
-      "computeMinDockWidthForActiveTab",
-      "enforceSizeConstraints",
-      "setActiveTab",
-      "mountTool",
-      "registerTool",
-      "getState"
-    ]) {
-      if (typeof applicationApi[name] !== "function") throw new Error(`external core application module is missing required method: ${name}`);
-    }
-    state.coreApplicationApplied = true;
-    UW.KWWitchDockApplicationInfo = Object.freeze({
-      version: CORE_APPLICATION_VERSION,
-      build: CORE_APPLICATION_BUILD,
-      url: CORE_APPLICATION_URL,
-      applied: true,
-      owner: "bootstrap-module",
-      contract: "legacy-application-shell-through-register-tool"
-    });
-
-    const styleReplacement = '  function addStyles() {\n    // Core CSS is injected by the privileged bootstrap before UI construction.\n  }\n\n  function el(';
-    let devSource = source.slice(0, styleStart) + styleReplacement + source.slice(styleEnd + STYLE_FUNCTION_END.length);
-
-    const prefsDeclStart = devSource.indexOf(PREFS_DECL_START);
-    const duplicatePrefsDeclStart = prefsDeclStart >= 0 ? devSource.indexOf(PREFS_DECL_START, prefsDeclStart + PREFS_DECL_START.length) : -1;
-    if (prefsDeclStart < 0 || duplicatePrefsDeclStart >= 0) {
-      throw new Error(`expected exactly one legacy preference declaration block; found ${prefsDeclStart < 0 ? 0 : 2}`);
-    }
-    const prefsDeclEnd = devSource.indexOf(PREFS_DECL_END, prefsDeclStart + PREFS_DECL_START.length);
-    if (prefsDeclEnd < 0) throw new Error("legacy preference declaration block end was not found");
-    const legacyPrefsDecl = devSource.slice(prefsDeclStart, prefsDeclEnd);
-    for (const required of ["width: 380", "height: 520", "lastOpenAnchored: true", "compactX: 16", "firstRun: false"]) {
-      if (!legacyPrefsDecl.includes(required)) throw new Error(`legacy preference defaults contract changed: missing ${required}`);
-    }
-    const prefsDeclReplacement = [
-      '  const STORE_KEY = UW.KWWitchDockPreferences.storeKey;',
-      '  const DEFAULTS = UW.KWWitchDockPreferences.defaults;',
-      '',
-      '  const state = {'
-    ].join('\n');
-    devSource = devSource.slice(0, prefsDeclStart) + prefsDeclReplacement + devSource.slice(prefsDeclEnd + PREFS_DECL_END.length);
-
-    const registryStateMatches = devSource.split(REGISTRY_STATE_BLOCK).length - 1;
-    if (registryStateMatches !== 1) {
-      throw new Error(`expected exactly one legacy registry state block; found ${registryStateMatches}`);
-    }
-    devSource = devSource.replace(REGISTRY_STATE_BLOCK, [
-      '    tabs: UW.KWWitchDockRegistry.tabs,',
-      '    toolsById: UW.KWWitchDockRegistry.toolsById,',
-      '    pending: UW.KWWitchDockRegistry.pending,'
-    ].join('\n'));
-
-    const shellRootStart = devSource.indexOf(SHELL_ROOT_START);
-    const duplicateShellRootStart = shellRootStart >= 0 ? devSource.indexOf(SHELL_ROOT_START, shellRootStart + SHELL_ROOT_START.length) : -1;
-    if (shellRootStart < 0 || duplicateShellRootStart >= 0) {
-      throw new Error(`expected exactly one legacy shell-root block; found ${shellRootStart < 0 ? 0 : 2}`);
-    }
-    const shellRootEnd = devSource.indexOf(SHELL_ROOT_END, shellRootStart + SHELL_ROOT_START.length);
-    if (shellRootEnd < 0) throw new Error("legacy shell-root block end was not found");
-    const legacyShellRoot = devSource.slice(shellRootStart, shellRootEnd);
-    for (const required of [
-      'id: "kwWDHeader", onpointerdown: startDockDrag',
-      'id: "kwWDDisclaimerBtn"',
-      'id: "kwWDAboutBtn"',
-      'title: "Minimize / Expand"',
-      'title: "Collapse to icon"',
-      'id: "kwWDUndoBtn"',
-      'id: "kwWDRedoBtn"',
-      'id: "kwWDResizeHandleBottom", onpointerdown: startResizeBottom',
-      'id: "kwWDResizeHandleCorner", onpointerdown: startResizeCorner',
-      'state.footer = state.root.querySelector("#kwWDFooter");'
-    ]) {
-      if (!legacyShellRoot.includes(required)) throw new Error(`legacy shell-root contract changed: missing ${required}`);
-    }
-    const shellRootReplacement = [
-      '    const dockShell = UW.KWWitchDockShell.createRoot({',
-      '      el,',
-      '      handlers: Object.freeze({',
-      '        startDockDrag,',
-      '        openDisclaimerModal,',
-      '        ensureAboutModal,',
-      '        openAboutModal,',
-      '        toggleMinimize,',
-      '        closeDock,',
-      '        triggerUndo,',
-      '        triggerRedo,',
-      '        startResizeBottom,',
-      '        startResizeCorner',
-      '      })',
-      '    });',
-      '    state.root = dockShell.root;',
-      '    state.header = dockShell.header;',
-      '    state.aboutBtn = dockShell.aboutBtn;',
-      '    state.tabsContainer = dockShell.tabsContainer;',
-      '    state.tabsBar = dockShell.tabsBar;',
-      '    state.tabsBarRight = dockShell.tabsBarRight;',
-      '    state.footer = dockShell.footer;',
-      '    state.undoBtn = dockShell.undoBtn;',
-      '    state.redoBtn = dockShell.redoBtn;',
-      '    state.body = dockShell.body;',
-      '    state.resizeBottom = dockShell.resizeBottom;',
-      '    state.resizeCorner = dockShell.resizeCorner;',
-      '    state.minimizeBtn = dockShell.minimizeBtn;',
-      '    state.closeBtn = dockShell.closeBtn;'
-    ].join('\n');
-    devSource = devSource.slice(0, shellRootStart) + shellRootReplacement + devSource.slice(shellRootEnd);
-
-    const compactDomStart = devSource.indexOf(COMPACT_DOM_START);
-    const duplicateCompactDomStart = compactDomStart >= 0 ? devSource.indexOf(COMPACT_DOM_START, compactDomStart + COMPACT_DOM_START.length) : -1;
-    if (compactDomStart < 0 || duplicateCompactDomStart >= 0) {
-      throw new Error(`expected exactly one legacy compact-DOM block; found ${compactDomStart < 0 ? 0 : 2}`);
-    }
-    const compactDomEnd = devSource.indexOf(COMPACT_DOM_END, compactDomStart + COMPACT_DOM_START.length);
-    if (compactDomEnd < 0) throw new Error("legacy compact-DOM block end was not found");
-    const legacyCompactDom = devSource.slice(compactDomStart, compactDomEnd);
-    for (const required of [
-      'id: "kwWDCompact"',
-      'title: "Open Witch Dock"',
-      'onpointerdown: startCompactDrag',
-      'id: "kwWDCompactIcon"',
-      'src: COMPACT_EMBLEM_URL',
-      'alt: "Witch Dock"',
-      'draggable: "false"'
-    ]) {
-      if (!legacyCompactDom.includes(required)) throw new Error(`legacy compact-DOM contract changed: missing ${required}`);
-    }
-    const compactDomReplacement = [
-      '    state.compact = UW.KWWitchDockShell.createCompact({',
-      '      el,',
-      '      emblemUrl: COMPACT_EMBLEM_URL,',
-      '      onPointerDown: startCompactDrag',
-      '    });'
-    ].join('\n');
-    devSource = devSource.slice(0, compactDomStart) + compactDomReplacement + devSource.slice(compactDomEnd);
-
-    const dockHistoryStart = devSource.indexOf(DOCK_HISTORY_START);
-    const duplicateDockHistoryStart = dockHistoryStart >= 0 ? devSource.indexOf(DOCK_HISTORY_START, dockHistoryStart + DOCK_HISTORY_START.length) : -1;
-    if (dockHistoryStart < 0 || duplicateDockHistoryStart >= 0) {
-      throw new Error(`expected exactly one Dock history block; found ${dockHistoryStart < 0 ? 0 : 2}`);
-    }
-    const dockHistoryEnd = devSource.indexOf(DOCK_HISTORY_END, dockHistoryStart + DOCK_HISTORY_START.length);
-    if (dockHistoryEnd < 0) throw new Error("Dock history block end was not found");
-    const legacyDockHistory = devSource.slice(dockHistoryStart, dockHistoryEnd);
-    for (const required of [
-      'function deepClone(obj) {',
-      'const u = CK && CK.UndoQueue ? CK.UndoQueue : null;',
-      'CK.tryLoadCharacter(deepClone(json), "Witch Dock: invalid character data", function () {});',
-      'function updateDockUndoRedoButtons() {',
-      'function triggerUndo() {',
-      'function triggerRedo() {',
-      'function hookUndoQueueForDockButtons() {',
-      'obj[key].__kwDockWrapped = true;',
-      'wrap(u, "undo");',
-      'wrap(u, "redo");'
-    ]) {
-      if (!legacyDockHistory.includes(required)) throw new Error(`Dock history contract changed: missing ${required}`);
-    }
-    const dockHistoryReplacement = [
-      '  UW.KWWitchDockHistory.configure({ state });',
-      '  function updateDockUndoRedoButtons() { return UW.KWWitchDockHistory.updateDockUndoRedoButtons(); }',
-      '  function triggerUndo() { return UW.KWWitchDockHistory.triggerUndo(); }',
-      '  function triggerRedo() { return UW.KWWitchDockHistory.triggerRedo(); }',
-      '  function hookUndoQueueForDockButtons() { return UW.KWWitchDockHistory.hookUndoQueueForDockButtons(); }'
-    ].join('\n\n');
-    devSource = devSource.slice(0, dockHistoryStart) + dockHistoryReplacement + devSource.slice(dockHistoryEnd);
-
-    const prefsIoStart = devSource.indexOf(PREFS_IO_START);
-    const duplicatePrefsIoStart = prefsIoStart >= 0 ? devSource.indexOf(PREFS_IO_START, prefsIoStart + PREFS_IO_START.length) : -1;
-    if (prefsIoStart < 0 || duplicatePrefsIoStart >= 0) {
-      throw new Error(`expected exactly one legacy preference IO block; found ${prefsIoStart < 0 ? 0 : 2}`);
-    }
-    const prefsIoEnd = devSource.indexOf(PREFS_IO_END, prefsIoStart + PREFS_IO_START.length);
-    if (prefsIoEnd < 0) throw new Error("legacy preference IO block end was not found");
-    const legacyPrefsIo = devSource.slice(prefsIoStart, prefsIoEnd + PREFS_IO_END.length);
-    if ((legacyPrefsIo.split("GM_getValue(STORE_KEY").length - 1) !== 1 || (legacyPrefsIo.split("GM_setValue(STORE_KEY").length - 1) !== 1) {
-      throw new Error("legacy main preference GM storage contract changed");
-    }
-    const prefsIoReplacement = [
-      '  function loadPrefs() { return UW.KWWitchDockPreferences.load(); }',
-      '  function savePrefs(p) { UW.KWWitchDockPreferences.save(p); }',
-      '',
-      '  const prefs = loadPrefs();',
-      '  UW.KWWitchDockApplication.configure({',
-      '    state,',
-      '    prefs,',
-      '    defaults: DEFAULTS,',
-      '    savePrefs,',
-      '    preferences: UW.KWWitchDockPreferences,',
-      '    history: UW.KWWitchDockHistory',
-      '  });',
-      '  UW.KWWitchDockInteractions.configure({',
-      '    state,',
-      '    prefs,',
-      '    defaults: DEFAULTS,',
-      '    savePrefs,',
-      '    snapshotCurrentDockPositionToPrefs,',
-      '    getViewport,',
-      '    enforceSizeConstraints,',
-      '    applyMinimizedState,',
-      '    showClosedCompact,',
-      '    clamp,',
-      '    computeMinDockHeightCollapsed',
-      '  });'
-    ].join('\n');
-    devSource = devSource.slice(0, prefsIoStart) + prefsIoReplacement + devSource.slice(prefsIoEnd + PREFS_IO_END.length);
-
-    const toolEnableStart = devSource.indexOf(TOOL_ENABLE_STORAGE_START);
-    const duplicateToolEnableStart = toolEnableStart >= 0 ? devSource.indexOf(TOOL_ENABLE_STORAGE_START, toolEnableStart + TOOL_ENABLE_STORAGE_START.length) : -1;
-    if (toolEnableStart < 0 || duplicateToolEnableStart >= 0) {
-      throw new Error(`expected exactly one legacy tool-enablement storage block; found ${toolEnableStart < 0 ? 0 : 2}`);
-    }
-    const toolEnableEnd = devSource.indexOf(TOOL_ENABLE_STORAGE_END, toolEnableStart + TOOL_ENABLE_STORAGE_START.length);
-    if (toolEnableEnd < 0) throw new Error("legacy tool-enablement storage block end was not found");
-    const legacyToolEnable = devSource.slice(toolEnableStart, toolEnableEnd);
-    for (const required of [
-      'GM_getValue(TOOL_ENABLE_PREFIX + toolId, null)',
-      'if (v === null || v === undefined) return !!enabledByDefault',
-      'return !!v'
-    ]) {
-      if (!legacyToolEnable.includes(required)) throw new Error(`legacy tool-enablement storage contract changed: missing ${required}`);
-    }
-    const toolEnableReplacement = [
-      'function getToolEnabled(toolId, enabledByDefault) {',
-      '  return UW.KWWitchDockPreferences.getToolEnabledFromHost(toolId, enabledByDefault);',
-      '}',
-      '',
-      'async function loadManifestAndTools() {'
-    ].join('\n');
-    devSource = devSource.slice(0, toolEnableStart) + toolEnableReplacement + devSource.slice(toolEnableEnd + TOOL_ENABLE_STORAGE_END.length);
-
-    const applicationBlockStart = devSource.indexOf(APPLICATION_BLOCK_START);
-    const duplicateApplicationBlockStart = applicationBlockStart >= 0 ? devSource.indexOf(APPLICATION_BLOCK_START, applicationBlockStart + APPLICATION_BLOCK_START.length) : -1;
-    if (applicationBlockStart < 0 || duplicateApplicationBlockStart >= 0) {
-      throw new Error(`expected exactly one application-shell block; found ${applicationBlockStart < 0 ? 0 : 2}`);
-    }
-    const applicationBlockEnd = devSource.indexOf(APPLICATION_BLOCK_END, applicationBlockStart + APPLICATION_BLOCK_START.length);
-    if (applicationBlockEnd < 0) throw new Error("application-shell block end was not found");
-    const legacyApplicationBlock = devSource.slice(applicationBlockStart, applicationBlockEnd);
-    for (const required of [
-      'function el(tag, attrs, children) {',
-      'function snapshotCurrentDockPositionToPrefs() {',
-      'function applyPositionAndSize() {',
-      'function setActiveTab(name) {',
-      'function ensureTab(name) {',
-      'function createSection(toolId, opts) {',
-      'function startSectionPointerDrag(toolId, sectionRoot, header, container, e) {',
-      'function mountTool(def) {',
-      'function registerTool(def) {'
-    ]) {
-      if (!legacyApplicationBlock.includes(required)) throw new Error(`application-shell contract changed: missing ${required}`);
-    }
-    const applicationBlockReplacement = [
-      '  function el(tag, attrs, children) { return UW.KWWitchDockApplication.el(tag, attrs, children); }',
-      '  function clamp(n, min, max) { return UW.KWWitchDockApplication.clamp(n, min, max); }',
-      '  function computeMinDockHeightCollapsed() { return UW.KWWitchDockApplication.computeMinDockHeightCollapsed(); }',
-      '  function getViewport() { return UW.KWWitchDockApplication.getViewport(); }',
-      '  function isAnchored() { return UW.KWWitchDockApplication.isAnchored(); }',
-      '  function snapshotCurrentDockPositionToPrefs() { return UW.KWWitchDockApplication.snapshotCurrentDockPositionToPrefs(); }',
-      '  function applyPositionAndSize() { return UW.KWWitchDockApplication.applyPositionAndSize(); }',
-      '  function applyMinimizedState() { return UW.KWWitchDockApplication.applyMinimizedState(); }',
-      '  function showClosedCompact() { return UW.KWWitchDockApplication.showClosedCompact(); }',
-      '  function computeMinDockWidthForActiveTab() { return UW.KWWitchDockApplication.computeMinDockWidthForActiveTab(); }',
-      '  function enforceSizeConstraints() { return UW.KWWitchDockApplication.enforceSizeConstraints(); }',
-      '  function setActiveTab(name) { return UW.KWWitchDockApplication.setActiveTab(name); }',
-      '  function mountTool(def) { return UW.KWWitchDockApplication.mountTool(def); }',
-      '  function registerTool(def) { return UW.KWWitchDockApplication.registerTool(def); }'
-    ].join('\n\n');
-    devSource = devSource.slice(0, applicationBlockStart) + applicationBlockReplacement + devSource.slice(applicationBlockEnd);
-
-    const dockDragStart = devSource.indexOf(DOCK_DRAG_START);
-    const duplicateDockDragStart = dockDragStart >= 0 ? devSource.indexOf(DOCK_DRAG_START, dockDragStart + DOCK_DRAG_START.length) : -1;
-    if (dockDragStart < 0 || duplicateDockDragStart >= 0) {
-      throw new Error(`expected exactly one Dock drag block; found ${dockDragStart < 0 ? 0 : 2}`);
-    }
-    const dockDragEnd = devSource.indexOf(DOCK_DRAG_END, dockDragStart + DOCK_DRAG_START.length);
-    if (dockDragEnd < 0) throw new Error("Dock drag block end was not found");
-    const legacyDockDrag = devSource.slice(dockDragStart, dockDragEnd);
-    for (const required of [
-      'function startDockDrag(e) {',
-      'target.closest("#kwWDControls")',
-      'const startLeft = rect.left;',
-      'window.addEventListener("pointermove", move);',
-      'window.addEventListener("pointerup", up);',
-      'prefs.x = Math.round(left);',
-      'prefs.y = Math.round(top);',
-      'savePrefs(prefs);'
-    ]) {
-      if (!legacyDockDrag.includes(required)) throw new Error(`Dock drag contract changed: missing ${required}`);
-    }
-    const dockDragReplacement = '  function startDockDrag(e) { return UW.KWWitchDockInteractions.startDockDrag(e); }';
-    devSource = devSource.slice(0, dockDragStart) + dockDragReplacement + devSource.slice(dockDragEnd);
-
-    const dockResizeStart = devSource.indexOf(DOCK_RESIZE_START);
-    const duplicateDockResizeStart = dockResizeStart >= 0 ? devSource.indexOf(DOCK_RESIZE_START, dockResizeStart + DOCK_RESIZE_START.length) : -1;
-    if (dockResizeStart < 0 || duplicateDockResizeStart >= 0) {
-      throw new Error(`expected exactly one Dock resize block; found ${dockResizeStart < 0 ? 0 : 2}`);
-    }
-    const dockResizeEnd = devSource.indexOf(DOCK_RESIZE_END, dockResizeStart + DOCK_RESIZE_START.length);
-    if (dockResizeEnd < 0) throw new Error("Dock resize block end was not found");
-    const legacyDockResize = devSource.slice(dockResizeStart, dockResizeEnd);
-    for (const required of [
-      'function startResizeCorner(e) {',
-      'state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "corner" };',
-      'prefs.lastOpenWidth = prefs.width;',
-      'prefs.lastOpenHeight = prefs.height;',
-      'function startResizeBottom(e) {',
-      'state.resizeStart = { x: e.clientX, y: e.clientY, w: rect.width, h: rect.height, mode: "bottom" };',
-      'enforceSizeConstraints();'
-    ]) {
-      if (!legacyDockResize.includes(required)) throw new Error(`Dock resize contract changed: missing ${required}`);
-    }
-    const dockResizeReplacement = [
-      '  function startResizeCorner(e) { return UW.KWWitchDockInteractions.startResizeCorner(e); }',
-      '  function startResizeBottom(e) { return UW.KWWitchDockInteractions.startResizeBottom(e); }'
-    ].join('\n\n');
-    devSource = devSource.slice(0, dockResizeStart) + dockResizeReplacement + devSource.slice(dockResizeEnd);
-
-    const dockLifecycleStart = devSource.indexOf(DOCK_LIFECYCLE_START);
-    const duplicateDockLifecycleStart = dockLifecycleStart >= 0 ? devSource.indexOf(DOCK_LIFECYCLE_START, dockLifecycleStart + DOCK_LIFECYCLE_START.length) : -1;
-    if (dockLifecycleStart < 0 || duplicateDockLifecycleStart >= 0) {
-      throw new Error(`expected exactly one Dock lifecycle block; found ${dockLifecycleStart < 0 ? 0 : 2}`);
-    }
-    const dockLifecycleEnd = devSource.indexOf(DOCK_LIFECYCLE_END, dockLifecycleStart + DOCK_LIFECYCLE_START.length);
-    if (dockLifecycleEnd < 0) throw new Error("Dock lifecycle block end was not found");
-    const legacyDockLifecycle = devSource.slice(dockLifecycleStart, dockLifecycleEnd);
-    for (const required of [
-      'function toggleMinimize() {',
-      'if (!prefs.minimized) snapshotCurrentDockPositionToPrefs();',
-      'function closeDock() {',
-      'prefs.closed = true;',
-      'function expandFromCompact() {',
-      'prefs.closed = false;',
-      'showClosedCompact();',
-      'enforceSizeConstraints();',
-      'applyMinimizedState();'
-    ]) {
-      if (!legacyDockLifecycle.includes(required)) throw new Error(`Dock lifecycle contract changed: missing ${required}`);
-    }
-    const dockLifecycleReplacement = [
-      '  function toggleMinimize() { return UW.KWWitchDockInteractions.toggleMinimize(); }',
-      '  function closeDock() { return UW.KWWitchDockInteractions.closeDock(); }',
-      '  function expandFromCompact() { return UW.KWWitchDockInteractions.expandFromCompact(); }'
-    ].join('\n\n');
-    devSource = devSource.slice(0, dockLifecycleStart) + dockLifecycleReplacement + devSource.slice(dockLifecycleEnd);
-
-    const compactDragStart = devSource.indexOf(COMPACT_DRAG_START);
-    const duplicateCompactDragStart = compactDragStart >= 0 ? devSource.indexOf(COMPACT_DRAG_START, compactDragStart + COMPACT_DRAG_START.length) : -1;
-    if (compactDragStart < 0 || duplicateCompactDragStart >= 0) {
-      throw new Error(`expected exactly one compact drag block; found ${compactDragStart < 0 ? 0 : 2}`);
-    }
-    const compactDragEnd = devSource.indexOf(COMPACT_DRAG_END, compactDragStart + COMPACT_DRAG_START.length);
-    if (compactDragEnd < 0) throw new Error("compact drag block end was not found");
-    const legacyCompactDrag = devSource.slice(compactDragStart, compactDragEnd);
-    for (const required of [
-      'function startCompactDrag(e) {',
-      'if (e.isPrimary === false) return;',
-      'Math.hypot(dx, dy) <= 5',
-      'state.compact.setPointerCapture(pointerId)',
-      'prefs.compactX = Math.round(left);',
-      'prefs.compactY = Math.round(top);',
-      'window.addEventListener("pointermove", move, true);',
-      'window.addEventListener("pointercancel", cancel, true);',
-      'if (!dragging) expandFromCompact();'
-    ]) {
-      if (!legacyCompactDrag.includes(required)) throw new Error(`compact drag contract changed: missing ${required}`);
-    }
-    const compactDragReplacement = '  function startCompactDrag(e) { return UW.KWWitchDockInteractions.startCompactDrag(e); }';
-    devSource = devSource.slice(0, compactDragStart) + compactDragReplacement + devSource.slice(compactDragEnd);
-
-    const dockHotkeyStart = devSource.indexOf(DOCK_HOTKEY_START);
-    const duplicateDockHotkeyStart = dockHotkeyStart >= 0 ? devSource.indexOf(DOCK_HOTKEY_START, dockHotkeyStart + DOCK_HOTKEY_START.length) : -1;
-    if (dockHotkeyStart < 0 || duplicateDockHotkeyStart >= 0) {
-      throw new Error(`expected exactly one Dock hotkey block; found ${dockHotkeyStart < 0 ? 0 : 2}`);
-    }
-    const dockHotkeyEnd = devSource.indexOf(DOCK_HOTKEY_END, dockHotkeyStart + DOCK_HOTKEY_START.length);
-    if (dockHotkeyEnd < 0) throw new Error("Dock hotkey block end was not found");
-    const legacyDockHotkey = devSource.slice(dockHotkeyStart, dockHotkeyEnd);
-    for (const required of [
-      'function isEditableTarget(t) {',
-      'tag === "input" || tag === "textarea" || tag === "select"',
-      'function installDockHotkey() {',
-      'if (e.repeat) return;',
-      'if (e.ctrlKey || e.altKey || e.metaKey) return;',
-      'if (isEditableTarget(e.target)) return;',
-      'if (e.code !== "Backquote") return;',
-      'if (prefs.closed) {',
-      'expandFromCompact();',
-      'closeDock();'
-    ]) {
-      if (!legacyDockHotkey.includes(required)) throw new Error(`Dock hotkey contract changed: missing ${required}`);
-    }
-    const dockHotkeyReplacement = '  function installDockHotkey() { return UW.KWWitchDockInteractions.installDockHotkey(); }';
-    devSource = devSource.slice(0, dockHotkeyStart) + dockHotkeyReplacement + devSource.slice(dockHotkeyEnd);
-
-    const modalStart = devSource.indexOf(MODAL_BLOCK_START);
-    const duplicateModalStart = modalStart >= 0 ? devSource.indexOf(MODAL_BLOCK_START, modalStart + MODAL_BLOCK_START.length) : -1;
-    if (modalStart < 0 || duplicateModalStart >= 0) {
-      throw new Error(`expected exactly one legacy modal block start; found ${modalStart < 0 ? 0 : 2}`);
-    }
-    const modalEnd = devSource.indexOf(MODAL_BLOCK_END, modalStart + MODAL_BLOCK_START.length);
-    if (modalEnd < 0) throw new Error("legacy modal block end was not found");
-    const legacyModalBlock = devSource.slice(modalStart, modalEnd);
-    for (const functionName of MODAL_FUNCTION_NAMES) {
-      const count = legacyModalBlock.split(`function ${functionName}(`).length - 1;
-      if (count !== 1) throw new Error(`expected exactly one ${functionName} in legacy modal block; found ${count}`);
-    }
-
-    const modalReplacement = [
-      '  function closeAboutModal() { return UW.KWWitchDockModals.closeAbout(); }',
-      '  function openAboutModal() { return UW.KWWitchDockModals.openAbout(); }',
-      '  function ensureAboutModal() { return UW.KWWitchDockModals.ensureAbout(); }',
-      '  function closeDisclaimerModal() { return UW.KWWitchDockModals.closeDisclaimer(); }',
-      '  function openDisclaimerModal() { return UW.KWWitchDockModals.openDisclaimer(); }',
-      '  function ensureDisclaimerModal() { return UW.KWWitchDockModals.ensureDisclaimer(); }',
-      '',
-      'function buildUI() {'
-    ].join('\n');
-    devSource = devSource.slice(0, modalStart) + modalReplacement + devSource.slice(modalEnd + MODAL_BLOCK_END.length);
-    devSource = devSource.replace(STABLE_MANIFEST_DECL, DEV_MANIFEST_DECL);
-
-    state.status = "loading-core";
-
-    // Temporary bounded migration seam for issue #19/#10. The fetched core executes
-    // inside this userscript sandbox so its existing GM_* contracts remain intact.
-    // Stage D application ownership is now external: CSS/presentation, preferences, registry state, shell DOM, application-shell orchestration, interactions/hotkey, and undo/redo are bootstrap-hosted GitHub components.
-    // The remaining Stable-derived source is temporary Stage E bootstrap/application startup scaffolding only.
-    eval(`${devSource}\n//# sourceURL=${CORE_URL}?channel=dev&v=${DEV_VERSION}`);
-
-    UW.KWWitchDockManifestURL = DEV_MANIFEST_URL;
-    applyDevIdentity();
     state.status = "running";
+    state.error = null;
   }
 
   boot().catch(showBootError);

@@ -2,6 +2,27 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-043 — v1.5.0 immutable launcher activation candidate
+
+Date: 2026-09-19
+
+### Static checks
+
+- Launcher source parses.
+- Metadata identity/grants/update/download URLs remain the existing Dev userscript identity.
+- Payload ref is exact commit SHA `6cbc7c5530391d3b8611374ce051bde080ea1a2d`.
+- Launcher has no `Witch_Dock.user.js`, `devSource`, application-block, drag-block, or Stable-monolith transform tokens.
+- Expected component versions/builds include Core v2.0.0 and Loader v0.2.0 immutable payload-root build.
+- Diagnostics default to `legacyMonolithFetched=false` and `legacySourceTransforms=false`.
+
+### Required live gate
+
+Bridge-reload through Dev auto-host after task-branch fast-forward. Require launcher running/error-null, pinned immutable payload diagnostics, Core v2.0.0 started/running, Loader 23/23 / 0 failed with immutable-payload-root source mode, and the full Stage C/D interaction/UI/history regression surface.
+
+**Runtime/module/manifest/public behavior changed:** Dev Stage E activation candidate only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-042 — Stage E immutable payload candidate
 
 Date: 2026-09-19

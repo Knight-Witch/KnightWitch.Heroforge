@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage E ACTIVE. Immutable modular payload candidate is staged off the known-good Stage D head; activation launcher/live gate still pending.
+**Current phase:** issue #10 Stage E ACTIVE. v1.5.0 activation candidate is ready: tiny Dev launcher pins immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d`; final live regression is pending.
 
 ## Current priorities
 
-1. #10 — ACTIVE, Stage E. Build immutable payload commit first, then pin the v1.5.0 launcher to that exact commit SHA and run the full final Dev regression gate.
+1. #10 — ACTIVE, Stage E final gate. Move the task branch to the v1.5.0 activation commit, Bridge-reload through Dev auto-host, and run the full final modular-bootstrap regression before declaring issue #10 complete.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -265,6 +265,15 @@
 - Manifest remains 23 runtime modules; every runtime module has a registry path.
 - Payload commit will be created before the activation launcher. The launcher will pin the payload commit SHA directly, not a moving branch.
 - Public Stable and legacy `Witch_Dock.user.js` remain untouched.
+
+
+## v1.5.0 activation candidate
+
+- Dev launcher v1.5.0 / build `1.5.0-immutable-modular-bootstrap` is ~11.6 KB and contains no `Witch_Dock.user.js` fetch, `devSource` transform pipeline, or legacy block sentinels.
+- Runtime payload is pinned to commit SHA `6cbc7c5530391d3b8611374ce051bde080ea1a2d`; readable ref `wd/payload-1.5.0` points to the same commit, but launcher compatibility depends on the SHA.
+- Bootstrap components are fetched through the existing bounded privileged host. Feature modules are then fetched by Loader v0.2.0 from the same immutable payload root using registry paths.
+- Diagnostics must report `immutablePayload=true`, `legacyMonolithFetched=false`, `legacySourceTransforms=false`, and payloadRef equal to the pinned SHA.
+- Required live regression remains the complete Stage E gate; issue #10 is not complete yet.
 
 ## Minimum continuation set
 

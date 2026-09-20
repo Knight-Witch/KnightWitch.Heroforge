@@ -2,6 +2,21 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-043 — v1.5.0 immutable launcher activation candidate
+
+Date: 2026-09-19
+
+- Dev launcher advances to v1.5.0 / build `1.5.0-immutable-modular-bootstrap`.
+- Launcher shrinks to a small channel/privilege/bootstrap host and pins payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d` directly.
+- Human-readable payload ref `wd/payload-1.5.0` points to that commit, but runtime compatibility depends on the immutable SHA.
+- Launcher contains no legacy monolith fetch, `devSource` text surgery, or Stable-derived block sentinels.
+- Bootstrap component versions/builds remain strict.
+- Stage E live regression is still required before issue #10 can be called complete.
+
+**Runtime/module/manifest/public behavior changed:** Dev Stage E activation candidate only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-042 — Stage E immutable payload candidate
 
 Date: 2026-09-19
