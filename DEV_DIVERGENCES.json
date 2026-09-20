@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is complete through v1.4.13 live parity. Stage E final bootstrap reduction is active: remove runtime Stable-source text transforms/eval and eliminate moving-branch launcher/module skew while preserving bounded privileges and all validated contracts.",
+      "reason": "Issue #10 Stage E is active. The immutable modular payload candidate is staged: Core v2.0.0, Assets v0.1.0, Loader v0.2.0 immutable payload-root resolution. Activation launcher and live regression remain pending.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -38,7 +38,9 @@
         "features/core/Witch_Dock_Shell.js",
         "features/core/Witch_Dock_Interactions.js",
         "features/core/Witch_Dock_History.js",
-        "features/core/Witch_Dock_Application.js"
+        "features/core/Witch_Dock_Application.js",
+        "features/core/Witch_Dock_Core.js",
+        "features/core/Witch_Dock_Assets.js"
       ],
       "acceptance": [
         "witch-dock-styles remains v0.1.0 / build 0.1.0-extracted-core-css and the v1.3.6 CSS gate remains healthy.",
@@ -122,7 +124,10 @@
         "v1.4.13 launcher/manifest identify 1.4.13 / build 1.4.13-extracted-application-shell and witch-dock-application v0.1.0 / build 0.1.0-shell-registry-orchestration.",
         "Application Shell extraction owns the contiguous el-through-registerTool block, uses Preferences/Registry/History named APIs, carries the v1.4.6 content-box geometry fix physically, and contains no raw GM capability.",
         "v1.4.13 live gate must preserve exact tab/tool/section counts/order, public WitchDock seams, geometry, reversible tab selection, and reversible Utilities section reorder with loader 23/23 / 0 failed.",
-        "v1.4.13 live PASS: Application v0.1.0 configured/error-null; loader 23/23 / 0 failed; 6 tabs / 9 tools / 12 sections and public WitchDock seams preserved; real section reorder persisted then restored exactly with Application drag telemetry 2/2."
+        "v1.4.13 live PASS: Application v0.1.0 configured/error-null; loader 23/23 / 0 failed; 6 tabs / 9 tools / 12 sections and public WitchDock seams preserved; real section reorder persisted then restored exactly with Application drag telemetry 2/2.",
+        "Stage E payload provides Core v2.0.0 composition/startup, Assets v0.1.0 exact compact emblem, and Loader v0.2.0 immutable payload-root resolution while preserving concurrency/order/failure isolation.",
+        "All 23 runtime manifest modules retain registry paths so immutable loader resolution can avoid moving-branch modules without weakening validation.",
+        "Activation launcher must pin the payload commit SHA directly and must not fetch/transform/eval Witch_Dock.user.js."
       ]
     }
   ],

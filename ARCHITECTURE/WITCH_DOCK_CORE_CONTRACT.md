@@ -169,3 +169,19 @@ For every stage:
 5. no public Stable change until a later explicit narrow promotion.
 
 Any unexplained behavior difference from Stable is treated as a regression, not an acceptable refactor side effect.
+
+## Stage E final bootstrap contract
+
+Issue #10 Stage E removes the temporary Dev path that fetched `Witch_Dock.user.js`, performed guarded runtime source-text transforms, and evaluated the transformed monolith.
+
+Final delivery contract:
+
+- `Witch_Dock_DEV.user.js` is a small channel/privilege/bootstrap host.
+- Each launcher revision pins an immutable payload commit SHA. Human-readable payload refs may point to that commit for inspection, but runtime compatibility depends on the SHA.
+- The payload contains the manifest, modular Core orchestrator, extracted core modules/assets, module loader, and feature-module sources.
+- `KWWitchDockPayloadRoot` points at the immutable raw commit root. Module Loader resolves manifest modules from `moduleRegistry.path` under that root; legacy `modules[].url` remains fallback-only.
+- Strict component version/build validation remains. Compatibility is achieved by immutable pairing, never by weakening checks.
+- `features/core/Witch_Dock_Core.js` owns composition/startup only and wires Preferences, Registry, Application, Shell, Interactions, History, Modals, Bone HUD, Assets, bounded host capabilities, and public `WitchDock` seams.
+- Module Loader retains concurrent fetch, deterministic manifest-order execution, cache-key behavior, and per-module failure isolation.
+- `Witch_Dock.user.js` remains available for Stable/history during migration but is not requested or executed by Stage E Dev.
+- HF-Chat-Bridge remains development infrastructure only and is never a Witch Dock runtime dependency.

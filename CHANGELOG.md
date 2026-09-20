@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-042 — Stage E immutable payload candidate
+
+Date: 2026-09-19
+
+- Added `Witch_Dock_Core.js` v2.0.0 / build `2.0.0-modular-orchestrator` as the final composition/startup owner.
+- Added `Witch_Dock_Assets.js` v0.1.0 preserving the exact known-good compact emblem data URL.
+- Advanced Module Loader to v0.2.0 / build `0.2.0-immutable-payload-root`.
+- Loader keeps concurrent fetch, deterministic manifest-order execution, cache-key behavior, and per-module failure isolation, but now prefers `KWWitchDockPayloadRoot + moduleRegistry.path` when an immutable payload root is supplied.
+- Manifest remains 23 runtime modules and every runtime module has a registry path.
+- This commit is the immutable Stage E payload candidate only; launcher activation and live regression follow in a separate commit so the Dev task branch cannot expose a half-migrated runtime.
+- Public Stable and legacy `Witch_Dock.user.js` are unchanged.
+
+**Runtime/module/manifest/public behavior changed:** isolated Stage E payload candidate; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-041 — Stage D COMPLETE / v1.4.13 Application live PASS
 
 Date: 2026-09-19

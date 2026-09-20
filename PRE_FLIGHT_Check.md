@@ -2,6 +2,28 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-042 — Stage E immutable payload candidate
+
+Date: 2026-09-19
+
+### Static / architecture checks
+
+- Core v2.0.0 source parses and owns composition/startup only.
+- Assets v0.1.0 source parses and preserves the exact legacy compact emblem data URL.
+- Module Loader v0.2.0 source parses and preserves concurrent fetch + ordered execution + per-module failure isolation.
+- Loader immutable mode resolves from `KWWitchDockPayloadRoot` and `moduleRegistry.path`; legacy `modules[].url` is fallback-only.
+- Manifest remains 23 runtime modules; every runtime module has a registry path.
+- Core/Assets/Loader registry version/build metadata is synchronized.
+- No Stable code or legacy `Witch_Dock.user.js` mutation is included.
+
+### Activation rule
+
+Create this payload as a detached commit and readable payload ref first. Only after that commit exists may the Dev launcher be changed to pin the exact payload commit SHA. Do not move the live task branch onto a launcher that references a payload that does not yet exist.
+
+**Runtime/module/manifest/public behavior changed:** isolated Stage E payload candidate; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-041 — Stage D COMPLETE / v1.4.13 Application live PASS
 
 Date: 2026-09-19

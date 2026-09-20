@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D COMPLETE. v1.4.13 final application-shell extraction is live-PASS. Stage E final bootstrap reduction is now ACTIVE.
+**Current phase:** issue #10 Stage E ACTIVE. Immutable modular payload candidate is staged off the known-good Stage D head; activation launcher/live gate still pending.
 
 ## Current priorities
 
-1. #10 — ACTIVE, Stage E. Replace the temporary Stable-source transform/eval bootstrap with a true small userscript host loading GitHub-owned core/modules through bounded capabilities; eliminate moving-branch launcher/module skew.
+1. #10 — ACTIVE, Stage E. Build immutable payload commit first, then pin the v1.5.0 launcher to that exact commit SHA and run the full final Dev regression gate.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -254,6 +254,17 @@
 - The confirmed moving-branch launcher/module version-skew hazard from v1.4.2 must be eliminated by immutable/compatibility-safe bootstrap sourcing; do not weaken module version validation.
 - Preserve loader order/cache/failure isolation, storage keys, public `WitchDock` seams, visual/interaction behavior, and all passed Stage C/D contracts.
 - HF-Chat-Bridge remains development infrastructure only and must not become a runtime dependency.
+
+
+## Stage E payload candidate
+
+- New Core v2.0.0 / build `2.0.0-modular-orchestrator` owns composition/startup only.
+- New Assets v0.1.0 preserves the exact known-good compact emblem data URL.
+- Module Loader advances to v0.2.0 / build `0.2.0-immutable-payload-root`.
+- Loader behavior remains concurrent-fetch + deterministic manifest-order execution + per-module failure isolation, but when `KWWitchDockPayloadRoot` is present it resolves each enabled module from `moduleRegistry.path` under that immutable root.
+- Manifest remains 23 runtime modules; every runtime module has a registry path.
+- Payload commit will be created before the activation launcher. The launcher will pin the payload commit SHA directly, not a moving branch.
+- Public Stable and legacy `Witch_Dock.user.js` remain untouched.
 
 ## Minimum continuation set
 

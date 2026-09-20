@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWModuleLoader";
-  const VERSION = "0.1.2";
-  const BUILD = "0.1.2-preferences-enablement-read";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-immutable-payload-root";
   const FALLBACK_MANIFEST_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/manifest.json";
   const SESSION = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
@@ -19,6 +19,9 @@
     completedAt: null,
     durationMs: null,
     manifestUrl: null,
+    payloadRoot: null,
+    immutableResolutionCount: 0,
+    fallbackResolutionCount: 0,
     total: 0,
     enabled: 0,
     started: 0,
@@ -69,8 +72,26 @@
     }
   }
 
-  function kwModuleRequestUrl(tool, registryEntry) {
-    const url = tool && typeof tool.url === "string" ? tool.url : "";
+  function resolveModuleSource(tool, registryEntry) {
+    const registry = registryEntry && typeof registryEntry === "object" ? registryEntry : null;
+    const configuredRoot = UW && typeof UW.KWWitchDockPayloadRoot === "string"
+      ? UW.KWWitchDockPayloadRoot.trim()
+      : "";
+    if (configuredRoot && registry && typeof registry.path === "string" && registry.path) {
+      const root = configuredRoot.endsWith("/") ? configuredRoot : configuredRoot + "/";
+      state.payloadRoot = root;
+      state.immutableResolutionCount += 1;
+      return { url: root + registry.path.replace(/^\/+/, ""), mode: "immutable-payload-root" };
+    }
+    state.fallbackResolutionCount += 1;
+    return {
+      url: tool && typeof tool.url === "string" ? tool.url : "",
+      mode: "manifest-url"
+    };
+  }
+
+  function kwModuleRequestUrl(tool, registryEntry, resolvedUrl) {
+    const url = String(resolvedUrl || "");
     const registry = registryEntry && typeof registryEntry === "object" ? registryEntry : null;
     const identity = [
       tool && tool.id,
@@ -143,6 +164,8 @@
       const record = {
         id,
         status: "pending",
+        sourceMode: null,
+        requestUrl: null,
         fetchStartedAt: null,
         fetchCompletedAt: null,
         fetchDurationMs: null,
@@ -158,7 +181,14 @@
 
       state.enabled += 1;
       const registryEntry = registryById.get(id) || null;
-      const requestUrl = kwModuleRequestUrl(moduleDef, registryEntry);
+      const source = resolveModuleSource(moduleDef, registryEntry);
+      if (!source.url) {
+        markFailure(record, "resolve", new Error(`No module source URL for ${id}`));
+        continue;
+      }
+      const requestUrl = kwModuleRequestUrl(moduleDef, registryEntry, source.url);
+      record.sourceMode = source.mode;
+      record.requestUrl = requestUrl;
       record.status = "fetching";
       record.fetchStartedAt = new Date().toISOString();
       state.started += 1;
