@@ -2,6 +2,35 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-044 — Stage E automated live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host: v1.5.0 launcher-executed, one attempt, no error.
+- Payload commit: `6cbc7c5530391d3b8611374ce051bde080ea1a2d`.
+- Launcher: immutable payload=true; legacy monolith fetch=false; legacy source transforms=false; status=running/error-null.
+- Core: v2.0.0 / build `2.0.0-modular-orchestrator`, started/running.
+- Loader: v0.2.0 / build `0.2.0-immutable-payload-root`; 23/23 fetched+executed, 0 failed; immutable resolutions=23, fallback resolutions=0.
+- Application: 6 tabs / 9 tools / 12 sections / 0 pending.
+- Interactions: minimize, close/reopen, Dock drag, corner/bottom resize, compact drag/click, and grave-key hotkey all exercised with lastError=null.
+- History: genuine queue boundary retained; no synthetic history; lastError=null.
+- Modals: About and Disclaimer open/close passed.
+- Bone HUD: configured/initialized/connected, failed=false.
+- Public `WitchDock.registerTool`, `ensureDock`, and `downloadBlob` remain callable.
+- Representative Booth, Body Editor, and JSON tool DOM mounted.
+- Utilities real section reorder persisted and inverse drag restored exact baseline; temporary collapse state restored.
+- Final state: Booth active, Dock 380x520 at x=565/y=244, compact hidden.
+
+### Remaining gate
+
+Human visual confirmation only: current v1.5.0 Dock should look normal. Do not close #10 until that visual gate is affirmative.
+
+**Runtime/module/manifest/public behavior changed:** Dev Stage E candidate validated; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-043 — v1.5.0 immutable launcher activation candidate
 
 Date: 2026-09-19

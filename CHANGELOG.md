@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-044 — Stage E automated live PASS
+
+Date: 2026-09-19
+
+- Dev v1.5.0 loaded through the auto-host from immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d`.
+- Launcher diagnostics: running/error-null, immutablePayload=true, legacyMonolithFetched=false, legacySourceTransforms=false.
+- Core v2.0.0 running.
+- Loader v0.2.0 completed 23/23 modules with 0 failures; immutableResolutionCount=23 and fallbackResolutionCount=0.
+- Final bounded regressions passed for Dock lifecycle, drag, corner/bottom resize, compact threshold/click, hotkey guard/toggle, History boundary, modals, Bone HUD, public WitchDock seams, representative tools, and section-order persistence.
+- Temporary test state was fully restored: Booth active, 380x520 Dock, compact hidden, Utilities order `booth-features, bound-decal-gizmo, heroforge-ui`, all three Utilities sections expanded.
+- Automated Stage E is complete. One human visual gate remains before issue #10 closure.
+
+**Runtime/module/manifest/public behavior changed:** Dev Stage E candidate validated; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-043 — v1.5.0 immutable launcher activation candidate
 
 Date: 2026-09-19

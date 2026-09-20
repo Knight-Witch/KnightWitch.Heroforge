@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage E ACTIVE. v1.5.0 activation candidate is ready: tiny Dev launcher pins immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d`; final live regression is pending.
+**Current phase:** issue #10 Stage E AUTOMATED PASS. v1.5.0 immutable modular bootstrap is live-clean; only the final human visual gate remains before issue #10 can be closed.
 
 ## Current priorities
 
-1. #10 — ACTIVE, Stage E final gate. Move the task branch to the v1.5.0 activation commit, Bridge-reload through Dev auto-host, and run the full final modular-bootstrap regression before declaring issue #10 complete.
+1. #10 — ACTIVE only for final human visual gate. Automated Stage E architecture + regression suite passed; do not expand scope.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -273,7 +273,35 @@
 - Runtime payload is pinned to commit SHA `6cbc7c5530391d3b8611374ce051bde080ea1a2d`; readable ref `wd/payload-1.5.0` points to the same commit, but launcher compatibility depends on the SHA.
 - Bootstrap components are fetched through the existing bounded privileged host. Feature modules are then fetched by Loader v0.2.0 from the same immutable payload root using registry paths.
 - Diagnostics must report `immutablePayload=true`, `legacyMonolithFetched=false`, `legacySourceTransforms=false`, and payloadRef equal to the pinned SHA.
-- Required live regression remains the complete Stage E gate; issue #10 is not complete yet.
+- Automated live regression PASS: auto-host v1.5.0 launcher-executed; payload SHA `6cbc7c5530391d3b8611374ce051bde080ea1a2d`; immutablePayload=true; legacyMonolithFetched=false; legacySourceTransforms=false; Core v2.0.0 running; Loader v0.2.0 complete 23/23/0 with immutableResolutionCount=23 and fallbackResolutionCount=0. Interaction, resize, compact, hotkey, History boundary, modal, HUD, public API, representative tools, and real section reorder/restore gates passed. Final human visual gate remains.
+
+
+## Stage E automated final gate — PASS
+
+Evidence:
+- `hf-20260919-wd10-stagee-v150-state-053`
+- `hf-20260919-wd10-stagee-interactions-a-054`
+- `hf-20260919-wd10-stagee-compact-hotkey-057`
+- `hf-20260919-wd10-stagee-resize-corner-058`
+- `hf-20260919-wd10-stagee-resize-corner-restore-059`
+- `hf-20260919-wd10-stagee-resize-bottom-060`
+- `hf-20260919-wd10-stagee-resize-bottom-restore-061`
+- `hf-20260919-wd10-stagee-core-seams-063`
+- `hf-20260919-wd10-stagee-section-reorder-066`
+- `hf-20260919-wd10-stagee-section-restore-067`
+- `hf-20260919-wd10-stagee-final-readback-068`
+
+Automated result:
+- Dev launcher v1.5.0 running/error-null from immutable payload commit `6cbc7c5530391d3b8611374ce051bde080ea1a2d`.
+- No legacy monolith fetch and no runtime source-transform path.
+- Core v2.0.0 running.
+- Loader v0.2.0: 23 total / 23 fetched / 23 executed / 0 failed; all 23 resolved via immutable payload root; fallback count 0.
+- Application: 6 tabs / 9 tools / 12 sections / 0 pending.
+- Dock restored to 380x520 at x=565/y=244; Booth active; compact hidden.
+- Minimize/restore, close/reopen, compact threshold, hotkey modifier guard/toggle, corner/bottom resize, Dock drag, History boundary, modals, Bone HUD, public `WitchDock` seams, representative tools, and real section reorder/restore passed.
+- Utilities section order restored exactly to `booth-features, bound-decal-gizmo, heroforge-ui`; temporary collapsed sections re-expanded.
+- Interaction/Application/History states all report lastError=null.
+- Remaining requirement: Amanda human visual confirmation that the current v1.5.0 Dock looks normal.
 
 ## Minimum continuation set
 
