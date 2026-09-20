@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-19-041 — Stage D COMPLETE / v1.4.13 Application live PASS
+
+Date: 2026-09-19
+
+- Auto-host delivered v1.4.13 with Application v0.1.0 configured/error-null.
+- Loader remained 23/23 / 0 failed.
+- Preserved 6 tabs, 9 mounted tools, 12 sections, active-tab persistence, public `WitchDock.registerTool` / `ensureDock` / `downloadBlob` seams, and 380x520 Dock geometry at x=820/y=244.
+- Real section drag persisted order `bound-decal-gizmo, booth-features, heroforge-ui`; inverse drag restored exact baseline `booth-features, bound-decal-gizmo, heroforge-ui`.
+- Application telemetry after restore: sectionDragStarts=2, sectionDragDrops=2, lastError=null.
+- Stage D application-shell extraction is complete. Stage E final bootstrap reduction begins next.
+- Evidence: `hf-20260919-wd10-v1413-state-048`, `hf-20260919-wd10-v1413-section-reorder-real-050`, `hf-20260919-wd10-v1413-section-restore-051`.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## DOCK-2026-09-19-040 — v1.4.13 final Stage D Application Shell candidate
 
 Date: 2026-09-19

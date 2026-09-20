@@ -2,6 +2,29 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-19-041 — Stage D COMPLETE / v1.4.13 Application live PASS
+
+Date: 2026-09-19
+
+### PASS
+
+- Auto-host payload v1.4.13; launcher running/error-null.
+- Application v0.1.0 configured=true / lastError=null.
+- Loader 23/23 / 0 failed.
+- 6 tabs / 9 tools / 12 sections.
+- Public `WitchDock.registerTool`, `ensureDock`, `downloadBlob` remain callable.
+- Dock geometry remains 380x520 CSS at x=820/y=244.
+- Real section drag reorder persisted and inverse drag restored exact baseline order.
+- Application telemetry: 2 drag starts / 2 drops; no error.
+
+### Stage disposition
+
+Stage D is complete. Proceed to Stage E final bootstrap reduction. Do not touch public Stable during Stage E development.
+
+**Runtime/module/manifest/public behavior changed:** Dev ownership only; public Stable unchanged.
+
+---
+
 ## PFC-2026-09-19-040 — v1.4.13 final Stage D Application Shell candidate
 
 Date: 2026-09-19

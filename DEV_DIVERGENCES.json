@@ -22,7 +22,7 @@
     {
       "issue": 10,
       "status": "task-branch-active",
-      "reason": "Issue #10 Stage D is active. v1.4.13 is the final Stage D Application Shell candidate, moving the remaining shared helpers plus tab/tool/section orchestration into a GitHub-owned module. If its live parity gate passes, Stage D is complete and Stage E begins.",
+      "reason": "Issue #10 Stage D is complete through v1.4.13 live parity. Stage E final bootstrap reduction is active: remove runtime Stable-source text transforms/eval and eliminate moving-branch launcher/module skew while preserving bounded privileges and all validated contracts.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -121,7 +121,8 @@
         "v1.4.12 live PASS at genuine queue boundary: auto-host delivered v1.4.12; History v0.1.0 configured/error-null; loader 23/23 / 0 failed; queue length/index stayed 1/0; canUndo/canRedo false; disabled-button clicks were no-ops; no synthetic HeroForge history was created.",
         "v1.4.13 launcher/manifest identify 1.4.13 / build 1.4.13-extracted-application-shell and witch-dock-application v0.1.0 / build 0.1.0-shell-registry-orchestration.",
         "Application Shell extraction owns the contiguous el-through-registerTool block, uses Preferences/Registry/History named APIs, carries the v1.4.6 content-box geometry fix physically, and contains no raw GM capability.",
-        "v1.4.13 live gate must preserve exact tab/tool/section counts/order, public WitchDock seams, geometry, reversible tab selection, and reversible Utilities section reorder with loader 23/23 / 0 failed."
+        "v1.4.13 live gate must preserve exact tab/tool/section counts/order, public WitchDock seams, geometry, reversible tab selection, and reversible Utilities section reorder with loader 23/23 / 0 failed.",
+        "v1.4.13 live PASS: Application v0.1.0 configured/error-null; loader 23/23 / 0 failed; 6 tabs / 9 tools / 12 sections and public WitchDock seams preserved; real section reorder persisted then restored exactly with Application drag telemetry 2/2."
       ]
     }
   ],

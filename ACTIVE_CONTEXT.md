@@ -5,11 +5,11 @@
 **Active architecture branch:** `wd/10-modular-bootstrap`  
 **Canonical installed Dev userscript:** `Witch_Dock_DEV.user.js`  
 **Stable baseline:** `Witch_Scripts` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`  
-**Current phase:** issue #10 Stage D ACTIVE. v1.4.12 History is live-PASS. v1.4.13 is the final Stage D candidate: move the remaining contiguous application-shell block (shared helpers + tab/tool/section orchestration) into a GitHub-owned Application module.
+**Current phase:** issue #10 Stage D COMPLETE. v1.4.13 final application-shell extraction is live-PASS. Stage E final bootstrap reduction is now ACTIVE.
 
 ## Current priorities
 
-1. #10 — ACTIVE. Validate v1.4.13 Application Shell parity; if it passes, Stage D is complete and Stage E final bootstrap reduction begins.
+1. #10 — ACTIVE, Stage E. Replace the temporary Stable-source transform/eval bootstrap with a true small userscript host loading GitHub-owned core/modules through bounded capabilities; eliminate moving-branch launcher/module skew.
 2. #19 — keep Tampermonkey identity fixed as `WITCH DOCK - DEV`; version belongs in `@version` and visible Dock title.
 3. #12 / #7 / #8 / #13 / #14 remain standing migration/backlog/cleanup work; do not expand scope during #10.
 
@@ -245,6 +245,15 @@
 - Evidence: `hf-20260919-wd10-stageD-app-baseline-044`, `hf-20260919-wd10-stageD-app-interaction-baseline-045`, `hf-20260919-wd10-stageD-section-baseline-046`.
 - Required live gate: auto-host v1.4.13; Application v0.1.0 configured/error-null; loader 23/23 / 0 failed; exact tabs/tools/sections/public seams/geometry parity; reversible Booth<->Utilities tab switch; reversible Utilities section reorder/restore; no duplicates.
 
+
+## Stage E — final bootstrap reduction
+
+- Stage D is COMPLETE through v1.4.13.
+- Stage E must remove the temporary pattern where the Dev launcher fetches the Stable-derived `Witch_Dock.user.js`, text-transforms guarded blocks at runtime, and evals the transformed monolith.
+- Final target: a small Tampermonkey userscript retaining only metadata/channel identity, bounded privileged host capabilities, startup/error handling, and deterministic loading of the GitHub-owned application/core modules.
+- The confirmed moving-branch launcher/module version-skew hazard from v1.4.2 must be eliminated by immutable/compatibility-safe bootstrap sourcing; do not weaken module version validation.
+- Preserve loader order/cache/failure isolation, storage keys, public `WitchDock` seams, visual/interaction behavior, and all passed Stage C/D contracts.
+- HF-Chat-Bridge remains development infrastructure only and must not become a runtime dependency.
 
 ## Minimum continuation set
 
