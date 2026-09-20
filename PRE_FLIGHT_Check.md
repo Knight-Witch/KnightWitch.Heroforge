@@ -2,6 +2,27 @@
 
 Rolling current Dev pre-flight record. Older detail remains in Git history/issues.
 
+## PFC-2026-09-20-049 — Canonical Dev v1.5.1 smoke PASS
+
+Date: 2026-09-20
+
+### PASS
+
+- Auto-host: v0.1.1, target `WITCH_DEV_MAIN`, payload launcher v1.5.1, one attempt, no error.
+- Dev launcher: branch `WITCH_DEV_MAIN`, payload `6603911658b426c6b95367697bedcc4c7acf67eb`, running/error-null.
+- Core v2.0.0 running.
+- Loader v0.2.0: 23/23 executed, 0 failed, immutable=23, fallback=0.
+- Legacy monolith/source transforms false.
+- One Dock/compact/icon; title `WITCH DOCK - DEV v1.5.1`.
+
+### Next
+
+Preserve Stable rollback baseline, then construct isolated public RC. Do not mutate `Witch_Scripts` before explicit approval.
+
+**Runtime/module/manifest/public behavior changed:** none.
+
+---
+
 ## PFC-2026-09-19-048 — Canonical Dev reconciliation candidate v1.5.1
 
 Date: 2026-09-19

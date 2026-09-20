@@ -2,6 +2,22 @@
 
 Rolling current Dev log. Older detail remains durable in Git history/issues.
 
+## DOCK-2026-09-20-049 — Canonical Dev v1.5.1 smoke PASS
+
+Date: 2026-09-20
+
+- Auto-host v0.1.1 successfully retargeted normal delivery to canonical `WITCH_DEV_MAIN`.
+- Canonical launcher v1.5.1 / `1.5.1-canonical-dev-reconcile` ran from pinned payload `6603911658b426c6b95367697bedcc4c7acf67eb`.
+- Core v2.0.0 running; Loader v0.2.0 completed 23/23 with 0 failures, immutable resolution=23, fallback=0.
+- Legacy monolith fetch/source transforms remained false.
+- One Dock/compact/icon and visible `WITCH DOCK - DEV v1.5.1` title confirmed.
+- Evidence: `hf-20260920-wd28-canonical-dev-reload-069`, `hf-20260920-wd28-canonical-dev-smoke-070`.
+- Public Stable remains untouched.
+
+**Runtime/module/manifest/public behavior changed:** none; canonical smoke record only.
+
+---
+
 ## DOCK-2026-09-19-048 — Canonical Dev reconciliation candidate v1.5.1
 
 Date: 2026-09-19
