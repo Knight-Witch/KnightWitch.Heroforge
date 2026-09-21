@@ -1,3 +1,16 @@
+## 2026-09-21 — Exact issue #20 payload / canonical candidate
+
+### PASS / pending live gate
+
+- Final immutable payload commit: `22d9f9e0bbf90675b52474eb736663fd8d5df7ea`.
+- Payload contains Booth v27.1.0 including current-mode mismatch fail-closed guard.
+- Dev launcher remains v1.5.2 / `1.5.2-issue-20-booth-json` and now pins that exact payload.
+- Temporary validation harness removed from the canonical candidate tree and remains non-runtime history only.
+- Next gate: fast-forward `WITCH_DEV_MAIN`, Auto Host reload, require launcher v1.5.2 + payload `22d9f9e0bbf9…`, Loader 23/23 / 0 failed, then exercise real `KW_WD_BOOTH` file-state API and unaffected-media smoke.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-21 — Issue #20 canonical Dev launcher gate
 
 ### PASS

@@ -1,3 +1,12 @@
+## 2026-09-21 — Finalize exact v1.5.2 Booth JSON payload for live Dev
+
+- Advanced the v1.5.2 launcher payload pin to exact commit `22d9f9e0bbf90675b52474eb736663fd8d5df7ea`, which includes the final Booth-mode mismatch guard.
+- Removed the temporary isolated issue #20 harness from the canonical candidate tree; it was never registered in the manifest or required at runtime.
+- The real Witch Dock Booth v27.1.0 module is now the exact code scheduled for Auto Host live validation.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-21 — Canonical Dev launcher v1.5.2 for issue #20 live gate
 
 - Dev launcher advances to v1.5.2 and pins immutable payload `0bb96bd18b735ddb458dc1fb4f20f8c82cb037ed`.

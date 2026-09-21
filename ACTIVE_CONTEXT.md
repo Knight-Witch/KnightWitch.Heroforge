@@ -8,7 +8,7 @@
 **Public Stable:** `Witch_Scripts` @ `95b5cdae4c8840d950d984c73bce101ba887011e`
 **Public payload:** `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`
 **Rollback archive:** `archive/Witch_Scripts-pre-modular-20260920` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`
-**Canonical Dev launcher candidate:** v1.5.2 / payload `791320c49d1038ce0d8d7c311ab2dea8abd7d983` — issue #20 live validation pending
+**Canonical Dev launcher candidate:** v1.5.2 / payload `22d9f9e0bbf90675b52474eb736663fd8d5df7ea` — issue #20 live validation pending
 
 ## Current state
 
