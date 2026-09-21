@@ -1,5 +1,21 @@
 # Changelog
 
+## DOCK-2026-09-21-040 — Public license and provenance boundary
+
+Date: 2026-09-21
+
+### Summary
+
+- Added `LICENSE` with the Knight Witch Community Source License v1.0 for Knight Witch-owned portions of Witch Dock.
+- Added `THIRD_PARTY.md` documenting the license boundary, unofficial Hero Forge relationship, and historical/community-script provenance.
+- Updated `README.md` to remove the overbroad claim that every tool is solely developed by Knight Witch and to link the license/provenance files.
+- Normal user installation/use remains permitted, including professional creative workflows. Redistribution, repackaging, competing distributions/services, and commercialization of the software itself remain reserved.
+- Third-party material is expressly excluded from relicensing.
+
+Commits: `6a9e85d882f81f45447a4be90de523f5dac75723` (license), `9c5da61f7a0d07742da3446eca268944e7c3d100` (provenance), `37a6493605d11d160daf79fa815c2d4bf52218f5` (README).
+
+**Runtime behavior changed:** no.
+
 ## 2026-09-20 — Witch Dock 2.0.0 modular public RC
 
 - Built isolated release candidate from exact current public Stable baseline `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`.
