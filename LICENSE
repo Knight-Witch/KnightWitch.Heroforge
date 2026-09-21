@@ -1,0 +1,62 @@
+Knight Witch Community Source License v1.0
+
+Copyright (c) 2026 Amanda Ivans / Knight Witch.
+All rights reserved except as expressly granted below.
+
+This is a source-available license, not an open-source license.
+
+1. Permitted use
+
+Subject to these terms, you may:
+
+- download, install, and run the Software;
+- use the Software in personal, educational, hobby, and professional creative workflows, including commercial work product created with the Software;
+- inspect the source code for learning, security review, interoperability, troubleshooting, and contribution;
+- modify the Software for your own private or internal use; and
+- create and publish a source-code fork solely for the purpose of proposing contributions back to the official Knight Witch project, provided that you preserve this license and all copyright, attribution, provenance, and third-party notices.
+
+The permission to use the Software in professional or commercial creative work applies to the outputs you create with the Software. It does not grant permission to sell, license, host, redistribute, or commercialize the Software itself.
+
+2. Restricted uses
+
+Unless you have prior written permission from the copyright holder, you may not:
+
+- sell, sublicense, rent, lease, or commercially distribute the Software or any modified version of it;
+- publish, redistribute, rehost, mirror, or repackage the Software or a modified version as an independent end-user product, download, addon, plugin, application, service, or competing distribution;
+- provide the Software or a modified version to third parties as a hosted, managed, or software-as-a-service offering;
+- distribute compiled, packaged, installer, or release builds of the Software;
+- use Knight Witch names, logos, artwork, trade dress, or other branding in a way that suggests endorsement, affiliation, or official status;
+- remove or obscure copyright, license, attribution, provenance, or third-party notices; or
+- use the Software, source code, documentation, or repository contents as training data, fine-tuning data, or a dataset for a machine-learning or generative-AI model without prior written permission.
+
+Public contribution forks permitted by Section 1 are not prohibited redistribution, provided they are clearly identified as unofficial development forks, are not packaged or promoted as an alternative distribution, and are used for contribution purposes.
+
+3. Third-party material
+
+This license applies only to material for which Amanda Ivans / Knight Witch owns or controls the relevant rights.
+
+Third-party software, code, libraries, services, assets, trademarks, interfaces, reconstructed behavior, and other materials remain subject to their own rights and license terms. Nothing in this license relicenses third-party material.
+
+Where this repository includes a THIRD_PARTY.md, NOTICE, or similar provenance file, that file is incorporated into this license by reference for purposes of identifying those boundaries.
+
+4. Contributions
+
+Unless a separate written agreement applies, by intentionally submitting a contribution for inclusion in the official project, you represent that you have the right to submit it and agree that the contribution may be distributed under this license.
+
+No contribution transfers ownership of unrelated pre-existing material.
+
+5. No trademark license
+
+No trademark, service mark, trade name, logo, or brand license is granted by this license.
+
+6. Termination
+
+Your rights under this license terminate automatically if you materially violate its terms. Rights may be reinstated only by written permission from the copyright holder.
+
+7. Disclaimer of warranty and limitation of liability
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER AND CONTRIBUTORS SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.
+
+For permissions beyond this license, contact Knight Witch through an official project or business channel.
