@@ -1,3 +1,12 @@
+## 2026-09-21 — Complete branch retirement / migration cleanup
+
+- Deleted exactly the handoff's 49 obsolete branch refs.
+- Verified the repository now contains exactly its six required branches: public Stable, canonical Dev, rollback archive, two immutable payload refs, and Dev Auto Host.
+- Closed the completed branch-retirement and canonical-Dev migration/cleanup tracking issues.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 # Changelog
 
 ## 2026-09-20 — Route current work to branch-retirement execution
