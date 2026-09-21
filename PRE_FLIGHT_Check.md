@@ -6,7 +6,8 @@
 - File I/O uses named current Hero Forge Booth APIs rather than resurrecting legacy `TN.tokenizer.effectState.toJson/fromJson`.
 - Export is full Booth config via `savePortrait()`; import is full config via `loadPortrait()`.
 - Camera and effects use Hero Forge-owned current restore paths.
-- Legacy Lob effect-only files are detected explicitly and applied only to the effects domain.
+- Legacy Lob effect-only files are detected explicitly and applied only to the effects domain; nested JSON-string payloads are normalized once for older `toJson()` output.
+- Manifest registry and manifest Booth URL cache key both resolve to v27.1.0.
 - Invalid/unrecognized files fail closed before mutation.
 - Required live gate: export distinctive Booth setup -> mutate -> import -> compare camera/background/lighting/effects/overlays; repeat after Booth exit/re-entry; verify legacy effects-only import; verify Persistent Booth, Black Canvas, true-resolution capture, and Spinny topology remain healthy.
 - Public Stable unchanged.

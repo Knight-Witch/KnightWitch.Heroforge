@@ -3,7 +3,8 @@
 - Bumped `booth-tool` to v27.1.0 / `v27.1.0-booth-json-file-io`.
 - Added Booth-tab Save/Load JSON controls using Hero Forge's current named `BT.maker.savePortrait/loadPortrait` ownership seam.
 - Preserves current camera/effects application through Hero Forge's own `cameras.loadCameraSave` and `loadEffectsFromConfig` paths.
-- Accepts Witch Dock full Booth files, raw current Booth configs, and legacy Lob effect-only JSON files.
+- Accepts Witch Dock full Booth files, raw current Booth configs, legacy Lob effect-only JSON files, and legacy nested JSON-string payloads.
+- Flushes Hero Forge-owned camera/effects persistence hooks before export and updates the Booth module URL cache key to v27.1.0.
 - Invalid/unrecognized JSON fails closed with visible status; unrelated Persistent Booth/Black Canvas behavior is unchanged.
 - Public Stable is untouched; candidate lives only on `wd/20-booth-json-repair` pending live validation.
 

@@ -246,6 +246,11 @@
   }
 
   function decodeBoothFileData(value) {
+    if (typeof value === 'string') {
+      try { value = JSON.parse(value); } catch {
+        throw new Error('Legacy Booth file contains invalid nested JSON.');
+      }
+    }
     if (!isObjectRecord(value)) throw new Error('Selected file does not contain a Booth settings object.');
 
     if (value.format === BOOTH_FILE_FORMAT) {
@@ -275,6 +280,13 @@
     if (!BT || !maker || typeof maker.savePortrait !== 'function') {
       throw new Error('Photo Booth settings runtime is unavailable.');
     }
+
+    try {
+      if (maker.cameras && typeof maker.cameras.saveCamera === 'function') maker.cameras.saveCamera();
+    } catch {}
+    try {
+      if (maker.effectsPersistence && typeof maker.effectsPersistence.save === 'function') maker.effectsPersistence.save();
+    } catch {}
 
     const saved = maker.savePortrait();
     if (!isObjectRecord(saved) || !looksLikeBoothConfig(saved)) {

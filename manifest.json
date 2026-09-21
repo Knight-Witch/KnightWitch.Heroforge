@@ -457,7 +457,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.0.6-v27.0.6-media-readiness-handoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.1.0-v27.1.0-booth-json-file-io",
       "enabledByDefault": true
     },
     {
