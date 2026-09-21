@@ -1,3 +1,12 @@
+## 2026-09-21 — Dev payload v1.5.2 prepared for issue #20
+
+- Prepared the immutable Dev payload for Booth JSON v27.1.0.
+- Advanced only the Dev launcher registry identity to v1.5.2 / `1.5.2-issue-20-booth-json` so the canonical launcher can pin this payload without registry/version mismatch.
+- Runtime payload includes the issue #20 Booth JSON candidate and otherwise preserves the current validated modular Dev baseline.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-21 — Issue #20 Booth JSON file I/O candidate
 
 - Bumped `booth-tool` to v27.1.0 / `v27.1.0-booth-json-file-io`.

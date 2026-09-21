@@ -1,3 +1,15 @@
+## 2026-09-21 — Dev payload v1.5.2 preparation
+
+### PASS
+
+- Payload source includes Booth v27.1.0 candidate and synchronized Booth cache identity.
+- Dev launcher registry advanced to v1.5.2 / `1.5.2-issue-20-booth-json`.
+- Core/loader/module architecture unchanged.
+- Public Stable untouched.
+- Next gate: canonical Dev launcher pin to this exact immutable payload, then auto-host reload and live #20 regression.
+
+---
+
 ## 2026-09-21 — Issue #20 Booth JSON candidate preflight
 
 ### Candidate checks / required live gate
