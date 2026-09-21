@@ -73,7 +73,7 @@ These utilities load quietly through Witch Dock and can be controlled from the U
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0UQV1J)
 
-This script and all its tools are developed by me. I will be opening up collaboration to help stabilize existing scripts with other creators and grow a useful community tool for HeroForge users.
+Witch Dock is maintained by Knight Witch. Some compatibility features are independent reconstructions or integrations informed by historical community tooling; authorship and third-party boundaries are documented in [`THIRD_PARTY.md`](./THIRD_PARTY.md). Collaboration is welcome where contributors have the rights needed to contribute their work.
 
 ---
 
@@ -111,6 +111,16 @@ The following scripts are no longer updated and will conflict with Witch Dock. I
 ### Body Editor / Body Editor BETA
 
 ### JSON Bulk Backup Tool, or one of its variations
+
+---
+
+## License and Provenance
+
+Knight Witch-owned portions of Witch Dock are distributed under the **Knight Witch Community Source License v1.0**. See [`LICENSE`](./LICENSE).
+
+This is source-available software, not an open-source license. Users may install and use Witch Dock, including in professional creative workflows, but redistribution, repackaging, competing distributions/services, and commercialization of the software itself require permission.
+
+Third-party and historical community-tooling provenance is documented in [`THIRD_PARTY.md`](./THIRD_PARTY.md). Third-party material is not relicensed by the Knight Witch license.
 
 ---
 
