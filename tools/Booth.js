@@ -309,6 +309,10 @@
     }
 
     const decoded = decodeBoothFileData(value);
+    const currentMode = UW.BT && UW.BT.currentMode ? String(UW.BT.currentMode) : null;
+    if (decoded.mode && currentMode && String(decoded.mode) !== currentMode) {
+      throw new Error(`This Booth file was saved for ${decoded.mode}; current Booth mode is ${currentMode}.`);
+    }
     const config = decoded.config;
     maker.loadPortrait(copyBTLighting(config), { commit: true, apply: true });
 

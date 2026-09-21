@@ -1,3 +1,12 @@
+## 2026-09-21 — Issue #20 isolated live-validation harness
+
+- Added temporary `devtools/Booth_JSON_Issue20_Candidate.user.js` on the issue branch only.
+- Harness exposes bounded capture/apply/memory methods through `KWBoothJsonIssue20Candidate` so HF-Chat-Bridge can validate the exact current file-I/O state logic before canonical Dev integration.
+- Added fail-closed current-mode validation for Witch Dock wrapper files.
+- Harness is development infrastructure for #20 only; it is not in `manifest.json` and must not become a Stable/runtime dependency.
+
+---
+
 ## 2026-09-21 — Canonical Dev launcher candidate v1.5.2 for Booth JSON
 
 - Advanced Dev launcher identity to v1.5.2 / `1.5.2-issue-20-booth-json`.

@@ -1,3 +1,15 @@
+## 2026-09-21 — Issue #20 isolated harness preflight
+
+### PASS / next gate
+
+- Candidate stays isolated on `wd/20-booth-json-repair`.
+- Harness is not registered in the Witch Dock manifest and cannot load in public Stable.
+- Exposes only bounded capture/apply/memory/dispose operations for Bridge validation.
+- Wrapper files fail closed on explicit Booth-mode mismatch.
+- Next gate: install harness once, reload, then Bridge performs capture -> controlled mutation -> memory restore -> domain readback.
+
+---
+
 ## 2026-09-21 — Dev launcher v1.5.2 candidate
 
 ### PASS / pending live gate
