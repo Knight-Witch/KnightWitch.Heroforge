@@ -1,3 +1,19 @@
+## 2026-09-21 — Issue #20 immutable payload preparation
+
+### PASS
+
+- Booth tool candidate remains v27.1.0 and parses.
+- Manifest launcher registry identity is v1.5.2 / `1.5.2-issue-20-booth-json`.
+- Existing Loader v0.2.0 immutable-payload architecture is unchanged.
+- Payload contains the exact Booth JSON candidate selected for live validation.
+- Public Stable unchanged.
+
+### Next
+
+Pin canonical Dev launcher v1.5.2 to this immutable payload commit, then reload through Dev Auto Host and run the #20 live gate.
+
+---
+
 ## 2026-09-21 — Issue #20 isolated harness preflight
 
 ### PASS / next gate

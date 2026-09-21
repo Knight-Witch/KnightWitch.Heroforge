@@ -9,7 +9,7 @@
       "load": "userscript",
       "version": "1.5.2",
       "build": "1.5.2-issue-20-booth-json",
-      "versionOrigin": "issue-20-booth-json-dev-payload-2026-09-21"
+      "versionOrigin": "issue-20-booth-json-dev-gate-2026-09-21"
     },
     {
       "id": "witch-dock-core",

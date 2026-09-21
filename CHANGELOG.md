@@ -1,3 +1,13 @@
+## 2026-09-21 — Issue #20 immutable Dev payload v1.5.2
+
+- Prepared the immutable Dev payload for Booth JSON repair validation.
+- Payload includes Booth tool v27.1.0 / `v27.1.0-booth-json-file-io`.
+- Dev launcher registry identity advances to v1.5.2 / `1.5.2-issue-20-booth-json`; launcher pinning happens in the following commit.
+- Core/loader architecture and all unrelated module versions remain unchanged.
+- Public Stable is untouched.
+
+---
+
 ## 2026-09-21 — Issue #20 isolated live-validation harness
 
 - Added temporary `devtools/Booth_JSON_Issue20_Candidate.user.js` on the issue branch only.
