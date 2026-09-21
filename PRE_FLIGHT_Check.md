@@ -1,5 +1,25 @@
 # Pre-Flight Check Log
 
+## PFC-2026-09-21-040 — Public license and provenance boundary
+
+### Scope
+
+Documentation/legal metadata only: `LICENSE`, `THIRD_PARTY.md`, README wording, and tracking records.
+
+### Review
+
+- Confirmed Witch Dock must remain public under the current raw-GitHub manifest/module delivery model.
+- Confirmed existing project records identify Lob/Advanced Decal Posing-derived or reconstructed compatibility work whose third-party provenance must not be silently relicensed.
+- Selected a source-available license that permits normal user installation/use and private modification while reserving redistribution/repackaging/software-commercialization rights.
+- Added an explicit third-party/provenance boundary.
+- Corrected the README's overbroad sole-authorship statement.
+
+### Validation
+
+- No launcher, manifest, module, tool, feature, URL, cache key, HeroForge integration, or runtime source changed.
+- No runtime testing required for the documentation-only change.
+- Public delivery paths remain unchanged.
+
 ## 2026-09-20 — Witch Dock 2.0.0 modular public RC
 
 ### Static scope
