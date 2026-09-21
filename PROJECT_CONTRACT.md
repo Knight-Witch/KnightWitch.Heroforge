@@ -13,7 +13,7 @@ Before material Witch Dock architecture/runtime work:
 3. Read only files routed by `ACTIVE_CONTEXT.md` or directly required by the task.
 4. Use GitHub source/runtime evidence before guessing.
 
-Do not preload full history, old changelogs/preflight logs, session logs, or legacy branch history. Legacy `WITCH_DEV_UI` / `WITCH_DEV` are reference sources only during migration audit #12.
+Do not preload full history, old changelogs/preflight logs, session logs, or legacy branch history. Legacy `WITCH_DEV_UI` and `WITCH_DEV` branch refs were retired after migration audit #12; never route active work to them. If a task genuinely needs legacy evidence, use Git history or the specific harvested reference/history file.
 
 ## Task/mode checkpoint
 

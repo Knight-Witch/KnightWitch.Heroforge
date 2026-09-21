@@ -1,3 +1,16 @@
+## 2026-09-21 — Post-cleanup documentation normalization
+
+### PASS
+
+- Live repository confirms `WITCH_DEV_UI` and `WITCH_DEV` are deleted.
+- `WITCH_DEV_MAIN` is the only canonical Dev branch.
+- Six protected/operational long-lived refs remain from cleanup; current issue #20 additionally owns one short-lived task branch.
+- Binding contract, active router, and cleanup handoff now distinguish current branches from retired historical refs.
+- Next-work routing is #20 Booth JSON -> #24 submitted High Res regressions -> #25 targeted object/KB/tail/hair expansion and optimization.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Branch-retirement execution complete
 
 ### PASS

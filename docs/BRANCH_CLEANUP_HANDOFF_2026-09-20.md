@@ -1,5 +1,7 @@
 # KnightWitch.Heroforge Branch Cleanup Handoff
 
+**Status:** COMPLETE — historical execution record. The listed DELETE refs no longer exist; do not use this file as the current branch inventory. Current branch truth is in `ACTIVE_CONTEXT.md` and the live repository.
+
 **Audit date:** 2026-09-20
 **Repository:** `Knight-Witch/KnightWitch.Heroforge`
 **Inventory:** 55 branches

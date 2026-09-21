@@ -1,3 +1,13 @@
+## 2026-09-21 — Normalize post-cleanup branch and task routing
+
+- Confirmed retired `WITCH_DEV_UI` / `WITCH_DEV` refs are gone and `WITCH_DEV_MAIN` is the sole canonical Dev branch.
+- Updated `PROJECT_CONTRACT.md` so deleted legacy branches are no longer described as usable reference sources.
+- Routed `ACTIVE_CONTEXT.md` to issue #20 / `wd/20-booth-json-repair`, followed by High Res issues #24 and #25.
+- Marked the branch-cleanup handoff as a completed historical execution record rather than current inventory.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Complete branch retirement / migration cleanup
 
 - Deleted exactly the handoff's 49 obsolete branch refs.
