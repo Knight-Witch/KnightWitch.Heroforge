@@ -1,3 +1,11 @@
+## 2026-09-21 — Canonical Dev launcher v1.5.2 for issue #20 live gate
+
+- Dev launcher advances to v1.5.2 and pins immutable payload `0bb96bd18b735ddb458dc1fb4f20f8c82cb037ed`.
+- Payload contains Booth tool v27.1.0 Booth JSON file I/O candidate.
+- This is a Dev-only live-validation step; public Stable remains untouched.
+
+---
+
 ## 2026-09-21 — Issue #20 immutable Dev payload v1.5.2
 
 - Prepared the immutable Dev payload for Booth JSON repair validation.

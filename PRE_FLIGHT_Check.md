@@ -1,3 +1,19 @@
+## 2026-09-21 — Issue #20 canonical Dev launcher gate
+
+### PASS
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV`.
+- Launcher metadata/runtime version synchronized at v1.5.2.
+- Launcher branch remains `WITCH_DEV_MAIN`.
+- Immutable payload pin is `0bb96bd18b735ddb458dc1fb4f20f8c82cb037ed`.
+- Public Stable unchanged.
+
+### Required live gate
+
+Reload through Dev Auto Host and verify launcher v1.5.2, Loader 23/23 with zero failures, Booth tool v27.1.0, then exercise Booth JSON round-trip and regressions.
+
+---
+
 ## 2026-09-21 — Issue #20 immutable payload preparation
 
 ### PASS
