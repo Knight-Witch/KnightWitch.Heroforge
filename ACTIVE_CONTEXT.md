@@ -1,47 +1,29 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-20
+**Updated:** 2026-09-21
 **Canonical Dev:** `WITCH_DEV_MAIN`
-**Active task:** issue #13 — branch retirement execution
-**Cleanup handoff:** `docs/BRANCH_CLEANUP_HANDOFF_2026-09-20.md`
-**Audit commit:** `d00b7b598ecced06df87be2b3643557943d0b0f4`
+**Release status:** issue #28 COMPLETE — public modular v2.0.0 promoted and Stable-smoke validated
 **Public Stable:** `Witch_Scripts` @ `95b5cdae4c8840d950d984c73bce101ba887011e`
+**Public payload:** `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`
+**Rollback archive:** `archive/Witch_Scripts-pre-modular-20260920` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`
 **Canonical Dev launcher:** v1.5.1 / payload `6603911658b426c6b95367697bedcc4c7acf67eb`
 
 ## Current state
 
-Issue #28 public promotion is complete and Stable-smoke validated.
+No active Witch Dock maintenance task.
 
-The full repository branch audit is complete:
-- 55 total branches;
-- 6 required keeps;
-- 49 classified for deletion after the report prerequisites;
-- issue #12 legacy harvest audit closed;
-- legacy #26 bone-selection references harvested into canonical Dev;
-- open issues #7 and #20-#26 cross-checked for branch dependencies.
+Branch retirement is complete: exactly six required branches remain after the 49-ref cleanup. Issue #13 is complete; issue #11's migration/cleanup gate is complete. The legacy audit/harvest record remains at `docs/BRANCH_CLEANUP_HANDOFF_2026-09-20.md`.
 
-## Exact next step
+## Next work
 
-Use ChatGPT Work / GitHub UI to execute `docs/BRANCH_CLEANUP_HANDOFF_2026-09-20.md` exactly.
-
-Do **not** redo the forensic audit.
-
-Before deleting `WITCH_DEV_UI`, Amanda must update the external ChatGPT project instructions so project bootstrap reads `PROJECT_CONTRACT.md` and `ACTIVE_CONTEXT.md` from `WITCH_DEV_MAIN`, not `WITCH_DEV_UI`.
-
-After deletion:
-1. confirm exactly the six KEEP branches remain;
-2. comment the result on issue #13 and close it;
-3. close issue #11 if the final inventory matches the handoff;
-4. return `ACTIVE_CONTEXT.md` to no active cleanup task.
+Wait for Amanda's next explicit Witch Dock task/backlog selection. Consult an open issue only when that task is selected.
 
 ## Protected state
 
-Do not delete:
-- `Witch_Scripts`;
-- `WITCH_DEV_MAIN`;
-- `archive/Witch_Scripts-pre-modular-20260920`;
-- `wd/28-public-payload-2.0.0`;
-- `wd/payload-1.5.1`;
-- `wd/dev-auto-host`.
-
-Do not mutate runtime code, Stable, payload contents, rollback contents, or Dev behavior during branch deletion.
+- Keep `Witch_Scripts` as public Stable.
+- Keep `WITCH_DEV_MAIN` as canonical Dev.
+- Keep `archive/Witch_Scripts-pre-modular-20260920` as the pre-modular Stable rollback.
+- Keep `wd/28-public-payload-2.0.0` and `wd/payload-1.5.1` because public Stable and canonical Dev pin their immutable commits.
+- Keep `wd/dev-auto-host` as operational Dev infrastructure.
+- Preserve issue #19 canonical Dev identity/routing.
+- HF-Chat-Bridge remains development infrastructure only and never a Witch Dock runtime dependency.
