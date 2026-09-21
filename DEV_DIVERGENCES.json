@@ -19,6 +19,21 @@
         "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
         "Bootstrap/channel failure remains visible."
       ]
+    },
+    {
+      "issue": 20,
+      "status": "task-branch-candidate",
+      "reason": "Booth JSON import/export repair candidate on wd/20-booth-json-repair; pending live Dev validation before canonical integration/promotion.",
+      "paths": [
+        "tools/Booth.js",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Current Hero Forge Booth config round-trips through Save/Load without private React patching.",
+        "Camera, background, lighting, effects, and overlays restore where present in the saved source.",
+        "Legacy Lob effect-only JSON is accepted without pretending missing camera/background/lighting data exists.",
+        "Invalid JSON fails closed and unrelated Booth/media behavior remains healthy."
+      ]
     }
   ],
   "notes": [

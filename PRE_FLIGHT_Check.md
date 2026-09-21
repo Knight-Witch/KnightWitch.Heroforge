@@ -1,3 +1,18 @@
+## 2026-09-21 — Issue #20 Booth JSON candidate preflight
+
+### Candidate checks / required live gate
+
+- `booth-tool` version/build synchronized to v27.1.0 / `v27.1.0-booth-json-file-io`.
+- File I/O uses named current Hero Forge Booth APIs rather than resurrecting legacy `TN.tokenizer.effectState.toJson/fromJson`.
+- Export is full Booth config via `savePortrait()`; import is full config via `loadPortrait()`.
+- Camera and effects use Hero Forge-owned current restore paths.
+- Legacy Lob effect-only files are detected explicitly and applied only to the effects domain.
+- Invalid/unrecognized files fail closed before mutation.
+- Required live gate: export distinctive Booth setup -> mutate -> import -> compare camera/background/lighting/effects/overlays; repeat after Booth exit/re-entry; verify legacy effects-only import; verify Persistent Booth, Black Canvas, true-resolution capture, and Spinny topology remain healthy.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-21 — Post-cleanup documentation normalization
 
 ### PASS

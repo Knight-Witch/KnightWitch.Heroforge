@@ -4,13 +4,15 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.0.6-media-readiness-handoff';
+  const BUILD_TAG = 'v27.1.0-booth-json-file-io';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
   const STORE_COMPONENTS = 'kw.witchDock.booth.components.v1';
   const STORE_BLACK_DEFAULT = 'kw.witchDock.booth.blackCanvasDefault.v1';
   const BOOTH_API_KEY = 'KW_WD_BOOTH';
+  const BOOTH_FILE_FORMAT = 'witch-dock.photo-booth';
+  const BOOTH_FILE_VERSION = 1;
 
   const state = {
     consent: false,
@@ -111,7 +113,8 @@
       dirWrap: null,
       dirText: null,
       dirBtn: null,
-      status: null
+      status: null,
+      fileStatus: null
     }
   };
 
@@ -174,6 +177,235 @@
 
   function cloneJson(value) {
     try { return JSON.parse(JSON.stringify(value)); } catch { return null; }
+  }
+
+  function sanitizeBoothFilename(value) {
+    const cleaned = String(value || 'Hero')
+      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return cleaned || 'Hero';
+  }
+
+  function boothCharacterName() {
+    try {
+      const CK = UW.CK;
+      return sanitizeBoothFilename(
+        (CK && CK.data && CK.data.meta && CK.data.meta.character_name) ||
+        (CK && CK.character && CK.character.data && CK.character.data.meta && CK.character.data.meta.character_name) ||
+        'Hero'
+      );
+    } catch {
+      return 'Hero';
+    }
+  }
+
+  function boothFileTimestamp() {
+    return new Date().toISOString().replace(/[:.-]/g, '');
+  }
+
+  function boothFileMaker() {
+    try {
+      const BT = UW.BT;
+      return BT && (BT.liveEngine || BT.maker) || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function setBoothFileStatus(message, kind) {
+    const node = state.ui.fileStatus;
+    if (!node) return;
+    node.textContent = String(message || '');
+    node.dataset.kind = kind || 'normal';
+  }
+
+  function isObjectRecord(value) {
+    return !!value && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  function isLegacyBoothEffectsFile(value) {
+    if (!isObjectRecord(value)) return false;
+    if (value.filters || value.selected || value.camera || value.lighting || value.aspect !== undefined) return false;
+    return !!(
+      value.effects &&
+      (
+        value.colorCurve ||
+        value.environmentGen ||
+        value.id !== undefined ||
+        value.name !== undefined ||
+        value.version !== undefined
+      )
+    );
+  }
+
+  function looksLikeBoothConfig(value) {
+    if (!isObjectRecord(value)) return false;
+    return ['camera', 'filters', 'selected', 'lighting', 'effects', 'aspect', 'model']
+      .some((key) => Object.prototype.hasOwnProperty.call(value, key));
+  }
+
+  function decodeBoothFileData(value) {
+    if (!isObjectRecord(value)) throw new Error('Selected file does not contain a Booth settings object.');
+
+    if (value.format === BOOTH_FILE_FORMAT) {
+      if (Number(value.version) > BOOTH_FILE_VERSION) {
+        throw new Error('This Booth settings file was created by a newer unsupported format.');
+      }
+      if (!isObjectRecord(value.booth) || !looksLikeBoothConfig(value.booth)) {
+        throw new Error('Witch Dock Booth file is missing its Booth settings payload.');
+      }
+      return { kind: 'witch-dock', config: copyBTLighting(value.booth), mode: value.mode || null };
+    }
+
+    if (isLegacyBoothEffectsFile(value)) {
+      return { kind: 'legacy-effects', config: { effects: copyBTLighting(value) }, mode: null };
+    }
+
+    if (looksLikeBoothConfig(value)) {
+      return { kind: 'raw-config', config: copyBTLighting(value), mode: null };
+    }
+
+    throw new Error('JSON is not a recognized Photo Booth settings file.');
+  }
+
+  function captureBoothSettingsFileData() {
+    const BT = UW.BT;
+    const maker = boothFileMaker();
+    if (!BT || !maker || typeof maker.savePortrait !== 'function') {
+      throw new Error('Photo Booth settings runtime is unavailable.');
+    }
+
+    const saved = maker.savePortrait();
+    if (!isObjectRecord(saved) || !looksLikeBoothConfig(saved)) {
+      throw new Error('Hero Forge did not return a saved Photo Booth setup.');
+    }
+
+    return {
+      format: BOOTH_FILE_FORMAT,
+      version: BOOTH_FILE_VERSION,
+      mode: BT.currentMode || null,
+      savedAt: new Date().toISOString(),
+      booth: copyBTLighting(saved)
+    };
+  }
+
+  function applyBoothSettingsFileData(value) {
+    const maker = boothFileMaker();
+    if (!maker || typeof maker.loadPortrait !== 'function') {
+      throw new Error('Photo Booth settings runtime is unavailable.');
+    }
+
+    const decoded = decodeBoothFileData(value);
+    const config = decoded.config;
+    maker.loadPortrait(copyBTLighting(config), { commit: true, apply: true });
+
+    if (config.camera && maker.cameras && typeof maker.cameras.loadCameraSave === 'function') {
+      maker.cameras.loadCameraSave(copyBTLighting(config.camera));
+    }
+
+    if (Object.prototype.hasOwnProperty.call(config, 'effects') && typeof maker.loadEffectsFromConfig === 'function') {
+      maker.loadEffectsFromConfig();
+    }
+
+    try {
+      if (UW.CK && UW.CK.GameLoop && typeof UW.CK.GameLoop.requestRenderRefresh === 'function') {
+        UW.CK.GameLoop.requestRenderRefresh();
+      }
+    } catch {}
+
+    return {
+      ok: true,
+      kind: decoded.kind,
+      mode: decoded.mode || (UW.BT && UW.BT.currentMode) || null,
+      legacyEffectsOnly: decoded.kind === 'legacy-effects'
+    };
+  }
+
+  function downloadBoothSettingsFile(payload) {
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${boothCharacterName()}_${boothFileTimestamp()}.photo_booth.json`;
+    document.documentElement.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function chooseBoothSettingsFile() {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.photo_booth.json,application/json,.json';
+      input.style.display = 'none';
+      let settled = false;
+
+      const finish = (fn, value) => {
+        if (settled) return;
+        settled = true;
+        input.remove();
+        fn(value);
+      };
+
+      input.addEventListener('change', async () => {
+        try {
+          const file = input.files && input.files[0];
+          if (!file) return finish(resolve, null);
+          const parsed = JSON.parse(await file.text());
+          finish(resolve, parsed);
+        } catch (error) {
+          finish(reject, error);
+        }
+      }, { once: true });
+
+      const onFocus = () => {
+        setTimeout(() => {
+          if (!settled && (!input.files || !input.files.length)) finish(resolve, null);
+        }, 250);
+      };
+      window.addEventListener('focus', onFocus, { once: true });
+
+      document.documentElement.appendChild(input);
+      input.click();
+    });
+  }
+
+  function exportBoothSettingsToFile() {
+    try {
+      setBoothFileStatus('Reading Photo Booth settings…');
+      const payload = captureBoothSettingsFileData();
+      downloadBoothSettingsFile(payload);
+      setBoothFileStatus('Booth settings saved.', 'success');
+      return true;
+    } catch (error) {
+      setBoothFileStatus(`Save failed: ${error && error.message ? error.message : error}`, 'error');
+      return false;
+    }
+  }
+
+  async function importBoothSettingsFromFile() {
+    try {
+      const data = await chooseBoothSettingsFile();
+      if (!data) {
+        setBoothFileStatus('Load cancelled.');
+        return false;
+      }
+      setBoothFileStatus('Applying Photo Booth settings…');
+      const result = applyBoothSettingsFileData(data);
+      setBoothFileStatus(
+        result.legacyEffectsOnly
+          ? 'Legacy Lob effects file applied. Camera/background/lighting were not present in that file.'
+          : 'Booth settings applied.',
+        'success'
+      );
+      return true;
+    } catch (error) {
+      setBoothFileStatus(`Load failed: ${error && error.message ? error.message : error}`, 'error');
+      return false;
+    }
   }
 
   function readBTTokenBg() {
@@ -499,6 +731,13 @@
       .kwBoothPersistNote{font-size:11px;line-height:1.35;opacity:.78;padding:0 2px;}
       .kwBoothPersistLink{border:0;padding:0;margin:0;background:none;color:#d9b8ff;font:inherit;font-weight:750;text-decoration:underline;cursor:pointer;}
       .kwBoothPersistLink:hover{color:#ead8ff;}
+      .kwBoothFileHeader{font-weight:700;font-size:12px;opacity:.95;margin-bottom:5px;}
+      .kwBoothFileNote{font-size:11px;line-height:1.35;opacity:.72;margin-bottom:8px;}
+      .kwBoothFileButtons{display:flex;gap:8px;}
+      .kwBoothFileButtons .kwBoothBtn{flex:1;}
+      .kwBoothFileStatus{font-size:11px;line-height:1.35;opacity:.85;margin-top:8px;min-height:1.35em;overflow-wrap:anywhere;}
+      .kwBoothFileStatus[data-kind="success"]{color:#b7efc5;}
+      .kwBoothFileStatus[data-kind="error"]{color:#ffb4b4;}
     `;
     document.head.appendChild(st);
   }
@@ -586,6 +825,47 @@
     togglesBox.appendChild(overlaysT.row);
     togglesBox.appendChild(backgroundT.row);
     togglesBox.appendChild(bgT.row);
+
+    const fileBox = document.createElement('div');
+    fileBox.className = 'kwBoothBox';
+    root.appendChild(fileBox);
+
+    const fileHeader = document.createElement('div');
+    fileHeader.className = 'kwBoothFileHeader';
+    fileHeader.textContent = 'Booth Settings JSON';
+
+    const fileNote = document.createElement('div');
+    fileNote.className = 'kwBoothFileNote';
+    fileNote.textContent = 'Save or restore the current Photo Booth setup. Legacy Lob effect-only JSON files are also accepted.';
+
+    const fileButtons = document.createElement('div');
+    fileButtons.className = 'kwBoothFileButtons';
+
+    const fileSaveBtn = document.createElement('button');
+    fileSaveBtn.type = 'button';
+    fileSaveBtn.className = 'kwBoothBtn';
+    fileSaveBtn.textContent = 'Save Settings';
+    fileSaveBtn.addEventListener('click', exportBoothSettingsToFile);
+
+    const fileLoadBtn = document.createElement('button');
+    fileLoadBtn.type = 'button';
+    fileLoadBtn.className = 'kwBoothBtn';
+    fileLoadBtn.textContent = 'Load Settings';
+    fileLoadBtn.addEventListener('click', () => { importBoothSettingsFromFile(); });
+
+    fileButtons.appendChild(fileSaveBtn);
+    fileButtons.appendChild(fileLoadBtn);
+
+    const fileStatus = document.createElement('div');
+    fileStatus.className = 'kwBoothFileStatus';
+    fileStatus.textContent = 'Ready.';
+    fileStatus.dataset.kind = 'normal';
+
+    fileBox.appendChild(fileHeader);
+    fileBox.appendChild(fileNote);
+    fileBox.appendChild(fileButtons);
+    fileBox.appendChild(fileStatus);
+    state.ui.fileStatus = fileStatus;
 
     const dirBox = document.createElement('div');
     dirBox.className = 'kwBoothBox';
@@ -2410,7 +2690,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.0.6',
+      version: '27.1.0',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2444,14 +2724,16 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.0.6',
+      version: '27.1.0',
       build: BUILD_TAG,
       getState: boothPublicState,
       setDefaultBoothPersistence,
       setDefaultBlackCanvas,
       setSessionBooth: onUserBoothToggle,
       setSessionBlackCanvas: onUserBgToggle,
-      reassertBlackCanvasPresentation
+      reassertBlackCanvasPresentation,
+      captureBoothSettingsFile: captureBoothSettingsFileData,
+      applyBoothSettingsFile: applyBoothSettingsFileData
     };
   }
 

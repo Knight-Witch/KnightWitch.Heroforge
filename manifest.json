@@ -232,9 +232,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.0.6",
-      "build": "v27.0.6-media-readiness-handoff",
-      "versionOrigin": "issue-10-media-readiness-handoff-2026-09-17"
+      "version": "27.1.0",
+      "build": "v27.1.0-booth-json-file-io",
+      "versionOrigin": "issue-20-booth-json-file-io-2026-09-21"
     },
     {
       "id": "booth-black-canvas-display-replay",

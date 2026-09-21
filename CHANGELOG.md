@@ -1,3 +1,14 @@
+## 2026-09-21 — Issue #20 Booth JSON file I/O candidate
+
+- Bumped `booth-tool` to v27.1.0 / `v27.1.0-booth-json-file-io`.
+- Added Booth-tab Save/Load JSON controls using Hero Forge's current named `BT.maker.savePortrait/loadPortrait` ownership seam.
+- Preserves current camera/effects application through Hero Forge's own `cameras.loadCameraSave` and `loadEffectsFromConfig` paths.
+- Accepts Witch Dock full Booth files, raw current Booth configs, and legacy Lob effect-only JSON files.
+- Invalid/unrecognized JSON fails closed with visible status; unrelated Persistent Booth/Black Canvas behavior is unchanged.
+- Public Stable is untouched; candidate lives only on `wd/20-booth-json-repair` pending live validation.
+
+---
+
 ## 2026-09-21 — Normalize post-cleanup branch and task routing
 
 - Confirmed retired `WITCH_DEV_UI` / `WITCH_DEV` refs are gone and `WITCH_DEV_MAIN` is the sole canonical Dev branch.
