@@ -1,3 +1,13 @@
+## 2026-09-21 — Canonical Dev launcher candidate v1.5.2 for Booth JSON
+
+- Advanced Dev launcher identity to v1.5.2 / `1.5.2-issue-20-booth-json`.
+- Pinned exact immutable payload `791320c49d1038ce0d8d7c311ab2dea8abd7d983`, which contains Booth v27.1.0 and the otherwise unchanged validated modular baseline.
+- Auto Host remains on canonical `WITCH_DEV_MAIN`; no host-boundary change is required.
+- Public Stable remains untouched.
+- Next gate: fast-forward canonical Dev to this candidate, reload through Auto Host, then run the live Booth JSON round-trip and unaffected-media smoke.
+
+---
+
 ## 2026-09-21 — Dev payload v1.5.2 prepared for issue #20
 
 - Prepared the immutable Dev payload for Booth JSON v27.1.0.

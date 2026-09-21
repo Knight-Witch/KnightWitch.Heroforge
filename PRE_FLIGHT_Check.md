@@ -1,3 +1,18 @@
+## 2026-09-21 — Dev launcher v1.5.2 candidate
+
+### PASS / pending live gate
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- @version and runtime DEV_VERSION both 1.5.2.
+- DEV_BUILD is `1.5.2-issue-20-booth-json`.
+- DEV_BRANCH remains `WITCH_DEV_MAIN`.
+- PAYLOAD_REF is exact immutable commit `791320c49d1038ce0d8d7c311ab2dea8abd7d983`.
+- Payload manifest launcher registry is synchronized to v1.5.2.
+- Public Stable untouched.
+- Required next gate: Auto Host reload, require v1.5.2 + payload `791320c49d10…`, Loader 23/23 / 0 failed, then Booth JSON functional regression.
+
+---
+
 ## 2026-09-21 — Dev payload v1.5.2 preparation
 
 ### PASS
