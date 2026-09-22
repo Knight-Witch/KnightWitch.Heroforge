@@ -66,6 +66,9 @@ After Stable passes:
 3. remove temporary diagnostics/probes/flags/shims unless intentionally retained;
 4. update or close the source issue;
 5. delete short-lived task/promotion branches no longer needed once their useful history is safely reachable;
+   - if the current tool surface cannot delete branch refs, create an exact handoff under `docs/` using `docs/templates/RELEASE_BRANCH_DELETION_HANDOFF_TEMPLATE.md`;
+   - the handoff must be generated from the live branch inventory and contain exact DELETE refs + SHAs, the complete KEEP inventory, at-most-once retry rules, final verification, and a paste-ready Work instruction;
+   - Work/GitHub UI then performs only the mechanical deletes and verifies the final inventory; do not leave disposable release refs indefinitely because chat tooling lacked deletion support;
 6. trim `ACTIVE_CONTEXT.md` to current work;
 7. compare untouched runtime/module paths for accidental drift;
 8. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.

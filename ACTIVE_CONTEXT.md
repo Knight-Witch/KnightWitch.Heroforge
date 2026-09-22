@@ -46,7 +46,11 @@ Four short-lived issue #20 refs are confirmed safely reachable from canonical hi
 - `wd/20-public-payload-2.0.1`
 - `wd/20-public-rc`
 
-This chat's GitHub connector exposes no branch/ref delete operation. The exact deletion is tracked on issue #14 and can be executed by Work/GitHub UI without additional audit. This is repository hygiene only and does not block issue #24 runtime work.
+This chat's GitHub connector exposes no branch/ref delete operation. The exact mechanical deletion handoff is:
+
+`docs/RELEASE_BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md`
+
+Work/GitHub UI should execute that handoff without re-auditing unless the live branch inventory contradicts it. This is repository hygiene only and does not block issue #24 runtime work.
 
 ## Protected state
 

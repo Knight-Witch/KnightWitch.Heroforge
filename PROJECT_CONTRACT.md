@@ -83,6 +83,8 @@ Before closing the rollout:
 - remove temporary diagnostics, probes, flags, shims, migration adapters, and test assets unless intentionally retained/documented;
 - update/close the source issue;
 - remove short-lived task/promotion/candidate branches once safely reachable from canonical history;
+- if the active tool surface cannot delete branch refs directly, create an exact release-branch deletion handoff from the live inventory before moving on; the handoff must list DELETE refs with SHAs, the complete KEEP branch inventory, verification rules, and a paste-ready Work instruction;
+- execute that handoff through Work/GitHub UI as mechanical cleanup without re-auditing unless live state contradicts it;
 - clean stale `ACTIVE_CONTEXT.md` routing;
 - remove resolved entries from `DEV_DIVERGENCES.json`;
 - verify untouched runtime files did not acquire accidental drift.

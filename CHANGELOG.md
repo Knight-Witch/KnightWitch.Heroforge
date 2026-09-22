@@ -1,3 +1,13 @@
+## 2026-09-21 — Standardize post-release branch deletion handoffs
+
+- Added `docs/RELEASE_BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md` with the exact four issue #20 DELETE refs and exact six-branch KEEP inventory for Work.
+- Added reusable `docs/templates/RELEASE_BRANCH_DELETION_HANDOFF_TEMPLATE.md` so future public releases generate the same mechanical cleanup handoff whenever branch deletion is unavailable in the active chat/tool surface.
+- Updated `PROJECT_CONTRACT.md` and `DEV_WORKFLOW.md` to make release-branch deletion handoffs part of mandatory post-promotion janitorial closeout.
+- Routed the current #20 janitorial note to the durable handoff.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Issue #20 public release closeout / Dev reconciliation COMPLETE
 
 - Public v2.0.1 passed Stable smoke and Amanda's real-file Booth JSON export/import gate.
