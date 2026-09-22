@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.0.0",
-      "build": "2.0.0-immutable-modular-bootstrap",
-      "versionOrigin": "issue-28-public-modular-promotion-2026-09-20"
+      "version": "2.0.1",
+      "build": "2.0.1-issue-20-booth-json",
+      "versionOrigin": "issue-20-booth-json-public-promotion-2026-09-21"
     },
     {
       "id": "witch-dock-core",
@@ -232,9 +232,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.0.6",
-      "build": "v27.0.6-media-readiness-handoff",
-      "versionOrigin": "issue-10-media-readiness-handoff-2026-09-17"
+      "version": "27.1.0",
+      "build": "v27.1.0-booth-json-file-io",
+      "versionOrigin": "issue-20-booth-json-file-io-2026-09-21"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -457,7 +457,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js?v=27.1.0-v27.1.0-booth-json-file-io",
       "enabledByDefault": true
     },
     {

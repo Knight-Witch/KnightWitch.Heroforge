@@ -1,3 +1,14 @@
+## 2026-09-21 — Public 2.0.1 payload: Booth JSON repair
+
+- Promotes only the Dev-validated issue #20 Booth JSON scope onto a Stable-derived immutable payload.
+- Booth tool advances 27.0.6 -> 27.1.0 / `v27.1.0-booth-json-file-io`.
+- Adds Booth Settings JSON Save/Load controls using current Hero Forge Booth-owned persistence APIs.
+- Preserves support for legacy Lob effect-only Booth JSON while rejecting unrecognized JSON before mutation.
+- Launcher registry identity advances to 2.0.1; public launcher pin is applied in the following RC commit.
+- All unrelated runtime modules remain unchanged from public Stable 2.0.0.
+
+---
+
 # Changelog
 
 ## DOCK-2026-09-21-040 — Public license and provenance boundary

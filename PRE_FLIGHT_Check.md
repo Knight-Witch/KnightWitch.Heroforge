@@ -1,3 +1,16 @@
+## 2026-09-21 — Public 2.0.1 immutable payload preflight
+
+### PASS
+
+- Payload is derived directly from current `Witch_Scripts`, not merged from Dev.
+- Only Booth runtime + manifest/log records differ from Stable in this payload step.
+- Booth source is byte-identical to the Dev-validated v27.1.0 candidate.
+- Manifest Booth registry/build/cache key synchronized to v27.1.0.
+- Launcher registry identity staged at v2.0.1.
+- No unrelated module versions or payload files changed.
+
+---
+
 # Pre-Flight Check Log
 
 ## PFC-2026-09-21-040 — Public license and provenance boundary
