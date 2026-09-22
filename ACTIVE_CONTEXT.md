@@ -2,48 +2,57 @@
 
 **Updated:** 2026-09-21
 **Canonical Dev:** `WITCH_DEV_MAIN`
-**Active task:** issue #20 — Booth JSON import/export repair
-**Current task branch:** `wd/20-booth-json-repair`
-**Dev gate:** PASS — automated + human real-file export/import validation complete
-**Promotion state:** awaiting explicit narrow Stable promotion authorization
-**Public Stable:** `Witch_Scripts` @ `95b5cdae4c8840d950d984c73bce101ba887011e`
-**Rollback archive:** `archive/Witch_Scripts-pre-modular-20260920` @ `273b2dc2bbb7a38ea1591abf7c7723d23800e4a4`
-**Canonical Dev launcher:** v1.5.2 / issue #20 candidate payload pinned in current launcher
+**Active task:** issue #24 — submitted High Res regression fixtures
+**Public Stable:** v2.0.1 / `Witch_Scripts` @ `33ff83599951a896d4bfcec180081a9b400a7f0b`
+**Public immutable payload:** `f773cd9607d12a4479e31951973f288fa282543a`
+**Canonical Dev launcher:** v1.5.2 / payload `22d9f9e0bbf90675b52474eb736663fd8d5df7ea`
+**Issue #20:** COMPLETE — Booth JSON repair promoted and validated on public Stable
 
 ## Current state
 
-Branch retirement is complete. `WITCH_DEV_MAIN` is the sole canonical Dev branch.
+Issue #20 is fully released:
+- Booth v27.1.0 / `v27.1.0-booth-json-file-io`;
+- Dev automated + human real-file gates passed;
+- public Stable v2.0.1 smoke passed with Loader 23/23 and zero failures;
+- Amanda confirmed real public Save Settings export and Load Settings restore both work;
+- current Hero Forge / Witch Dock Booth JSON behavior is now the maintained canonical implementation.
 
-Issue #20 is implemented and Dev-validated:
-- Booth tool v27.1.0 uses Hero Forge-owned current Booth save/load seams;
-- Witch Dock full Booth JSON round-trip passed live;
-- legacy Lob effect-only Booth JSON is accepted through the current effects persistence path;
-- invalid/unrecognized JSON fails closed before mutation;
-- Loader completed 23/23 modules with zero failures;
-- Amanda confirmed the new UI looks normal and independently confirmed real file export + load both work.
+Post-release parity check:
+- all 39 shared active/runtime JS/CSS blobs are byte-identical between `WITCH_DEV_MAIN` and public Stable;
+- only the intentional Dev launcher/channel identity differs;
+- two Dev-only JS files are archived issue #26 bone-detection references under `HISTORY/REFERENCES`, not runtime modules;
+- issue #20 is removed from `DEV_DIVERGENCES.json`.
 
-Public Stable has not been modified for issue #20.
+## Active work — issue #24
 
-## Exact next step
+Begin controlled reproduction on the actual submitted High Res fixtures before changing Texture Quality architecture.
 
-Wait for explicit authorization for the **narrow issue #20 Stable promotion**.
+Required order:
+1. reproduce each submitted fixture on current canonical Dev;
+2. record before-enable / enabled / disabled / native-idle behavior;
+3. capture figure/host/material ownership and classify each result;
+4. distinguish Witch Dock regression, uncovered texture host, HeroForge rebake/channel behavior, or upstream-only behavior;
+5. use `Knight-Witch/HeroForge.Compatibility` branch `feature/rendering-texture-quality` only when unresolved engine evidence or validated compatibility work is directly required.
 
-Once authorized, perform only the normal release flow:
-1. promote the validated Booth JSON scope to `Witch_Scripts`;
-2. run Stable smoke;
-3. perform automatic Dev reconciliation/janitorial cleanup under the standing release authorization;
-4. close #20 and remove the short-lived task branch when safely reachable.
+Do not reopen old artifact conclusions on historical evidence alone.
 
-After #20 release closeout, immediately prioritize:
-1. issue #24 submitted High Res regression fixtures;
-2. issue #25 targeted High Res expansion for objects / KB items / tails / hair with measured VRAM/performance optimization.
+After #24, continue issue #25 targeted coverage expansion for objects / KB items / tails / hair with measured VRAM/performance optimization.
 
-Do not resume issue #10 or retired legacy-Dev migration work.
+## Release janitorial note
+
+Four short-lived issue #20 refs are confirmed safely reachable from canonical history and are ready for mechanical deletion:
+- `wd/payload-1.5.2`
+- `wd/20-booth-json-repair`
+- `wd/20-public-payload-2.0.1`
+- `wd/20-public-rc`
+
+This chat's GitHub connector exposes no branch/ref delete operation. The exact deletion is tracked on issue #14 and can be executed by Work/GitHub UI without additional audit. This is repository hygiene only and does not block issue #24 runtime work.
 
 ## Protected state
 
-- `Witch_Scripts` remains public Stable until explicit issue #20 promotion authorization.
-- Keep `WITCH_DEV_MAIN` as canonical Dev.
-- Keep rollback/payload/Dev Auto Host refs required by the modular architecture.
-- Keep `wd/20-booth-json-repair` only until issue #20 promotion cleanup completes.
+- Keep `Witch_Scripts` as public Stable.
+- Keep `WITCH_DEV_MAIN` as the sole canonical Dev branch.
+- Keep `archive/Witch_Scripts-pre-modular-20260920` as rollback.
+- Keep `wd/dev-auto-host` as Dev infrastructure.
+- Keep `wd/payload-1.5.1` and `wd/28-public-payload-2.0.0` as known-good prior immutable rollback payload refs until a separate rollback-retention decision changes that policy.
 - HF-Chat-Bridge remains development infrastructure only and never a Witch Dock runtime dependency.

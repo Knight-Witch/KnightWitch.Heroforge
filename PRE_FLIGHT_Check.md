@@ -1,3 +1,18 @@
+## 2026-09-21 — Issue #20 post-release reconciliation
+
+### PASS
+
+- Public Stable v2.0.1 final human gate passed.
+- Stable baseline recorded at `33ff83599951a896d4bfcec180081a9b400a7f0b`.
+- Dev/Stable shared runtime parity: 39 JS/CSS files compared, 0 differences.
+- Booth v27.1.0 is canonical in both channels.
+- Issue #20 divergence removed; issue #19 remains intentional.
+- `ACTIVE_CONTEXT.md` now routes to issue #24.
+- Short-lived #20 refs proven ancestor/identical to canonical heads and queued on #14 for mechanical deletion.
+- No runtime/module/manifest behavior changed.
+
+---
+
 ## 2026-09-21 — Issue #20 human / real-file gate
 
 ### PASS

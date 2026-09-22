@@ -1,3 +1,15 @@
+## 2026-09-21 — Issue #20 public release closeout / Dev reconciliation COMPLETE
+
+- Public v2.0.1 passed Stable smoke and Amanda's real-file Booth JSON export/import gate.
+- Updated Stable baseline to `33ff83599951a896d4bfcec180081a9b400a7f0b`.
+- Removed resolved issue #20 from `DEV_DIVERGENCES.json`; issue #19 Dev channel identity remains the only intentional runtime divergence.
+- Verified all 39 shared runtime JS/CSS blobs are byte-identical between canonical Dev and Stable.
+- Routed active work to issue #24 submitted High Res regressions, followed by issue #25 targeted host expansion/optimization.
+- Four safely reachable short-lived #20 refs are queued for mechanical deletion via issue #14 because this connector has no delete-ref action.
+- No runtime/module/manifest behavior changed by this reconciliation commit.
+
+---
+
 ## 2026-09-21 — Issue #20 Dev acceptance complete
 
 - Amanda passed the human visual gate for the new Booth Settings JSON block.
