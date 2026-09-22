@@ -1,3 +1,16 @@
+## 2026-09-21 — Issue #20 human / real-file gate
+
+### PASS
+
+- Booth Settings JSON UI visually accepted by Amanda.
+- Save Settings successfully exported a real Booth JSON file.
+- Load Settings successfully loaded/restored from that file.
+- Combined with automated Bridge validation, issue #20 Dev acceptance is complete.
+- Stable promotion is not yet authorized; public Stable remains unchanged.
+- Documentation-only update; no runtime/module/manifest behavior changed.
+
+---
+
 ## 2026-09-21 — Exact issue #20 payload / canonical candidate
 
 ### PASS / pending live gate

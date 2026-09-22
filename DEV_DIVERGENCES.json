@@ -22,8 +22,8 @@
     },
     {
       "issue": 20,
-      "status": "task-branch-candidate",
-      "reason": "Booth JSON import/export repair candidate on wd/20-booth-json-repair; pending live Dev validation before canonical integration/promotion.",
+      "status": "dev-validated-awaiting-stable-promotion",
+      "reason": "Booth JSON file I/O is implemented and passed automated + human real-file Dev validation; awaiting explicit narrow Stable promotion authorization.",
       "paths": [
         "tools/Booth.js",
         "manifest.json"

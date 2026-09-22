@@ -1,3 +1,13 @@
+## 2026-09-21 — Issue #20 Dev acceptance complete
+
+- Amanda passed the human visual gate for the new Booth Settings JSON block.
+- Amanda independently confirmed real-file Booth JSON export and load both work.
+- Issue #20 is now Dev-validated and ready for explicit narrow Stable promotion.
+- Public Stable remains untouched pending that authorization.
+- No additional runtime/module/manifest behavior changed in this documentation update.
+
+---
+
 ## 2026-09-21 — Finalize exact v1.5.2 Booth JSON payload for live Dev
 
 - Advanced the v1.5.2 launcher payload pin to exact commit `22d9f9e0bbf90675b52474eb736663fd8d5df7ea`, which includes the final Booth-mode mismatch guard.
