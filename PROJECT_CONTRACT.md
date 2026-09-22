@@ -91,6 +91,18 @@ Before closing the rollout:
 
 Promotion includes cleaning the workspace.
 
+### Completed-issue branch deletion handoff
+
+At the close of any issue, inspect whether that issue created temporary task, payload, RC, helper, staging, or candidate branch refs.
+
+- If no temporary refs remain, record that fact in the closeout and continue.
+- If temporary refs remain and the current executor can safely delete them, prove useful history is reachable from canonical refs, delete them, and verify the final inventory.
+- If the current executor cannot delete branch refs, create `docs/BRANCH_DELETION_HANDOFF_ISSUE_<N>_<YYYY-MM-DD>.md` before leaving the issue. The handoff must contain the exact DELETE refs and expected SHAs, protected KEEP refs, reachability evidence, expected post-delete inventory, no-re-audit instruction, and the narrow post-delete documentation steps.
+- Link that handoff from issue #14 and the temporary janitorial note in `ACTIVE_CONTEXT.md`. Work/GitHub UI may then execute the mechanical deletion without repeating the audit.
+- After deletion, verify the live inventory, mark the handoff complete, remove the temporary router note, and record the documentation-only closeout in `CHANGELOG.md` / `PRE_FLIGHT_Check.md`.
+
+A completed issue must not leave untracked temporary branch refs. Git history/issues are the archive; branch names are not.
+
 ## Documentation discipline
 
 - `ACTIVE_CONTEXT.md` is the small current-task router, not a transcript.

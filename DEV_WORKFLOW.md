@@ -75,6 +75,23 @@ After Stable passes:
 
 Do not call the rollout complete before those steps are done. This cleanup authorization does not permit unrelated Stable edits or scope expansion.
 
+### Branch deletion handoff standard
+
+At every issue closeout—not only large releases—inventory refs created for that issue.
+
+If temporary refs exist:
+
+1. prove each disposable ref's useful commits are reachable from a canonical/protected branch or otherwise durably preserved;
+2. define an exact DELETE set with branch names and expected head SHAs;
+3. define an exact KEEP/protected set and expected post-delete inventory;
+4. delete directly when the available tool surface supports safe ref deletion;
+5. when the current executor cannot delete refs, create `docs/BRANCH_DELETION_HANDOFF_ISSUE_<N>_<YYYY-MM-DD>.md` containing the evidence and a ready-to-run Work prompt;
+6. link the handoff from issue #14 and temporarily from `ACTIVE_CONTEXT.md`;
+7. Work/GitHub UI deletes exactly the named refs without re-auditing unless live state contradicts the handoff;
+8. after deletion, verify the live inventory, mark the handoff complete, remove the router note, and add concise documentation-only changelog/preflight records.
+
+If the issue created no temporary refs, say so explicitly in the final closeout. No completed issue should silently accumulate task/payload/RC/helper branches.
+
 ## 6. Legacy branch retirement
 
 Legacy Dev/candidate/helper branches are audited under #12/#13 before deletion. Useful unique work is referenced by exact commit/path in an issue or migrated narrowly. Promoted, superseded, or abandoned experiments are not carried into New Dev.

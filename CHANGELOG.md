@@ -1,3 +1,12 @@
+## 2026-09-21 — Standardize completed-issue branch deletion handoffs
+
+- Added `docs/BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md` with the exact four-ref issue #20 DELETE set, six-ref protected KEEP set, reachability proof, expected final inventory, and ready-to-run Work prompt.
+- Made branch deletion handoffs a binding closeout requirement whenever a completed issue leaves temporary refs and the current executor cannot delete them directly.
+- Updated `DEV_WORKFLOW.md` with the reusable issue-closeout procedure and routed the current janitorial note to the handoff.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Standardize post-release branch deletion handoffs
 
 - Added `docs/RELEASE_BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md` with the exact four issue #20 DELETE refs and exact six-branch KEEP inventory for Work.
