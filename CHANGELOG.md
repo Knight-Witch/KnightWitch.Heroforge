@@ -1,3 +1,12 @@
+## 2026-09-21 — Public 2.0.1 RC launcher
+
+- Public launcher advances 2.0.0 -> 2.0.1 and pins immutable issue #20 payload `f773cd9607d12a4479e31951973f288fa282543a`.
+- Public Booth tool in that payload is v27.1.0, exactly matching the Dev-validated candidate.
+- Stable channel identity/update URLs remain `Witch_Scripts`.
+- No unrelated public runtime scope is included.
+
+---
+
 ## 2026-09-21 — Public 2.0.1 payload: Booth JSON repair
 
 - Promotes only the Dev-validated issue #20 Booth JSON scope onto a Stable-derived immutable payload.

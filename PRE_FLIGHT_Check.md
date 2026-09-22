@@ -1,3 +1,15 @@
+## 2026-09-21 — Public 2.0.1 RC launcher gate
+
+### PASS
+
+- Userscript `@name`, `@version`, runtime VERSION/BUILD, SCRIPT_NAME, and manifest launcher registry are synchronized at v2.0.1.
+- Stable channel branch/update/download URLs remain `Witch_Scripts`.
+- Immutable payload pin is `f773cd9607d12a4479e31951973f288fa282543a`.
+- Booth source is the exact Dev-validated v27.1.0 blob.
+- Required next gate: static diff verification, then non-forced Stable promotion and live Stable smoke.
+
+---
+
 ## 2026-09-21 — Public 2.0.1 immutable payload preflight
 
 ### PASS
