@@ -1,3 +1,14 @@
+## 2026-09-21 — Public v2.0.1 Booth JSON release COMPLETE
+
+- Public Stable v2.0.1 passed live smoke on `Witch_Scripts`.
+- Stable channel identity, immutable payload `f773cd9607d12a4479e31951973f288fa282543a`, Loader 23/23, and Booth v27.1.0 all verified live.
+- Dev channel / Dev Auto Host globals were absent from the public smoke.
+- Amanda independently confirmed public **Save Settings** export and **Load Settings** restore both work.
+- Issue #20 runtime scope is fully released.
+- This commit records final release evidence only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Public 2.0.1 RC launcher
 
 - Public launcher advances 2.0.0 -> 2.0.1 and pins immutable issue #20 payload `f773cd9607d12a4479e31951973f288fa282543a`.

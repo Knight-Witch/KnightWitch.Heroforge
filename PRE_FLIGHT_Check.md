@@ -1,3 +1,17 @@
+## 2026-09-21 — Public v2.0.1 final human + smoke gate
+
+### PASS
+
+- Public channel: `Witch_Scripts`, v2.0.1 / `2.0.1-issue-20-booth-json`.
+- Immutable payload: `f773cd9607d12a4479e31951973f288fa282543a`.
+- Loader: 23/23 enabled/fetched/executed, 0 failed, immutable=23, fallback=0.
+- Booth: v27.1.0 / `v27.1.0-booth-json-file-io`.
+- Dev channel and Dev Auto Host globals absent.
+- Amanda confirmed real public Booth JSON export and load both work.
+- Documentation-only closeout; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Public 2.0.1 RC launcher gate
 
 ### PASS
