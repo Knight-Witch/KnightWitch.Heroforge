@@ -38,19 +38,9 @@ Do not reopen old artifact conclusions on historical evidence alone.
 
 After #24, continue issue #25 targeted coverage expansion for objects / KB items / tails / hair with measured VRAM/performance optimization.
 
-## Release janitorial note
+## Release janitorial state
 
-Four short-lived issue #20 refs are confirmed safely reachable from canonical history and are ready for mechanical deletion:
-- `wd/payload-1.5.2`
-- `wd/20-booth-json-repair`
-- `wd/20-public-payload-2.0.1`
-- `wd/20-public-rc`
-
-This chat's GitHub connector exposes no branch/ref delete operation. The exact mechanical deletion handoff is:
-
-`docs/RELEASE_BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md`
-
-Work/GitHub UI should execute that handoff without re-auditing unless the live branch inventory contradicts it. This is repository hygiene only and does not block issue #24 runtime work.
+Issue #20 branch cleanup is COMPLETE. Work deleted the four temporary issue #20 refs and verified the live repository contains exactly the six protected branches. No issue #20 janitorial work remains.
 
 ## Protected state
 

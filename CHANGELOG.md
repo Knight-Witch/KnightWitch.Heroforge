@@ -1,3 +1,14 @@
+## 2026-09-22 — Complete issue #20 branch-deletion closeout
+
+- Verified Work deleted exactly the four temporary issue #20 refs.
+- Verified the repository now contains exactly the six protected branches.
+- Removed the stale pending-deletion note from `ACTIVE_CONTEXT.md`.
+- Marked the canonical issue #20 branch-deletion handoff COMPLETE and the earlier release-specific handoff historical/superseded.
+- Issue #24 remains the active task.
+- Documentation-only closeout; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-21 — Standardize completed-issue branch deletion handoffs
 
 - Added `docs/BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md` with the exact four-ref issue #20 DELETE set, six-ref protected KEEP set, reachability proof, expected final inventory, and ready-to-run Work prompt.

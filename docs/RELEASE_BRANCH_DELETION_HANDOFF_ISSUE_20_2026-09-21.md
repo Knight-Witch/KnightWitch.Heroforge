@@ -1,11 +1,14 @@
 # Release Branch Deletion Handoff — Issue #20 / Public v2.0.1
 
-**Status:** READY FOR WORK — exact mechanical deletion only  
+**Status:** COMPLETE / SUPERSEDED BY CANONICAL ISSUE-CLOSEOUT HANDOFF  
 **Repository:** `Knight-Witch/KnightWitch.Heroforge`  
 **Prepared:** 2026-09-21  
 **Release:** public Witch Dock v2.0.1 / Booth JSON repair  
 **Source issue:** #20 — CLOSED / released  
 **Janitorial tracking:** #14
+
+
+The deletion was completed and verified through the canonical handoff `docs/BRANCH_DELETION_HANDOFF_ISSUE_20_2026-09-21.md`. This earlier release-specific handoff is retained only as historical context and must not be executed again.
 
 ## Purpose
 
