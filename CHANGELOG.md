@@ -1,3 +1,13 @@
+## 2026-09-23 — Issue #24 native restore-adoption repair candidate
+
+- Classified all required Robot, Human, Canine, Half Dragon, AAT75R, and Lob fixtures as a deterministic Texture Quality ON-to-OFF restore-generation failure: model hashes and native atlas allocations restore, while promoted `_usedTextureSize` values and body material masks remain stale.
+- Added Texture Quality Native Reconcile v0.3.6 / `0.3.6-verify-native-restore-adoption`.
+- Disable and failed-enable rollback now reapply captured native source sizes to the adopted native display generation, rebuild native color materials, and verify atlas, allocation, source-size, and body-mask invariants before reporting successful restoration.
+- Added `lastRestoreVerification` to the service diagnostic state and recorded issue #24 as the current Dev runtime divergence pending live and human visual validation.
+- Public Stable remains unchanged.
+
+---
+
 ## 2026-09-23 — Add compact #24 stop-condition guard
 
 - Added a short blocker-proof rule so Work does not stop on connector assumptions, OS focus, document visibility alone, one timeout, or transient renderer state.

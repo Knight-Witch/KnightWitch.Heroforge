@@ -19,11 +19,27 @@
         "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
         "Bootstrap/channel failure remains visible."
       ]
+    },
+    {
+      "issue": 24,
+      "status": "dev-validation",
+      "reason": "Texture Quality native reconcile 0.3.6 repairs the deterministic ON-to-OFF restore boundary by reapplying captured native source sizes to the adopted restore generation, rebuilding native color materials, and verifying native atlas, allocation, source-size, and body-mask invariants before reporting OFF success.",
+      "paths": [
+        "features/rendering/Texture_Quality_Native_Reconcile.js",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Robot and Human retain stable paints, paintByIntent, and parts across ON-to-OFF transitions.",
+        "After disable, native atlas dimensions and target allocations match the fresh OFF baseline.",
+        "After disable, bodyLower/bodyUpper/face bakeSize and _usedTextureSize match the fresh OFF baseline.",
+        "After disable, body color-material masks match native dimensions and no High Res override remains adopted.",
+        "Canine, Half Dragon, AAT75R, and Lob restore fixtures pass the same automated invariants before the human visual gate."
+      ]
     }
   ],
   "notes": [
     "Issue #20 is complete: public v2.0.1 is live on Witch_Scripts with Booth v27.1.0 and passed Stable smoke plus Amanda's real-file export/import confirmation.",
-    "All 39 shared active/runtime JS/CSS blobs are byte-identical between canonical Dev and Stable after the v2.0.1 release; only the intentional issue #19 Dev channel identity/routing remains divergent.",
+    "Issue #24 is the current intentional runtime divergence while Texture Quality native restore adoption is validated on Dev.",
     "The two Dev-only JS files are archived issue #26 bone-detection references under HISTORY/REFERENCES and are not runtime modules.",
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency."
