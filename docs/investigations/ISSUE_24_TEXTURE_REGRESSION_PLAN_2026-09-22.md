@@ -149,6 +149,20 @@ Therefore:
 
 For the current Human fixture, the prior B enable request is terminal and must not be blindly replayed. Read current stable state first; any fresh logical re-test requires a new request ID and should be treated as a new controlled trial, not a retry of the uncertain request.
 
+## Stop-condition guard
+
+Do not stop for a guessed blocker.
+
+These alone are **not blockers**: no named HF-Chat-Bridge connector, another desktop app has focus, `visibilityState=hidden`, one reconcile timeout, or one stale/intermediate renderer readback.
+
+Before stopping or asking Amanda to act:
+1. read back current live state;
+2. use the GitHub Bridge mailbox if the needed action/read is Bridge-capable;
+3. continue from the next safe unfinished step if state is known;
+4. only stop if no safe autonomous step remains.
+
+If stopping is genuinely required, record only: the proven blocker, the live evidence, and the exact human-only action needed.
+
 ## Fixture identity rule
 
 Use Amanda's explicit **HeroForge URL + fixture label** as the authoritative navigation identity.

@@ -1,3 +1,12 @@
+## 2026-09-23 — #24 stop-condition guard
+
+### PASS
+
+- Guard is compact and requires live readback plus exhaustion of safe autonomous steps before Work may stop.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-23 — Issue #24 background visibility interpretation
 
 ### PASS

@@ -1,3 +1,10 @@
+## 2026-09-23 — Add compact #24 stop-condition guard
+
+- Added a short blocker-proof rule so Work does not stop on connector assumptions, OS focus, document visibility alone, one timeout, or transient renderer state.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-23 — Correct #24 background/visibility handling
 
 - Clarified that HF-Chat-Bridge background capability is independent of which desktop app has OS focus.
