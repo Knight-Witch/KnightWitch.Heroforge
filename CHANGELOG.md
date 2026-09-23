@@ -1,3 +1,12 @@
+## 2026-09-22 — Add interruption-safe Work execution to issue #24
+
+- Added bounded fixture phases and compact durable checkpoints so interrupted Work runs resume without repeating completed regression work.
+- Added readback-before-retry rules for uncertain Bridge mutations.
+- Added efficiency rules: reuse one compact snapshot, diff after baseline, deduplicate errors, avoid history preload, and avoid routine narration turns.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Clarify issue #24 fixture identity
 
 - Added an explicit fixture-identity rule to the #24 Work plan: Amanda's URL + fixture label is authoritative for navigation; exported JSON metadata/config IDs are supporting channel-map evidence and may reflect reused/edited source figures.

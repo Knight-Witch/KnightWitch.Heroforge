@@ -1,3 +1,14 @@
+## 2026-09-22 — Issue #24 interruption-safe Work plan
+
+### PASS
+
+- #24 now checkpoints after meaningful fixture phases without stopping execution.
+- Interrupted runs resume from durable state rather than re-running completed probes.
+- Bridge mutations retain at-most-once/readback-before-retry discipline.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Issue #24 fixture identity guard
 
 ### PASS

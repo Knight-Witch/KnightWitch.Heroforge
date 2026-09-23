@@ -41,6 +41,55 @@ Primary reproduction should run with:
 
 Use HF-Chat-Bridge for all runtime reads, navigation, bounded reversible probes, and verification. Amanda should only be asked for Tampermonkey switching or subjective visual confirmation when Bridge cannot provide it.
 
+## Work interruption / usage-efficiency discipline
+
+This investigation is structured to survive interruptions without repeating expensive fixture work.
+
+### Bounded phases
+
+Execute in this order and write a compact durable checkpoint after each completed phase, then continue automatically:
+
+1. Robot + Human baseline/classification.
+2. Canine + Half Dragon confirmation.
+3. AAT75R real-user validation.
+4. Lob ON -> OFF restore investigation.
+5. Cross-figure Lob atlas/decal case only if still needed.
+6. Implementation + targeted regression if evidence warrants a Witch Dock change.
+
+A checkpoint is not a request to stop or ask Amanda to continue.
+
+### Compact checkpoint contents
+
+Record only:
+- fixtures completed;
+- exact current Dev commit/build;
+- first bad transition per fixture;
+- decisive field diffs;
+- current ownership/root-cause classification;
+- any issue branch/commit created;
+- exact next unfinished step.
+
+Do not paste full Bridge responses, giant HeroForge objects, duplicate console output, or repetitive screenshots into the durable record.
+
+### Resume rule after interruption
+
+If Work is interrupted, times out, or resumes in another turn:
+- read `PROJECT_CONTRACT.md`, `ACTIVE_CONTEXT.md`, this plan, and the latest durable #24 checkpoint;
+- resume from the first unfinished phase;
+- do not repeat completed fixtures or probes just to reconstruct context;
+- if any mutation has uncertain execution state, read back live state before retrying;
+- never blindly replay a Bridge mutation.
+
+### Efficiency rules
+
+- Reuse one compact Bridge diagnostic snapshot across fixtures.
+- After the first full baseline, prefer hashes/diffs and changed keys over repeated complete objects.
+- Capture the first distinct error signature/stack, then deduplicate repeats.
+- Do not preload old Texture Quality history, unrelated issues, or Compatibility docs.
+- Do not run #25 coverage/performance sweeps during #24 unless one specific host is required to explain #24.
+- Do not escalate reasoning mode merely because the fixture matrix is long; escalate only for genuinely ambiguous causal evidence or an unresolved renderer seam.
+- Do not spend separate turns on routine progress narration. Persist the checkpoint and keep working.
+
 ## Fixture identity rule
 
 Use Amanda's explicit **HeroForge URL + fixture label** as the authoritative navigation identity.
