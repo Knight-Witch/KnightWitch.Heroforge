@@ -1,3 +1,13 @@
+## 2026-09-22 — Expand issue #24 color-channel regression evidence and Work plan
+
+- Added AAT75R anthro atlas-shift fixtures, controlled human/robot/canine/half-dragon channel fixtures, and Lob ON->OFF restore-drift cases to issue #24.
+- Added `docs/investigations/ISSUE_24_TEXTURE_REGRESSION_PLAN_2026-09-22.md` with a staged, compact Bridge-first diagnostic matrix designed to distinguish model paint mutation, mask/channel rebake failure, stale display/material ownership, and disable-only restore sequencing.
+- Robot is first priority because it supplies the highest channel-count signal; Human is the simplest explicit expected-color baseline.
+- Created low-priority issue #29 for Lob Core Tweaks console-error flooding so external-script noise does not contaminate #24.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Complete issue #20 branch-deletion closeout
 
 - Verified Work deleted exactly the four temporary issue #20 refs.

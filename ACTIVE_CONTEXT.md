@@ -25,7 +25,9 @@ Post-release parity check:
 
 ## Active work — issue #24
 
-Begin controlled reproduction on the actual submitted High Res fixtures before changing Texture Quality architecture.
+Execution plan: `docs/investigations/ISSUE_24_TEXTURE_REGRESSION_PLAN_2026-09-22.md`
+
+Begin controlled reproduction on the actual submitted High Res fixtures before changing Texture Quality architecture. The 2026-09-22 controlled color-channel suite and AAT75R/Lob cases are incorporated into issue #24 and the plan above.
 
 Required order:
 1. reproduce each submitted fixture on current canonical Dev;

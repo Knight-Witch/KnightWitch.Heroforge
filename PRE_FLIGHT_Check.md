@@ -1,3 +1,16 @@
+## 2026-09-22 — Issue #24 expanded regression-plan preflight
+
+### PASS
+
+- #24 now contains the new AAT75R, controlled channel, and Lob restore-drift fixtures.
+- Investigation order is explicit: Robot -> Human -> Canine/Half Dragon -> AAT real fixtures -> Lob restore drift -> unconfirmed cross-figure decal shift.
+- Compact runtime snapshot fields and causal decision tree are defined.
+- Core Tweaks console flooding is isolated to low-priority #29.
+- Compatibility history is not preloaded; consult only for unresolved engine seams.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Issue #20 branch cleanup verification
 
 ### PASS
