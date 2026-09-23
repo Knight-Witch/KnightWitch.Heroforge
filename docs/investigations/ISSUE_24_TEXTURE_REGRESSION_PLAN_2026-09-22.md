@@ -124,6 +124,31 @@ If a later Work run suspects Bridge failure:
 
 Do not substitute cloud-browser HeroForge state for Amanda's authenticated local runtime.
 
+## Background / visibility handling — do not make Amanda babysit the tab
+
+HF-Chat-Bridge is validated for background operation. Another desktop application (for example Discord) having OS focus is **not** a Bridge blocker and is not a reason to ask Amanda to foreground HeroForge.
+
+Interpret `document.visibilityState` narrowly:
+- `visible` / `hidden` is browser document visibility state, not equivalent to OS foreground focus;
+- a hidden state may occur when another browser tab is selected or the browser/minimized page is considered non-visible;
+- it is a diagnostic input for HeroForge/native renderer scheduling, not proof that Bridge transport failed.
+
+Current evidence:
+- Work observed a transient Human-B stall while the document reported `hidden`;
+- the explicit High Res enable eventually terminalized as a timeout and rolled back;
+- a later Bridge readback while Amanda continued using Discord showed a coherent native state: `_needsUpdating=false`, `_inUpdate=false`, display/resource atlases equal at 4096x2048;
+- a live timing probe through `HF-Chat-Bridge#3109` while Amanda remained in Discord reported `visibility=visible`, `hidden=false`, and 177 `requestAnimationFrame` callbacks over ~3.5 s.
+
+Therefore:
+- do **not** stop merely because a readback reports `visibilityState=hidden`;
+- do **not** ask Amanda to foreground HeroForge merely because another desktop app has focus;
+- continue with bounded readbacks and classify whether the native HeroForge transition itself is stalled, terminal, rolled back, or later recovered;
+- if a mutation terminalizes and live state is known/coherent, record the result and continue from that known state;
+- only request a visibility/tab-selection action if a controlled test specifically requires comparing visible-vs-hidden renderer behavior and that comparison cannot be performed safely through Bridge;
+- human visual confirmation remains a valid separate reason to ask Amanda to inspect the page.
+
+For the current Human fixture, the prior B enable request is terminal and must not be blindly replayed. Read current stable state first; any fresh logical re-test requires a new request ID and should be treated as a new controlled trial, not a retry of the uncertain request.
+
 ## Fixture identity rule
 
 Use Amanda's explicit **HeroForge URL + fixture label** as the authoritative navigation identity.

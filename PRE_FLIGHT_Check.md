@@ -1,3 +1,15 @@
+## 2026-09-23 — Issue #24 background visibility interpretation
+
+### PASS
+
+- Verified Bridge transport while Amanda remained in Discord.
+- Current HeroForge state read back coherent with no update in progress.
+- Timing probe #3109 observed 177 requestAnimationFrame callbacks in ~3.5 s and document visibility visible.
+- #24 plan now forbids treating OS foreground focus as a Bridge requirement and treats hidden document state as diagnostic evidence only.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — HF-Chat-Bridge Work access correction
 
 ### PASS

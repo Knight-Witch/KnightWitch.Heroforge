@@ -1,3 +1,13 @@
+## 2026-09-23 — Correct #24 background/visibility handling
+
+- Clarified that HF-Chat-Bridge background capability is independent of which desktop app has OS focus.
+- Document visibility is now treated as diagnostic renderer state, not a routine stop condition.
+- Live background proof: while Amanda remained in Discord, Bridge readback recovered to coherent native state and timing probe #3109 reported visible document state with active animation-frame progression.
+- Work must not ask Amanda to foreground HeroForge merely because another application has focus.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Correct Work HF-Chat-Bridge access model
 
 - Clarified that HF-Chat-Bridge is a GitHub-mailbox transport, not a ChatGPT plugin/connector.
