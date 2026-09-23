@@ -1,3 +1,12 @@
+## 2026-09-22 — Correct Work HF-Chat-Bridge access model
+
+- Clarified that HF-Chat-Bridge is a GitHub-mailbox transport, not a ChatGPT plugin/connector.
+- Added binding Work instructions not to treat absence from the callable-tool/plugin inventory as a blocker.
+- Live `bridge.ping` proof through `Knight-Witch/HF-Chat-Bridge#3049` passed on Bridge v0.4.0 with page context, DEV writes, workbench, and pump all healthy.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Add interruption-safe Work execution to issue #24
 
 - Added bounded fixture phases and compact durable checkpoints so interrupted Work runs resume without repeating completed regression work.

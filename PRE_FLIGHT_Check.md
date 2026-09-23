@@ -1,3 +1,14 @@
+## 2026-09-22 — HF-Chat-Bridge Work access correction
+
+### PASS
+
+- Live GitHub-mailbox `bridge.ping` #3049 completed successfully.
+- Bridge reported v0.4.0, page context available, DEV writes enabled, workbench available, pump running, zero consecutive errors.
+- #24 plan now requires actual mailbox ping evidence before declaring Bridge unavailable.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Issue #24 interruption-safe Work plan
 
 ### PASS

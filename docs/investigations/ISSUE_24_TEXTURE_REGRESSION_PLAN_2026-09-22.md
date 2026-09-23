@@ -90,6 +90,40 @@ If Work is interrupted, times out, or resumes in another turn:
 - Do not escalate reasoning mode merely because the fixture matrix is long; escalate only for genuinely ambiguous causal evidence or an unresolved renderer seam.
 - Do not spend separate turns on routine progress narration. Persist the checkpoint and keep working.
 
+## HF-Chat-Bridge access model — binding for Work
+
+HF-Chat-Bridge is **not** a ChatGPT plugin/connector and will not appear in Work's callable-tool or plugin inventory.
+
+The transport is:
+
+`Work / authorized development chat -> GitHub issues in Knight-Witch/HF-Chat-Bridge -> local relay -> HeroForge Bridge userscript -> live authenticated HeroForge page`
+
+Therefore:
+
+- GitHub access to `Knight-Witch/HF-Chat-Bridge` is the required Work-side transport capability.
+- Do **not** search the plugin/connector directory for HF-Chat-Bridge.
+- Do **not** stop because there is no tool literally named HF-Chat-Bridge.
+- Use GitHub to create/read Bridge request/result mailbox issues using the existing protocol/pattern.
+- A Bridge transport failure must be established by an actual mailbox request/result failure, not by absence from the connector list.
+
+Live proof before this Work pass:
+- Bridge request issue: `Knight-Witch/HF-Chat-Bridge#3049`
+- request: `bridge.ping` / `hf-20260922-wd24-bridge-proof-001`
+- result: SUCCESS
+- Bridge v0.4.0
+- `pageContextAvailable: true`
+- `devWritesEnabled: true`
+- `workbench: true`
+- request pump running with zero consecutive errors
+
+If a later Work run suspects Bridge failure:
+1. issue one narrow fresh `bridge.ping` through the GitHub mailbox;
+2. read the returned issue comment/result;
+3. classify transport health from that actual round trip;
+4. only stop for external access if the mailbox itself cannot be used or the live ping fails in a way that cannot be recovered safely.
+
+Do not substitute cloud-browser HeroForge state for Amanda's authenticated local runtime.
+
 ## Fixture identity rule
 
 Use Amanda's explicit **HeroForge URL + fixture label** as the authoritative navigation identity.
