@@ -1,3 +1,13 @@
+## 2026-09-22 — Issue #24 fixture identity guard
+
+### PASS
+
+- Work plan now prevents embedded JSON metadata/config IDs from silently overriding Amanda's explicit fixture URL/label mapping.
+- JSON exports remain usable as expected paint/channel evidence.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Issue #24 expanded regression-plan preflight
 
 ### PASS

@@ -41,6 +41,14 @@ Primary reproduction should run with:
 
 Use HF-Chat-Bridge for all runtime reads, navigation, bounded reversible probes, and verification. Amanda should only be asked for Tampermonkey switching or subjective visual confirmation when Bridge cannot provide it.
 
+## Fixture identity rule
+
+Use Amanda's explicit **HeroForge URL + fixture label** as the authoritative navigation identity.
+
+Some exported JSONs were created from reused/edited test figures and can retain metadata/config IDs that do not cleanly match the label/URL currently assigned to the test. Use the JSONs as evidence for expected part/paint/channel mappings, not as the authority for which URL represents Robot vs Canine vs Humanoid.
+
+If an embedded JSON `config_id`, `meta.character_name`, or part taxonomy conflicts with the explicit fixture list below, record the mismatch and continue with the URL/label list rather than silently relabeling the test.
+
 ## Evidence bundle / fixture order
 
 ### Tier 1 — controlled channel fixtures

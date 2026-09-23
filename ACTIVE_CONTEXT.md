@@ -1,6 +1,6 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-21
+**Updated:** 2026-09-22
 **Canonical Dev:** `WITCH_DEV_MAIN`
 **Active task:** issue #24 — submitted High Res regression fixtures
 **Public Stable:** v2.0.1 / `Witch_Scripts` @ `33ff83599951a896d4bfcec180081a9b400a7f0b`

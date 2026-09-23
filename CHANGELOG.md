@@ -1,3 +1,11 @@
+## 2026-09-22 — Clarify issue #24 fixture identity
+
+- Added an explicit fixture-identity rule to the #24 Work plan: Amanda's URL + fixture label is authoritative for navigation; exported JSON metadata/config IDs are supporting channel-map evidence and may reflect reused/edited source figures.
+- Updated `ACTIVE_CONTEXT.md` date to the current 2026-09-22 investigation state.
+- Documentation-only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-22 — Expand issue #24 color-channel regression evidence and Work plan
 
 - Added AAT75R anthro atlas-shift fixtures, controlled human/robot/canine/half-dragon channel fixtures, and Lob ON->OFF restore-drift cases to issue #24.
