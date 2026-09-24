@@ -1,3 +1,11 @@
+## 2026-09-24 — Dev payload v1.5.4 prepared for issue #24
+
+- Prepared an immutable Dev payload containing Texture Quality Native Reconcile v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- Advanced only the payload launcher registry identity to v1.5.4 / `1.5.4-issue-24-colorbake-restore`; the canonical launcher pin follows after payload verification.
+- Public Stable and #32 remain untouched.
+
+---
+
 ## 2026-09-24 — Issue #24 native color-bake restore repair
 
 - Reproduced Quinn's intermittent wrong OFF body tint with native atlas, source sizes, masks, AAIDs, gradients, paint hashes, and restore verification all structurally correct.
