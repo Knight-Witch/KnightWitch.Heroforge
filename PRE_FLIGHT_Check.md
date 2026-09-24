@@ -1,3 +1,21 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.4 candidate for issue #24
+
+### PASS / pending integrated live reload
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version` and runtime `DEV_VERSION` are synchronized at v1.5.4.
+- `DEV_BUILD` is `1.5.4-issue-24-colorbake-restore`.
+- `DEV_BRANCH` remains `WITCH_DEV_MAIN`.
+- `PAYLOAD_REF` is exact immutable payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`.
+- Payload manifest launcher registry is synchronized to v1.5.4 and contains Texture Quality Native Reconcile v0.3.7.
+- Public Stable and #32 remain untouched.
+
+### Required live gate
+
+Reload through Dev Auto Host and require launcher v1.5.4, payload `6aee7fd8716d…`, Loader complete with zero failures, Texture Quality v0.3.7 / `0.3.7-refresh-native-color-bake`, then exact Quinn and D4 OFF output-hash restoration after ON→OFF.
+
+---
+
 ## 2026-09-24 — Issue #24 native color-bake restore candidate
 
 ### Classified failure
