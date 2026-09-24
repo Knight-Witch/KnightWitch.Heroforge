@@ -1,3 +1,16 @@
+## 2026-09-24 — Dev payload v1.5.3 preparation for issue #24
+
+### PASS
+
+- Payload parent is canonical Dev merge `1bcf5be3d3a0f9779434938f65f712ed88e5cd7d`.
+- Payload contains Texture Quality Native Reconcile v0.3.6 / `0.3.6-verify-native-restore-adoption`.
+- Robot, Human, Canine, Half Dragon, three AAT75R fixtures, and two Lob fixtures passed A-D live regression; Amanda's human visual gate passed.
+- Dev launcher registry advances to v1.5.3 / `1.5.3-issue-24-texture-restore`.
+- Public Stable remains untouched.
+- Next gate: pin the canonical Dev launcher to this exact payload, reload through Auto Host, and verify launcher, loader, module identity, and settled native OFF state.
+
+---
+
 ## 2026-09-23 — Issue #24 native restore-adoption candidate
 
 ### Classified failure
