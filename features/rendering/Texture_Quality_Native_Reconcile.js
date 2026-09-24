@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.5
+// @version      0.3.6
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.5';
-  const BUILD = '0.3.5-preserve-native-source-floor';
+  const VERSION = '0.3.6';
+  const BUILD = '0.3.6-verify-native-restore-adoption';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -37,6 +37,7 @@
   let enabled = false;
   let lastError = null;
   let lastVerification = null;
+  let lastRestoreVerification = null;
   let statusText = 'OFF';
   let statusError = false;
   let persistent = readPersistent();
@@ -323,6 +324,10 @@
       partsSeen: [],
       meshesSeen: [],
       adoptions: 0,
+      nativeSources: Object.fromEntries(TARGETS.map((key) => [key, {
+        bakeSize: row.parts[key].bakeSize,
+        usedTextureSize: row.parts[key]._usedTextureSize
+      }])),
       baseline: {
         atlas: atlasSize(row.display.atlas),
         allocations: Object.fromEntries(TARGETS.map((key) => [key, allocation(row.display.atlas, key)]))
@@ -395,6 +400,10 @@
         const changedParts = TARGETS.some((key) => p.ids[key] !== ids[key]);
         if (changedParts) {
           p.ids = ids;
+          p.nativeSources = Object.fromEntries(TARGETS.map((key) => [key, {
+            bakeSize: row.parts[key].bakeSize,
+            usedTextureSize: row.parts[key]._usedTextureSize
+          }]));
           p.masks = await loadMasks(row, R || cap.R, s);
         }
       }
@@ -441,6 +450,25 @@
         p.d.change({}, p.d.settings || s.c.settings);
         if (!adoptPipeline(s, p)) throw new Error('HeroForge figure changed during native restore.');
       }
+      setupColorMaterials(p.display);
+    }
+    s.c.refresh();
+  }
+
+  function restoreAdoptedNativeSources(s) {
+    if (!adoptAll(s)) throw new Error('HeroForge figure set changed before native source adoption.');
+    for (const p of s.pipelines) {
+      const currentState = currentPipeline(s, p);
+      for (const key of TARGETS) {
+        const native = p.nativeSources[key];
+        if (!native) throw new Error(`${key} native source snapshot is unavailable.`);
+        currentState.parts[key].bakeSize = native.bakeSize;
+        currentState.parts[key]._usedTextureSize = native.usedTextureSize;
+      }
+      // Native restore can adopt a replacement display after the first policy
+      // rollback. Re-apply the exact source sizes to that adopted generation,
+      // then rebuild its color materials so they no longer retain the pinned
+      // High Res masks or HeroForge's 1x1 fallback texture.
       setupColorMaterials(p.display);
     }
     s.c.refresh();
@@ -664,6 +692,113 @@
     return out;
   }
 
+  function samePair(actual, expected) {
+    return !!(
+      actual && expected &&
+      Number(actual[0]) === Number(expected[0]) &&
+      Number(actual[1]) === Number(expected[1])
+    );
+  }
+
+  function verifyNativeRestorePipeline(s, p, index) {
+    if (!adoptPipeline(s, p)) return { ok: false, reason: 'HeroForge figure/data/target parts changed.' };
+    const currentState = currentPipeline(s, p);
+    const atlas = p.display.atlas;
+    const out = {
+      ok: true,
+      key: p.key,
+      label: p.primary ? 'primary' : (p.key || `figure-${index + 1}`),
+      primary: p.primary,
+      atlas: atlasSize(atlas),
+      sameAtlas: atlas === p.m.resourceAtlas,
+      allocations: {},
+      bakeSize: {},
+      usedTextureSize: {},
+      masks: {}
+    };
+
+    if (!out.sameAtlas) return { ...out, ok: false, reason: 'Display/resource atlas objects differ after restore.' };
+    if (!samePair(out.atlas, p.baseline.atlas)) {
+      return { ...out, ok: false, reason: 'Native atlas dimensions were not restored.' };
+    }
+
+    for (const key of TARGETS) {
+      const part = currentState.parts[key];
+      const native = p.nativeSources[key];
+      out.allocations[key] = allocation(atlas, key);
+      out.bakeSize[key] = part.bakeSize;
+      out.usedTextureSize[key] = part._usedTextureSize;
+      if (
+        !native ||
+        !samePair(out.allocations[key], p.baseline.allocations[key]) ||
+        Number(out.bakeSize[key]) !== Number(native.bakeSize) ||
+        Number(out.usedTextureSize[key]) !== Number(native.usedTextureSize)
+      ) {
+        return { ...out, ok: false, reason: `${key} native source/allocation was not restored.` };
+      }
+    }
+
+    for (const key of BODIES) {
+      const mesh = currentState.meshes[key];
+      const mat = mesh.bakeMaterials && mesh.bakeMaterials.color;
+      const actual = mat && typeof mat.getUniform === 'function' ? mat.getUniform('masksMap') : null;
+      const expectedSize = Number(p.nativeSources[key].usedTextureSize);
+      out.masks[key] = {
+        expected: [expectedSize, expectedSize],
+        actual: texSize(actual),
+        highResOverrideRetained: !!(p.masks && mesh.masksMapOverride === p.masks[key])
+      };
+      if (
+        !Number.isFinite(expectedSize) || expectedSize <= 0 ||
+        out.masks[key].actual[0] !== expectedSize ||
+        out.masks[key].actual[1] !== expectedSize ||
+        out.masks[key].highResOverrideRetained
+      ) {
+        return { ...out, ok: false, reason: `${key} native color-bake mask was not adopted.` };
+      }
+    }
+
+    return out;
+  }
+
+  function verifyNativeRestore(s) {
+    if (!adoptAll(s)) return { ok: false, reason: 'HeroForge character/figure set changed during restore verification.' };
+    const figures = s.pipelines.map((p, index) => verifyNativeRestorePipeline(s, p, index));
+    const failed = figures.find((figure) => !figure.ok);
+    const primary = figures.find((figure) => figure.primary) || figures[0] || null;
+    const out = {
+      ok: !failed,
+      phase: 'native-restore',
+      version: VERSION,
+      build: BUILD,
+      figureCount: figures.length,
+      figures,
+      atlas: primary ? primary.atlas : null,
+      sameAtlas: figures.every((figure) => figure.sameAtlas === true),
+      allocations: primary ? primary.allocations : {},
+      bakeSize: primary ? primary.bakeSize : {},
+      usedTextureSize: primary ? primary.usedTextureSize : {},
+      masks: primary ? primary.masks : {}
+    };
+    if (failed) out.reason = `${failed.label}: ${failed.reason}`;
+    return out;
+  }
+
+  async function restoreSession(s) {
+    for (const p of s.pipelines) restorePolicy(p);
+    nativeRestore(s);
+    let settled = await waitForStableScene(SETTLE_TIMEOUT);
+    if (!settled) throw new Error('Timed out waiting for native reconciliation to settle.');
+
+    restoreAdoptedNativeSources(s);
+    settled = await waitForStableScene(SETTLE_TIMEOUT);
+    if (!settled) throw new Error('Timed out waiting for restored native materials to settle.');
+
+    const verification = verifyNativeRestore(s);
+    if (!verification.ok) throw new Error(verification.reason);
+    return verification;
+  }
+
   function baselineState(s) {
     if (!s) return null;
     return {
@@ -688,6 +823,7 @@
       statusText,
       statusError,
       lastVerification,
+      lastRestoreVerification,
       baseline: baselineState(session),
       capability: cap.ok
         ? {
@@ -724,6 +860,7 @@
     session = null;
     enabled = false;
     lastVerification = null;
+    lastRestoreVerification = null;
     lastError = null;
     resetAutoAttempt();
     if (persistent && !sessionSuppressed) setStatus('Persistent High Res — waiting for the new figure…', false);
@@ -742,6 +879,7 @@
     if (busy || enabled) return enabled;
     busy = true;
     lastError = null;
+    lastRestoreVerification = null;
     setStatus('Preparing native reconcile…', false);
     let s = null;
 
@@ -776,9 +914,7 @@
       const policyTouched = !!(s && s.pipelines.some((p) => p.scales.length || p.partsSeen.length || p.meshesSeen.length));
       if (policyTouched && sameCharacter(s)) {
         try {
-          for (const p of s.pipelines) restorePolicy(p);
-          nativeRestore(s);
-          await waitForStableScene(SETTLE_TIMEOUT);
+          lastRestoreVerification = await restoreSession(s);
         } catch (restoreError) {
           lastError += ` | restore: ${String(restoreError && restoreError.message || restoreError)}`;
         }
@@ -810,10 +946,7 @@
 
     try {
       if (!sameCharacter(s)) throw new Error('HeroForge character/data changed; stale snapshots not restored.');
-      for (const p of s.pipelines) restorePolicy(p);
-      nativeRestore(s);
-      const settled = await waitForStableScene(SETTLE_TIMEOUT);
-      if (!settled) throw new Error('Timed out waiting for native reconciliation to settle.');
+      lastRestoreVerification = await restoreSession(s);
       enabled = false;
       session = null;
       lastVerification = null;
@@ -987,6 +1120,7 @@
     get sessionSuppressed() { return sessionSuppressed; },
     get lastError() { return lastError; },
     get lastVerification() { return lastVerification; },
+    get lastRestoreVerification() { return lastRestoreVerification; },
     get statusText() { return statusText; },
     get statusError() { return statusError; }
   };

@@ -1,3 +1,37 @@
+## 2026-09-23 — Issue #24 native restore-adoption candidate
+
+### Classified failure
+
+- All required fixtures first diverge at the ON-to-OFF transition.
+- `paints`, `paintByIntent`, shader references, and part IDs remain stable.
+- Native atlas dimensions, allocations, and bake sizes restore, but previously promoted `_usedTextureSize` values persist and body color materials adopt a shared 1×1 fallback mask.
+- A bounded Lob2 probe proved that restoring native body source sizes and rerunning native color-material setup replaces the 1×1 masks with the correct native 512px resources without changing the native atlas.
+
+### Candidate
+
+- Texture Quality Native Reconcile v0.3.6 / `0.3.6-verify-native-restore-adoption`.
+- Captures each target's native `bakeSize` and `_usedTextureSize` at enable time.
+- After HeroForge's native restore generation settles, reapplies those native sizes to the adopted generation, rebuilds color materials, waits again, and refuses OFF success unless native atlas, allocation, target source sizes, and body-mask dimensions all match baseline.
+- Uses the same verified restore path for failed-enable rollback.
+- Exposes compact `lastRestoreVerification` diagnostics; no UI or persistence contract changed.
+
+### Static checks
+
+- PASS: module syntax (`node --check`), manifest and `DEV_DIVERGENCES.json` parsing, registry/source/cache-key version consistency, and clean diff whitespace.
+- PASS: isolated service initialization smoke confirms v0.3.6 diagnostics and visibility lifecycle registration.
+- PASS: focused mocked native-generation regression reproduces HeroForge's disable-time source re-promotion plus 1×1 body-mask fallback; v0.3.6 restores body source sizes/masks, restores face source size, records `lastRestoreVerification.ok=true`, and reports clean OFF.
+
+### Required live gate
+
+1. Load the issue #24 candidate service on a fresh controlled fixture.
+2. Retest Robot + Human A-D first and confirm restore verification passes with baseline source sizes and native body masks.
+3. Retest Canine + Half Dragon, then the three AAT75R fixtures, then both Lob ON-to-OFF sequences using compact diffs.
+4. Confirm Stable remains untouched and hand the fully automated Dev result to Amanda for the final visual gate.
+
+**Runtime/module/manifest/public behavior changed:** Dev Texture Quality native restore behavior and diagnostics changed; public Stable unchanged.
+
+---
+
 ## 2026-09-23 — #24 stop-condition guard
 
 ### PASS
