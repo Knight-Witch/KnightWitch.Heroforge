@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.0.1",
-      "build": "2.0.1-issue-20-booth-json",
-      "versionOrigin": "issue-20-booth-json-public-promotion-2026-09-21"
+      "version": "2.0.2",
+      "build": "2.0.2-issue-24-texture-restore",
+      "versionOrigin": "issue-24-texture-restore-public-promotion-2026-09-23"
     },
     {
       "id": "witch-dock-core",
@@ -302,9 +302,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.3.5",
-      "build": "0.3.5-preserve-native-source-floor",
-      "versionOrigin": "stable-promoted-human-validated-2026-09-15"
+      "version": "0.3.6",
+      "build": "0.3.6-verify-native-restore-adoption",
+      "versionOrigin": "issue-24-native-restore-adoption-2026-09-23"
     },
     {
       "id": "texture-quality-same-figure-drift-guard",
@@ -518,7 +518,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.6-verify-native-restore-adoption",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

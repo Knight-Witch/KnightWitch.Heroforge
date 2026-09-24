@@ -1,3 +1,29 @@
+## 2026-09-23 — Public 2.0.2 RC launcher gate
+
+### PASS
+
+- Userscript `@name`, `@version`, runtime VERSION/BUILD, SCRIPT_NAME, and manifest launcher registry are synchronized at v2.0.2.
+- Stable channel branch/update/download URLs remain `Witch_Scripts`.
+- Immutable payload pin is `fa442b99a7376aa31882f66fd20ae8cded32fe67`.
+- Texture Quality Native Reconcile in the payload is the exact validated v0.3.6 blob.
+- #32 color-zone collapse remains intentionally unresolved and excluded.
+- Required next gate: narrow diff verification, then non-forced Stable promotion and live Stable smoke.
+
+---
+
+## 2026-09-23 — Public 2.0.2 immutable payload preflight
+
+### PASS
+
+- Payload is derived directly from current `Witch_Scripts` v2.0.1.
+- Texture Quality Native Reconcile source is byte-identical to validated Dev candidate `9b16a2f1b7c4f0f6d5b50188319e2f8c14352af5` (blob `8b182828799c077caa219b9d87ad738c0e3a3384`).
+- Manifest synchronizes native reconcile at v0.3.6 / `0.3.6-verify-native-restore-adoption` and public launcher registry at v2.0.2.
+- Stable module URL/cache identity for native reconcile is updated to the v0.3.6 build.
+- #32 color-zone collapse is explicitly excluded from this release.
+- No unrelated module versions or runtime files changed.
+
+---
+
 ## 2026-09-21 — Public v2.0.1 final human + smoke gate
 
 ### PASS
