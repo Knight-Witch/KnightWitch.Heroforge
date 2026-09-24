@@ -1,16 +1,16 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-24  
-**Canonical Dev:** `WITCH_DEV_MAIN` @ `49206661f6a7c9b155368d937ccb59a2754f3857`  
+**Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active task:** issue #24 — **HR ON/OFF body visual paint tint change** (REOPENED / failed broader Stable smoke)  
 **Separate active bug:** issue #32 — **HR body paint zone collapse**  
 **Public Stable:** v2.0.2 / `Witch_Scripts` @ `1b7d45bad6a602ffe6a39d9457b64f7daeca72d8`  
 **Public immutable payload:** `fa442b99a7376aa31882f66fd20ae8cded32fe67`  
-**Canonical Dev launcher:** v1.5.3 / issue #24 texture restore payload
+**Canonical Dev launcher:** v1.5.4 / payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`  
 
 ## Current route
 
-Issue #24 v0.3.6 passed an earlier narrow Dev visual gate but failed broader public smoke and also reproduces on canonical Dev. Do not close it.
+Issue #24 is classified as a stale body color-bake cache after ON→OFF native restore. Dev candidate v0.3.7 forces the bounded native color-bake cache refresh that restored Quinn's body outputs byte-for-byte; integrated live Quinn/D4 validation is next. Do not close it.
 
 Primary handoff:
 `docs/investigations/ISSUE_24_REOPEN_HANDOFF_2026-09-24.md`
