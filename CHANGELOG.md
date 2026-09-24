@@ -1,3 +1,14 @@
+## 2026-09-23 — Public 2.0.2 payload: High Res ON/OFF body tint restore
+
+- Promotes only the Dev-validated #24 restore/adoption fix onto a Stable-derived immutable payload.
+- Texture Quality Native Reconcile advances 0.3.5 -> 0.3.6 / `0.3.6-verify-native-restore-adoption` using the exact validated Dev blob.
+- Fix restores native per-part source sizes/material mask adoption after High Res ON -> OFF and verifies the restored native generation before reporting success.
+- #32 — HR body paint zone collapse remains a separate open bug and is not included in this promotion.
+- Launcher registry identity stages public v2.0.2; launcher pin is applied in the following RC commit.
+- No unrelated runtime module is changed.
+
+---
+
 ## 2026-09-21 — Public v2.0.1 Booth JSON release COMPLETE
 
 - Public Stable v2.0.1 passed live smoke on `Witch_Scripts`.
