@@ -1,3 +1,16 @@
+## 2026-09-24 — Public 2.0.3 corrected Stable candidate gate
+
+### PASS / pending live Stable smoke
+
+- Userscript name/version, runtime VERSION/BUILD, SCRIPT_NAME, and manifest launcher registry are synchronized at v2.0.3.
+- Stable channel branch/update/download URLs remain `Witch_Scripts`.
+- Immutable payload pin is `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`.
+- Payload Texture Quality is exact validated v0.3.7 / `0.3.7-refresh-native-color-bake` blob `09d92a14595077d49ec928263c6aab7ca3ef468a`.
+- Candidate diff is limited to launcher identity/pin plus the payload's Texture Quality, manifest, and release records.
+- Required next gate: non-forced Stable promotion, then live Stable launcher/loader/module identity and Curvy Body OFF→ON→OFF exact restoration smoke.
+
+---
+
 ## 2026-09-24 — Public 2.0.3 immutable payload preflight
 
 ### PASS

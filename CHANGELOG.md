@@ -1,3 +1,13 @@
+## 2026-09-24 — Public 2.0.3 corrected Stable candidate
+
+- Public launcher advances 2.0.2 -> 2.0.3 and pins immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`.
+- Payload contains the exact Dev-validated Texture Quality v0.3.7 color-bake cache refresh.
+- Stable channel identity and update/download URLs remain `Witch_Scripts`.
+- Scope is only #24 ON→OFF body tint restoration; #32 and 2048 source-resolution work remain excluded.
+- No unrelated public runtime scope is included.
+
+---
+
 ## 2026-09-24 — Public 2.0.3 payload: final High Res OFF tint restore
 
 - Promotes only the Dev-validated #24 color-bake cache correction onto a Stable-derived immutable payload.
