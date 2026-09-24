@@ -1,3 +1,15 @@
+## 2026-09-24 — Dev payload v1.5.4 preparation for issue #24
+
+### PASS
+
+- Payload parent is canonical Dev candidate `a28ff093b53de90bb864752b412fd68ae24eec60`.
+- Payload contains Texture Quality Native Reconcile v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- Payload launcher registry advances to v1.5.4 / `1.5.4-issue-24-colorbake-restore`.
+- Public Stable and #32 remain untouched.
+- Next gate: pin the canonical Dev launcher to the exact final payload commit, reload through Auto Host, and verify launcher, loader, module identity, and Quinn/D4 ON-to-OFF output hashes.
+
+---
+
 ## 2026-09-24 — Issue #24 native color-bake restore candidate
 
 ### Classified failure
