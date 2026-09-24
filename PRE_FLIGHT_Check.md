@@ -1,3 +1,22 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.3 candidate for issue #24
+
+### PASS / pending integrated live reload
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version` and runtime `DEV_VERSION` are synchronized at v1.5.3.
+- `DEV_BUILD` is `1.5.3-issue-24-texture-restore`.
+- `DEV_BRANCH` remains `WITCH_DEV_MAIN`.
+- `PAYLOAD_REF` is exact immutable payload `74b8fc9c08cd816f4b50919aeee46f751fb1975c`.
+- Payload manifest launcher registry is synchronized to v1.5.3 and contains Texture Quality Native Reconcile v0.3.6.
+- Launcher syntax, manifest JSON, version/build/payload consistency, and whitespace checks pass.
+- Public Stable remains untouched.
+
+### Required live gate
+
+Reload through Dev Auto Host and require launcher v1.5.3, payload `74b8fc9c08cd…`, Loader complete with zero failures, Texture Quality v0.3.6 / `0.3.6-verify-native-restore-adoption`, and an idle native OFF state with matching display/resource atlases.
+
+---
+
 ## 2026-09-24 — Dev payload v1.5.3 preparation for issue #24
 
 ### PASS

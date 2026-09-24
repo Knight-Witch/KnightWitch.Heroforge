@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.3 for issue #24
+
+- Advanced the fixed-name Dev launcher to v1.5.3 / `1.5.3-issue-24-texture-restore`.
+- Pinned exact immutable payload `74b8fc9c08cd816f4b50919aeee46f751fb1975c`, which contains the validated Texture Quality Native Reconcile v0.3.6 repair and otherwise preserves the canonical Dev baseline.
+- Public Stable remains untouched.
+- Next gate: merge this launcher integration, reload through Auto Host, and verify the live runtime reports launcher v1.5.3, payload `74b8fc9c08cd…`, Texture Quality v0.3.6, a healthy loader, and settled native OFF state.
+
+---
+
 ## 2026-09-24 — Dev payload v1.5.3 prepared for issue #24
 
 - Prepared the immutable Dev payload containing the validated Texture Quality Native Reconcile v0.3.6 / `0.3.6-verify-native-restore-adoption`.
