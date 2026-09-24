@@ -23,7 +23,7 @@
     {
       "issue": 24,
       "status": "dev-validation",
-      "reason": "Texture Quality native reconcile 0.3.6 repairs the deterministic ON-to-OFF restore boundary by reapplying captured native source sizes to the adopted restore generation, rebuilding native color materials, and verifying native atlas, allocation, source-size, and body-mask invariants before reporting OFF success.",
+      "reason": "Texture Quality native reconcile 0.3.7 repairs the ON-to-OFF body tint boundary by reapplying captured native source sizes, rebuilding native color materials, then invalidating and refreshing the adopted native color-bake cache before reporting OFF success.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "manifest.json"
@@ -33,6 +33,7 @@
         "After disable, native atlas dimensions and target allocations match the fresh OFF baseline.",
         "After disable, bodyLower/bodyUpper/face bakeSize and _usedTextureSize match the fresh OFF baseline.",
         "After disable, body color-material masks match native dimensions and no High Res override remains adopted.",
+        "After disable, every adopted figure completes a native color-bake cache invalidation and forced refresh.",
         "Canine, Half Dragon, AAT75R, and Lob restore fixtures pass the same automated invariants before the human visual gate."
       ]
     }
