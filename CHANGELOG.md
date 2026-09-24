@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #24 native color-bake restore repair
+
+- Reproduced Quinn's intermittent wrong OFF body tint with native atlas, source sizes, masks, AAIDs, gradients, paint hashes, and restore verification all structurally correct.
+- Isolated the remaining fault to HeroForge's body color-bake cache: `colorBake.invalidateCache()` plus `colorBake.refresh(true)` restored both body slots byte-for-byte to the fresh OFF baseline while face remained unchanged.
+- Advanced Texture Quality Native Reconcile to v0.3.7 / `0.3.7-refresh-native-color-bake`; restore now forces that bounded color-bake refresh after native source/material adoption and verifies that every adopted figure completed it.
+- Public Stable remains untouched; #32 remains separate.
+
+---
+
 ## 2026-09-24 — #24 failed broader Stable smoke; reopen handoff
 
 - Public v2.0.2 promotion remains merged, but broader human Stable smoke reproduced wrong body tint/restore failures on Quinn and intermittent restore warnings on D4/Blood Moon; #24 remains open.
