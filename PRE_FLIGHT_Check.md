@@ -1,3 +1,16 @@
+## 2026-09-24 — Public 2.0.3 immutable payload preflight
+
+### PASS
+
+- Payload is derived directly from current `Witch_Scripts` v2.0.2.
+- Texture Quality Native Reconcile source is byte-identical to validated Dev blob `09d92a14595077d49ec928263c6aab7ca3ef468a` at v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- Manifest synchronizes Texture Quality v0.3.7, its cache key, and public launcher registry v2.0.3.
+- Automated exact A→B→D restore passed on Quinn, D4, and Curvy Body; Curvy Body human visual gate passed.
+- #32 and the separate 2048 source-resolution evidence are excluded.
+- No unrelated module versions or runtime files changed.
+
+---
+
 ## 2026-09-23 — Public 2.0.2 RC launcher gate
 
 ### PASS

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.6
+// @version      0.3.7
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.6';
-  const BUILD = '0.3.6-verify-native-restore-adoption';
+  const VERSION = '0.3.7';
+  const BUILD = '0.3.7-refresh-native-color-bake';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -324,6 +324,7 @@
       partsSeen: [],
       meshesSeen: [],
       adoptions: 0,
+      restoreColorBakeRefreshes: 0,
       nativeSources: Object.fromEntries(TARGETS.map((key) => [key, {
         bakeSize: row.parts[key].bakeSize,
         usedTextureSize: row.parts[key]._usedTextureSize
@@ -472,6 +473,24 @@
       setupColorMaterials(p.display);
     }
     s.c.refresh();
+  }
+
+  async function refreshAdoptedNativeColorBakes(s) {
+    if (!adoptAll(s)) throw new Error('HeroForge figure set changed before native color-bake refresh.');
+    for (const p of s.pipelines) {
+      const colorBake = p.display && p.display.colorBake;
+      if (
+        !colorBake ||
+        typeof colorBake.invalidateCache !== 'function' ||
+        typeof colorBake.refresh !== 'function'
+      ) {
+        throw new Error(`${p.primary ? 'Primary figure' : (p.key || 'Figure')} color-bake refresh is unavailable.`);
+      }
+      colorBake.invalidateCache();
+      const pending = colorBake.refresh(true);
+      if (pending && typeof pending.then === 'function') await pending;
+      p.restoreColorBakeRefreshes += 1;
+    }
   }
 
   function sceneReady(cap) {
@@ -714,10 +733,14 @@
       allocations: {},
       bakeSize: {},
       usedTextureSize: {},
-      masks: {}
+      masks: {},
+      colorBakeRefreshes: p.restoreColorBakeRefreshes
     };
 
     if (!out.sameAtlas) return { ...out, ok: false, reason: 'Display/resource atlas objects differ after restore.' };
+    if (out.colorBakeRefreshes < 1) {
+      return { ...out, ok: false, reason: 'Native color-bake cache was not refreshed after restore.' };
+    }
     if (!samePair(out.atlas, p.baseline.atlas)) {
       return { ...out, ok: false, reason: 'Native atlas dimensions were not restored.' };
     }
@@ -793,6 +816,10 @@
     restoreAdoptedNativeSources(s);
     settled = await waitForStableScene(SETTLE_TIMEOUT);
     if (!settled) throw new Error('Timed out waiting for restored native materials to settle.');
+
+    await refreshAdoptedNativeColorBakes(s);
+    settled = await waitForStableScene(SETTLE_TIMEOUT);
+    if (!settled) throw new Error('Timed out waiting for refreshed native color bake to settle.');
 
     const verification = verifyNativeRestore(s);
     if (!verification.ok) throw new Error(verification.reason);

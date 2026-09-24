@@ -1,3 +1,15 @@
+## 2026-09-24 — Public 2.0.3 payload: final High Res OFF tint restore
+
+- Promotes only the Dev-validated #24 color-bake cache correction onto a Stable-derived immutable payload.
+- Texture Quality Native Reconcile advances 0.3.6 -> 0.3.7 / `0.3.7-refresh-native-color-bake` using the exact validated Dev blob.
+- After native source/material adoption, OFF restore invalidates and forcibly refreshes HeroForge's final body color-bake cache before verification.
+- Quinn, D4, and Curvy Body passed exact byte-for-byte A→B→D output restoration; Amanda accepted the Curvy Body visual gate.
+- #32 paint-zone collapse and the separate 2048 source-resolution evidence are excluded.
+- Launcher registry identity stages public v2.0.3; the launcher pin follows in the RC commit.
+- No unrelated runtime module changed.
+
+---
+
 ## 2026-09-23 — Public 2.0.2 RC launcher
 
 - Public launcher advances 2.0.1 -> 2.0.2 and pins immutable #24 payload `fa442b99a7376aa31882f66fd20ae8cded32fe67`.
