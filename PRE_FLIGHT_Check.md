@@ -1,3 +1,23 @@
+## 2026-09-24 — Issue #24 native color-bake restore candidate
+
+### Classified failure
+
+- Quinn fresh OFF body hashes were `3ce98341` / `027a4ba6`; ON-to-OFF settled at `00c1b356` / `4bece629` while model paint hashes, native 512 masks/AAIDs, gradient bytes, atlas, allocations, source sizes, and `lastRestoreVerification.ok` remained correct.
+- A bounded native color-bake probe (`invalidateCache()` then `refresh(true)`) restored the body hashes exactly to `3ce98341` / `027a4ba6`; face stayed byte-identical at `843a3d53`.
+
+### Candidate
+
+- Texture Quality Native Reconcile v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- After native source/material adoption settles, restore invalidates and forcibly refreshes each adopted figure's color-bake cache, waits for stability again, and records/verifies the refresh count before reporting OFF success.
+- Public Stable and #32 are untouched.
+
+### Validation
+
+- PASS: syntax, manifest/divergence JSON, registry/source/cache-key identity, and whitespace checks.
+- Pending: live candidate ON-to-OFF output-hash regression on Quinn and D4, then the bounded fixture regression required by the issue #24 plan before Amanda's human visual gate.
+
+---
+
 ## 2026-09-24 — #24 regression handoff checkpoint
 
 ### PASS
