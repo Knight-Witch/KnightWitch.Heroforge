@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.4 for issue #24
+
+- Advanced the fixed-name Dev launcher to v1.5.4 / `1.5.4-issue-24-colorbake-restore`.
+- Pinned exact immutable payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`, containing Texture Quality Native Reconcile v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- Public Stable and #32 remain untouched.
+- Next gate: reload through Auto Host and run Quinn/D4 ON-to-OFF output-hash regression.
+
+---
+
 ## 2026-09-24 — Issue #24 native color-bake restore repair
 
 - Reproduced Quinn's intermittent wrong OFF body tint with native atlas, source sizes, masks, AAIDs, gradients, paint hashes, and restore verification all structurally correct.
