@@ -1,3 +1,16 @@
+## 2026-09-23 — Public 2.0.2 RC launcher gate
+
+### PASS
+
+- Userscript `@name`, `@version`, runtime VERSION/BUILD, SCRIPT_NAME, and manifest launcher registry are synchronized at v2.0.2.
+- Stable channel branch/update/download URLs remain `Witch_Scripts`.
+- Immutable payload pin is `fa442b99a7376aa31882f66fd20ae8cded32fe67`.
+- Texture Quality Native Reconcile in the payload is the exact validated v0.3.6 blob.
+- #32 color-zone collapse remains intentionally unresolved and excluded.
+- Required next gate: narrow diff verification, then non-forced Stable promotion and live Stable smoke.
+
+---
+
 ## 2026-09-23 — Public 2.0.2 immutable payload preflight
 
 ### PASS

@@ -1,3 +1,13 @@
+## 2026-09-23 — Public 2.0.2 RC launcher
+
+- Public launcher advances 2.0.1 -> 2.0.2 and pins immutable #24 payload `fa442b99a7376aa31882f66fd20ae8cded32fe67`.
+- Payload contains the exact Dev-validated Texture Quality Native Reconcile v0.3.6 restore/adoption fix.
+- Stable channel identity and update/download URLs remain `Witch_Scripts`.
+- #32 — HR body paint zone collapse remains open and is not part of this release.
+- No unrelated public runtime scope is included.
+
+---
+
 ## 2026-09-23 — Public 2.0.2 payload: High Res ON/OFF body tint restore
 
 - Promotes only the Dev-validated #24 restore/adoption fix onto a Stable-derived immutable payload.
