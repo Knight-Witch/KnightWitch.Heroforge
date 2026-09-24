@@ -1,3 +1,14 @@
+## 2026-09-24 — #24 failed broader Stable smoke; reopen handoff
+
+- Public v2.0.2 promotion remains merged, but broader human Stable smoke reproduced wrong body tint/restore failures on Quinn and intermittent restore warnings on D4/Blood Moon; #24 remains open.
+- Canonical Dev was not changed by the public promotion and reproduces the Quinn failure family as well.
+- Current HeroForge 08.1.10.5 High Res activation produces failed assumed 1024 body-mask loads plus native 2048 mask/AAID/normal 404s; this is now the first diagnostic lead.
+- Added compact restart/new-chat handoff `docs/investigations/ISSUE_24_REOPEN_HANDOFF_2026-09-24.md` and routed ACTIVE_CONTEXT to it.
+- #32 HR body paint zone collapse remains separate.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.3 for issue #24
 
 - Advanced the fixed-name Dev launcher to v1.5.3 / `1.5.3-issue-24-texture-restore`.

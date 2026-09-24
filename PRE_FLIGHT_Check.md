@@ -1,3 +1,15 @@
+## 2026-09-24 — #24 regression handoff checkpoint
+
+### PASS
+
+- Confirmed `WITCH_DEV_MAIN` remains at `49206661f6a7c9b155368d937ccb59a2754f3857`; no Dev runtime mutation was made during public v2.0.2 promotion.
+- Confirmed public Stable is v2.0.2 @ `1b7d45bad6a602ffe6a39d9457b64f7daeca72d8` and #24 remains open.
+- Persisted Quinn/D4/Blood Moon visual failures, High Res 404/resource-load signature, script-isolation matrix, and exact next diagnostic sequence.
+- #32 color-zone collapse remains explicitly separate.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.3 candidate for issue #24
 
 ### PASS / pending integrated live reload
