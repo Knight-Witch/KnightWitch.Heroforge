@@ -1,3 +1,35 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.3 candidate for issue #24
+
+### PASS / pending integrated live reload
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version` and runtime `DEV_VERSION` are synchronized at v1.5.3.
+- `DEV_BUILD` is `1.5.3-issue-24-texture-restore`.
+- `DEV_BRANCH` remains `WITCH_DEV_MAIN`.
+- `PAYLOAD_REF` is exact immutable payload `74b8fc9c08cd816f4b50919aeee46f751fb1975c`.
+- Payload manifest launcher registry is synchronized to v1.5.3 and contains Texture Quality Native Reconcile v0.3.6.
+- Launcher syntax, manifest JSON, version/build/payload consistency, and whitespace checks pass.
+- Public Stable remains untouched.
+
+### Required live gate
+
+Reload through Dev Auto Host and require launcher v1.5.3, payload `74b8fc9c08cd…`, Loader complete with zero failures, Texture Quality v0.3.6 / `0.3.6-verify-native-restore-adoption`, and an idle native OFF state with matching display/resource atlases.
+
+---
+
+## 2026-09-24 — Dev payload v1.5.3 preparation for issue #24
+
+### PASS
+
+- Payload parent is canonical Dev merge `1bcf5be3d3a0f9779434938f65f712ed88e5cd7d`.
+- Payload contains Texture Quality Native Reconcile v0.3.6 / `0.3.6-verify-native-restore-adoption`.
+- Robot, Human, Canine, Half Dragon, three AAT75R fixtures, and two Lob fixtures passed A-D live regression; Amanda's human visual gate passed.
+- Dev launcher registry advances to v1.5.3 / `1.5.3-issue-24-texture-restore`.
+- Public Stable remains untouched.
+- Next gate: pin the canonical Dev launcher to this exact payload, reload through Auto Host, and verify launcher, loader, module identity, and settled native OFF state.
+
+---
+
 ## 2026-09-23 — Issue #24 native restore-adoption candidate
 
 ### Classified failure
