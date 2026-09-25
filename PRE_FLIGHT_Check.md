@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 title/alignment refinement
+
+### PENDING live/human gate
+
+- Shell v0.5.1 moves metadata inline after the title; no core/runtime ownership change.
+- Styles v0.5.1 enlarges the emblem, reserves space for the right-side controls, and vertically centers button content.
+- Title/header changes remain Dev-only; public Stable remains v2.2.2.
+- No High Res runtime files changed.
+- Next: syntax/static verification, immutable Dev payload/launcher staging, live Bridge regression, then Amanda visual review.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.2 launcher
 
 ### PASS — source pin / live gate pending

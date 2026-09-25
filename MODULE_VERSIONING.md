@@ -53,7 +53,7 @@ The version is carried separately. When the Dev launcher version changes, update
 
 - userscript `@version`;
 - runtime `DEV_VERSION`;
-- visible Dock header, containing the branded `WITCH DOCK` title plus unmistakable `DEV` and `v<version>` metadata (the brand and metadata may be separate visual rows);
+- visible Dock header, containing the branded `WITCH DOCK` title plus unmistakable `DEV` and `v<version>` metadata (inline or on a secondary visual row);
 - `manifest.json.moduleRegistry` entry `witch-dock-dev-launcher` version/build.
 
 Do **not** put the changing version into Tampermonkey `@name`. A versioned `@name` changes the userscript identity and can cause raw install/update actions to create duplicate Dev installs instead of updating the existing one.
