@@ -41,9 +41,9 @@ Unexpected Dev-vs-Stable runtime drift is a defect until explained.
 
 - The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`, not the public `Witch_Dock.user.js` entrypoint.
 - Tampermonkey identity must remain stable across Dev versions: fixed `@name` `WITCH DOCK - DEV`, stable namespace, and stable channel-specific update/download URL.
-- The active version belongs in userscript `@version`, runtime `DEV_VERSION`, the module registry, and the visible Dock title `WITCH DOCK - DEV v<version>`.
+- The active version belongs in userscript `@version`, runtime `DEV_VERSION`, the module registry, and the visible Dock header. The branded `WITCH DOCK` title may be visually separated from a smaller `DEV` / `v<version>` metadata line, but the Dev channel and version must remain unmistakable.
 - Do not put the changing version into Tampermonkey `@name`; doing so can create duplicate Dev installs instead of updating the existing script.
-- Tampermonkey and the visible Dock must clearly identify the same Dev channel, but the Tampermonkey name is intentionally unversioned while the Dock title is versioned.
+- Tampermonkey and the visible Dock must clearly identify the same Dev channel, but the Tampermonkey name is intentionally unversioned while the Dock header exposes the active Dev/version metadata.
 - Dev `@updateURL` and `@downloadURL` resolve to `WITCH_DEV_MAIN` so the installed Dev launcher updates from the canonical channel.
 - The completed modular architecture may pin its manifest/core/runtime modules to an immutable payload commit SHA. That payload must be derived from canonical Dev, and any fallback URLs must resolve to `WITCH_DEV_MAIN`, never Stable or a retired task branch.
 - A Dev bootstrap/channel-seam failure must fail visibly rather than silently running Stable while appearing to be Dev.
