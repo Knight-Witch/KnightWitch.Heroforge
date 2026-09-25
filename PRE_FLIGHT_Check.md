@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #58 Polymorph display-font candidate
+
+### PASS / live Dev + human visual gate pending
+
+- Full source verification: Regular SHA-256 `e3d1bf414bdd0b517989e89ea3350acafdd90b61322c6c6ec8c7390a9f6ea188`; Bold SHA-256 `aea401e914959cd4638cec82c0a7328a5d84b8d79d942c850052b10a18cca511`.
+- Full source coverage replaces the earlier Polymorph display-only subsets; both Regular and Bold are staged as TTF assets.
+- Witch_Dock_Assets.js parses at v0.2.0 and registers 400/700 font faces from the active immutable payload root.
+- Witch_Dock_Styles.css changes only named display/header selectors; the root/body font declaration is unchanged.
+- manifest.json parses with Assets v0.2.0 and Styles v0.4.0.
+- Public Stable and High Res runtime/diagnostics are unchanged.
+- Next gate: immutable Dev launcher integration, live font-load check, human visual approval.
+
+---
+
 ## 2026-09-25 — #41 deletion handoff finalization
 
 ### PASS
