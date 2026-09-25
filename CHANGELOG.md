@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 payload staging
+
+- Dev launcher registry staged at v1.9.6 / `1.9.6-title-version-baseline`.
+- Payload carries Styles v0.6.1 / `0.6.1-title-version-baseline` on top of the accepted v1.9.5 UI consistency candidate.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 title/version baseline correction
 
 - Witch Dock Styles -> v0.6.1 / `0.6.1-title-version-baseline`.
