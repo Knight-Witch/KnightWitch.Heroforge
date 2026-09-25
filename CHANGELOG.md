@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.8 for diagnostics v0.1.3
+
+- Advanced canonical Dev launcher to v1.5.8 / 1.5.8-issue-35-hr-diagnostics-v013.
+- Pinned exact immutable task payload ed32c18edfa5b16619870c1ef5cc07bff4786d49 containing High Res Diagnostics v0.1.3.
+- v0.1.2 live gates already passed loader 25/25, Robot comparison, restoration, and read-only capture non-mutation.
+- Next gate: reload via Dev Auto Host, then prove addressable Native OFF / High Res ON section retrieval.
+- Public Stable remains untouched.
+
+---
 ## 2026-09-24 — Canonical Dev launcher v1.5.7 for diagnostics v0.1.2
 
 - Advanced canonical Dev launcher to v1.5.7 / `1.5.7-issue-35-hr-diagnostics-v012`.

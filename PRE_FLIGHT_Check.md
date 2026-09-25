@@ -1,3 +1,23 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.8 candidate
+
+### PASS / pending live reload
+
+- Fixed userscript identity remains WITCH DOCK - DEV / KnightWitch.
+- @version and DEV_VERSION synchronized at v1.5.8.
+- DEV_BUILD: 1.5.8-issue-35-hr-diagnostics-v013.
+- PAYLOAD_REF: ed32c18edfa5b16619870c1ef5cc07bff4786d49.
+- Canonical launcher registry synchronized to v1.5.8.
+- Public Stable unchanged.
+
+### Required live gate
+
+- Auto Host reload.
+- Loader 25/25, 0 failed, immutable=25, fallback=0.
+- Diagnostics v0.1.3.
+- Robot comparison completes and restores OFF.
+- getComparisonSection returns targeted Native OFF / High Res ON evidence without whole-snapshot overflow.
+
+---
 ## 2026-09-24 — Canonical Dev launcher v1.5.7 candidate
 
 ### PASS / pending live reload
