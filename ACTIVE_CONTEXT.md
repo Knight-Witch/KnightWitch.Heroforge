@@ -18,6 +18,12 @@ Issue #41 — Update delivery hardening / header version visibility — is activ
 
 Issue #37 remains otherwise release-ready and previously passed Dev validation. #32 and #34 remain paused and untouched. Issue #42 is a later repository-wide Developer Mode/module/subtool version-display cleanup task.
 
+Validated diagnostic runtime:
+- Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
+- High Res Diagnostic Capture v0.1.3 / `0.1.3-addressable-comparison-sections`;
+- High Res Diagnostic Capture UI v0.1.0 under Utilities;
+- schema v1 with current snapshot, controlled Native OFF → HR ON comparison, deterministic summaries/deltas, coverage manifest, local JSON export, and addressable comparison sections.
+
 ## #35 final gate
 
 PASS on canonical Dev v1.5.9 / payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`:
