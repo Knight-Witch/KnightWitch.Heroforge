@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #58 Polymorph display-font candidate
+
+- Recovered Amanda's full-source Polymorph Regular and Bold TTFs and verified them against Polymorph's recorded source SHA-256 identities.
+- Bundled both faces under Witch Dock core assets; Bold is the initial display face and Regular remains available for a later weight switch.
+- Assets -> v0.2.0 / `0.2.0-polymorph-display-fonts`; font-face URLs derive from the immutable channel payload root.
+- Styles -> v0.4.0 / `0.4.0-polymorph-display-typography`; Polymorph applies only to Dock title, tab labels, section/tool headings, and About/Disclaimer titles.
+- Existing body copy/system-font stack is unchanged.
+- Public Stable remains v2.2.1; #32/#34 are untouched.
+
+---
+
 ## 2026-09-25 — #41 deletion handoff finalized
 
 - Added final temporary closeout ref `wd/41-release-closeout` @ `acb37dbbd4a7ef14cd8f8676d44a40ad1de4ee5d` to the #41 branch-deletion handoff.
