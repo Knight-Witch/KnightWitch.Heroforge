@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 canonical Dev v1.9.0 pin
+
+### PASS / live font gate pending
+
+- Launcher JavaScript parse passed.
+- @version and DEV_VERSION are synchronized at v1.9.0.
+- DEV_BUILD is `1.9.0-polymorph-display-fonts`.
+- PAYLOAD_REF is immutable `858416a37a31df48454f71c5a2493ddc733b5e7b`.
+- Expected Assets contract is synchronized to v0.2.0.
+- Public Stable and High Res scope remain untouched.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.0 payload staging
 
 ### PASS / launcher pin pending

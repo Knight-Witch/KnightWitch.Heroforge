@@ -8,13 +8,13 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.1 / `Witch_Scripts` @ `50b22b3f9d8bf030f958b5372e008bca5404fa1d`  
 **Public immutable payload:** `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`  
-**Canonical Dev launcher:** v1.8.0 / payload `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`
+**Canonical Dev launcher:** v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b`
 
 ## Current route
 
 Issue #58 — Bundle Polymorph display fonts for Witch Dock headers — is active. Amanda's owned full-source Polymorph Regular and Bold TTFs were recovered and verified against the source SHA-256 identities recorded by Polymorph. Both faces are staged as Witch Dock core assets; Bold is the initial display face for Dock title/tabs/section/tool/modal headings while body copy remains on the existing system-font stack. Regular is bundled but not selected by default so the display weight can be switched later without another asset-recovery pass.
 
-Current #58 candidate: Assets v0.2.0 / `0.2.0-polymorph-display-fonts`; Styles v0.4.0 / `0.4.0-polymorph-display-typography`. The font-face URLs resolve from the launcher's immutable payload root rather than a third-party CDN. Public Stable remains v2.2.1 and is unchanged. Next gate is canonical Dev payload/launcher integration, live font-load verification, then Amanda's visual approval.
+Canonical Dev v1.9.0 is staged for #58 with immutable payload `858416a37a31df48454f71c5a2493ddc733b5e7b`, Assets v0.2.0 / `0.2.0-polymorph-display-fonts`, and Styles v0.4.0 / `0.4.0-polymorph-display-typography`. The font-face URLs resolve from that immutable payload root rather than a third-party CDN. Public Stable remains v2.2.1 and is unchanged. Next gate is live font-load verification, then Amanda's visual approval.
 
 Issues #37/#41 are complete; only their separate mechanical branch cleanup remains under the existing handoffs. Issue #32 remains paused; do not resume it until explicitly requested. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
 
