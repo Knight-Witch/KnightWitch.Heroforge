@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 live-smoke handoff
+
+- Canonical Dev launcher is v1.7.0, pinned to immutable payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
+- Dev Auto Host v0.2.0 is published on `wd/dev-auto-host` with branch-head -> immutable-launcher resolution.
+- Public RC PR #51 is v2.2.0 with self-refreshing Stable delivery, runtime version in the Stable title bar, and Disclaimer moved into About.
+- Stable self-host static harness passed legacy-branch local fallback, compatible older-version downgrade refusal, and compatible newer-version remote dispatch.
+- #32/#34 remain paused and untouched.
+
+---
+
 ## 2026-09-25 — Issue #41 canonical Dev v1.7.0 pin
 
 - Dev launcher advanced to v1.7.0 / `1.7.0-issue-41-delivery-header`.
