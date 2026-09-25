@@ -316,6 +316,35 @@
   cursor: ns-resize;
 }
 
+.kwWDResizeResetHandle::after{
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 12;
+  width: max-content;
+  max-width: 220px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(20,20,22,0.96);
+  color: rgba(255,255,255,0.90);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+  font: 10px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease 300ms;
+}
+.kwWDResizeResetHandle:hover::after{ opacity: 1; }
+#kwWDResizeHandleBottom::after{
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+}
+#kwWDResizeHandleCorner::after{
+  right: 2px;
+  bottom: 22px;
+}
+
 .kwWDMinimized #kwWDBody{ display: none; }
 .kwWDMinimized #kwWDResizeHandleCorner{ display: none; }
 .kwWDMinimized #kwWDResizeHandleBottom{ display: none; }
