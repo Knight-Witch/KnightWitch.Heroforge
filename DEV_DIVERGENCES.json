@@ -42,8 +42,8 @@
     },
     {
       "issue": 37,
-      "status": "dev-validation",
-      "reason": "Utilities adds a Dev-only control that resets Witch Dock to the canonical 380x520 size through the live Interactions-owned preference state; public Stable remains unchanged pending validation.",
+      "status": "canonical-dev-live-smoke",
+      "reason": "Utilities dock-size reset is integrated into WITCH_DEV_MAIN and Dev launcher v1.6.0 pins immutable payload 67f06a0e691c4a96a71c83258fac8130df73b950; public Stable remains unchanged pending live validation.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -51,9 +51,9 @@
         "tools/Utilities.js"
       ],
       "acceptance": [
+        "Canonical Dev launcher v1.6.0 resolves payload 67f06a0e691c4a96a71c83258fac8130df73b950 with zero fallback.",
         "Utilities exposes a Reset Dock Size control.",
-        "The control restores and persists width=380 and height=520 without moving the Dock.",
-        "A reload preserves 380x520.",
+        "The control forces the live Dock to 380x520, persists those size preferences, and does not move it.",
         "Existing drag, manual resize, minimize/compact, and tool loading behavior remain intact.",
         "Public Stable remains untouched until explicit promotion."
       ]

@@ -1,6 +1,6 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-24  
+**Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
 **Active task:** issue #37 — **Dock default-size reset utility**  
 **Paused task:** issue #32 — **HR body paint zone collapse**  
@@ -8,7 +8,7 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
-**Canonical Dev launcher:** v1.5.9 / payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`
+**Canonical Dev launcher:** v1.6.0 / payload `67f06a0e691c4a96a71c83258fac8130df73b950`
 
 ## Current route
 
