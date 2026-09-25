@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-shell";
-  const VERSION = "0.4.0";
-  const BUILD = "0.4.0-resize-border-reset";
+  const VERSION = "0.5.0";
+  const BUILD = "0.5.0-centered-brand-title-emblem";
 
   const STATE = {
     createCalls: 0,
@@ -14,6 +14,7 @@
   function createRoot(options) {
     const opts = options && typeof options === "object" ? options : {};
     const el = opts.el;
+    const titleEmblemUrl = typeof opts.titleEmblemUrl === "string" ? opts.titleEmblemUrl : "";
     const handlers = opts.handlers && typeof opts.handlers === "object" ? opts.handlers : {};
 
     if (typeof el !== "function") {
@@ -39,13 +40,27 @@
       }
     }
 
+    if (!titleEmblemUrl) {
+      STATE.lastError = "missing title emblem";
+      throw new Error("Witch Dock Shell requires the title emblem URL.");
+    }
+
     STATE.createCalls += 1;
     STATE.lastError = null;
 
     const root = el("div", { id: "kwWitchDock" }, [
       el("div", { id: "kwWDHeader", onpointerdown: handlers.startDockDrag }, [
         el("div", { id: "kwWDTitleWrap" }, [
-          el("div", { id: "kwWDTitle", text: "WITCH DOCK" }),
+          el("div", { id: "kwWDTitle" }, [
+            el("span", { class: "kwWDTitleWord", text: "WITCH" }),
+            el("img", {
+              id: "kwWDTitleEmblem",
+              src: titleEmblemUrl,
+              alt: "",
+              draggable: "false"
+            }),
+            el("span", { class: "kwWDTitleWord", text: "DOCK" })
+          ]),
           el("span", { id: "kwWDTitleVersion", text: "" })
         ]),
         el("div", { id: "kwWDControls" }, [
