@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 canonical Dev v1.9.0 pin
+
+- Dev launcher advanced to v1.9.0 / `1.9.0-polymorph-display-fonts`.
+- Immutable payload pinned to `858416a37a31df48454f71c5a2493ddc733b5e7b`.
+- Launcher expectation advanced to Witch Dock Assets v0.2.0 / `0.2.0-polymorph-display-fonts`.
+- Public Stable remains v2.2.1; next gate is live Dev font loading + Amanda visual approval.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.0 payload staging
 
 - Staged canonical Dev launcher registry v1.9.0 / `1.9.0-polymorph-display-fonts`.
