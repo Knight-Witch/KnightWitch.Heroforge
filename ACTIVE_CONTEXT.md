@@ -2,7 +2,8 @@
 
 **Updated:** 2026-09-24  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #32 — **HR body paint zone collapse**  
+**Active task:** issue #37 — **Dock default-size reset utility**  
+**Paused task:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
@@ -11,9 +12,9 @@
 
 ## Current route
 
-Resume issue #32 — HR body paint zone collapse — from its latest durable issue state.
+Complete issue #37 — Dock default-size reset utility — as a narrow Dev-only Utilities addition, then route back to #32 after live validation.
 
-High Res Diagnostic Capture v1 is now available in canonical Dev and should be used as the standardized first-pass evidence collector instead of rebuilding broad ad hoc Bridge probes.
+Issue #37 scope: add one Utilities button that forces the live Dock size state back to the canonical 380×520 defaults and persists that size. Do not change position, High Res behavior, or unrelated Dock lifecycle.
 
 Validated diagnostic runtime:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
