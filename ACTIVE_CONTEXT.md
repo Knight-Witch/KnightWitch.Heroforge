@@ -2,23 +2,26 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #41 — **Update delivery hardening / header version visibility**  
+**Active task:** janitorial closeout for completed issues #37 and #41  
 **Paused task:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
-**Public Stable:** v2.1.0 / `Witch_Scripts` @ `407d9b6d46dd93a2e2818e59bbea7aa6333b6b20`  
-**Public immutable payload:** `002e0e62a21798091c96c3eb52668c8ae0844629`  
+**Public Stable:** v2.2.1 / `Witch_Scripts` @ `50b22b3f9d8bf030f958b5372e008bca5404fa1d`  
+**Public immutable payload:** `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`  
 **Canonical Dev launcher:** v1.8.0 / payload `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`
 
 ## Current route
 
-Issue #41 — Update delivery hardening / header version visibility — is active. Public v2.1.0 for #37 is published, but Amanda's installed Stable remained on v2.0.3 after reload, so the #37 Stable smoke is blocked by the updater seam rather than the Reset Size implementation.
+Issues #37 — Dock default-size reset utility — and #41 — update delivery hardening / header version visibility — have passed their release gates.
 
-#41 Dev live gate PASS. Dev Auto Host v0.2.0 resolved canonical `WITCH_DEV_MAIN` by ref API -> immutable SHA, Dev v1.7.0 loaded payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`, loader completed 25/25 with 0 failed/fallback, and the header/About changes passed. Canonical Dev v1.8.0 is staged with the final resize-border reset affordance. Public RC PR #51 is being refreshed to the same shared runtime before final smoke. Self-refreshing Stable delivery, visible Stable runtime version beside WITCH DOCK, and Disclaimer-in-About remain unchanged.
+Public Stable v2.2.1 is live. Stable self-host v1.0.0 resolved the exact current `Witch_Scripts` head through GitHub's ref API, reported `local-wrapper-current`, and loaded immutable payload `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`. Stable loader smoke passed 23/23 executed, 0 failed, 23 immutable, 0 fallback. Amanda visually confirmed the RC reset-button and resize-border double-click behavior before the exact RC head was promoted.
 
-Issue #37 remains published as public v2.1.0 but its Stable smoke is waiting on #41. #32 and #34 remain paused and untouched. Issue #42 is a later repository-wide Developer Mode/module/subtool version-display cleanup task.
+Canonical Dev v1.8.0 is live through Dev Auto Host v0.2.0. The host resolved exact `WITCH_DEV_MAIN` head `6b59e9a509b0cc712dd17bb1b95b8c75a4e0e3ab`, loaded immutable payload `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`, and passed 25/25 executed, 0 failed, 25 immutable, 0 fallback. Shared Shell/Core/Styles/Interactions/Utilities bytes were verified identical to the promoted Stable RC payload.
 
-Validated diagnostic runtime:
+The only remaining #37/#41 work is mechanical branch cleanup under the exact deletion handoffs in `docs/`. Issue #32 remains paused; do not resume it until explicitly requested. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
+
+## Validated diagnostic runtime
+
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
 - High Res Diagnostic Capture v0.1.3 / `0.1.3-addressable-comparison-sections`;
 - High Res Diagnostic Capture UI v0.1.0 under Utilities;
@@ -26,7 +29,7 @@ Validated diagnostic runtime:
 
 ## #35 final gate
 
-PASS on canonical Dev v1.5.9 / payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`:
+PASS on canonical Dev diagnostic scope:
 - loader 25/25 executed;
 - 0 failed;
 - immutable=25;
@@ -41,18 +44,16 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 
 ## Scope boundaries
 
-- #32 remains the active bug investigation.
+- #32 remains paused.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
-- Public Stable may change only for the explicitly authorized #37 release and #41 delivery maintenance; #32/#34 runtime scope remains untouched.
+- No further Stable mutation is authorized by the completed #37/#41 rollout.
 - HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
-- Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32, inspect adjacent runtime/source behavior and identify missing capture layers.
+- Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32 when that issue resumes, inspect adjacent runtime/source behavior and identify missing capture layers.
 
 ## Cleanup
 
-Issue #35 and PR #36 are closed. Temporary branch `wd/35-hr-diagnostic-capture` is disposable; deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_35_2026-09-24.md`.
-
-
-## Immediate maintenance after #37
-
-Issue #41 — update delivery hardening — is authorized next because stale mutable raw-branch delivery can undermine Dev/Stable validation. Preserve all paused #32/#34 state while doing that maintenance. Issue #42 is a later, non-bug Developer Mode version-display cleanup task.
+- #37 branch deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_37_2026-09-25.md`
+- #41 branch deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_41_2026-09-25.md`
+- #35 branch deletion handoff remains separate: `docs/BRANCH_DELETION_HANDOFF_ISSUE_35_2026-09-24.md`
+- `wd/dev-auto-host` is persistent development infrastructure and must be kept.

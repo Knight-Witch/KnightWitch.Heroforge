@@ -1,3 +1,15 @@
+## 2026-09-25 — Issues #37/#41 release closeout
+
+- Public Stable v2.2.1 is live at `50b22b3f9d8bf030f958b5372e008bca5404fa1d`, payload `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`.
+- Stable self-host resolved the current canonical head with `local-wrapper-current`, error=null; loader passed 23/23, failed=0, immutable=23, fallback=0.
+- Canonical Dev v1.8.0 / payload `b4bd42695ab5280f723290525aa0b8f0e9b83dbf` passed through Dev Auto Host v0.2.0; loader passed 25/25, failed=0, immutable=25, fallback=0.
+- Amanda visually passed the final RC Dock reset and resize-border double-click behavior; the exact RC head was promoted.
+- Removed resolved #37/#41 entries from DEV_DIVERGENCES and advanced the Stable baseline.
+- Added exact branch-deletion handoffs for #37 and #41; branch deletion remains mechanical janitorial work.
+- #32/#34 remain untouched and #32 remains paused.
+
+---
+
 ## 2026-09-25 — Issue #41 canonical Dev v1.8.0 pin
 
 - Dev launcher advanced to v1.8.0 / `1.8.0-resize-border-reset`.

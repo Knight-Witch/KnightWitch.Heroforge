@@ -1,3 +1,19 @@
+## 2026-09-25 — Issues #37/#41 final release gate
+
+### PASS / mechanical branch deletion pending
+
+- Stable v2.2.1: self-host current-head resolution PASS, runtime error=null.
+- Stable loader: 23/23 executed, 0 failed, 23 immutable, 0 fallback.
+- Dev v1.8.0: Auto Host resolved exact WITCH_DEV_MAIN head and executed in one attempt, error=null.
+- Dev loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Shared release runtime parity was verified before promotion.
+- Final human RC gesture/reset gate PASS.
+- ACTIVE_CONTEXT and DEV_DIVERGENCES closeout staged.
+- Exact #37/#41 branch deletion handoffs staged; current tool surface cannot delete refs.
+- No High Res runtime/diagnostic code changed.
+
+---
+
 ## 2026-09-25 — Issue #41 canonical Dev v1.8.0 pin
 
 ### PASS / live gesture smoke pending
