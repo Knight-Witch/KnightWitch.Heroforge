@@ -70,7 +70,7 @@
     {
       "issue": 83,
       "title": "Reusable Witch Dock notification / update-alert system",
-      "reason": "Dev is staging a generic one-time notification service plus a v2.3.0 Stable wrapper-update notice. Public Stable remains v2.2.2 until the combined #58/#83 release passes Dev and human gates.",
+      "reason": "Dev is staging a loader-isolated generic one-time notification service plus a v2.3.0 Stable wrapper-update notice. Neither module is required by Core, preserving optional-feature failure isolation. Public Stable remains v2.2.2 until the combined #58/#83 release passes Dev and human gates.",
       "paths": [
         "manifest.json",
         "features/core/Witch_Dock_Core.js",
@@ -79,7 +79,7 @@
         "features/core/Witch_Dock_Release_Notices.js"
       ],
       "acceptance": [
-        "Generic notices have stable IDs, one-time acknowledgement storage, queue/priority behavior, close/Escape handling, optional action links, and observable state.",
+        "Generic notices are loader-isolated from Core and have stable IDs, one-time acknowledgement storage, queue/priority behavior, close/Escape handling, optional action links, and observable state.",
         "Acknowledgement can occur on show, dismiss, or action; the v2.3.0 wrapper notice uses on-show acknowledgement so it never repeats after first display.",
         "Release-specific notice copy is isolated from Core in a hidden module.",
         "Stable trigger uses installed Tampermonkey wrapper evidence from KWWitchDockStableHost, not the self-hosted runtime version.",
