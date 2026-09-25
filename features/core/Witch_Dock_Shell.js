@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-shell";
-  const VERSION = "0.2.0";
-  const BUILD = "0.2.0-main-and-compact-dom";
+  const VERSION = "0.3.0";
+  const BUILD = "0.3.0-header-version";
 
   const STATE = {
     createCalls: 0,
@@ -23,7 +23,6 @@
 
     for (const name of [
       "startDockDrag",
-      "openDisclaimerModal",
       "ensureAboutModal",
       "openAboutModal",
       "toggleMinimize",
@@ -46,13 +45,7 @@
       el("div", { id: "kwWDHeader", onpointerdown: handlers.startDockDrag }, [
         el("div", { id: "kwWDTitleWrap" }, [
           el("div", { id: "kwWDTitle", text: "WITCH DOCK" }),
-          el("button", {
-            id: "kwWDDisclaimerBtn",
-            type: "button",
-            title: "Disclaimer",
-            text: "Disclaimer",
-            onclick: () => { handlers.openDisclaimerModal(); }
-          })
+          el("span", { id: "kwWDTitleVersion", text: "" })
         ]),
         el("div", { id: "kwWDControls" }, [
           el("button", {
