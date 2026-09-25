@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.2 immutable payload preparation
+
+- Static PASS for Texture Quality v0.4.0, High Res Diagnostics v0.1.2, Diagnostics UI v0.1.0, manifest JSON, and divergence JSON.
+- Confirmed v0.1.2 includes synchronous comparison start, stable-idle transition/restoration guards, semantic comparison facts, and bounded changed-path retrieval.
+- Advanced the payload manifest launcher registry to v1.5.7 / `1.5.7-issue-35-hr-diagnostics-v012`.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot comparison hardening
 
 - First real Robot comparison captured identical OFF/ON `paints` and `paintByIntent` hashes while the raw structural delta reached its 400-path cap.

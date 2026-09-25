@@ -1,3 +1,17 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.2 payload gate
+
+### PASS
+
+- All three affected/new JS modules parse.
+- Manifest/divergence JSON parse.
+- Diagnostics registry/module/cache key agree at v0.1.2 / `0.1.2-stable-restore-semantic-delta`.
+- 25 unique manifest modules; no duplicate registry/module IDs.
+- Stable-idle guard and semantic-delta APIs are present.
+- Payload launcher registry advanced to v1.5.7.
+- Pending: canonical Dev pin + live Robot rerun.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot hardening
 
 ### Confirmed first-comparison findings
