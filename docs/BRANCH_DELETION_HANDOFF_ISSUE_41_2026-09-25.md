@@ -16,8 +16,9 @@ Issue #41 — Update delivery hardening / header version visibility — is fully
 - `wd/41-resize-reset-dev-launcher` @ `29a3e02051b1c1795db7165170a1a3978b31a83e`
 - `wd/41-resize-reset-dev-payload` @ `74f46948407116dc97bc861d1bf0df6f9fc1bb0a`
 - `wd/41-smoke-handoff` @ `278153969825959b3ddcf8dbc83664abadd769b7`
+- `wd/41-release-closeout` @ `acb37dbbd4a7ef14cd8f8676d44a40ad1de4ee5d`
 
-The closeout branch `wd/41-release-closeout` will be added to this DELETE list after its exact merged PR-head SHA is known.
+The closeout branch is now fully recorded; no #41 temporary ref remains untracked.
 
 ## Reachability / preservation evidence
 

@@ -1,3 +1,10 @@
+## 2026-09-25 — #41 deletion handoff finalized
+
+- Added final temporary closeout ref `wd/41-release-closeout` @ `acb37dbbd4a7ef14cd8f8676d44a40ad1de4ee5d` to the #41 branch-deletion handoff.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-25 — Issues #37/#41 release closeout
 
 - Public Stable v2.2.1 is live at `50b22b3f9d8bf030f958b5372e008bca5404fa1d`, payload `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`.

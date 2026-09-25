@@ -1,3 +1,14 @@
+## 2026-09-25 — #41 deletion handoff finalization
+
+### PASS
+
+- Final closeout branch SHA recorded in the #41 deletion handoff.
+- #37/#41 DELETE refs are now fully enumerated.
+- Protected KEEP inventory remains unchanged.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-25 — Issues #37/#41 final release gate
 
 ### PASS / mechanical branch deletion pending
