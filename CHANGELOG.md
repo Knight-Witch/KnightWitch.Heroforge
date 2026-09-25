@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #58 Dock UI consistency candidate
+
+- Witch Dock Styles -> v0.6.0 / `0.6.0-shared-control-theme`.
+- Texture Quality Native Reconcile UI -> v0.3.0 / `0.3.0-ui-consistency`.
+- Tightened WITCH/emblem/DOCK spacing while retaining the large branded emblem.
+- Standardized tool tabs to fixed-height flex centering and compacted section/tool header vertical padding.
+- Standardized common text-button typography around 12px semibold system text and 30px control height for High Res, Utilities action buttons, and decal-gizmo mode buttons.
+- Added shared purple checkbox accent and purple hover treatment for tabs/common tool buttons.
+- Styled the main Dock scrollbar with a dark shell-matching track.
+- Aligned High Res persistence row sizing with Utilities and renamed its checkbox label from `Persistent` to `Enabled`.
+- Public Stable remains v2.2.2 pending live Dev and human visual gates.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 live gate
 
 - Dev Auto Host resolved canonical head `5ff9534dc152f68267b9db830152f9eae6480960` and executed v1.9.4 in one attempt with no error.
