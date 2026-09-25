@@ -1,3 +1,21 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.5 candidate for issue #35
+
+### PASS / pending live reload
+
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version` and runtime `DEV_VERSION` are synchronized at v1.5.5.
+- `DEV_BUILD` is `1.5.5-issue-35-hr-diagnostics`.
+- `DEV_BRANCH` remains `WITCH_DEV_MAIN`.
+- `PAYLOAD_REF` is exact immutable issue payload `25275c35ac8e54a691e2c3a4d152889700e51d79`.
+- Canonical manifest launcher registry is synchronized to v1.5.5.
+- Public Stable remains untouched.
+
+### Required live gate
+
+Reload through Dev Auto Host and require launcher v1.5.5, payload `25275c35ac8e…`, Loader complete 25/25 with zero failures / immutable=25 / fallback=0, Texture Quality v0.4.0, and High Res Diagnostics service/UI v0.1.0.
+
+---
+
 ## 2026-09-24 — Issue #24 public v2.0.3 Stable closeout
 
 ### PASS

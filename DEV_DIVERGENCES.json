@@ -19,6 +19,25 @@
         "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
         "Bootstrap/channel failure remains visible."
       ]
+    },
+    {
+      "issue": 35,
+      "status": "canonical-dev-live-validation",
+      "reason": "Canonical Dev launcher temporarily pins the unmerged issue #35 immutable payload so High Res diagnostics can be live-validated before merging the task branch.",
+      "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json",
+        "features/rendering/Texture_Quality_Native_Reconcile.js",
+        "features/rendering/Texture_Quality_Diagnostics.js",
+        "features/rendering/Texture_Quality_Diagnostics_UI.js"
+      ],
+      "acceptance": [
+        "Launcher v1.5.5 resolves the exact issue #35 payload with zero fallback.",
+        "Loader executes 25/25 modules with zero failures.",
+        "Capture Current State is observational.",
+        "Robot #32 provides the first controlled Native OFF to High Res ON differential.",
+        "Public Stable remains untouched."
+      ]
     }
   ],
   "notes": [

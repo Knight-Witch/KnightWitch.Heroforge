@@ -1,3 +1,13 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.5 for issue #35 live validation
+
+- Advanced the fixed-name Dev launcher to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
+- Pinned exact unmerged issue payload `25275c35ac8e54a691e2c3a4d152889700e51d79` so Dev Auto Host can live-validate the task branch before merge.
+- Payload contains Texture Quality v0.4.0 plus High Res Diagnostics service/UI v0.1.0 and schedules 25 modules.
+- Public Stable remains untouched; #32 remains a validation fixture rather than implementation scope.
+- Next gate: reload through Dev Auto Host and require 25/25 immutable module execution with zero failures.
+
+---
+
 ## 2026-09-24 — Issue #24 public v2.0.3 Stable smoke / Dev reconciliation
 
 - Public Stable v2.0.3 is live from immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`; live loader smoke passed 23/23 executed, 0 failed, immutable=23, fallback=0.
