@@ -28,7 +28,7 @@
 }
 #kwWDTitle{
   font-family: "KW Polymorph", system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.25px;
 }
 #kwWDTitleVersion{
@@ -430,7 +430,7 @@
 .kwWDSectionHeader.dragging .kwWDDragHandle{cursor:grabbing;opacity:0.95;}
 .kwWDSectionHeaderName{
   font-family: "KW Polymorph", system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.2px;
 }
@@ -462,7 +462,7 @@
 .kwWDToolHeader:active{ cursor: grabbing; }
 .kwWDToolTitle{
   font-family: "KW Polymorph", system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.2px;
 }
@@ -589,7 +589,7 @@
 }
 #kwWDAboutTitle{
   font-family: "KW Polymorph", system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.2px;
   font-size: 12px;
   color: rgba(255,255,255,0.92);
@@ -697,7 +697,7 @@
 }
 #kwWDDisclaimerTitle{
   font-family: "KW Polymorph", system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.2px;
   font-size: 12px;
   color: rgba(255,255,255,0.92);
