@@ -12,14 +12,24 @@
       "versionOrigin": "issue-58-version-baseline-2026-09-25"
     },
     {
+      "id": "witch-dock-notifications",
+      "title": "Witch Dock Notifications",
+      "path": "features/core/Witch_Dock_Notifications.js",
+      "kind": "core-feature",
+      "load": "bootstrap-module",
+      "version": "0.1.0",
+      "build": "0.1.0-reusable-one-time-notices",
+      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
+    },
+    {
       "id": "witch-dock-core",
       "title": "Witch Dock Core",
       "path": "features/core/Witch_Dock_Core.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "2.3.0",
-      "build": "2.3.0-branded-title-meta",
-      "versionOrigin": "issue-58-brand-title-2026-09-25"
+      "version": "2.4.0",
+      "build": "2.4.0-notification-service",
+      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
       "id": "witch-dock-assets",
@@ -37,9 +47,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.6.1",
-      "build": "0.6.1-title-version-baseline",
-      "versionOrigin": "issue-58-version-baseline-2026-09-25"
+      "version": "0.7.0",
+      "build": "0.7.0-notification-overlay",
+      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -384,6 +394,16 @@
       "version": "1.3.1",
       "versionOrigin": "issue-37-dock-size-reset-version-meta-2026-09-25",
       "build": "1.3.1-dock-size-reset-version-meta"
+    },
+    {
+      "id": "witch-dock-release-notices",
+      "title": "Witch Dock Release Notices",
+      "path": "features/core/Witch_Dock_Release_Notices.js",
+      "kind": "core-feature",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-v230-wrapper-update",
+      "versionOrigin": "issue-83-v230-wrapper-notice-2026-09-25"
     }
   ],
   "tools": [
@@ -398,6 +418,15 @@
     }
   ],
   "modules": [
+    {
+      "id": "witch-dock-release-notices",
+      "title": "Witch Dock Release Notices",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Release_Notices.js?v=0.1.0-v230-wrapper-update",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
     {
       "id": "witch-dock-developer-mode",
       "title": "Developer Mode",
