@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #41 Dev Auto Host v0.2.0
+
+### PASS / one-time installed-host smoke pending
+
+- Host metadata/runtime version synchronized at v0.2.0.
+- Host source parses after immutable branch-head resolution changes.
+- `@connect api.github.com` added only for canonical branch-ref resolution.
+- Updated test fixture requires one GitHub ref response followed by an immutable-SHA raw launcher fetch and checks the resolved SHA in host diagnostics.
+- No Witch Dock runtime module, Stable branch, or High Res file changed on this delivery-helper branch.
+
+---
+
 # Pre-Flight Check Log
 
 ## PFC-2026-09-19-030 — v0.1.1 test expectation correction

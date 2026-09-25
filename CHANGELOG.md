@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 Dev Auto Host v0.2.0 immutable-head delivery
+
+- Dev Auto Host now resolves `WITCH_DEV_MAIN` through GitHub's branch-ref API before fetching the launcher.
+- The launcher is fetched from `raw.githubusercontent.com` by the resolved immutable commit SHA rather than by mutable branch name.
+- Host diagnostics now expose the resolved head SHA and immutable launcher URL.
+- Existing three-attempt retry, metadata/grant validation, synthetic launcher `GM_info`, duplicate protection, and direct-launcher conflict rejection remain intact.
+- This is development delivery infrastructure only; public Stable and High Res runtime behavior are not changed by this branch.
+
+---
+
 # Changelog
 
 ## 2026-09-19 — Fix v0.1.1 auto-host test expectations

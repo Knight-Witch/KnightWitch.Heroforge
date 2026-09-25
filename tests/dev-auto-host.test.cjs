@@ -6,7 +6,7 @@ const hostSource = fs.readFileSync('devtools/Witch_Dock_DEV_Auto_Host.user.js', 
 const launcherSource = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
 
 assert.doesNotThrow(() => new Function(hostSource), 'auto host parses');
-assert.match(hostSource, /const HOST_VERSION = "0\.1\.1";/);
+assert.match(hostSource, /const HOST_VERSION = "0\.2\.0";/);
 assert.match(hostSource, /const TARGET_BRANCH = "WITCH_DEV_MAIN";/);
 
 const metadata = text => text.match(/^\/\/ ==UserScript==\s*\n([\s\S]*?)^\/\/ ==\/UserScript==\s*$/m)[1];
@@ -36,14 +36,30 @@ const sandbox = {
   window: unsafeWindow,
   setTimeout,
   clearTimeout,
-  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.1.1' } },
+  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.2.0' } },
   GM_addStyle() {},
   GM_setClipboard() {},
   GM_getValue() {},
   GM_setValue() {},
   GM_download() {},
   GM_xmlhttpRequest(options) {
-    setImmediate(() => options.onload({ status: 200, responseText: fixture }));
+    setImmediate(() => {
+      if (String(options.url || '').startsWith('https://api.github.com/')) {
+        options.onload({
+          status: 200,
+          responseText: JSON.stringify({
+            ref: 'refs/heads/WITCH_DEV_MAIN',
+            object: { sha: '1234567890abcdef1234567890abcdef12345678', type: 'commit' }
+          })
+        });
+        return;
+      }
+      assert.match(
+        String(options.url || ''),
+        /raw\.githubusercontent\.com\/Knight-Witch\/KnightWitch\.Heroforge\/1234567890abcdef1234567890abcdef12345678\/Witch_Dock_DEV\.user\.js/
+      );
+      options.onload({ status: 200, responseText: fixture });
+    });
   }
 };
 vm.runInNewContext(hostSource, sandbox, { filename: 'Witch_Dock_DEV_Auto_Host.user.js' });
@@ -58,6 +74,7 @@ setTimeout(() => {
   assert.equal(state.status, 'launcher-executed');
   assert.equal(state.payloadVersion, '1.5.1');
   assert.equal(state.attempts, 1);
+  assert.equal(state.resolvedHeadSha, '1234567890abcdef1234567890abcdef12345678');
   assert.equal(nodes.size, 0, 'successful load adds no error UI');
   console.log('Witch Dock Dev auto-host checks passed');
 }, 25);
