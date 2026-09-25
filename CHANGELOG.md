@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.1 immutable payload preparation
+
+- High Res Diagnostic Capture v0.1.1 syntax and manifest identity checks pass.
+- Advanced the payload manifest launcher registry to v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
+- This commit is the next immutable task-branch payload candidate; canonical Dev pin follows separately.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe polish
 
 - Live Dev startup passed on payload `25275c35ac8…`: 25/25 modules executed, 0 failed, immutable=25, fallback=0; Texture Quality v0.4.0 and both diagnostic modules registered.

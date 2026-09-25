@@ -1,3 +1,15 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.1 payload gate
+
+### PASS
+
+- Diagnostics v0.1.1 JS parse PASS.
+- Registry/module version and cache-key match `0.1.1-bridge-section-selection`.
+- Payload schedules 25 modules.
+- Payload launcher registry advanced to v1.5.6.
+- Pending: canonical Dev launcher pin and live reload.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe correction
 
 ### PASS / pending next payload
