@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 Dock UI consistency candidate
+
+### PENDING live/human gate
+
+- Scope is presentation-only except the High Res persistence label text; no Texture Quality service behavior changed.
+- Styles v0.6.0 introduces shared purple accent variables, dark body-scrollbar styling, exact tab centering, compact headers, common button typography, and checkbox accent-color.
+- Texture Quality UI v0.3.0 preserves service wiring and persistence behavior while matching Utilities row typography/layout and changing only the visible checkbox label to `Enabled`.
+- Manifest registry versions/builds are synchronized.
+- Public Stable remains v2.2.2.
+- Next: syntax/static verification, immutable Dev v1.9.5 payload/launcher staging, live Bridge regression, then Amanda visual gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 live gate
 
 ### PASS — human visual gate pending
