@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.0 payload staging
+
+- Staged canonical Dev launcher registry v1.9.0 / `1.9.0-polymorph-display-fonts`.
+- Payload contains full-source Polymorph Regular/Bold assets, Assets v0.2.0, and Styles v0.4.0.
+- Body typography remains unchanged; Public Stable remains v2.2.1.
+- Next step is immutable payload pin and live Dev font-load/visual validation.
+
+---
+
 ## 2026-09-25 — Issue #58 Polymorph display-font candidate
 
 - Recovered Amanda's full-source Polymorph Regular and Bold TTFs and verified them against Polymorph's recorded source SHA-256 identities.
