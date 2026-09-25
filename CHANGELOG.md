@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #83 reusable notification architecture candidate
+
+- Added `KWWitchDockNotifications` v0.1.0 / `0.1.0-reusable-one-time-notices` as a generic core notification service.
+- Added `Witch_Dock_Release_Notices.js` v0.1.0 / `0.1.0-v230-wrapper-update` as a hidden release-specific registration module.
+- Core -> v2.4.0 / `2.4.0-notification-service`; Styles -> v0.7.0 / `0.7.0-notification-overlay`.
+- Generic notices support stable IDs, per-notice acknowledgement, priority queueing, close/Escape handling, optional primary links, and show/dismiss/action acknowledgement timing.
+- First release notice targets Stable v2.3.0 and uses `KWWitchDockStableHost.getState().installedWrapperVersion` to distinguish an outdated installed Tampermonkey wrapper from the newer self-hosted runtime.
+- The v2.3.0 notice acknowledges on first display and links directly to the canonical public userscript for the one-time installed-wrapper refresh.
+- Dev gets a separate one-time preview notice for visual validation; Stable only triggers when installed wrapper < v2.3.0.
+- #58 typography/UI is Dev-approved and will ship in the same public release; public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 baseline live gate
 
 - Dev Auto Host resolved canonical head `05425389d24e57b054d3118eeb7c8edf40808167` and executed v1.9.6 with no error.
