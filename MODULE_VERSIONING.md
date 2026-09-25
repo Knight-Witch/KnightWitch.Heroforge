@@ -53,12 +53,12 @@ The version is carried separately. When the Dev launcher version changes, update
 
 - userscript `@version`;
 - runtime `DEV_VERSION`;
-- visible Dock title, formatted `WITCH DOCK - DEV v<version>`;
+- visible Dock header, containing the branded `WITCH DOCK` title plus unmistakable `DEV` and `v<version>` metadata (the brand and metadata may be separate visual rows);
 - `manifest.json.moduleRegistry` entry `witch-dock-dev-launcher` version/build.
 
 Do **not** put the changing version into Tampermonkey `@name`. A versioned `@name` changes the userscript identity and can cause raw install/update actions to create duplicate Dev installs instead of updating the existing one.
 
-Tampermonkey and the visible Dock must identify the same **Dev channel**, but they intentionally use different display strings: Tampermonkey shows the fixed `WITCH DOCK - DEV` identity while the Dock title shows the active version. Dev `@updateURL` and `@downloadURL` remain on `WITCH_DEV_MAIN`. A validated launcher may pin manifest/core/module loading to an immutable payload commit SHA for compatibility safety; that payload's fallback URLs must resolve to `WITCH_DEV_MAIN`, never Stable or a retired task branch.
+Tampermonkey and the visible Dock must identify the same **Dev channel**, but they intentionally use different display strings: Tampermonkey shows the fixed `WITCH DOCK - DEV` identity while the Dock header shows the active Dev/version metadata. Dev `@updateURL` and `@downloadURL` remain on `WITCH_DEV_MAIN`. A validated launcher may pin manifest/core/module loading to an immutable payload commit SHA for compatibility safety; that payload's fallback URLs must resolve to `WITCH_DEV_MAIN`, never Stable or a retired task branch.
 
 Do not bump the Stable core merely because the Dev channel wrapper changes. `witch-dock-core` tracks the shared core source; `witch-dock-dev-launcher` tracks the Dev-specific installed/bootstrap surface.
 

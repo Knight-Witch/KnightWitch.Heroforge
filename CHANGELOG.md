@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 typography refinement candidate
+
+- Witch Dock Core -> v2.3.0 / `2.3.0-branded-title-meta`.
+- Witch Dock Shell -> v0.5.0 / `0.5.0-centered-brand-title-emblem`.
+- Witch Dock Styles -> v0.5.0 / `0.5.0-brand-title-readable-controls`.
+- Main brand title now renders as centered, larger, letter-spaced `WITCH [emblem] DOCK` using Amanda's bundled Polymorph display face.
+- Dev/version metadata moves to a small muted line under the brand title; the existing header height is preserved.
+- Polymorph is removed from tabs/section/tool/modal headings. Those surfaces use the existing system stack at a lighter semibold weight, larger header sizing, modest letter spacing, and uniform uppercase.
+- Text buttons and prominent labels receive system-font/lighter-weight overrides so existing tool-local 700/800 weights do not reproduce the heavy legacy look.
+- Public Stable remains v2.2.2 pending live Dev and human visual gates.
+
+---
+
 ## 2026-09-25 — Issue #32 public v2.2.2 closeout
 
 - Public Stable v2.2.2 / `2.2.2-issue-32-body-aaid-binding` is live at `d2d2298e1949da71d64bb11e880f5af6868809f8`, payload `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`.

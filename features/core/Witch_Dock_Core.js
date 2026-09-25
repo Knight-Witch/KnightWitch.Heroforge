@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-core";
-  const VERSION = "2.2.0";
-  const BUILD = "2.2.0-resize-border-reset";
+  const VERSION = "2.3.0";
+  const BUILD = "2.3.0-branded-title-meta";
   const DEFAULTS = Object.freeze({
     x: null, y: null, width: 380, height: 520,
     minimized: false, closed: false,
@@ -171,6 +171,7 @@
 
       Object.assign(state, shell.createRoot({
         el: application.el,
+        titleEmblemUrl: assets.compactEmblemUrl,
         handlers: {
           startDockDrag: interactions.startDockDrag,
           ensureAboutModal: modals.ensureAbout,
@@ -187,17 +188,17 @@
 
       const title = state.root && state.root.querySelector("#kwWDTitle");
       const titleVersion = state.root && state.root.querySelector("#kwWDTitleVersion");
-      if (title && opts.displayName) {
-        const displayName = String(opts.displayName);
-        title.textContent = displayName;
+      if (title) {
         if (opts.channel) title.setAttribute("data-kw-channel", String(opts.channel));
         if (opts.sourceLabel) title.title = String(opts.sourceLabel);
+      }
+      if (titleVersion) {
         const metaVersion = scriptMeta && scriptMeta.version ? String(scriptMeta.version) : "";
-        const displayAlreadyHasVersion = !!(metaVersion && displayName.includes(metaVersion));
-        if (titleVersion) {
-          titleVersion.textContent = metaVersion && !displayAlreadyHasVersion ? `v${metaVersion}` : "";
-          titleVersion.hidden = !titleVersion.textContent;
-        }
+        const channelLabel = String(opts.channel || "").toLowerCase() === "dev" ? "DEV" : "";
+        titleVersion.textContent = [channelLabel, metaVersion ? `v${metaVersion}` : ""]
+          .filter(Boolean)
+          .join(" · ");
+        titleVersion.hidden = !titleVersion.textContent;
       }
 
       boneHud.init(state);
