@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #41 live-smoke handoff
+
+### PASS / human + Bridge smoke next
+
+- Canonical Dev and public RC static/version contracts are complete.
+- Public RC changed only launcher, shared Shell/Modals/Core/Styles, manifest, and release logs; no High Res files.
+- Stable self-host refuses a compatible older branch launcher, falls back locally when pre-v2.2.0 canonical metadata lacks the new host contract, and dispatches a compatible newer launcher by immutable SHA.
+- Next gate is the installed Dev Auto Host v0.2.0 + Dev v1.7.0 smoke, then the public v2.2.0 RC smoke before promotion.
+
+---
+
 ## 2026-09-25 — Issue #41 canonical Dev v1.7.0 pin
 
 ### PASS / live smoke pending
