@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #58 Dev v1.9.2 payload staging
+
+- Dev launcher registry staged at v1.9.2 / `1.9.2-title-typography-refine`.
+- Payload contains Core v2.3.0, Shell v0.5.0, Styles v0.5.0, and existing Assets v0.2.0 with bundled Polymorph Regular/Bold.
+- No public Stable change.
+
+---
+
 ## 2026-09-25 — Issue #58 typography refinement candidate
 
 - Witch Dock Core -> v2.3.0 / `2.3.0-branded-title-meta`.
