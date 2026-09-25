@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #37 public v2.1.0 RC launcher
+
+### PASS / public smoke pending
+
+- Public launcher JavaScript parse passed.
+- @version / runtime VERSION / SCRIPT_NAME synchronized at v2.1.0.
+- BUILD: `2.1.0-dock-size-reset`.
+- PAYLOAD_REF: `002e0e62a21798091c96c3eb52668c8ae0844629`.
+- Expected Interactions contract synchronized to v0.6.0.
+- Payload manifest carries Utilities v1.3.1 and Interactions v0.6.0.
+- No High Res runtime/diagnostic files changed.
+
+---
+
 ## 2026-09-25 — Issue #37 public RC payload staging
 
 ### PASS / launcher pin pending
