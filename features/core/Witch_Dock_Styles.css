@@ -29,9 +29,10 @@
 }
 #kwWDTitleWrap{
   position: absolute;
-  left: 50%;
+  left: 10px;
+  right: 108px;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
