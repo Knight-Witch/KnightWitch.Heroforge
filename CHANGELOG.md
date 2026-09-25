@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #41 canonical Dev v1.8.0 pin
+
+- Dev launcher advanced to v1.8.0 / `1.8.0-resize-border-reset`.
+- Immutable payload pinned to `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`.
+- Launcher expectations now require Shell v0.4.0 and Core v2.2.0.
+- Final live gate will verify normal drag-resize remains intact and both resize surfaces double-click through the existing reset behavior.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev v1.8.0 payload staging
 
 - Staged canonical Dev launcher registry v1.8.0 / `1.8.0-resize-border-reset`.
