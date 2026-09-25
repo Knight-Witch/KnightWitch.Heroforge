@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.9.5 / `1.9.5-ui-standardization`.
+- Styles v0.6.0 and Texture Quality UI v0.3.0 are present in the same payload.
+- Core/Shell/Assets remain unchanged from the prior typography candidate.
+- Public Stable remains v2.2.2.
+- Next: pin the immutable payload from Dev launcher v1.9.5 and reload through Dev Auto Host.
+
+---
+
 ## 2026-09-25 — Issue #58 Dock UI consistency candidate
 
 ### PENDING live/human gate
