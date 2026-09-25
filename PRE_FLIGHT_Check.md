@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 Dev v1.9.2 launcher
+
+### PASS — source pin / live gate pending
+
+- Userscript @version, DEV_VERSION, manifest launcher registry, and DEV_BUILD are synchronized at v1.9.2 / `1.9.2-title-typography-refine`.
+- Launcher pins immutable payload `766641726eb785f51c8c6af342341b089cd46868`.
+- Expected Shell/Core API versions match the payload.
+- Dev update/download URLs remain canonical `WITCH_DEV_MAIN`; Tampermonkey @name remains fixed `WITCH DOCK - DEV`.
+- Public Stable remains v2.2.2.
+- Next: reload through Dev Auto Host and verify loader, bundled fonts, title DOM, metadata, and unaffected resize/reset behavior.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.2 payload staging
 
 ### PASS — payload composition / live gate pending

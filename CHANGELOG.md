@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.2 launcher
+
+- Dev launcher -> v1.9.2 / `1.9.2-title-typography-refine`.
+- Pins immutable payload `766641726eb785f51c8c6af342341b089cd46868`.
+- Expected shared APIs updated to Shell v0.5.0 / `0.5.0-centered-brand-title-emblem` and Core v2.3.0 / `2.3.0-branded-title-meta`.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.2 payload staging
 
 - Dev launcher registry staged at v1.9.2 / `1.9.2-title-typography-refine`.
