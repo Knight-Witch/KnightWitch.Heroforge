@@ -12,7 +12,7 @@
 
 ## Current route
 
-Issue #83 — Reusable Witch Dock notification / update-alert system — is the active Dev task. The generic notification service is staged as a new core component (`KWWitchDockNotifications` v0.1.0) with per-notice IDs, one-time page-storage acknowledgement, priority/queueing, optional primary actions, close/Escape handling, and a reusable modal surface. Release-specific copy is isolated in hidden module `Witch_Dock_Release_Notices.js` v0.1.0 rather than hard-coded into Core.
+Issue #83 — Reusable Witch Dock notification / update-alert system — is the active Dev task. The generic notification service is staged as an isolated hidden module (`KWWitchDockNotifications` v0.1.0) with per-notice IDs, one-time page-storage acknowledgement, priority/queueing, optional primary actions, close/Escape handling, and a reusable modal surface. Release-specific copy is isolated in hidden module `Witch_Dock_Release_Notices.js` v0.1.0 rather than hard-coded into Core.
 
 The first notice targets the upcoming combined public v2.3.0 release. Stable logic will show it only when `KWWitchDockStableHost.getState().installedWrapperVersion` proves the installed Tampermonkey wrapper is older than v2.3.0. It acknowledges on first successful display, links `Update Witch Dock` to the canonical public userscript URL, and tells the user this is a one-time wrapper refresh before normal automatic/runtime updates resume. Dev registers a separate one-time preview notice for visual validation.
 
