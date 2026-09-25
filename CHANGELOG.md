@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #58 Dev v1.9.3 live gate
+
+- Dev Auto Host resolved canonical head `024602202fc5a2bc77393529a57b30047ab3a54a` and executed v1.9.3 in one attempt with no error.
+- Loader passed 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Bundled Polymorph Bold loaded from immutable payload `47208351d47baec3cc0fa08d6446b37e1b2261c4`.
+- Header geometry confirms the 20px emblem, inline muted `DEV · v1.9.3`, vertically centered title row, and a 14px gap before the right-side window controls.
+- Public Stable remains v2.2.2; human visual approval remains pending.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.3 launcher
 
 - Dev launcher -> v1.9.3 / `1.9.3-title-alignment-fix`.
