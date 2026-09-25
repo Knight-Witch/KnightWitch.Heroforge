@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV AUTO HOST
 // @namespace    KnightWitch
-// @version      0.1.1
+// @version      0.2.0
 // @description  Loads the current Witch Dock Dev launcher on every HeroForge page load.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -17,16 +17,19 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
 // @connect      raw.githubusercontent.com
+// @connect      api.github.com
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  const HOST_VERSION = "0.1.1";
+  const HOST_VERSION = "0.2.0";
   const TARGET_NAME = "WITCH DOCK - DEV";
   const TARGET_NAMESPACE = "KnightWitch";
   const TARGET_BRANCH = "WITCH_DEV_MAIN";
   const TARGET_URL = `https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/${TARGET_BRANCH}/Witch_Dock_DEV.user.js`;
+  const TARGET_REF_URL = `https://api.github.com/repos/Knight-Witch/KnightWitch.Heroforge/git/ref/heads/${TARGET_BRANCH}`;
+  const TARGET_RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const MAX_SOURCE_CHARS = 160000;
   const REQUIRED_GRANTS = Object.freeze([
     "unsafeWindow",
@@ -47,6 +50,9 @@
     hostVersion: HOST_VERSION,
     targetBranch: TARGET_BRANCH,
     targetUrl: TARGET_URL,
+    targetRefUrl: TARGET_REF_URL,
+    resolvedHeadSha: null,
+    resolvedTargetUrl: null,
     payloadVersion: null,
     status: "starting",
     attempts: 0,
@@ -128,10 +134,50 @@
     });
   }
 
-  function requestLauncher(attempt) {
+  function resolveBranchHead(attempt) {
     state.attempts = attempt;
+    state.status = "resolving-branch-head";
+    const url = `${TARGET_REF_URL}?kwDevAutoHost=${encodeURIComponent(HOST_VERSION)}-${Date.now()}-${attempt}`;
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest({
+        method: "GET",
+        url,
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "Cache-Control": "no-cache",
+          "X-GitHub-Api-Version": "2022-11-28"
+        },
+        responseType: "text",
+        timeout: 20000,
+        anonymous: true,
+        onload: response => {
+          if (response.status < 200 || response.status >= 300) {
+            reject(new Error(`Dev branch-head resolve failed: HTTP ${response.status}`));
+            return;
+          }
+          try {
+            const payload = JSON.parse(String(response.responseText || ""));
+            const sha = payload && payload.object && typeof payload.object.sha === "string"
+              ? payload.object.sha.trim()
+              : "";
+            if (!/^[0-9a-f]{40}$/i.test(sha)) throw new Error("GitHub ref response did not contain a commit SHA");
+            resolve(sha.toLowerCase());
+          } catch (error) {
+            reject(new Error(`Dev branch-head resolve failed: ${error && error.message ? error.message : error}`));
+          }
+        },
+        onerror: () => reject(new Error("Dev branch-head resolve failed: network error")),
+        ontimeout: () => reject(new Error("Dev branch-head resolve failed: timeout"))
+      });
+    });
+  }
+
+  function requestLauncher(attempt, headSha) {
     state.status = "fetching-launcher";
-    const url = `${TARGET_URL}?kwDevAutoHost=${encodeURIComponent(HOST_VERSION)}-${Date.now()}-${attempt}`;
+    const immutableUrl = `${TARGET_RAW_ROOT}/${headSha}/Witch_Dock_DEV.user.js`;
+    state.resolvedHeadSha = headSha;
+    state.resolvedTargetUrl = immutableUrl;
+    const url = `${immutableUrl}?kwDevAutoHost=${encodeURIComponent(HOST_VERSION)}-${Date.now()}-${attempt}`;
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
         method: "GET",
@@ -156,8 +202,11 @@
   async function fetchWithRetry() {
     let lastError = null;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
-      try { return await requestLauncher(attempt); }
-      catch (error) {
+      try {
+        const headSha = await resolveBranchHead(attempt);
+        const source = await requestLauncher(attempt, headSha);
+        return { source, headSha };
+      } catch (error) {
         lastError = error;
         if (attempt < 3) await new Promise(resolve => setTimeout(resolve, attempt * 300));
       }
@@ -195,7 +244,7 @@
       "GM_setValue",
       "GM_xmlhttpRequest",
       "GM_download",
-      `"use strict";\n${source}\n//# sourceURL=${TARGET_URL}?executedBy=dev-auto-host&v=${encodeURIComponent(meta.version)}`
+      `"use strict";\n${source}\n//# sourceURL=${state.resolvedTargetUrl || TARGET_URL}?executedBy=dev-auto-host&v=${encodeURIComponent(meta.version)}`
     );
     run(
       UW,
@@ -212,7 +261,8 @@
   }
 
   async function boot() {
-    const source = await fetchWithRetry();
+    const fetched = await fetchWithRetry();
+    const source = fetched.source;
     const meta = parseMetadata(source);
     state.fetchedAt = new Date().toISOString();
     executeLauncher(source, meta);
