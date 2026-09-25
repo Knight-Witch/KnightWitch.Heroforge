@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.5.2",
-      "build": "0.5.2-compact-left-brand-header",
-      "versionOrigin": "issue-58-header-compact-left-2026-09-25"
+      "version": "0.6.0",
+      "build": "0.6.0-shared-control-theme",
+      "versionOrigin": "issue-58-ui-standardization-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -342,9 +342,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.2.0",
-      "build": "0.2.0-dev-persistence-advanced-controls",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
+      "version": "0.3.0",
+      "build": "0.3.0-ui-consistency",
+      "versionOrigin": "issue-58-ui-standardization-2026-09-25"
     },
     {
       "id": "texture-quality-diagnostics-ui",
