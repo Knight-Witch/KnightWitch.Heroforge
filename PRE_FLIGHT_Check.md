@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #41 public RC v2.2.1 final pin
+
+### PASS / live smoke pending
+
+- Launcher JavaScript parses.
+- @name / @version / runtime VERSION / SCRIPT_NAME are synchronized at v2.2.1.
+- BUILD is `2.2.1-self-refreshing-delivery-resize-reset`.
+- PAYLOAD_REF is immutable `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`.
+- Expected Shell/Core contracts match the final RC payload.
+- Self-refresh, downgrade refusal, header version, Disclaimer-in-About, and existing Reset Size behavior remain intact.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC v2.2.1 payload metadata
 
 ### PASS / launcher pin pending

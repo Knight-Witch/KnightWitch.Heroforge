@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #41 public RC v2.2.1 final pin
+
+- Public RC launcher advanced to v2.2.1 / `2.2.1-self-refreshing-delivery-resize-reset`.
+- Immutable payload pinned to `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`.
+- Launcher expectations now require Shell v0.4.0 and Core v2.2.0.
+- This supersedes the earlier v2.2.0 RC test wrapper before public promotion.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC v2.2.1 payload metadata
 
 - Final RC version advances from v2.2.0 to v2.2.1 so Tampermonkey can distinguish the refreshed candidate after the resize-border reset addition.

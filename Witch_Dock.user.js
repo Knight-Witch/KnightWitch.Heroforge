@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v2.2.0
+// @name         Witch Dock v2.2.1
 // @namespace    KnightWitch
-// @version      2.2.0
+// @version      2.2.1
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -24,12 +24,12 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.2.0";
-  const BUILD = "2.2.0-self-refreshing-delivery-header";
-  const SCRIPT_NAME = "Witch Dock v2.2.0";
+  const VERSION = "2.2.1";
+  const BUILD = "2.2.1-self-refreshing-delivery-resize-reset";
+  const SCRIPT_NAME = "Witch Dock v2.2.1";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "2601c26a474ed41a41e2fc930dd1d9bf5d7cbfe9";
+  const PAYLOAD_REF = "d2be75fbab7a76a9833debe5145d7dd9e8e8b831";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
@@ -353,12 +353,12 @@
     KWWitchDockBoneHUD: ["0.1.0", "0.1.0-extracted-bone-hud"],
     KWWitchDockPreferences: ["0.3.0", "0.3.0-tool-enablement-store"],
     KWWitchDockRegistry: ["0.1.0", "0.1.0-tab-tool-state-containers"],
-    KWWitchDockShell: ["0.3.0", "0.3.0-header-version"],
+    KWWitchDockShell: ["0.4.0", "0.4.0-resize-border-reset"],
     KWWitchDockInteractions: ["0.6.0", "0.6.0-dock-size-reset"],
     KWWitchDockHistory: ["0.1.0", "0.1.0-undo-redo-owner"],
     KWWitchDockApplication: ["0.1.0", "0.1.0-shell-registry-orchestration"],
     KWWitchDockAssets: ["0.1.0", "0.1.0-known-good-compact-emblem"],
-    KWWitchDockCore: ["2.1.0", "2.1.0-title-version-render"],
+    KWWitchDockCore: ["2.2.0", "2.2.0-resize-border-reset"],
     KWModuleLoader: ["0.2.0", "0.2.0-immutable-payload-root"]
   });
 
