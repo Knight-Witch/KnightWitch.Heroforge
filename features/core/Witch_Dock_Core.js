@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-core";
-  const VERSION = "2.0.0";
-  const BUILD = "2.0.0-modular-orchestrator";
+  const VERSION = "2.1.0";
+  const BUILD = "2.1.0-title-version-render";
   const DEFAULTS = Object.freeze({
     x: null, y: null, width: 380, height: 520,
     minimized: false, closed: false,
@@ -173,7 +173,6 @@
         el: application.el,
         handlers: {
           startDockDrag: interactions.startDockDrag,
-          openDisclaimerModal: modals.openDisclaimer,
           ensureAboutModal: modals.ensureAbout,
           openAboutModal: modals.openAbout,
           toggleMinimize: interactions.toggleMinimize,
@@ -186,10 +185,18 @@
       }));
 
       const title = state.root && state.root.querySelector("#kwWDTitle");
+      const titleVersion = state.root && state.root.querySelector("#kwWDTitleVersion");
       if (title && opts.displayName) {
-        title.textContent = String(opts.displayName);
+        const displayName = String(opts.displayName);
+        title.textContent = displayName;
         if (opts.channel) title.setAttribute("data-kw-channel", String(opts.channel));
         if (opts.sourceLabel) title.title = String(opts.sourceLabel);
+        const metaVersion = scriptMeta && scriptMeta.version ? String(scriptMeta.version) : "";
+        const displayAlreadyHasVersion = !!(metaVersion && displayName.includes(metaVersion));
+        if (titleVersion) {
+          titleVersion.textContent = metaVersion && !displayAlreadyHasVersion ? `v${metaVersion}` : "";
+          titleVersion.hidden = !titleVersion.textContent;
+        }
       }
 
       boneHud.init(state);
