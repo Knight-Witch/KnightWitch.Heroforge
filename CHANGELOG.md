@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe polish
+
+- Live Dev startup passed on payload `25275c35ac8…`: 25/25 modules executed, 0 failed, immutable=25, fallback=0; Texture Quality v0.4.0 and both diagnostic modules registered.
+- First Bridge capture proved the current-state path itself did not alter Texture Quality ON/OFF/busy/persistence state.
+- Advanced High Res Diagnostic Capture to v0.1.1 so synchronous Current State capture returns a direct Bridge result, post-comparison sectional reads prefer the newest comparison snapshot, and environment is indexed in the manifest.
+- Robot model data loaded with expected IDs 1961/1962/21906, but HeroForge's display remained in native update with no `display.modded`; no HR toggle was attempted while the renderer was unstable.
+
+---
+
 ## 2026-09-24 — Issue #35 immutable Dev payload preparation
 
 - Static PASS on Texture Quality v0.4.0, High Res Diagnostics v0.1.0, and Diagnostics UI v0.1.0; manifest/divergence JSON parse and module ID/version/cache-key consistency checks also pass.

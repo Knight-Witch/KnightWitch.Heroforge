@@ -1,3 +1,16 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe correction
+
+### PASS / pending next payload
+
+- Prior payload startup: 25/25 executed, 0 failed, immutable=25, fallback=0.
+- Texture Quality remained OFF/idle before and after Current State capture.
+- Corrected Current State Bridge return shape from Promise to direct result.
+- Corrected latest sectional retrieval after comparison and added environment to the section manifest.
+- Robot IDs are present in model data, but renderer readiness is still false; comparison remains intentionally unrun.
+- Pending: syntax/manifest re-check, repin payload, then recapture once Robot renderer is ready.
+
+---
+
 ## 2026-09-24 — Issue #35 immutable payload static gate
 
 ### PASS

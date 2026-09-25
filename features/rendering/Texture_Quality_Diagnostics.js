@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - High Res Diagnostic Capture
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.1.1
 // @description  Structured read-only diagnostics and controlled OFF-to-ON comparison for Texture Quality.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityDiagnostics';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-hr-capture-v1';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-bridge-section-selection';
   const FORMAT = 'witch-dock.hr-diagnostic';
   const SCHEMA_VERSION = 1;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
@@ -25,7 +25,7 @@
   const EVENT_LIMIT = 120;
   const DIFF_LIMIT = 400;
   const SECTION_NAMES = [
-    'witchDock', 'highRes', 'scene', 'figures', 'paintState',
+    'environment', 'witchDock', 'highRes', 'scene', 'figures', 'paintState',
     'atlas', 'materials', 'colorBake', 'resources',
     'verification', 'warnings', 'events', 'coverage'
   ];
@@ -885,7 +885,7 @@
     }
   }
 
-  async function captureCurrent() {
+  function captureCurrent() {
     if (operationBusy) return { ok: false, error: 'Diagnostic capture is already running.' };
     operationBusy = true;
     lastError = null;
@@ -1044,6 +1044,9 @@
   }
 
   function latestCaptureForSection() {
+    if (lastExportable && lastExportable.kind === 'comparison' && lastComparison && lastComparison.snapshots) {
+      return lastComparison.snapshots.highResOn || lastComparison.snapshots.nativeOff || lastComparison.snapshots.original || null;
+    }
     if (lastCapture) return lastCapture;
     if (lastComparison && lastComparison.snapshots) {
       return lastComparison.snapshots.highResOn || lastComparison.snapshots.nativeOff || lastComparison.snapshots.original || null;

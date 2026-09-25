@@ -312,9 +312,9 @@
       "path": "features/rendering/Texture_Quality_Diagnostics.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-hr-capture-v1",
-      "versionOrigin": "issue-35-hr-diagnostic-capture-2026-09-24"
+      "version": "0.1.1",
+      "build": "0.1.1-bridge-section-selection",
+      "versionOrigin": "issue-35-live-capture-polish-2026-09-24"
     },
     {
       "id": "texture-quality-same-figure-drift-guard",
@@ -547,7 +547,7 @@
       "id": "texture-quality-diagnostics",
       "title": "High Res Diagnostic Capture Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Diagnostics.js?v=0.1.0-hr-capture-v1",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Diagnostics.js?v=0.1.1-bridge-section-selection",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
