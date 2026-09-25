@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #41 canonical Dev v1.7.0 pin
+
+### PASS / live smoke pending
+
+- Launcher JavaScript parse passed.
+- @version / DEV_VERSION synchronized at v1.7.0.
+- Payload ref is canonical immutable commit `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
+- Expected Modals/Shell/Core contracts match the staged payload.
+- No High Res runtime or diagnostic files changed.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev v1.7.0 payload staging
 
 ### PASS / launcher pin pending
