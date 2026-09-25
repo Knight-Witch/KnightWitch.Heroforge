@@ -43,10 +43,12 @@
     {
       "issue": 58,
       "status": "dev-candidate",
-      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold display fonts for header and bold-label typography. Public Stable is v2.2.2; the Polymorph font candidate remains Dev-only until the live font-load and human visual gates pass.",
+      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold fonts for the main branded title only. The centered title is larger and letter-spaced with the compact emblem between WITCH and DOCK; Dev/version metadata is a smaller muted line. Other headers, labels, and buttons use the readable system stack at lighter weights. Public Stable remains v2.2.2 until the live and human visual gates pass.",
       "paths": [
         "manifest.json",
         "features/core/Witch_Dock_Assets.js",
+        "features/core/Witch_Dock_Core.js",
+        "features/core/Witch_Dock_Shell.js",
         "features/core/Witch_Dock_Styles.css",
         "features/core/assets/fonts/Polymorph-Regular.ttf",
         "features/core/assets/fonts/Polymorph-Bold.ttf"
@@ -54,10 +56,13 @@
       "acceptance": [
         "Full-source Polymorph Regular and Bold assets match the provenance hashes recorded by Polymorph.",
         "Both faces are bundled from the immutable Witch Dock payload with no Google Fonts or other third-party runtime dependency.",
-        "Bold applies only to Dock display/header surfaces while ordinary body text remains on the existing system-font stack.",
-        "Font loading succeeds in live Dev with no loader/module regression.",
-        "Amanda visually approves the typography before any Stable promotion.",
-        "High Res issues #32/#34 remain untouched."
+        "Polymorph is used only for the main WITCH [emblem] DOCK brand title; body copy remains on the existing system-font stack.",
+        "The main title is centered, larger, visibly letter-spaced, and uses the existing compact emblem between WITCH and DOCK without increasing the title-bar height.",
+        "Dev/version metadata is separate, smaller, and lower-contrast; Stable will show only its version metadata when promoted.",
+        "Tabs and section/tool/modal headings use the readable system stack, lighter semibold weight, uniform uppercase, and modest letter spacing.",
+        "Text buttons and prominent labels use the readable system stack at lighter weights instead of the prior heavy bold treatment.",
+        "Font loading and the revised title DOM succeed in live Dev with no loader/module regression.",
+        "Amanda visually approves the typography before any Stable promotion."
       ]
     }
   ],
