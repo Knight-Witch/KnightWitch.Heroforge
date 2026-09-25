@@ -22,7 +22,7 @@
     },
     {
       "issue": 35,
-      "status": "task-branch-candidate",
+      "status": "immutable-payload-candidate",
       "reason": "Dev-only High Res diagnostic capture provider plus a backward-compatible read-only Texture Quality diagnostic-state seam. #32 Robot is the first validation fixture; public Stable remains untouched.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",

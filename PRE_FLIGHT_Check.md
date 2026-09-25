@@ -1,3 +1,17 @@
+## 2026-09-24 — Issue #35 immutable payload static gate
+
+### PASS
+
+- JS parse: Texture Quality Native Reconcile v0.4.0, High Res Diagnostic Capture v0.1.0, High Res Diagnostic Capture UI v0.1.0.
+- JSON parse: `manifest.json`, `DEV_DIVERGENCES.json`.
+- Registry/module IDs are unique; payload manifest schedules 25 modules.
+- Version/build/cache-key identities are consistent for all three affected/new modules.
+- Diagnostics UI has no Booth dependency and registers under Utilities.
+- Payload launcher registry advanced to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
+- Pending: canonical Dev launcher pin + live Auto Host gate.
+
+---
+
 ## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
 
 ### Candidate scope

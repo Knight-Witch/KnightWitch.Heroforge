@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 immutable Dev payload preparation
+
+- Static PASS on Texture Quality v0.4.0, High Res Diagnostics v0.1.0, and Diagnostics UI v0.1.0; manifest/divergence JSON parse and module ID/version/cache-key consistency checks also pass.
+- Advanced only the payload manifest's Dev launcher registry identity to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
+- Exact immutable payload SHA from this commit is intended for the next canonical Dev launcher pin; task-branch runtime code remains unmerged pending live validation.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
 
 - Added Dev-only High Res Diagnostic Capture service/UI v0.1.0 with structured schema v1, sectional manifest, figure/part inventory, paint signatures, atlas/material/color-bake/resource state, coverage reporting, local JSON export, and controlled Native OFF → High Res ON comparison.
