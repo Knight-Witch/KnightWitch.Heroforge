@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 payload staging
+
+- Dev launcher registry staged at v1.9.4 / `1.9.4-compact-left-brand-header`.
+- Payload contains Styles v0.5.2 with the compact left-aligned brand/header refinements on top of Core v2.3.0, Shell v0.5.1, and Assets v0.2.0.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 compact left header refinement
 
 - Witch Dock Styles -> v0.5.2 / `0.5.2-compact-left-brand-header`.
