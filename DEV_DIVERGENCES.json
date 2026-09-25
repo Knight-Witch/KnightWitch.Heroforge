@@ -59,8 +59,8 @@
     },
     {
       "issue": 41,
-      "status": "dev-maintenance-candidate",
-      "reason": "Update delivery hardening is active because Dev Auto Host received stale branch bytes after a canonical launcher update and public Stable remained installed at v2.0.3 after v2.1.0 publication. Shared header/version observability changes are staged with this maintenance.",
+      "status": "ready-for-live-smoke",
+      "reason": "Dev v1.7.0 and Dev Auto Host v0.2.0 are prepared; public RC PR #51 is v2.2.0 with self-refreshing Stable delivery and header version observability. Static remote/local/fallback/downgrade paths passed; live Dev and RC smoke remain.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
