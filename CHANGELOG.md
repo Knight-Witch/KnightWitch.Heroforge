@@ -1,3 +1,17 @@
+## 2026-09-24 — Issue #35 High Res Diagnostic Capture v1 complete
+
+- Integrated High Res Diagnostic Capture v0.1.3 and its Utilities UI into canonical Dev.
+- Texture Quality advanced to v0.4.0 only for the additive read-only diagnostic-state seam; rendering/reconcile behavior is unchanged by #35.
+- Final integrated Dev launcher is v1.5.9, pinned to immutable payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- Final smoke PASS: loader 25/25, 0 failed, immutable=25, fallback=0; Diagnostics v0.1.3 and Utilities registration present.
+- Standard Current State capture passed non-mutation verification.
+- Controlled Native OFF → High Res ON comparison passed on #32 Robot fixture and restored the original OFF state.
+- Added addressable comparison-section retrieval so Bridge/GPT can fetch targeted OFF/ON evidence without serializing an oversized full snapshot.
+- #32 remains a separate active bug; Robot observations made during #35 validation are not a completed root-cause diagnosis.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.9 for integrated High Res diagnostics
 
 - Repinned Dev Auto Host to canonical-main payload `904dd039d5e05511ab9d3737622991fd9970c5bb` containing the validated #35 runtime integration.
