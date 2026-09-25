@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #58 Dev v1.9.3 payload staging
+
+- Dev launcher registry staged at v1.9.3 / `1.9.3-title-alignment-fix`.
+- Payload contains Shell v0.5.1 and Styles v0.5.1 on top of Core v2.3.0 / Assets v0.2.0.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 title/alignment refinement
 
 - Witch Dock Shell -> v0.5.1 / `0.5.1-inline-version-title-alignment`.
