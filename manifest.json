@@ -97,9 +97,9 @@
       "path": "features/core/Witch_Dock_Interactions.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.5.0",
-      "build": "0.5.0-dock-hotkey",
-      "versionOrigin": "issue-10-stage-d-dock-hotkey-2026-09-19"
+      "version": "0.6.0",
+      "build": "0.6.0-dock-size-reset",
+      "versionOrigin": "issue-37-dock-size-reset-2026-09-25"
     },
     {
       "id": "witch-dock-history",
@@ -361,9 +361,9 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.2",
-      "versionOrigin": "issue-10-stage-d-tool-enablement-2026-09-17",
-      "build": "1.2.2-tool-enablement-preferences"
+      "version": "1.3.1",
+      "versionOrigin": "issue-37-dock-size-reset-version-meta-2026-09-25",
+      "build": "1.3.1-dock-size-reset-version-meta"
     }
   ],
   "tools": [
