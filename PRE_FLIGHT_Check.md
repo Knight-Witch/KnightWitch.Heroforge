@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.10.0 / `1.10.0-reusable-notifications`.
+- Notification service and release notice are the first two hidden loader modules so the service exists before release-specific registration.
+- Core remains v2.3.0 and does not depend on the optional notification modules.
+- #58 typography/UI changes remain included in the same payload.
+- Public Stable remains v2.2.2.
+- Next: pin this immutable payload from Dev launcher v1.10.0 and reload through Dev Auto Host.
+
+---
+
 ## 2026-09-25 — Issue #83 reusable notification architecture candidate
 
 ### PENDING live/human gate
