@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 typography refinement candidate
+
+### PENDING live/human gate
+
+- Scope limited to Witch Dock title/header typography and shared control typography; no High Res runtime files changed.
+- Core/Shell/Styles versions bumped consistently in the manifest.
+- Existing bundled Polymorph Regular/Bold assets are reused; no new external font dependency.
+- Existing compact emblem asset is reused in the title; compact-mode behavior itself is unchanged.
+- Body font stack remains unchanged.
+- Public Stable remains v2.2.2 until Amanda visually approves the Dev result.
+
+---
+
 ## 2026-09-25 — Issue #32 public v2.2.2 closeout
 
 ### PASS / mechanical branch deletion pending
