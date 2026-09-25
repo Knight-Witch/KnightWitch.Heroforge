@@ -1,3 +1,19 @@
+## 2026-09-25 — Issue #41 public v2.2.0 self-refreshing RC
+
+### PASS / live smoke pending
+
+- Public launcher JavaScript parses with async self-refresh wrapper.
+- @version / runtime VERSION / SCRIPT_NAME synchronized at v2.2.0; BUILD is `2.2.0-self-refreshing-delivery-header`.
+- Added only `GM_info` and `api.github.com` permissions required for resolved-launcher identity and branch-head lookup.
+- Static remote-path simulation: branch ref -> immutable launcher SHA -> newer launcher dispatch with synthetic v9.9.9 identity; no mutable branch launcher fetch.
+- Static local-current simulation: identical version/build/payload continues into local launcher without duplicate dispatch.
+- Public payload ref remains immutable `2601c26a474ed41a41e2fc930dd1d9bf5d7cbfe9`.
+- Expected Modals/Shell/Core contracts match the staged public payload.
+- No High Res runtime or diagnostic file changed.
+- Human smoke remains required for Dev header/About appearance and the final Stable wrapper/update path.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC payload staging
 
 ### PASS / launcher wrapper pending
