@@ -12,9 +12,9 @@
 
 ## Current route
 
-Complete issue #37 — Dock default-size reset utility — as a narrow Dev-only Utilities addition, then route back to #32 after live validation.
+Issue #37 — Dock default-size reset utility — is Dev-validated and awaiting explicit Stable promotion approval. Do not promote without Amanda's approval; #32 remains paused until this narrow release decision is resolved.
 
-Issue #37 scope: add one Utilities button that forces the live Dock size state back to the canonical 380×520 defaults and persists that size. Do not change position, High Res behavior, or unrelated Dock lifecycle.
+Issue #37 live gate PASS: on Dev v1.6.0, the actual Utilities Reset Size button reset a seeded 500×966 Dock to 380×520, preserved x=954/y=261, persisted 380×520, and remained correct after reload. Public Stable is unchanged.
 
 Validated diagnostic runtime:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
