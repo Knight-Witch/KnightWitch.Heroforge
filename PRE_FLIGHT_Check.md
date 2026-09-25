@@ -1,3 +1,21 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 live UI gate
+
+### PASS — human visual gate pending
+
+- Auto Host v0.2.0 resolved exact canonical Dev head and launched v1.9.5 with error=null.
+- Runtime channel: v1.9.5 / `1.9.5-ui-standardization`, immutable payload `1f8333aa0b18bf9d880ccf9fa16ca03ef3102433`.
+- Loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Polymorph Bold loaded; Regular remains bundled.
+- Tabs: 30px fixed-height controls.
+- Decal gizmo modes: 30px; High Res primary action: 30px.
+- High Res persistence visible label: `Enabled`.
+- Visible section header height: ~36.9px.
+- Brand title retains 34px emblem box with materially tighter overall width.
+- Styles v0.6.0 includes dark scrollbar track plus purple checkbox/hover theme; visual judgment remains Amanda's gate.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 launcher
 
 ### PASS — source pin / live gate pending
