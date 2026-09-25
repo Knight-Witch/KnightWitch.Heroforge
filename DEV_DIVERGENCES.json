@@ -22,20 +22,21 @@
     },
     {
       "issue": 35,
-      "status": "immutable-payload-candidate",
-      "reason": "Dev-only High Res diagnostic capture provider plus a backward-compatible read-only Texture Quality diagnostic-state seam. #32 Robot is the first validation fixture; public Stable remains untouched.",
+      "status": "canonical-dev-live-validation",
+      "reason": "Canonical Dev launcher temporarily pins the unmerged issue #35 immutable payload so High Res diagnostics can be live-validated before merging the task branch.",
       "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json",
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Diagnostics.js",
-        "features/rendering/Texture_Quality_Diagnostics_UI.js",
-        "manifest.json"
+        "features/rendering/Texture_Quality_Diagnostics_UI.js"
       ],
       "acceptance": [
-        "Capture Current State is observational and does not change High Res/HeroForge state.",
-        "Structured schema v1 exposes explicit coverage/missing-data information and addressable sections.",
-        "Controlled Native OFF to High Res ON comparison uses existing Texture Quality lifecycle calls at-most-once and records restoration state.",
-        "Robot #32 yields a useful differential or identifies a missing diagnostic layer before broader fixture work.",
-        "No public Stable mutation occurs during #35 development."
+        "Launcher v1.5.5 resolves the exact issue #35 payload with zero fallback.",
+        "Loader executes 25/25 modules with zero failures.",
+        "Capture Current State is observational.",
+        "Robot #32 provides the first controlled Native OFF to High Res ON differential.",
+        "Public Stable remains untouched."
       ]
     }
   ],

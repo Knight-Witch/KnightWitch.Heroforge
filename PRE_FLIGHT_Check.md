@@ -1,127 +1,71 @@
-## 2026-09-24 — Issue #35 diagnostics v0.1.3 immutable payload
+## 2026-09-24 — Issue #35 PR #36 reconciliation
 
 ### PASS
 
-- High Res Diagnostics v0.1.3 syntax parses.
-- Registry version/build and module cache key match the source.
-- No duplicate registry/module IDs; 25 modules scheduled.
-- getComparisonSection is present and exported.
-- Payload manifest launcher identity advanced to v1.5.8.
-
-### Pending
-
-- Canonical Dev launcher v1.5.8 pin.
-- Live loader gate and Robot comparison retrieval gate.
-
----
-## 2026-09-24 — Issue #35 diagnostics v0.1.3 candidate
-
-### PASS so far
-
-- v0.1.2 live runtime: launcher v1.5.7, loader 25/25, 0 failed, immutable=25, fallback=0.
-- Robot identity confirmed in captured figure inventory: bodyLower 1961 robot, bodyUpper 1962 robot, face 21906 robotZ.
-- Robot comparison preserved paints / paintByIntent hashes and part inventory while identifying atlas/resource/material deltas.
-- Read-only capture proof: Texture Quality before/after state remained OFF, idle, no error, 2048×2048 native atlas, valid native restore verification.
-- Whole-snapshot Bridge retrieval exceeded the 56k result bound as expected; v0.1.3 adds addressable snapshot-section retrieval rather than weakening transport bounds.
-
-### Pending
-
-- Syntax/manifest checks for v0.1.3.
-- Immutable payload + launcher repin.
-- Live call gate for getComparisonSection(nativeOff|highResOn, section).
-
----
-## 2026-09-24 — Issue #35 diagnostics v0.1.2 payload gate
-
-### PASS
-
-- All three affected/new JS modules parse.
-- Manifest/divergence JSON parse.
-- Diagnostics registry/module/cache key agree at v0.1.2 / `0.1.2-stable-restore-semantic-delta`.
-- 25 unique manifest modules; no duplicate registry/module IDs.
-- Stable-idle guard and semantic-delta APIs are present.
-- Payload launcher registry advanced to v1.5.7.
-- Pending: canonical Dev pin + live Robot rerun.
+- Runtime candidate remains the already validated v0.1.3 payload.
+- Reconciliation changes bookkeeping only and preserves canonical Dev launcher history.
+- Public Stable remains untouched.
 
 ---
 
-## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot hardening
+## 2026-09-24 — Canonical Dev launcher v1.5.8 candidate
 
-### Confirmed first-comparison findings
+### PASS / pending live reload
 
-- Robot native snapshot: one figure, coherent 2048×2048 atlas, 32 referenced resources, no warning.
-- Current-state capture left Texture Quality OFF/idle before and after.
-- OFF→ON paint hashes remained identical: paints `6nq1h4`, paintByIntent `7g8zac`.
-- Raw diff hit 400-path cap.
-- Initial automatic restoration raced HR busy state and returned false; readback proved HR remained ON.
-- One subsequent explicit disable, issued only after readback showed ON + idle, restored OFF successfully with native restore verification PASS.
+- Fixed userscript identity remains WITCH DOCK - DEV / KnightWitch.
+- @version and DEV_VERSION synchronized at v1.5.8.
+- DEV_BUILD: 1.5.8-issue-35-hr-diagnostics-v013.
+- PAYLOAD_REF: ed32c18edfa5b16619870c1ef5cc07bff4786d49.
+- Canonical launcher registry synchronized to v1.5.8.
+- Public Stable unchanged.
 
-### Candidate v0.1.2
+### Required live gate
 
-- Stable-idle waits guard comparison transitions/restoration.
-- Start call returns immediate comparison ID instead of Promise-only Bridge output.
-- Semantic delta added ahead of raw diff.
-- Pending: syntax/manifest check, immutable payload pin, second Robot comparison.
+- Auto Host reload.
+- Loader 25/25, 0 failed, immutable=25, fallback=0.
+- Diagnostics v0.1.3.
+- Robot comparison completes and restores OFF.
+- getComparisonSection returns targeted Native OFF / High Res ON evidence without whole-snapshot overflow.
+
+---
+## 2026-09-24 — Canonical Dev launcher v1.5.7 candidate
+
+### PASS / pending live reload
+
+- Fixed userscript identity remains `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version`, runtime `DEV_VERSION`, and canonical launcher registry are synchronized at v1.5.7.
+- `DEV_BUILD`: `1.5.7-issue-35-hr-diagnostics-v012`.
+- Exact payload: `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff`.
+- Pending live gate: 25/25 executed, 0 failed, immutable=25, fallback=0, Diagnostics v0.1.2, then one Robot comparison with automatic original-state restoration.
 
 ---
 
-## 2026-09-24 — Issue #35 diagnostics v0.1.1 payload gate
+## 2026-09-24 — Canonical Dev launcher v1.5.6 candidate
 
-### PASS
+### PASS / pending reload
 
-- Diagnostics v0.1.1 JS parse PASS.
-- Registry/module version and cache-key match `0.1.1-bridge-section-selection`.
-- Payload schedules 25 modules.
-- Payload launcher registry advanced to v1.5.6.
-- Pending: canonical Dev launcher pin and live reload.
-
----
-
-## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe correction
-
-### PASS / pending next payload
-
-- Prior payload startup: 25/25 executed, 0 failed, immutable=25, fallback=0.
-- Texture Quality remained OFF/idle before and after Current State capture.
-- Corrected Current State Bridge return shape from Promise to direct result.
-- Corrected latest sectional retrieval after comparison and added environment to the section manifest.
-- Robot IDs are present in model data, but renderer readiness is still false; comparison remains intentionally unrun.
-- Pending: syntax/manifest re-check, repin payload, then recapture once Robot renderer is ready.
+- Fixed Tampermonkey identity remains `WITCH DOCK - DEV`.
+- Launcher version/build synchronized at v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
+- Exact payload: `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb`.
+- Pending live gate: 25/25 executed, 0 failed, immutable=25, fallback=0; Diagnostics v0.1.1.
 
 ---
 
-## 2026-09-24 — Issue #35 immutable payload static gate
+## 2026-09-24 — Canonical Dev launcher v1.5.5 candidate for issue #35
 
-### PASS
+### PASS / pending live reload
 
-- JS parse: Texture Quality Native Reconcile v0.4.0, High Res Diagnostic Capture v0.1.0, High Res Diagnostic Capture UI v0.1.0.
-- JSON parse: `manifest.json`, `DEV_DIVERGENCES.json`.
-- Registry/module IDs are unique; payload manifest schedules 25 modules.
-- Version/build/cache-key identities are consistent for all three affected/new modules.
-- Diagnostics UI has no Booth dependency and registers under Utilities.
-- Payload launcher registry advanced to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
-- Pending: canonical Dev launcher pin + live Auto Host gate.
+- Tampermonkey identity remains fixed `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version` and runtime `DEV_VERSION` are synchronized at v1.5.5.
+- `DEV_BUILD` is `1.5.5-issue-35-hr-diagnostics`.
+- `DEV_BRANCH` remains `WITCH_DEV_MAIN`.
+- `PAYLOAD_REF` is exact immutable issue payload `25275c35ac8e54a691e2c3a4d152889700e51d79`.
+- Canonical manifest launcher registry is synchronized to v1.5.5.
+- Public Stable remains untouched.
 
----
+### Required live gate
 
-## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
-
-### Candidate scope
-
-- Texture Quality Native Reconcile: v0.4.0 / `0.4.0-diagnostic-state-seam`; additive read-only `getDiagnosticState()` API only.
-- High Res Diagnostic Capture service: v0.1.0 / `0.1.0-hr-capture-v1`.
-- High Res Diagnostic Capture UI: v0.1.0 / `0.1.0-hr-capture-v1-ui`, registered under Utilities.
-- Manifest contains both new hidden modules and matching registry versions/builds.
-- Standard snapshot is read-only. Comparative mode uses existing Texture Quality enable/disable APIs once per required transition and records restoration result.
-- Public Stable, Booth, #32 implementation, and #34 implementation are unchanged.
-
-### Required gates
-
-- Pending: JS syntax checks for the three affected/new modules.
-- Pending: manifest/divergence JSON validation and version/build/cache-key consistency.
-- Pending: task-branch runtime payload through Dev Auto Host with zero module failures.
-- Pending: Current State non-mutation proof.
-- Pending: Robot #32 Native OFF → High Res ON comparison and human visual correlation.
+Reload through Dev Auto Host and require launcher v1.5.5, payload `25275c35ac8e…`, Loader complete 25/25 with zero failures / immutable=25 / fallback=0, Texture Quality v0.4.0, and High Res Diagnostics service/UI v0.1.0.
 
 ---
 

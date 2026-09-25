@@ -1,72 +1,45 @@
-## 2026-09-24 — Issue #35 immutable Dev payload for diagnostics v0.1.3
+## 2026-09-24 — Issue #35 task-branch reconciliation for PR #36
 
-- Static PASS on High Res Diagnostics v0.1.3 / 0.1.3-addressable-comparison-sections.
-- Payload manifest launcher registry advanced to v1.5.8 / 1.5.8-issue-35-hr-diagnostics-v013.
-- Payload still contains 25 modules; no unrelated runtime modules changed.
-- Next gate is canonical Dev launcher pin and live Auto Host reload.
-
----
-## 2026-09-24 — Issue #35 diagnostics v0.1.3 addressable comparison sections
-
-- Live v0.1.2 startup gate passed: Dev v1.5.7, exact immutable payload, loader 25/25 executed, 0 failed, immutable=25, fallback=0.
-- Robot #32 was confirmed as the first comparison fixture. Compact facts surfaced unchanged model paint assignments/part inventory/color-bake structure alongside changed atlas/resources/materials, including Robot AAID resources resolving to a 1×1 fallback in High Res.
-- Capture Current State passed a before/after non-mutation gate with identical HR OFF/idle/error/atlas/restore-verification state.
-- Added getComparisonSection(snapshotName, sectionName) so GPT/Bridge triage can retrieve a specific Native OFF / High Res ON section without serializing the entire diagnostic snapshot.
-- Public Stable remains untouched.
-
----
-## 2026-09-24 — Issue #35 diagnostics v0.1.2 immutable payload preparation
-
-- Static PASS for Texture Quality v0.4.0, High Res Diagnostics v0.1.2, Diagnostics UI v0.1.0, manifest JSON, and divergence JSON.
-- Confirmed v0.1.2 includes synchronous comparison start, stable-idle transition/restoration guards, semantic comparison facts, and bounded changed-path retrieval.
-- Advanced the payload manifest launcher registry to v1.5.7 / `1.5.7-issue-35-hr-diagnostics-v012`.
+- Reconciled task-branch bookkeeping to current canonical Dev after live payload-pin commits diverged the branch histories.
+- High Res Diagnostics runtime remains the already live-validated v0.1.3 candidate; this reconciliation changes no runtime behavior.
 - Public Stable remains untouched.
 
 ---
 
-## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot comparison hardening
+## 2026-09-24 — Canonical Dev launcher v1.5.8 for diagnostics v0.1.3
 
-- First real Robot comparison captured identical OFF/ON `paints` and `paintByIntent` hashes while the raw structural delta reached its 400-path cap.
-- The initial comparator exposed a real restoration race: a post-enable HR busy window caused its automatic OFF restore to return false; readback showed HR still ON. A single explicit readback-confirmed disable restored Robot OFF and native restore verification passed.
-- Advanced High Res Diagnostics to v0.1.2: comparison starts return synchronously, transitions wait for a stable idle HR window, restoration waits/settles before reporting success, and a compact semantic delta summarizes paint assignments, part inventory, atlas topology, resources, materials, color bake, and warnings.
-- Added bounded comparison-facts and changed-path retrieval APIs for Bridge/GPT triage without dumping the full raw diff.
+- Advanced canonical Dev launcher to v1.5.8 / 1.5.8-issue-35-hr-diagnostics-v013.
+- Pinned exact immutable task payload ed32c18edfa5b16619870c1ef5cc07bff4786d49 containing High Res Diagnostics v0.1.3.
+- v0.1.2 live gates already passed loader 25/25, Robot comparison, restoration, and read-only capture non-mutation.
+- Next gate: reload via Dev Auto Host, then prove addressable Native OFF / High Res ON section retrieval.
+- Public Stable remains untouched.
 
 ---
+## 2026-09-24 — Canonical Dev launcher v1.5.7 for diagnostics v0.1.2
 
-## 2026-09-24 — Issue #35 diagnostics v0.1.1 immutable payload preparation
-
-- High Res Diagnostic Capture v0.1.1 syntax and manifest identity checks pass.
-- Advanced the payload manifest launcher registry to v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
-- This commit is the next immutable task-branch payload candidate; canonical Dev pin follows separately.
+- Advanced canonical Dev launcher to v1.5.7 / `1.5.7-issue-35-hr-diagnostics-v012`.
+- Pinned exact immutable task payload `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff` containing High Res Diagnostics v0.1.2.
+- Prior Robot state was restored OFF and native restore verification passed before this repin.
 - Public Stable remains untouched.
 
 ---
 
-## 2026-09-24 — Issue #35 diagnostics v0.1.1 live-probe polish
+## 2026-09-24 — Canonical Dev launcher v1.5.6 for diagnostics v0.1.1
 
-- Live Dev startup passed on payload `25275c35ac8…`: 25/25 modules executed, 0 failed, immutable=25, fallback=0; Texture Quality v0.4.0 and both diagnostic modules registered.
-- First Bridge capture proved the current-state path itself did not alter Texture Quality ON/OFF/busy/persistence state.
-- Advanced High Res Diagnostic Capture to v0.1.1 so synchronous Current State capture returns a direct Bridge result, post-comparison sectional reads prefer the newest comparison snapshot, and environment is indexed in the manifest.
-- Robot model data loaded with expected IDs 1961/1962/21906, but HeroForge's display remained in native update with no `display.modded`; no HR toggle was attempted while the renderer was unstable.
-
----
-
-## 2026-09-24 — Issue #35 immutable Dev payload preparation
-
-- Static PASS on Texture Quality v0.4.0, High Res Diagnostics v0.1.0, and Diagnostics UI v0.1.0; manifest/divergence JSON parse and module ID/version/cache-key consistency checks also pass.
-- Advanced only the payload manifest's Dev launcher registry identity to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
-- Exact immutable payload SHA from this commit is intended for the next canonical Dev launcher pin; task-branch runtime code remains unmerged pending live validation.
+- Advanced Dev Auto Host target launcher to v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
+- Pinned exact immutable task payload `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb` containing High Res Diagnostics v0.1.1.
+- Prior v0.1.0 live startup gate passed 25/25 modules with zero failures; v0.1.1 corrects Bridge return/section selection only.
 - Public Stable remains untouched.
 
 ---
 
-## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
+## 2026-09-24 — Canonical Dev launcher v1.5.5 for issue #35 live validation
 
-- Added Dev-only High Res Diagnostic Capture service/UI v0.1.0 with structured schema v1, sectional manifest, figure/part inventory, paint signatures, atlas/material/color-bake/resource state, coverage reporting, local JSON export, and controlled Native OFF → High Res ON comparison.
-- Advanced Texture Quality Native Reconcile to v0.4.0 / `0.4.0-diagnostic-state-seam` solely for a backward-compatible read-only snapshot of its private session baselines/masks/native-source facts; rendering/reconcile behavior is unchanged.
-- Routed the temporary UI to Utilities. Booth is untouched.
-- #32 Robot (`59568049`) is the first live validation fixture; #34 and public Stable remain untouched.
-- This commit is a task-branch candidate pending syntax/static checks and live Dev validation.
+- Advanced the fixed-name Dev launcher to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
+- Pinned exact unmerged issue payload `25275c35ac8e54a691e2c3a4d152889700e51d79` so Dev Auto Host can live-validate the task branch before merge.
+- Payload contains Texture Quality v0.4.0 plus High Res Diagnostics service/UI v0.1.0 and schedules 25 modules.
+- Public Stable remains untouched; #32 remains a validation fixture rather than implementation scope.
+- Next gate: reload through Dev Auto Host and require 25/25 immutable module execution with zero failures.
 
 ---
 

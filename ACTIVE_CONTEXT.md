@@ -7,34 +7,31 @@
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
-**Canonical Dev launcher:** v1.5.4 / payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`
+**Canonical Dev launcher:** v1.5.8 / payload `ed32c18edfa5b16619870c1ef5cc07bff4786d49`
 
 ## Current route
 
-Build the smallest usable Dev-only High Res Diagnostic Capture v1 under issue #35 before resuming #32.
+Issue #35 is the active Dev task.
 
-Implementation branch: `wd/35-hr-diagnostic-capture`.
+The canonical Dev launcher is temporarily pinned to the unmerged issue-branch payload `ed32c18edfa5b16619870c1ef5cc07bff4786d49` for live validation through Amanda's installed Dev Auto Host v0.1.1. Normal loader resolution must remain immutable-payload-only with zero fallback requests.
 
-Initial provider scope:
-- immutable/current read-only snapshot;
-- figure/part/slot inventory;
-- model `paints` / `paintByIntent` values + signatures;
-- atlas dimensions/allocations;
-- body mask/material bindings and referenced resources;
-- color-bake structural/target state;
-- Texture Quality public + narrow private diagnostic state;
-- explicit coverage/missing-data manifest;
-- compact deterministic summary;
-- local JSON export;
-- controlled Native OFF → High Res ON comparison with at-most-once lifecycle transitions and restoration readback.
+Payload contents:
+- Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
+- High Res Diagnostic Capture v0.1.3 / `0.1.3-addressable-comparison-sections`;
+- High Res Diagnostic Capture UI v0.1.0 / `0.1.0-hr-capture-v1-ui`;
+- 25 manifest modules total.
 
-The capture layer records evidence; it must not narrow collection around a presumed #32 cause.
+The task branch `wd/35-hr-diagnostic-capture` remains unmerged until the live gates pass.
 
-## First real validation fixture
+## First live gates
 
-Issue #32 Robot — config `59568049`.
-
-Pause manual #32 probing. After #35 static/live startup validation, use Robot as the first Native OFF → HR ON differential capture. If the capture fails to expose any meaningful divergence while the visual bug reproduces, treat that as evidence that the diagnostic surface is missing a layer and extend #35 before brute-forcing the remaining #32 fixture matrix.
+1. Reload HeroForge through Dev Auto Host.
+2. Require launcher v1.5.8 / payload `ed32c18edfa5…`.
+3. Require loader 25/25, zero failures, immutable=25, fallback=0.
+4. Require Texture Quality v0.4.0 with prior behavior intact.
+5. Require High Res Diagnostics v0.1.0 and its Utilities UI.
+6. Prove `Capture Current State` is observational.
+7. Use #32 Robot config `59568049` for the first Native OFF → High Res ON differential capture.
 
 ## Scope boundaries
 
@@ -48,6 +45,6 @@ Pause manual #32 probing. After #35 static/live startup validation, use Robot as
 
 - Keep `Witch_Scripts` public Stable.
 - Keep `WITCH_DEV_MAIN` canonical Dev.
-- Preserve Texture Quality v0.3.7 behavior while adding only the backward-compatible read-only diagnostic seam required by #35.
+- Preserve Texture Quality v0.3.7 rendering/reconcile behavior while the candidate exposes only the new read-only diagnostic seam.
 - Standard diagnostic capture must not mutate HeroForge/High Res state.
-- Controlled comparison may use only the existing Texture Quality lifecycle APIs and must retain evidence on transition failure.
+- Controlled comparison may use only existing Texture Quality lifecycle APIs and must retain evidence on transition failure.
