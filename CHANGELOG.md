@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 public RC resize-border reset refresh
+
+- Refreshed the public RC shared runtime to the canonical resize-border reset implementation.
+- Shell v0.4.0 / Core v2.2.0 / Styles v0.3.0 now match canonical Dev bytes.
+- Bottom edge and bottom-right corner double-click through the existing Reset Dock Size behavior and expose the hover hint.
+- Existing self-refreshing delivery, header version display, Disclaimer-in-About, Utilities Reset Size, and High Res scope are otherwise unchanged.
+- Launcher repin/version refresh follows after this immutable payload commit.
+
+---
+
 ## 2026-09-25 — Issue #41 Stable self-host downgrade guard
 
 - Stable v2.2.0 now refuses to dispatch a resolved launcher whose semantic version is older than the installed wrapper.

@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #41 public RC resize-border reset refresh
+
+### PASS / launcher repin pending
+
+- Shared Shell/Core JavaScript parses and matches canonical Dev source.
+- Stable manifest parses with Shell v0.4.0 / Core v2.2.0 / Styles v0.3.0.
+- Interactions remains v0.6.0; reset behavior is reused unchanged.
+- No High Res runtime or diagnostic files were staged.
+- Next step is to repin the public RC launcher to this immutable payload.
+
+---
+
 ## 2026-09-25 — Issue #41 Stable self-host downgrade guard
 
 ### PASS
