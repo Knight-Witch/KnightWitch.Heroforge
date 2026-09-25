@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 payload staging
+
+- Dev launcher registry staged at v1.10.0 / `1.10.0-reusable-notifications`.
+- Payload includes the accepted #58 typography/UI runtime plus Notifications v0.1.0, Release Notices v0.1.0, and Styles v0.7.0.
+- Hidden module count is now 27 total runtime modules.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #83 reusable notification architecture candidate
 
 - Added `KWWitchDockNotifications` v0.1.0 / `0.1.0-reusable-one-time-notices` as an isolated hidden notification-service module.
