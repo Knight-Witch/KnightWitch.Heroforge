@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** janitorial closeout for completed issues #37 and #41  
+**Active task:** issue #58 — **Bundle Polymorph display fonts for Witch Dock headers**  
 **Paused task:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
@@ -12,13 +12,11 @@
 
 ## Current route
 
-Issues #37 — Dock default-size reset utility — and #41 — update delivery hardening / header version visibility — have passed their release gates.
+Issue #58 — Bundle Polymorph display fonts for Witch Dock headers — is active. Amanda's owned full-source Polymorph Regular and Bold TTFs were recovered and verified against the source SHA-256 identities recorded by Polymorph. Both faces are staged as Witch Dock core assets; Bold is the initial display face for Dock title/tabs/section/tool/modal headings while body copy remains on the existing system-font stack. Regular is bundled but not selected by default so the display weight can be switched later without another asset-recovery pass.
 
-Public Stable v2.2.1 is live. Stable self-host v1.0.0 resolved the exact current `Witch_Scripts` head through GitHub's ref API, reported `local-wrapper-current`, and loaded immutable payload `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`. Stable loader smoke passed 23/23 executed, 0 failed, 23 immutable, 0 fallback. Amanda visually confirmed the RC reset-button and resize-border double-click behavior before the exact RC head was promoted.
+Current #58 candidate: Assets v0.2.0 / `0.2.0-polymorph-display-fonts`; Styles v0.4.0 / `0.4.0-polymorph-display-typography`. The font-face URLs resolve from the launcher's immutable payload root rather than a third-party CDN. Public Stable remains v2.2.1 and is unchanged. Next gate is canonical Dev payload/launcher integration, live font-load verification, then Amanda's visual approval.
 
-Canonical Dev v1.8.0 is live through Dev Auto Host v0.2.0. The host resolved exact `WITCH_DEV_MAIN` head `6b59e9a509b0cc712dd17bb1b95b8c75a4e0e3ab`, loaded immutable payload `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`, and passed 25/25 executed, 0 failed, 25 immutable, 0 fallback. Shared Shell/Core/Styles/Interactions/Utilities bytes were verified identical to the promoted Stable RC payload.
-
-The only remaining #37/#41 work is mechanical branch cleanup under the exact deletion handoffs in `docs/`. Issue #32 remains paused; do not resume it until explicitly requested. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
+Issues #37/#41 are complete; only their separate mechanical branch cleanup remains under the existing handoffs. Issue #32 remains paused; do not resume it until explicitly requested. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
 
 ## Validated diagnostic runtime
 
@@ -47,7 +45,7 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 - #32 remains paused.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
-- No further Stable mutation is authorized by the completed #37/#41 rollout.
+- #58 is Dev-only until Amanda visually approves the typography; Public Stable v2.2.1 remains unchanged.
 - HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
 - Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32 when that issue resumes, inspect adjacent runtime/source behavior and identify missing capture layers.
 
