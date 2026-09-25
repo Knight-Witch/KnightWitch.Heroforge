@@ -59,8 +59,8 @@
     },
     {
       "issue": 41,
-      "status": "dev-live-pass-public-rc-next",
-      "reason": "Dev Auto Host v0.2.0 and Dev v1.7.0 passed the live gate. Public RC PR #51 is the remaining #41 smoke before Stable promotion.",
+      "status": "resize-border-affordance-static-pass",
+      "reason": "Issue #41 delivery/header maintenance passed its prior Dev live gate; final pre-release refinement adds bottom and bottom-right double-click reset through the existing resetDockSize handler plus a hover hint. Live gesture smoke remains before public promotion.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -75,7 +75,8 @@
         "Public Stable can run the current Stable launcher even when Tampermonkey has not yet replaced the installed wrapper.",
         "Stable header visibly reports the runtime Witch Dock version.",
         "Disclaimer is absent from the title bar and accessible from About.",
-        "High Res issues #32/#34 remain untouched."
+        "High Res issues #32/#34 remain untouched.",
+        "Bottom and bottom-right resize surfaces double-click through the existing Dock-size reset behavior with a visible hover hint."
       ]
     }
   ],
