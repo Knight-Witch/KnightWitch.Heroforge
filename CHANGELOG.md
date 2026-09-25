@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 public RC payload staging
+
+- Staged the shared header/version observability changes from canonical Dev: Shell v0.3.0, Modals v0.2.0, Core v2.1.0, Styles v0.2.0.
+- Stable will show the active Witch Dock runtime version beside the title; Dev avoids duplicate version text because its display name already contains the version.
+- Header Disclaimer control is removed; Disclaimer remains available from About.
+- High Res issue #32/#34 files and Dev-only diagnostics are not part of this RC.
+- Stable self-refreshing launcher wrapper is the next RC step.
+
+---
+
 ## 2026-09-25 — Issue #37 public v2.1.0 RC launcher
 
 - Public launcher advanced to v2.1.0 / `2.1.0-dock-size-reset`.
