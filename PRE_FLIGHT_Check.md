@@ -1,3 +1,18 @@
+## 2026-09-25 — Issue #83 reusable notification architecture candidate
+
+### PENDING live/human gate
+
+- New generic notification service is loader-isolated from both Core and release-specific notice copy.
+- Notification service self-configures from HeroForge localStorage plus the already-loaded bundled emblem; Core does not require it, so notification failure cannot block Dock startup. No new Tampermonkey grant or @connect is required.
+- Release notice trigger reads only `KWWitchDockStableHost.getState().installedWrapperVersion` on Stable and does not infer installed state from synthetic runtime `GM_info`.
+- The first Stable notice targets v2.3.0, acknowledges on show, and points to the canonical public userscript URL.
+- Dev preview uses a distinct notice ID so it cannot suppress the future Stable notice.
+- Manifest registers notification service first and release notice second as hidden loader modules; module count rises from 25 to 27.
+- Public Stable remains v2.2.2; #58 remains held for the same combined release.
+- Next: syntax/static checks, Dev payload/launcher staging, live notification-state/one-time-ack regression, Amanda visual gate, then combined public RC.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 baseline live gate
 
 ### PASS — human visual gate pending

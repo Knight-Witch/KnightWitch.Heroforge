@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #58 — **Bundle Polymorph display fonts for Witch Dock headers**  
+**Active task:** issue #83 — **Reusable Witch Dock notification / update-alert system**  
 **Completed release:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
@@ -12,7 +12,11 @@
 
 ## Current route
 
-Issue #58 — Bundle Polymorph display fonts for Witch Dock headers — remains the active Dev task and now also owns the accompanying Dock UI consistency pass requested during visual review. The brand remains left-aligned `WITCH [emblem] DOCK` in Polymorph Bold with a large emblem and muted inline Dev/version metadata; this pass tightens the word/emblem spacing further. Tabs, subtool headers, buttons, checkboxes, hover states, and the main body scrollbar are being standardized around the readable system stack and the Dock's existing purple accent. Tool tabs use fixed-height flex centering; section/tool header vertical padding is reduced; common text buttons use consistent 12px semibold typography and 30px control height where appropriate; checked checkboxes use the purple accent; tab/tool-button hover uses the same purple treatment as High Res; the main scrollbar track is dark. High Res persistence now matches Utilities persistence styling and uses the label `Enabled`. Polymorph Regular and Bold remain bundled. Candidate module revisions are Core v2.3.0, Shell v0.5.1, Styles v0.6.0, and Texture Quality UI v0.3.0. Dev v1.9.5 / `1.9.5-ui-standardization` is pinned to immutable payload `1f8333aa0b18bf9d880ccf9fa16ca03ef3102433`. Live Dev verification passed: Auto Host resolved exact canonical head `23e003d03824d70d036f988ae00c854461f482b9`; loader passed 25/25 with 0 failed and 0 fallback; Polymorph Bold loaded from the immutable payload. Tool tabs now render at a fixed 30px height; decal gizmo and High Res primary buttons both render at 30px; High Res persistence visibly reads `Enabled`; visible section headers are ~36.9px tall with reduced vertical padding; title width shrank from ~216.6px to ~199.4px while retaining the 34px emblem box, confirming the tighter word/emblem spacing. Amanda approved the overall v1.9.5 typography direction and requested one final optical correction: move the muted Dev/version metadata down 3px so its bottom aligns with the 16px Polymorph title glyphs. Styles v0.6.1 / `0.6.1-title-version-baseline` implements that correction. Dev v1.9.6 / `1.9.6-title-version-baseline` is pinned to immutable payload `4d7a92d183515fb59f93685632c2afeec0691a00`. Live Dev geometry verification passed: both Polymorph title-word boxes and `DEV · v1.9.6` now end at exactly y=35.73, confirming the requested bottom alignment. Auto Host resolved canonical head `05425389d24e57b054d3118eeb7c8edf40808167`; loader passed 25/25 with 0 failed and 0 fallback. Public Stable remains v2.2.2; only Amanda's final visual approval remains before promotion.
+Issue #83 — Reusable Witch Dock notification / update-alert system — is the active Dev task. The generic notification service is staged as an isolated hidden module (`KWWitchDockNotifications` v0.1.0) with per-notice IDs, one-time page-storage acknowledgement, priority/queueing, optional primary actions, close/Escape handling, and a reusable modal surface. Release-specific copy is isolated in hidden module `Witch_Dock_Release_Notices.js` v0.1.0 rather than hard-coded into Core.
+
+The first notice targets the upcoming combined public v2.3.0 release. Stable logic will show it only when `KWWitchDockStableHost.getState().installedWrapperVersion` proves the installed Tampermonkey wrapper is older than v2.3.0. It acknowledges on first successful display, links `Update Witch Dock` to the canonical public userscript URL, and tells the user this is a one-time wrapper refresh before normal automatic/runtime updates resume. Dev registers a separate one-time preview notice for visual validation.
+
+Issue #58 — Bundle Polymorph display fonts for Witch Dock headers — has passed its Dev static/live/human gates on v1.9.6. Amanda approved the final typography/UI direction, including exact title/version baseline alignment. #58 is release-ready but intentionally held for the same public release as #83 rather than promoted separately. Public Stable remains v2.2.2 until the combined Dev/RC gates pass.
 
 Issue #32 — HR body paint zone collapse — is released and complete. Public Stable v2.2.2 / `2.2.2-issue-32-body-aaid-binding` uses immutable payload `1a586ec3540138694b2342a5fd074b5ec4b1a8e5` with Texture Quality v0.3.8 / `0.3.8-supported-body-aaid-binding`. Dev visual gates passed on Human and Robot; structural AAID/restore coverage passed on Robot, Human, and Canine. Stable smoke passed on Half Dragon with real 1024 body AAIDs under HR ON, 2048 body allocations, and clean native OFF restoration. Dev v0.4.1 remains the canonical diagnostic superset because issue #35 intentionally owns the extra diagnostic state seam.
 
@@ -47,7 +51,8 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 - #32 is complete on public Stable v2.2.2; its temporary refs are deletion-handoff only.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
-- #58 is active and remains Dev-only pending Amanda's final typography visual approval. Static/live verification has passed; do not promote the typography without that human gate.
+- #58 is Dev-accepted and release-ready; hold it for the combined #83 public release rather than promoting it separately.
+- #83 is active and Dev-only until the generic notification service and v2.3.0 wrapper-update notice pass static/live/human gates.
 - HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
 - Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32 when that issue resumes, inspect adjacent runtime/source behavior and identify missing capture layers.
 
