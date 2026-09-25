@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #32 canonical Dev v1.9.1 pin
+
+- Dev launcher advanced to v1.9.1 / `1.9.1-issue-32-body-aaid-binding`.
+- Immutable payload pinned to `9aed4edee07e9ca746b6e49a8a8bf071e50fd996`.
+- Payload requires Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding`.
+- Public Stable remains v2.2.1; next gate is live Robot/Human AAID/allocation/restore validation and Amanda's visual paint-zone check.
+
+---
+
 ## 2026-09-25 — Issue #32 Dev v1.9.1 payload staging
 
 - Staged canonical Dev launcher registry v1.9.1 / `1.9.1-issue-32-body-aaid-binding`.

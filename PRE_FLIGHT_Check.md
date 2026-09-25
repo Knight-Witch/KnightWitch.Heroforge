@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #32 canonical Dev v1.9.1 pin
+
+### PASS / live #32 gate pending
+
+- Launcher JavaScript parse passed.
+- @version and DEV_VERSION are synchronized at v1.9.1.
+- DEV_BUILD is `1.9.1-issue-32-body-aaid-binding`.
+- PAYLOAD_REF is immutable `9aed4edee07e9ca746b6e49a8a8bf071e50fd996`.
+- Payload manifest registers Texture Quality Native Reconcile v0.4.1.
+- Public Stable remains unchanged.
+
+---
+
 ## 2026-09-25 — Issue #32 Dev v1.9.1 payload staging
 
 ### PASS / launcher pin pending
