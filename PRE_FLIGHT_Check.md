@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 launcher
+
+### PASS — source pin / live gate pending
+
+- Userscript @version, DEV_VERSION, manifest launcher registry, and DEV_BUILD are synchronized at v1.9.5 / `1.9.5-ui-standardization`.
+- Launcher pins immutable payload `1f8333aa0b18bf9d880ccf9fa16ca03ef3102433`.
+- Core/Shell API expectations remain unchanged.
+- Public Stable remains v2.2.2.
+- Next: reload through Dev Auto Host and verify loader, tabs, common buttons, scrollbar styling, checkbox accent, High Res persistence label/layout, and bundled font state.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 payload staging
 
 ### PASS — payload composition / live gate pending
