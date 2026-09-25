@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile UI
 // @namespace    KnightWitch
-// @version      0.2.0
+// @version      0.3.0
 // @description  Witch Dock controls for the Dev native texture-quality reconcile service.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityNativeReconcileUI';
   if (UW[GLOBAL]) return;
   const TOOL_ID = 'texture-quality-native-reconcile';
-  const VERSION = '0.2.0';
-  const BUILD = '0.2.0-dev-persistence-advanced-controls';
+  const VERSION = '0.3.0';
+  const BUILD = '0.3.0-ui-consistency';
   const STYLE_ID = 'kwTextureQualityNativeReconcileUIStyle';
 
   let registerTimer = null;
@@ -47,7 +47,7 @@
       .kwTextureQualityRoot{display:flex;flex-direction:column;gap:8px;padding:2px 0;color-scheme:dark;}
       .kwTextureQualityIntro{font-size:11px;line-height:1.4;opacity:.82;}
       .kwTextureQualityActions{display:flex;flex-direction:column;gap:7px;}
-      .kwTextureQualityActions button,.kwTextureQualityAdvanced button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:7px 8px;background:rgba(255,255,255,.06);color:inherit;font-size:11px;font-weight:800;cursor:pointer;}
+      .kwTextureQualityActions button,.kwTextureQualityAdvanced button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:0 10px;min-height:30px;background:rgba(255,255,255,.06);color:inherit;font-size:12px;font-weight:600;cursor:pointer;}
       .kwTextureQualityActions button:hover:not(:disabled),.kwTextureQualityAdvanced button:hover:not(:disabled){background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}
       .kwTextureQualityActions button:disabled,.kwTextureQualityAdvanced button:disabled{opacity:.42;cursor:default;}
       .kwTextureQualityPersistentRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 9px;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(255,255,255,.035);}
@@ -161,7 +161,7 @@
             <div class="kwTextureQualityPersistentName">Persistent High Res</div>
             <div class="kwTextureQualityPersistentDesc">Automatically enables High Res after reloads and figure changes. Disable remains a temporary override until you enable it again or reload the page.</div>
           </div>
-          <label class="kwTextureQualityPersistentToggle"><input type="checkbox" class="kwTextureQualityPersistent"><span>Persistent</span></label>
+          <label class="kwTextureQualityPersistentToggle"><input type="checkbox" class="kwTextureQualityPersistent"><span>Enabled</span></label>
         </div>
       </div>
       <div class="kwTextureQualityStatus" data-error="0">OFF</div>
