@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.3 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.9.3 / `1.9.3-title-alignment-fix`.
+- Shell v0.5.1 / Styles v0.5.1 are present in the same payload.
+- Existing Core v2.3.0 and Assets v0.2.0 remain unchanged.
+- Public Stable remains v2.2.2.
+- Next: pin the immutable payload from Dev launcher v1.9.3 and reload through Dev Auto Host.
+
+---
+
 ## 2026-09-25 — Issue #58 title/alignment refinement
 
 ### PENDING live/human gate
