@@ -191,6 +191,27 @@
     });
   }
 
+  function stableHostCompareVersions(a, b) {
+    const parse = value => {
+      const match = String(value || "").match(/^(\d+)\.(\d+)\.(\d+)(?:[-+]([0-9A-Za-z.-]+))?$/);
+      if (!match) return null;
+      return {
+        numbers: [Number(match[1]), Number(match[2]), Number(match[3])],
+        suffix: match[4] || ""
+      };
+    };
+    const left = parse(a);
+    const right = parse(b);
+    if (!left || !right) return 0;
+    for (let i = 0; i < 3; i += 1) {
+      if (left.numbers[i] !== right.numbers[i]) return left.numbers[i] > right.numbers[i] ? 1 : -1;
+    }
+    if (left.suffix === right.suffix) return 0;
+    if (!left.suffix) return 1;
+    if (!right.suffix) return -1;
+    return left.suffix > right.suffix ? 1 : -1;
+  }
+
   function stableHostPayloadInfo(meta) {
     const baseInfo = typeof GM_info === "object" && GM_info ? GM_info : {};
     const baseScript = baseInfo.script && typeof baseInfo.script === "object" ? baseInfo.script : {};
@@ -289,17 +310,21 @@
       stableHostState.resolvedLauncherBuild = meta.build;
       stableHostState.resolvedPayloadRef = meta.payloadRef;
 
+      const versionOrder = stableHostCompareVersions(meta.version, VERSION);
       const localIsCurrent =
         meta.version === VERSION &&
         meta.build === BUILD &&
         meta.payloadRef === PAYLOAD_REF;
 
-      if (!localIsCurrent) {
+      if (versionOrder < 0) {
+        stableHostState.status = "local-wrapper-newer-than-branch";
+        stableHostState.deliveryWarning = `Resolved branch launcher v${meta.version} is older than installed wrapper v${VERSION}; refusing downgrade.`;
+      } else if (!localIsCurrent) {
         stableHostExecuteLauncher(fetched.source, meta, headSha, stableHostState);
         return;
+      } else {
+        stableHostState.status = "local-wrapper-current";
       }
-
-      stableHostState.status = "local-wrapper-current";
     } catch (error) {
       stableHostState.status = "local-fallback";
       stableHostState.error = error && error.message ? error.message : String(error || "stable self-host failure");
