@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 launcher
+
+- Dev launcher -> v1.9.6 / `1.9.6-title-version-baseline`.
+- Pins immutable payload `4d7a92d183515fb59f93685632c2afeec0691a00`.
+- Payload carries Styles v0.6.1 with the 3px title/version baseline correction; all other v1.9.5 UI consistency behavior is unchanged.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 payload staging
 
 - Dev launcher registry staged at v1.9.6 / `1.9.6-title-version-baseline`.
