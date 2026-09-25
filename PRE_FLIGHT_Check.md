@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 public RC v2.2.1 payload metadata
+
+### PASS / launcher pin pending
+
+- manifest.json parses with public launcher registry v2.2.1.
+- The version bump is intentional so the revised RC can replace the already-installed v2.2.0 test wrapper cleanly.
+- Shared runtime module versions remain synchronized with canonical Dev.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC resize-border reset refresh
 
 ### PASS / launcher repin pending

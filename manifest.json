@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.0.3",
-      "build": "2.0.3-issue-24-colorbake-restore",
-      "versionOrigin": "issue-24-colorbake-restore-public-promotion-2026-09-24"
+      "version": "2.2.1",
+      "build": "2.2.1-self-refreshing-delivery-resize-reset",
+      "versionOrigin": "issue-41-delivery-resize-reset-2026-09-25"
     },
     {
       "id": "witch-dock-core",

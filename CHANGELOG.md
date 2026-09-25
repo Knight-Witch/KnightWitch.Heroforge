@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #41 public RC v2.2.1 payload metadata
+
+- Final RC version advances from v2.2.0 to v2.2.1 so Tampermonkey can distinguish the refreshed candidate after the resize-border reset addition.
+- Stable launcher registry is synchronized to v2.2.1 / `2.2.1-self-refreshing-delivery-resize-reset`.
+- Shared payload remains Shell v0.4.0 / Core v2.2.0 / Styles v0.3.0 with Interactions v0.6.0.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC resize-border reset refresh
 
 - Refreshed the public RC shared runtime to the canonical resize-border reset implementation.
