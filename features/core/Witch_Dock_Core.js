@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-core";
-  const VERSION = "2.1.0";
-  const BUILD = "2.1.0-title-version-render";
+  const VERSION = "2.2.0";
+  const BUILD = "2.2.0-resize-border-reset";
   const DEFAULTS = Object.freeze({
     x: null, y: null, width: 380, height: 520,
     minimized: false, closed: false,
@@ -93,7 +93,7 @@
       "setActiveTab","mountTool","registerTool"
     ]);
     const interactions = requireApi("KWWitchDockInteractions", [
-      "configure","startDockDrag","startResizeCorner","startResizeBottom","startCompactDrag",
+      "configure","startDockDrag","startResizeCorner","startResizeBottom","resetDockSize","startCompactDrag",
       "toggleMinimize","closeDock","expandFromCompact","installDockHotkey"
     ]);
     const history = requireApi("KWWitchDockHistory", [
@@ -180,7 +180,8 @@
           triggerUndo: history.triggerUndo,
           triggerRedo: history.triggerRedo,
           startResizeBottom: interactions.startResizeBottom,
-          startResizeCorner: interactions.startResizeCorner
+          startResizeCorner: interactions.startResizeCorner,
+          resetDockSize: interactions.resetDockSize
         }
       }));
 
