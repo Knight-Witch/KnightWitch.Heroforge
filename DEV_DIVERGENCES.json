@@ -42,8 +42,8 @@
     },
     {
       "issue": 37,
-      "status": "canonical-dev-live-smoke",
-      "reason": "Utilities dock-size reset is integrated into WITCH_DEV_MAIN and Dev launcher v1.6.0 pins immutable payload 67f06a0e691c4a96a71c83258fac8130df73b950; public Stable remains unchanged pending live validation.",
+      "status": "dev-validated-awaiting-promotion",
+      "reason": "Utilities dock-size reset is live-validated in canonical Dev v1.6.0; the actual button reset a seeded 500x966 Dock to canonical 380x520, preserved position, persisted the size, and survived reload. Public Stable remains unchanged pending explicit promotion.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -51,10 +51,11 @@
         "tools/Utilities.js"
       ],
       "acceptance": [
-        "Canonical Dev launcher v1.6.0 resolves payload 67f06a0e691c4a96a71c83258fac8130df73b950 with zero fallback.",
-        "Utilities exposes a Reset Dock Size control.",
-        "The control forces the live Dock to 380x520, persists those size preferences, and does not move it.",
-        "Existing drag, manual resize, minimize/compact, and tool loading behavior remain intact.",
+        "Canonical Dev v1.6.0 / Interactions v0.6.0 / Utilities v1.3.0 load through Dev Auto Host v0.1.1.",
+        "Utilities exposes a visible Reset Size button.",
+        "From a seeded 500x966 state, the actual button resets live Dock size to 380x520.",
+        "Reset preserves Dock position and persists width=380 / height=520.",
+        "Reload returns at 380x520 with the reset button still available.",
         "Public Stable remains untouched until explicit promotion."
       ]
     }

@@ -1,3 +1,19 @@
+## 2026-09-25 — Issue #37 Dev live gate
+
+### PASS
+
+- Runtime: WITCH DOCK - DEV v1.6.0.
+- Dev Auto Host: v0.1.1.
+- Interactions: v0.6.0 / `0.6.0-dock-size-reset`.
+- Utilities: v1.3.0 / `1.3.0-dock-size-reset`.
+- Seeded bad state: 500×966 at x=954 / y=261.
+- Actual Reset Size click: live size 380×520; persisted width/height 380×520; x/y unchanged.
+- `resetDockSizeCalls=1` after the click.
+- Post-click reload: 380×520 persisted; Reset Size button remained visible.
+- Public Stable unchanged; promotion not yet authorized.
+
+---
+
 ## 2026-09-25 — Issue #37 canonical Dev launcher pin
 
 ### PASS / live Dev smoke pending

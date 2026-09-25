@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #37 Dev live gate PASS
+
+- Dev Auto Host v0.1.1 loaded Witch Dock Dev v1.6.0 with Interactions v0.6.0 and Utilities v1.3.0.
+- Seeded the prior bad persisted Dock state at 500×966 and verified the Reset Size control was visible in Utilities.
+- Invoked the actual Reset Size button through HF-Chat-Bridge: live Dock returned to 380×520, persisted prefs returned to 380×520, and position remained x=954 / y=261.
+- Interactions telemetry recorded one resetDockSize call.
+- Reload persistence PASS: Dev returned at 380×520 with the reset button still present.
+- Initial raw-branch propagation briefly served v1.5.9; a later Auto Host fetch resolved v1.6.0 without host changes.
+- Public Stable remains unchanged pending explicit promotion.
+
+---
+
 ## 2026-09-25 — Issue #37 canonical Dev launcher pin
 
 - Canonical Dev launcher bumped to v1.6.0 / `1.6.0-issue-37-dock-size-reset`.
