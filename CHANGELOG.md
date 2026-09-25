@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 live UI gate
+
+- Dev Auto Host resolved canonical head `23e003d03824d70d036f988ae00c854461f482b9` and executed v1.9.5 in one attempt with no error.
+- Loader passed 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Bundled Polymorph Bold loaded from immutable payload `1f8333aa0b18bf9d880ccf9fa16ca03ef3102433`.
+- Tool tabs render at fixed 30px height; decal-gizmo mode buttons and High Res primary action both render at 30px.
+- High Res persistence label now reads `Enabled`; visible section headers render at ~36.9px after reduced vertical padding.
+- Brand-title width contracted from ~216.6px to ~199.4px while keeping the 34px emblem box, confirming tighter WITCH/emblem/DOCK spacing.
+- Shared dark-scrollbar / purple-hover / purple-checkbox styling is present in Styles v0.6.0; final appearance remains a human visual gate.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 launcher
 
 - Dev launcher -> v1.9.5 / `1.9.5-ui-standardization`.
