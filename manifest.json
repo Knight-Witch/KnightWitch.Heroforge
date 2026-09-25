@@ -27,9 +27,9 @@
       "path": "features/core/Witch_Dock_Assets.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.1.0",
-      "build": "0.1.0-known-good-compact-emblem",
-      "versionOrigin": "issue-10-stage-e-core-assets-2026-09-19"
+      "version": "0.2.0",
+      "build": "0.2.0-polymorph-display-fonts",
+      "versionOrigin": "issue-58-polymorph-fonts-2026-09-25"
     },
     {
       "id": "witch-dock-styles",
@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.3.0",
-      "build": "0.3.0-resize-border-reset-tooltip",
-      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
+      "version": "0.4.0",
+      "build": "0.4.0-polymorph-display-typography",
+      "versionOrigin": "issue-58-polymorph-fonts-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
