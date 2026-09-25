@@ -1,3 +1,18 @@
+## 2026-09-25 — Issue #41 Dev live gate
+
+### PASS
+
+- Dev Auto Host v0.2.0: launcher-executed, attempts=1, error=null.
+- Resolved branch head: `4083e846691290da2288e1017f6d03777dd8dabf`.
+- Dev launcher: v1.7.0 / `1.7.0-issue-41-delivery-header`.
+- Immutable payload: `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
+- Loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Header/About/Disclaimer DOM behavior matches #41 acceptance.
+- Reset Size remains visible.
+- No High Res runtime or diagnostic changes.
+
+---
+
 ## 2026-09-25 — Issue #41 live-smoke handoff
 
 ### PASS / human + Bridge smoke next
