@@ -1,3 +1,11 @@
+## 2026-09-24 — Issue #35 final payload-sync correction
+
+- Corrected the v1.5.9 Dev launcher payload pin from `904dd039d5e05511ab9d3737622991fd9970c5bb` to synchronized canonical payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- The corrected payload is the integrated runtime plus the matching v1.5.9 launcher registry metadata; diagnostic runtime code is unchanged.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Issue #35 High Res Diagnostic Capture v1 complete
 
 - Integrated High Res Diagnostic Capture v0.1.3 and its Utilities UI into canonical Dev.

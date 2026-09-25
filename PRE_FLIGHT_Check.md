@@ -1,3 +1,15 @@
+## 2026-09-24 — Issue #35 final payload-sync correction
+
+### PASS / pending one final reload
+
+- Dev launcher remains v1.5.9 / `1.5.9-issue-35-integrated`.
+- PAYLOAD_REF corrected to synchronized canonical payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- Payload manifest launcher registry is v1.5.9 / `1.5.9-issue-35-integrated`.
+- Diagnostic runtime code is unchanged.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-24 — Issue #35 High Res Diagnostic Capture v1 closeout
 
 ### PASS

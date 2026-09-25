@@ -7,13 +7,13 @@
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
-**Canonical Dev launcher:** v1.5.9 / payload `904dd039d5e05511ab9d3737622991fd9970c5bb`
+**Canonical Dev launcher:** v1.5.9 / payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`
 
 ## Current route
 
 Issue #35 is the active Dev task.
 
-The canonical Dev launcher is pinned to canonical-main payload `904dd039d5e05511ab9d3737622991fd9970c5bb` for the final #35 integration smoke through Amanda's installed Dev Auto Host v0.1.1. Normal loader resolution must remain immutable-payload-only with zero fallback requests.
+The canonical Dev launcher is pinned to canonical-main payload `c4fe7ef7f6307578823706de552b44b8a2a378dd` for the final #35 integration smoke through Amanda's installed Dev Auto Host v0.1.1. Normal loader resolution must remain immutable-payload-only with zero fallback requests.
 
 Payload contents:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
@@ -26,7 +26,7 @@ The validated #35 runtime is integrated on WITCH_DEV_MAIN. Final canonical-paylo
 ## First live gates
 
 1. Reload HeroForge through Dev Auto Host.
-2. Require launcher v1.5.9 / payload `904dd039d5e0…`.
+2. Require launcher v1.5.9 / payload `c4fe7ef7f630…`.
 3. Require loader 25/25, zero failures, immutable=25, fallback=0.
 4. Require Texture Quality v0.4.0 with prior behavior intact.
 5. Require High Res Diagnostics v0.1.0 and its Utilities UI.
