@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #41 public RC payload staging
+
+### PASS / launcher wrapper pending
+
+- Shared Shell/Modals/Core JavaScript parses.
+- Stable manifest parses with Shell v0.3.0, Modals v0.2.0, Core v2.1.0, Styles v0.2.0.
+- Existing Stable Reset Dock Size / Interactions / Utilities scope remains intact.
+- No High Res runtime or diagnostic files were staged.
+
+---
+
 ## 2026-09-25 — Issue #37 public v2.1.0 RC launcher
 
 ### PASS / public smoke pending
