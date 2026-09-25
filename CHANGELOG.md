@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #41 Dev live gate PASS
+
+- Dev Auto Host v0.2.0 resolved canonical `WITCH_DEV_MAIN` head `4083e846691290da2288e1017f6d03777dd8dabf` through GitHub's ref API and fetched the launcher from that immutable SHA.
+- WITCH DOCK - DEV v1.7.0 loaded payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
+- Loader completed 25/25 executed, 0 failed, immutable=25, fallback=0.
+- Core v2.1.0 is running; Dock geometry remains 380×520 CSS with one root/compact.
+- Dev title remains `WITCH DOCK - DEV v1.7.0` without duplicate version text.
+- Header Disclaimer button is absent. About contains a visible Disclaimer button and Version: 1.7.0; Disclaimer opens correctly from About.
+- Reset Size remains present in Utilities.
+- High Res issues #32/#34 remain untouched.
+
+---
+
 ## 2026-09-25 — Issue #41 live-smoke handoff
 
 - Canonical Dev launcher is v1.7.0, pinned to immutable payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
