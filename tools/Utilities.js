@@ -2,6 +2,9 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+  const VERSION = "1.3.1";
+  const BUILD = "1.3.1-dock-size-reset-version-meta";
+  const RESET_DOCK_SIZE_VERSION = "1.0.0";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
   const SLOT_URL = RAW_ROOT + "HeroForge_UI/HF_UI_Slot_Bridge.js";
@@ -48,7 +51,11 @@
       ".kwu .gizmo-meta{opacity:.7;margin-top:5px;font-size:10px;font-variant-numeric:tabular-nums;}" +
       ".kwu .gizmo-note{opacity:.72;margin-top:8px;font-size:11px;}" +
       ".kwu .feature-name{font-weight:800;font-size:12px;color:rgba(255,255,255,.92);margin-bottom:7px;}" +
-      ".kwu .booth-defaults{display:flex;flex-direction:column;gap:8px;}";
+      ".kwu .booth-defaults{display:flex;flex-direction:column;gap:8px;}" +
+      ".kwu .action-btn{background:rgba(255,255,255,.10);color:#e8e8e8;border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700;}" +
+      ".kwu .action-btn:hover{background:rgba(255,255,255,.16);}" +
+      ".kwu .dev-subtool-version{display:none;margin-left:5px;font-size:9px;font-weight:650;opacity:.58;font-variant-numeric:tabular-nums;}" +
+      "#kwWitchDock.kwWDDeveloperMode .kwu .dev-subtool-version{display:inline;}";
     document.head.appendChild(style);
   }
 
@@ -235,6 +242,54 @@
     return { input, status };
   }
 
+  function renderDockSection(root, api) {
+    const section = api.ui.createSection({
+      id: "witch-dock",
+      title: "Witch Dock",
+      defaultCollapsed: false
+    });
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const main = document.createElement("div");
+    main.className = "main";
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = "Reset Dock Size";
+    const version = document.createElement("span");
+    version.className = "dev-subtool-version";
+    version.textContent = `v${RESET_DOCK_SIZE_VERSION}`;
+    name.appendChild(version);
+
+    const desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = "Force Witch Dock back to its default 380 × 520 px size.";
+
+    const status = document.createElement("div");
+    status.className = "status";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "action-btn";
+    button.textContent = "Reset Size";
+    button.addEventListener("click", () => {
+      const interactions = UW.KWWitchDockInteractions;
+      if (!interactions || typeof interactions.resetDockSize !== "function") {
+        status.textContent = "Dock resize service unavailable.";
+        return;
+      }
+      const result = interactions.resetDockSize();
+      status.textContent = `Dock reset to ${result.width} × ${result.height}px.`;
+    });
+
+    main.append(name, desc, status);
+    row.append(main, button);
+    section.body.appendChild(row);
+    root.appendChild(section.root);
+  }
+
   function renderBoothSection(root, api) {
     const section = api.ui.createSection({
       id: "booth-features",
@@ -412,6 +467,7 @@
     root.className = "kwu";
     container.appendChild(root);
 
+    renderDockSection(root, api);
     renderBoothSection(root, api);
     renderGizmoSection(root, api);
 
@@ -437,6 +493,8 @@
       id: "utilities",
       tab: "Utilities",
       title: "Utilities",
+      version: VERSION,
+      build: BUILD,
       render: function (container, api) {
         renderTool(container, api);
       }
