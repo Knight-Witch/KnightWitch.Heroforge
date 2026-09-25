@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #41 canonical Dev v1.8.0 pin
+
+### PASS / live gesture smoke pending
+
+- Launcher JavaScript parse passed.
+- @version / DEV_VERSION synchronized at v1.8.0.
+- DEV_BUILD is `1.8.0-resize-border-reset`.
+- PAYLOAD_REF is immutable `b4bd42695ab5280f723290525aa0b8f0e9b83dbf`.
+- Shell/Core expected contracts match the staged payload.
+- No High Res runtime or diagnostic files changed.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev v1.8.0 payload staging
 
 ### PASS / launcher pin pending
