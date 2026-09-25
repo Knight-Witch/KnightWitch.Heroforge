@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "devBranch": "WITCH_DEV_MAIN",
   "stableBranch": "Witch_Scripts",
-  "stableBaseline": "50b22b3f9d8bf030f958b5372e008bca5404fa1d",
+  "stableBaseline": "d2d2298e1949da71d64bb11e880f5af6868809f8",
   "runtimeDivergences": [
     {
       "issue": 19,
@@ -41,24 +41,9 @@
       ]
     },
     {
-      "issue": 32,
-      "status": "dev-candidate",
-      "reason": "High Res body paint segmentation requires supported body AAID source selection independent of the protected 2048 atlas allocation. Dev v0.4.1 preloads each body's native-supported AAID and keeps native getAAID behavior while overriding only its synchronous size lookup; Public Stable remains unchanged pending live structural and human visual validation.",
-      "paths": [
-        "manifest.json",
-        "features/rendering/Texture_Quality_Native_Reconcile.js"
-      ],
-      "acceptance": [
-        "Robot and Human HR ON bind real non-1x1 body AAIDs at each part's supported size while body atlas allocations remain 2048.",
-        "Native body masks and existing #24 restore behavior remain intact.",
-        "AAID lookup wrapper and temporary getTextureSize override are fully restored on HR OFF/failure/lifecycle retirement.",
-        "Amanda confirms native OFF body paint-zone segmentation is visually preserved under HR ON before Stable promotion."
-      ]
-    },
-    {
       "issue": 58,
       "status": "dev-candidate",
-      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold display fonts for header and bold-label typography. Public Stable remains v2.2.1 until the live font-load and human visual gates pass.",
+      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold display fonts for header and bold-label typography. Public Stable is v2.2.2; the Polymorph font candidate remains Dev-only until the live font-load and human visual gates pass.",
       "paths": [
         "manifest.json",
         "features/core/Witch_Dock_Assets.js",
@@ -79,11 +64,11 @@
   "notes": [
     "Issue #20 is complete: public v2.0.1 is live on Witch_Scripts with Booth v27.1.0 and passed Stable smoke plus Amanda's real-file export/import confirmation.",
     "Issue #24 is complete: public v2.0.3 carries Texture Quality Native Reconcile v0.3.7 and passed the scoped Stable visual ON-to-OFF tint gate. Intermittent restore-verifier warning telemetry is tracked separately as issue #34.",
-    "Issue #32 HR body paint zone collapse is active in Dev with a supported-AAID binding candidate; it remains separate from issue #34 and is not yet promoted.",
+    "Issue #32 is complete: public Stable v2.2.2 carries Texture Quality v0.3.8 supported body-AAID binding and passed Stable Half Dragon HR ON + native OFF restore smoke after Human/Robot visual approval.",
     "The two Dev-only JS files are archived issue #26 bone-detection references under HISTORY/REFERENCES and are not runtime modules.",
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
     "Issue #35 is complete: High Res Diagnostic Capture v0.1.3 is canonical Dev-only tooling and #32 is routed to use it as standardized evidence collection.",
-    "Issues #37 and #41 are complete: public Stable v2.2.1 carries Dock size reset, resize-border double-click reset, visible runtime version, Disclaimer-in-About, and self-refreshing Stable delivery; canonical Dev v1.8.0 carries the same shared runtime plus intentional Dev-only diagnostics."
+    "Issues #37 and #41 are complete: public Stable v2.2.2 carries Dock size reset, resize-border double-click reset, visible runtime version, Disclaimer-in-About, and self-refreshing Stable delivery; canonical Dev v1.8.0 carries the same shared runtime plus intentional Dev-only diagnostics."
   ]
 }

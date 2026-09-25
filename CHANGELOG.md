@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #32 public v2.2.2 closeout
+
+- Public Stable v2.2.2 / `2.2.2-issue-32-body-aaid-binding` is live at `d2d2298e1949da71d64bb11e880f5af6868809f8`, payload `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`.
+- Stable loader smoke passed 23/23 with immutable=23, fallback=0, failed=0.
+- Stable Half Dragon smoke verified real 1024 upper/lower body AAIDs with 2048 allocations under HR ON; native OFF restore passed and rebound real 512 body AAIDs.
+- Human and Robot visual gates passed before promotion; Robot/Human/Canine structural Dev regressions passed.
+- #32 divergence removed; Dev v0.4.1 remains the issue #35 diagnostic superset of shipped Stable v0.3.8.
+- Issue #58 resumes as active Dev work. Exact #32 branch deletion is routed through `docs/BRANCH_DELETION_HANDOFF_ISSUE_32_2026-09-25.md`.
+
+---
+
 ## 2026-09-25 — Issue #32 automated Dev structural gate
 
 - Canonical Dev v1.9.1 / payload `9aed4edee07e9ca746b6e49a8a8bf071e50fd996`: loader PASS 25/25, failed=0, immutable=25, fallback=0.

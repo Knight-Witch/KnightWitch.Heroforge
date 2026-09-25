@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #32 public v2.2.2 closeout
+
+### PASS / mechanical branch deletion pending
+
+- Stable host resolved `Witch_Scripts` head `d2d2298e1949da71d64bb11e880f5af6868809f8` with launcher v2.2.2 and payload `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`.
+- Stable module loader: 23/23 executed; immutable=23; fallback=0; failed=0.
+- Texture Quality v0.3.8 verify PASS on Half Dragon with body allocations 2048×2048 and real 1024×1024 upper/lower AAIDs.
+- Stable native OFF restore PASS; body AAIDs returned to real 512×512 native textures.
+- No Dev launcher/global was present in the Stable session.
+- #32 Dev divergence removed; #35 diagnostics and #58 font candidate remain isolated intentional Dev differences.
+- Temporary #32 refs are safely preserved by canonical history and have an exact deletion handoff.
+
+---
+
 ## 2026-09-25 — Issue #32 automated Dev structural gate
 
 ### PASS / human visual gate pending
