@@ -35,7 +35,7 @@
           font-family: "${FONT_FAMILY}";
           src: url("${boldUrl}") format("truetype");
           font-style: normal;
-          font-weight: 700 900;
+          font-weight: 700;
           font-display: swap;
         }
       `;
@@ -56,7 +56,7 @@
         ? fonts.check(`400 16px "${FONT_FAMILY}"`)
         : null,
       boldLoaded: fonts && typeof fonts.check === "function"
-        ? fonts.check(`800 16px "${FONT_FAMILY}"`)
+        ? fonts.check(`700 16px "${FONT_FAMILY}"`)
         : null
     };
   }
