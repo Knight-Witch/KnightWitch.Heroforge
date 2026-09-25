@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #37 canonical Dev launcher pin
+
+### PASS / live Dev smoke pending
+
+- Launcher static JavaScript parse passed after v1.6.0 payload pin.
+- Immutable payload: `67f06a0e691c4a96a71c83258fac8130df73b950`.
+- Expected Interactions contract synchronized to v0.6.0 / `0.6.0-dock-size-reset`.
+- Manifest already stages launcher v1.6.0, Interactions v0.6.0, and Utilities v1.3.0.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-25 — Issue #37 dock default-size reset candidate
 
 ### PASS / live Dev validation pending
