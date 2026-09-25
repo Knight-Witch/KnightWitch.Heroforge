@@ -50,11 +50,11 @@
       .kwTextureQualityActions button,.kwTextureQualityAdvanced button{border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:0 10px;min-height:30px;background:rgba(255,255,255,.06);color:inherit;font-size:12px;font-weight:600;cursor:pointer;}
       .kwTextureQualityActions button:hover:not(:disabled),.kwTextureQualityAdvanced button:hover:not(:disabled){background:rgba(170,85,255,.24);border-color:rgba(190,130,255,.72);}
       .kwTextureQualityActions button:disabled,.kwTextureQualityAdvanced button:disabled{opacity:.42;cursor:default;}
-      .kwTextureQualityPersistentRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 9px;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(255,255,255,.035);}
-      .kwTextureQualityPersistentMain{min-width:0;display:flex;flex-direction:column;gap:3px;}
-      .kwTextureQualityPersistentName{font-size:11px;font-weight:800;color:rgba(255,255,255,.92);}
-      .kwTextureQualityPersistentDesc{font-size:10px;line-height:1.35;color:rgba(255,255,255,.62);}
-      .kwTextureQualityPersistentToggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:rgba(255,255,255,.82);}
+      .kwTextureQualityPersistentRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(255,255,255,.035);}
+      .kwTextureQualityPersistentMain{min-width:0;display:flex;flex-direction:column;gap:4px;}
+      .kwTextureQualityPersistentName{font-size:12px;font-weight:600;color:rgba(255,255,255,.92);}
+      .kwTextureQualityPersistentDesc{font-size:11px;line-height:1.3;color:rgba(255,255,255,.68);}
+      .kwTextureQualityPersistentToggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.82);}
       .kwTextureQualityPersistentToggle input{transform:translateY(1px);}
       .kwTextureQualityStatus{min-height:16px;font-size:11px;line-height:1.35;font-weight:700;overflow-wrap:anywhere;}
       .kwTextureQualityStatus[data-error="1"]{color:#ff8a8a;}
