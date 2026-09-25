@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 title/alignment refinement
+
+- Witch Dock Shell -> v0.5.1 / `0.5.1-inline-version-title-alignment`.
+- Witch Dock Styles -> v0.5.1 / `0.5.1-title-button-alignment`.
+- Enlarged the embedded Witch Dock emblem from 14px to 20px.
+- Moved Dev/version metadata from the lower line to immediately after the branded `WITCH [emblem] DOCK` title.
+- Centered the title group within the header space left of the window controls to avoid overlap at the default Dock width.
+- Applied shared inline-flex alignment and line-height to Dock buttons so text sits vertically centered.
+- Public Stable remains v2.2.2 pending the live/human gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.2 launcher
 
 - Dev launcher -> v1.9.2 / `1.9.2-title-typography-refine`.
