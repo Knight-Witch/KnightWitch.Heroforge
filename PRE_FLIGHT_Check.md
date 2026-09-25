@@ -1,3 +1,24 @@
+## 2026-09-24 — Issue #35 High Res Diagnostic Capture v1 closeout
+
+### PASS
+
+- Canonical Dev launcher: v1.5.9 / `1.5.9-issue-35-integrated`.
+- Immutable payload: `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- Loader: 25/25 executed, 0 failed, immutable=25, fallback=0.
+- Texture Quality: v0.4.0 / `0.4.0-diagnostic-state-seam`.
+- High Res Diagnostics: v0.1.3 / `0.1.3-addressable-comparison-sections`.
+- High Res Diagnostics UI: v0.1.0 under Utilities; Booth untouched.
+- `Capture Current State` before/after proof: HR remained OFF, idle, no error, same native atlas/restore state.
+- Controlled Robot Native OFF → High Res ON comparison completed once and restored OFF with native restore verification PASS.
+- `getComparisonSection(snapshot, section)` returns targeted OFF/ON evidence without whole-snapshot Bridge overflow.
+- Public Stable unchanged.
+
+### Scope note
+
+Robot/#32 was only the validation fixture. #32 diagnosis/fix resumes separately from the standardized capture evidence.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.9 candidate
 
 ### PASS / pending final smoke
