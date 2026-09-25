@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 baseline live gate
+
+- Dev Auto Host resolved canonical head `05425389d24e57b054d3118eeb7c8edf40808167` and executed v1.9.6 with no error.
+- Loader passed 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Live geometry now reports both Polymorph title words ending at y=35.73 and `DEV · v1.9.6` ending at y=35.73: exact requested bottom alignment.
+- Public Stable remains v2.2.2; final human visual approval remains pending.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 launcher
 
 - Dev launcher -> v1.9.6 / `1.9.6-title-version-baseline`.
