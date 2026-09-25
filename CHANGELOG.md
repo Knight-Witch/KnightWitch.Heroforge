@@ -1,3 +1,14 @@
+## 2026-09-24 — Issue #35 final canonical smoke / route back to #32
+
+- Confirmed Dev Auto Host loaded canonical launcher v1.5.9 / `1.5.9-issue-35-integrated` from payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- Final loader smoke PASS: 25/25 executed, 0 failed, immutable=25, fallback=0.
+- High Res Diagnostics v0.1.3 loaded successfully and its UI is registered under Utilities.
+- #35 and superseded PR #36 are closed; `ACTIVE_CONTEXT.md` routes active work back to #32.
+- Added exact cleanup handoff for temporary branch `wd/35-hr-diagnostic-capture`.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Issue #35 final payload-sync correction
 
 - Corrected the v1.5.9 Dev launcher payload pin from `904dd039d5e05511ab9d3737622991fd9970c5bb` to synchronized canonical payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.

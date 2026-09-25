@@ -1,3 +1,25 @@
+## 2026-09-24 — Issue #35 final canonical payload smoke
+
+### PASS
+
+- Dev launcher: v1.5.9 / `1.5.9-issue-35-integrated`.
+- Immutable payload: `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
+- Loader: 25/25 executed, 0 failed, immutable=25, fallback=0.
+- Diagnostics: v0.1.3 / `0.1.3-addressable-comparison-sections`.
+- Utilities registry includes `texture-quality-diagnostics-ui`.
+- Bridge remained healthy on Robot route after the reload.
+- This gate verifies the diagnostic tool, not #32 root cause.
+- Public Stable unchanged.
+
+### Closeout
+
+- Issue #35 closed.
+- PR #36 closed as superseded by the canonical Dev integration.
+- Active route returns to #32.
+- One disposable task branch remains for deletion via the branch handoff.
+
+---
+
 ## 2026-09-24 — Issue #35 final payload-sync correction
 
 ### PASS / pending one final reload

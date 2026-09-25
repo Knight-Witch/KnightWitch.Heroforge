@@ -22,8 +22,8 @@
     },
     {
       "issue": 35,
-      "status": "canonical-dev-final-smoke",
-      "reason": "High Res Diagnostics v0.1.3 is integrated into WITCH_DEV_MAIN. Canonical Dev launcher v1.5.9 pins the canonical integration commit for final startup smoke; public Stable remains intentionally unchanged.",
+      "status": "canonical-dev-diagnostic-provider",
+      "reason": "Issue #35 is complete. High Res Diagnostics v0.1.3 is intentionally Dev-only in WITCH_DEV_MAIN; final canonical payload smoke passed 25/25 with zero failures, and public Stable remains intentionally unchanged.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -32,10 +32,11 @@
         "features/rendering/Texture_Quality_Diagnostics_UI.js"
       ],
       "acceptance": [
-        "Launcher v1.5.5 resolves the exact issue #35 payload with zero fallback.",
-        "Loader executes 25/25 modules with zero failures.",
+        "Canonical Dev launcher v1.5.9 resolves payload c4fe7ef7f6307578823706de552b44b8a2a378dd with immutable=25, fallback=0, failed=0.",
         "Capture Current State is observational.",
-        "Robot #32 provides the first controlled Native OFF to High Res ON differential.",
+        "Controlled Native OFF to High Res ON comparison restores original state.",
+        "Comparison sections are addressable without whole-snapshot retrieval.",
+        "Diagnostics UI is registered under Utilities and Booth remains untouched.",
         "Public Stable remains untouched."
       ]
     }
@@ -46,6 +47,7 @@
     "Issue #32 HR body paint zone collapse remains open and separate from issue #34.",
     "The two Dev-only JS files are archived issue #26 bone-detection references under HISTORY/REFERENCES and are not runtime modules.",
     "Governance/documentation files are not runtime divergences.",
-    "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency."
+    "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
+    "Issue #35 is complete: High Res Diagnostic Capture v0.1.3 is canonical Dev-only tooling and #32 is routed to use it as standardized evidence collection."
   ]
 }
