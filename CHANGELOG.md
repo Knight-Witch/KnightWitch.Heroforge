@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #41 update-delivery/header maintenance candidate
+
+- Added a dedicated compact runtime-version slot beside the Witch Dock title; Stable will show its version there while Dev keeps its existing versioned title without duplication.
+- Removed the Disclaimer button from the Dock header and retained Disclaimer access inside About.
+- Staged Shell v0.3.0, Modals v0.2.0, Core v2.1.0, and Styles v0.2.0.
+- This maintenance is isolated from paused High Res issues #32/#34.
+- Dev Auto Host immutable-head resolution and Stable self-refreshing launcher delivery are the remaining #41 implementation pieces.
+
+---
+
 ## 2026-09-25 — Issue #37 canonical Dev v1.6.1 pin
 
 - Dev launcher advanced to v1.6.1 / `1.6.1-issue-37-version-meta`.
