@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #37 public RC payload staging
+
+- Staged Dock default-size reset for public Stable.
+- Witch Dock Interactions -> v0.6.0 / `0.6.0-dock-size-reset`.
+- Utilities -> v1.3.1 / `1.3.1-dock-size-reset-version-meta`.
+- Reset Dock Size subtool version v1.0.0 is visible only in Developer Mode.
+- Exact promoted runtime bytes come from validated canonical Dev payload `c050a600d878a834656fbb04fad747c24c50ec53`.
+- High Res issues #32/#34 and their Dev-only diagnostics are not part of this RC.
+
+---
+
 ## 2026-09-24 — Public 2.0.3 corrected Stable candidate
 
 - Public launcher advances 2.0.2 -> 2.0.3 and pins immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`.
