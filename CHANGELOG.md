@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #37 version metadata refinement
+
+- Utilities now explicitly reports v1.3.1 / `1.3.1-dock-size-reset-version-meta` to Developer Mode instead of relying only on manifest fallback.
+- Reset Dock Size carries subtool version v1.0.0, rendered inside Utilities only while Developer Mode is enabled.
+- Normal Utilities presentation is unchanged while Developer Mode is off.
+- This remains issue #37 scope only; repository-wide version-display normalization is deferred to issue #42.
+- High Res issues #32/#34 are untouched.
+
+---
+
 ## 2026-09-25 — Issue #37 Dev live gate PASS
 
 - Dev Auto Host v0.1.1 loaded Witch Dock Dev v1.6.0 with Interactions v0.6.0 and Utilities v1.3.0.
