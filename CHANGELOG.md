@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #37 dock default-size reset candidate
+
+- Added a Utilities → Witch Dock → Reset Size control targeting the canonical 380×520 Dock dimensions.
+- Added Interactions-owned reset logic so the live in-memory preferences and persisted size are updated together; Dock position is preserved.
+- Reset clears the current computed minimum-width cache back to the 260px baseline so a stale oversized minimum cannot block the 380px reset.
+- Bumped Witch Dock Interactions to v0.6.0 and Utilities to v1.3.0; staged Dev launcher v1.6.0 metadata for the immutable payload handoff.
+- Public Stable unchanged; live Dev validation pending.
+
+---
+
 ## 2026-09-24 — Issue #35 final canonical smoke / route back to #32
 
 - Confirmed Dev Auto Host loaded canonical launcher v1.5.9 / `1.5.9-issue-35-integrated` from payload `c4fe7ef7f6307578823706de552b44b8a2a378dd`.
