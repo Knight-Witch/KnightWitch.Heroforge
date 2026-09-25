@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 launcher
+
+### PASS — source pin / live gate pending
+
+- Userscript @version, DEV_VERSION, manifest launcher registry, and DEV_BUILD are synchronized at v1.9.6 / `1.9.6-title-version-baseline`.
+- Launcher pins immutable payload `4d7a92d183515fb59f93685632c2afeec0691a00`.
+- Shared Core/Shell/API expectations are unchanged.
+- Public Stable remains v2.2.2.
+- Next: reload through Dev Auto Host and verify title-word/version bottoms align while loader/font/runtime state stays clean.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 payload staging
 
 ### PASS — payload composition / live gate pending
