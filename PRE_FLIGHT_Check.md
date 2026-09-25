@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 launcher
+
+### PASS — source pin / live gate pending
+
+- Userscript @version, DEV_VERSION, manifest launcher registry, and DEV_BUILD are synchronized at v1.9.4 / `1.9.4-compact-left-brand-header`.
+- Launcher pins immutable payload `730794910cd23bb3e3d2fce4d52415b60fe52aeb`.
+- Core/Shell API expectations remain unchanged; the payload style version is v0.5.2.
+- Public Stable remains v2.2.2.
+- Next: reload through Dev Auto Host and verify loader/font/title geometry/button layout before Amanda's visual gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 payload staging
 
 ### PASS — payload composition / live gate pending
