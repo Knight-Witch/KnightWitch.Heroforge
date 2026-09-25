@@ -7,17 +7,17 @@
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
-**Canonical Dev launcher:** v1.5.6 / payload `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb`
+**Canonical Dev launcher:** v1.5.7 / payload `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff`
 
 ## Current route
 
 Issue #35 is the active Dev task.
 
-The canonical Dev launcher is temporarily pinned to the unmerged issue-branch payload `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb` for live validation through Amanda's installed Dev Auto Host v0.1.1. Normal loader resolution must remain immutable-payload-only with zero fallback requests.
+The canonical Dev launcher is temporarily pinned to the unmerged issue-branch payload `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff` for live validation through Amanda's installed Dev Auto Host v0.1.1. Normal loader resolution must remain immutable-payload-only with zero fallback requests.
 
 Payload contents:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
-- High Res Diagnostic Capture v0.1.1 / `0.1.1-bridge-section-selection`;
+- High Res Diagnostic Capture v0.1.2 / `0.1.2-stable-restore-semantic-delta`;
 - High Res Diagnostic Capture UI v0.1.0 / `0.1.0-hr-capture-v1-ui`;
 - 25 manifest modules total.
 
@@ -26,7 +26,7 @@ The task branch `wd/35-hr-diagnostic-capture` remains unmerged until the live ga
 ## First live gates
 
 1. Reload HeroForge through Dev Auto Host.
-2. Require launcher v1.5.6 / payload `5dbccc5fc640…`.
+2. Require launcher v1.5.7 / payload `e3ce6c5a344a…`.
 3. Require loader 25/25, zero failures, immutable=25, fallback=0.
 4. Require Texture Quality v0.4.0 with prior behavior intact.
 5. Require High Res Diagnostics v0.1.0 and its Utilities UI.

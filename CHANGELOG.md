@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.7 for diagnostics v0.1.2
+
+- Advanced canonical Dev launcher to v1.5.7 / `1.5.7-issue-35-hr-diagnostics-v012`.
+- Pinned exact immutable task payload `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff` containing High Res Diagnostics v0.1.2.
+- Prior Robot state was restored OFF and native restore verification passed before this repin.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.6 for diagnostics v0.1.1
 
 - Advanced Dev Auto Host target launcher to v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.

@@ -1,3 +1,15 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.7 candidate
+
+### PASS / pending live reload
+
+- Fixed userscript identity remains `WITCH DOCK - DEV` / `KnightWitch`.
+- `@version`, runtime `DEV_VERSION`, and canonical launcher registry are synchronized at v1.5.7.
+- `DEV_BUILD`: `1.5.7-issue-35-hr-diagnostics-v012`.
+- Exact payload: `e3ce6c5a344a883e6e8e0d1b2f1de1a02a794bff`.
+- Pending live gate: 25/25 executed, 0 failed, immutable=25, fallback=0, Diagnostics v0.1.2, then one Robot comparison with automatic original-state restoration.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.6 candidate
 
 ### PASS / pending reload
