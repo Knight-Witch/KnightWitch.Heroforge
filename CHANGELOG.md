@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #37 canonical Dev launcher pin
+
+- Canonical Dev launcher bumped to v1.6.0 / `1.6.0-issue-37-dock-size-reset`.
+- Launcher now pins immutable payload `67f06a0e691c4a96a71c83258fac8130df73b950` containing Interactions v0.6.0 and Utilities v1.3.0.
+- Launcher compatibility expectation updated for Witch Dock Interactions v0.6.0.
+- Public Stable remains unchanged; live Dev smoke is the remaining gate.
+
+---
+
 ## 2026-09-25 — Issue #37 dock default-size reset candidate
 
 - Added a Utilities → Witch Dock → Reset Size control targeting the canonical 380×520 Dock dimensions.
