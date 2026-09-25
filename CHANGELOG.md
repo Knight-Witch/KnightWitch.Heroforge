@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 launcher
+
+- Dev launcher -> v1.9.5 / `1.9.5-ui-standardization`.
+- Pins immutable payload `1f8333aa0b18bf9d880ccf9fa16ca03ef3102433`.
+- Shared Core/Shell API expectations remain unchanged; Styles v0.6.0 and Texture Quality UI v0.3.0 are payload-delivered.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 payload staging
 
 - Dev launcher registry staged at v1.9.5 / `1.9.5-ui-standardization`.
