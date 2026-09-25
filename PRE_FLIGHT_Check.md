@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #58 compact left header refinement
+
+### PENDING live/human gate
+
+- Runtime scope is style-only: no Core/Shell/High Res logic changed.
+- Styles v0.5.2 left-aligns the brand, uses a 34px emblem with compact negative margins, reduces title-bar vertical padding, and pulls version metadata closer to DOCK.
+- Shared button typography remains system-font semibold; line-height/padding now favor optical vertical centering.
+- Manifest registry is synchronized to Styles v0.5.2 / `0.5.2-compact-left-brand-header`.
+- Public Stable remains v2.2.2.
+- Next: static check, immutable Dev v1.9.4 payload/launcher, live Bridge geometry/font regression, then Amanda visual gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.3 live gate
 
 ### PASS — human visual gate pending

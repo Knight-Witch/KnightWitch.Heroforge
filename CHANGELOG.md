@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 compact left header refinement
+
+- Witch Dock Styles -> v0.5.2 / `0.5.2-compact-left-brand-header`.
+- Left-aligns the branded title with the Dock content instead of centering it.
+- Enlarges the emblem box from 20px to 34px while using negative horizontal margins to keep WITCH/DOCK visually tighter rather than widening the title.
+- Reduces header vertical padding from 10px/8px to 4px/4px so the larger emblem does not fatten the title bar.
+- Pulls muted Dev/version metadata closer to the end of DOCK.
+- Tightens global button line-height and adds optical vertical-padding corrections for tabs, Texture Quality buttons, and Utilities action/gizmo buttons.
+- Public Stable remains v2.2.2 pending live Dev and human visual gates.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.3 live gate
 
 - Dev Auto Host resolved canonical head `024602202fc5a2bc77393529a57b30047ab3a54a` and executed v1.9.3 in one attempt with no error.

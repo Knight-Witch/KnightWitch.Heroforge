@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.5.1",
-      "build": "0.5.1-title-button-alignment",
-      "versionOrigin": "issue-58-title-alignment-2026-09-25"
+      "version": "0.5.2",
+      "build": "0.5.2-compact-left-brand-header",
+      "versionOrigin": "issue-58-header-compact-left-2026-09-25"
     },
     {
       "id": "witch-dock-modals",

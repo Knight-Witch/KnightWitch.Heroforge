@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 10px 10px 8px 10px;
+  padding: 4px 10px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   user-select: none;
   cursor: move;
@@ -35,15 +35,15 @@
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   white-space: nowrap;
   pointer-events: none;
 }
 #kwWDTitle{
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  justify-content: flex-start;
+  gap: 4px;
   font-family: "KW Polymorph", system-ui, sans-serif;
   font-size: 16px;
   line-height: 1;
@@ -52,16 +52,18 @@
 }
 .kwWDTitleWord{ display:inline-block; }
 #kwWDTitleEmblem{
-  width: 20px;
-  height: 20px;
+  width: 34px;
+  height: 34px;
   flex: 0 0 auto;
   display: block;
   object-fit: contain;
-  opacity: 0.94;
+  margin-left: -6px;
+  margin-right: -6px;
+  opacity: 1;
 }
 #kwWDTitleVersion{
   align-self: center;
-  margin-left: 2px;
+  margin-left: -2px;
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
   font-size: 8px;
   line-height: 1;
@@ -269,7 +271,7 @@
   background: rgba(255,255,255,0.06);
   color: #eee;
   border-radius: 6px;
-  padding: 5px 10px;
+  padding: 6px 10px 4px;
   cursor: default;
   font-size: 12px;
   font-weight: 600;
@@ -784,8 +786,9 @@
   justify-content: center;
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1;
   letter-spacing: 0.12px;
+  text-align: center;
 }
 #kwWitchDock label{ font-weight: 500; }
 #kwWitchDock strong{ font-weight: 650; }
@@ -800,5 +803,20 @@
   font-family: inherit;
   font-weight: 600;
   letter-spacing: 0.15px;
+}
+
+/* Optical centering for common text-button surfaces. Keep total vertical padding unchanged. */
+#kwWitchDock .kwTextureQualityActions button,
+#kwWitchDock .kwTextureQualityAdvanced button{
+  padding-top: 8px;
+  padding-bottom: 6px;
+}
+#kwWitchDock .kwu .action-btn{
+  padding-top: 8px;
+  padding-bottom: 6px;
+}
+#kwWitchDock .kwu .gizmo-modes button{
+  padding-top: 7px;
+  padding-bottom: 5px;
 }
 
