@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 baseline live gate
+
+### PASS — human visual gate pending
+
+- Auto Host resolved exact canonical Dev head `05425389d24e57b054d3118eeb7c8edf40808167`; launcher v1.9.6 / payload `4d7a92d183515fb59f93685632c2afeec0691a00`.
+- Loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- WITCH bottom: y=35.73.
+- DOCK bottom: y=35.73.
+- `DEV · v1.9.6` bottom: y=35.73.
+- Baseline correction is exact and did not alter title/emblem/header geometry otherwise.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.6 launcher
 
 ### PASS — source pin / live gate pending
