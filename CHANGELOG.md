@@ -1,3 +1,13 @@
+## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
+
+- Added Dev-only High Res Diagnostic Capture service/UI v0.1.0 with structured schema v1, sectional manifest, figure/part inventory, paint signatures, atlas/material/color-bake/resource state, coverage reporting, local JSON export, and controlled Native OFF → High Res ON comparison.
+- Advanced Texture Quality Native Reconcile to v0.4.0 / `0.4.0-diagnostic-state-seam` solely for a backward-compatible read-only snapshot of its private session baselines/masks/native-source facts; rendering/reconcile behavior is unchanged.
+- Routed the temporary UI to Utilities. Booth is untouched.
+- #32 Robot (`59568049`) is the first live validation fixture; #34 and public Stable remain untouched.
+- This commit is a task-branch candidate pending syntax/static checks and live Dev validation.
+
+---
+
 ## 2026-09-24 — Issue #24 public v2.0.3 Stable smoke / Dev reconciliation
 
 - Public Stable v2.0.3 is live from immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`; live loader smoke passed 23/23 executed, 0 failed, immutable=23, fallback=0.

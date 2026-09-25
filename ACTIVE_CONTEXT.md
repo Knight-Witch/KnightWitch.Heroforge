@@ -2,43 +2,52 @@
 
 **Updated:** 2026-09-24  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #34 — **HR false restore warning / native body mask verification**  
-**Separate active bug:** issue #32 — **HR body paint zone collapse**  
+**Active task:** issue #35 — **High Res diagnostic capture**  
+**Paused validation bug:** issue #32 — **HR body paint zone collapse**  
+**Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
 **Canonical Dev launcher:** v1.5.4 / payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`
 
 ## Current route
 
-Issue #24 — **HR ON/OFF body visual paint tint change** is resolved and promoted.
+Build the smallest usable Dev-only High Res Diagnostic Capture v1 under issue #35 before resuming #32.
 
-Public v2.0.3 live smoke confirms Stable identity v2.0.3 / `2.0.3-issue-24-colorbake-restore`, immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`, loader 23/23 with 0 failures, and Texture Quality v0.3.7 / `0.3.7-refresh-native-color-bake`. Amanda confirmed the Stable ON→OFF body-tint result is visually correct.
+Implementation branch: `wd/35-hr-diagnostic-capture`.
 
-During that smoke, an intermittent `OFF / restore warning — primary: bodyLower native color-bake mask was not adopted` was captured while the resulting native state remained visually correct and structurally coherent. That warning is isolated as **#34** and must not reopen #24 unless an actual visual tint regression returns.
+Initial provider scope:
+- immutable/current read-only snapshot;
+- figure/part/slot inventory;
+- model `paints` / `paintByIntent` values + signatures;
+- atlas dimensions/allocations;
+- body mask/material bindings and referenced resources;
+- color-bake structural/target state;
+- Texture Quality public + narrow private diagnostic state;
+- explicit coverage/missing-data manifest;
+- compact deterministic summary;
+- local JSON export;
+- controlled Native OFF → High Res ON comparison with at-most-once lifecycle transitions and restoration readback.
 
-For #34, start with the captured verifier hypotheses:
-1. restore verification may incorrectly derive expected body-mask size from `nativeSources.usedTextureSize` when the supported native mask is smaller;
-2. HeroForge shared-resource cache identity may make a correctly restored native mask object equal the previously loaded HR mask object, falsely triggering the retained-override assertion.
+The capture layer records evidence; it must not narrow collection around a presumed #32 cause.
 
-Bridge evidence: HF-Chat-Bridge #3391, #3392, #3394, #3395.
+## First real validation fixture
 
-## #24 reconciliation / janitorial state
+Issue #32 Robot — config `59568049`.
 
-- Dev and Stable Texture Quality source blob are identical: `09d92a14595077d49ec928263c6aab7ca3ef468a`.
-- All 36 shared non-launcher runtime JS/CSS paths were checked byte-for-byte with zero mismatches.
-- Non-launcher module registry parity is restored; issue #24 is removed from `DEV_DIVERGENCES.json`.
-- Temporary #24 branches are queued for exact mechanical deletion through `docs/BRANCH_DELETION_HANDOFF_ISSUE_24_2026-09-24.md`.
-- Janitorial branch deletion is tracked by issue #14. Do not re-audit unless live branch state contradicts the handoff.
+Pause manual #32 probing. After #35 static/live startup validation, use Robot as the first Native OFF → HR ON differential capture. If the capture fails to expose any meaningful divergence while the visual bug reproduces, treat that as evidence that the diagnostic surface is missing a layer and extend #35 before brute-forcing the remaining #32 fixture matrix.
 
 ## Scope boundaries
 
-- #32 — **HR body paint zone collapse** remains separate from #34.
-- #34 is a restore-verification/warning problem unless evidence proves an actual restore failure.
-- #29 — HF Core Tweaks console flood remains unrelated.
+- #35 does not fix #32.
+- #35 does not fix or reinterpret #34.
+- #24 remains resolved unless its actual visual ON→OFF tint defect returns.
+- Public Stable stays untouched.
+- HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
 
 ## Protected state
 
 - Keep `Witch_Scripts` public Stable.
 - Keep `WITCH_DEV_MAIN` canonical Dev.
-- Keep the exact protected branches listed in the #24 deletion handoff.
-- HF-Chat-Bridge remains development infrastructure only and never a Witch Dock runtime dependency.
+- Preserve Texture Quality v0.3.7 behavior while adding only the backward-compatible read-only diagnostic seam required by #35.
+- Standard diagnostic capture must not mutate HeroForge/High Res state.
+- Controlled comparison may use only the existing Texture Quality lifecycle APIs and must retain evidence on transition failure.

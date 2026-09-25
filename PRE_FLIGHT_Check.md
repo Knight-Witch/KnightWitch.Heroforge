@@ -1,3 +1,24 @@
+## 2026-09-24 — Issue #35 High Res diagnostic capture v1 candidate
+
+### Candidate scope
+
+- Texture Quality Native Reconcile: v0.4.0 / `0.4.0-diagnostic-state-seam`; additive read-only `getDiagnosticState()` API only.
+- High Res Diagnostic Capture service: v0.1.0 / `0.1.0-hr-capture-v1`.
+- High Res Diagnostic Capture UI: v0.1.0 / `0.1.0-hr-capture-v1-ui`, registered under Utilities.
+- Manifest contains both new hidden modules and matching registry versions/builds.
+- Standard snapshot is read-only. Comparative mode uses existing Texture Quality enable/disable APIs once per required transition and records restoration result.
+- Public Stable, Booth, #32 implementation, and #34 implementation are unchanged.
+
+### Required gates
+
+- Pending: JS syntax checks for the three affected/new modules.
+- Pending: manifest/divergence JSON validation and version/build/cache-key consistency.
+- Pending: task-branch runtime payload through Dev Auto Host with zero module failures.
+- Pending: Current State non-mutation proof.
+- Pending: Robot #32 Native OFF → High Res ON comparison and human visual correlation.
+
+---
+
 ## 2026-09-24 — Issue #24 public v2.0.3 Stable closeout
 
 ### PASS

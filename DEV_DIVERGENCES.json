@@ -19,6 +19,24 @@
         "Normal runtime resolves manifest/core/modules from the launcher's immutable payload commit; fallback routing is WITCH_DEV_MAIN and never Stable.",
         "Bootstrap/channel failure remains visible."
       ]
+    },
+    {
+      "issue": 35,
+      "status": "task-branch-candidate",
+      "reason": "Dev-only High Res diagnostic capture provider plus a backward-compatible read-only Texture Quality diagnostic-state seam. #32 Robot is the first validation fixture; public Stable remains untouched.",
+      "paths": [
+        "features/rendering/Texture_Quality_Native_Reconcile.js",
+        "features/rendering/Texture_Quality_Diagnostics.js",
+        "features/rendering/Texture_Quality_Diagnostics_UI.js",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Capture Current State is observational and does not change High Res/HeroForge state.",
+        "Structured schema v1 exposes explicit coverage/missing-data information and addressable sections.",
+        "Controlled Native OFF to High Res ON comparison uses existing Texture Quality lifecycle calls at-most-once and records restoration state.",
+        "Robot #32 yields a useful differential or identifies a missing diagnostic layer before broader fixture work.",
+        "No public Stable mutation occurs during #35 development."
+      ]
     }
   ],
   "notes": [
