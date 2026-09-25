@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.7
+// @version      0.3.8
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.7';
-  const BUILD = '0.3.7-refresh-native-color-bake';
+  const VERSION = '0.3.8';
+  const BUILD = '0.3.8-supported-body-aaid-binding';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -181,6 +181,9 @@
         if (!row.meshes[key] || typeof row.parts[key].getMaskPath !== 'function') {
           return { ok: false, reason: `${label} ${key} mask capability is unavailable.` };
         }
+        if (row.parts[key].hasAAID && typeof row.parts[key].getAAIDPath !== 'function') {
+          return { ok: false, reason: `${label} ${key} AAID capability is unavailable.` };
+        }
       }
     }
 
@@ -275,11 +278,57 @@
     }
   }
 
-  function requestTexture(R, path) {
+  function supportedAAIDSize(part) {
+    const nativeBake = Number(part && part.bakeSize);
+    return Number.isFinite(nativeBake) && nativeBake > 0 ? Math.min(USED, nativeBake) : USED;
+  }
+
+  function requestResource(R, path, type) {
     try {
-      const pending = R.getResource(path, 'webp', OWNER);
+      const pending = R.getResource(path, type, OWNER);
       if (pending && typeof pending.catch === 'function') pending.catch(() => {});
     } catch (_) {}
+  }
+
+  async function loadAAIDs(row, R) {
+    const hi = !!(row.m.settings && row.m.settings.hiRez);
+    const refs = {};
+
+    for (const key of BODIES) {
+      const part = row.parts[key];
+      if (!part || !part.hasAAID) {
+        refs[key] = { required: false, path: null, size: 0, texture: null };
+        continue;
+      }
+      const size = supportedAAIDSize(part);
+      const path = part.getAAIDPath(hi, size);
+      if (!path) throw new Error(`Could not resolve supported ${key} body AAID.`);
+      refs[key] = { required: true, path, size, texture: null };
+      requestResource(R, path, 'png');
+    }
+
+    const end = Date.now() + 5000;
+    while (Date.now() < end) {
+      const ready = BODIES.every((key) => {
+        const ref = refs[key];
+        if (!ref.required) return true;
+        const dims = texSize(R.getNow(ref.path));
+        return dims[0] === ref.size && dims[1] === ref.size;
+      });
+      if (ready) break;
+      await sleep(100);
+    }
+
+    for (const key of BODIES) {
+      const ref = refs[key];
+      if (!ref.required) continue;
+      ref.texture = R.getNow(ref.path);
+      const dims = texSize(ref.texture);
+      if (dims[0] !== ref.size || dims[1] !== ref.size) {
+        throw new Error(`Valid ${ref.size}px ${key} body AAID did not load.`);
+      }
+    }
+    return refs;
   }
 
   async function loadMasks(row, R, s = null) {
@@ -288,7 +337,7 @@
     const paths = BODIES.map((key) => resolveMaskPath(row.parts[key], hi, sizes[key]));
     if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported body masks.');
 
-    paths.forEach((path) => requestTexture(R, path));
+    paths.forEach((path) => requestResource(R, path, 'webp'));
     const end = Date.now() + 5000;
     while (Date.now() < end) {
       const ready = paths.every((path, index) => {
@@ -325,6 +374,7 @@
       meshesSeen: [],
       adoptions: 0,
       restoreColorBakeRefreshes: 0,
+      aaidLookupWrappers: [],
       nativeSources: Object.fromEntries(TARGETS.map((key) => [key, {
         bakeSize: row.parts[key].bakeSize,
         usedTextureSize: row.parts[key]._usedTextureSize
@@ -333,13 +383,61 @@
         atlas: atlasSize(row.display.atlas),
         allocations: Object.fromEntries(TARGETS.map((key) => [key, allocation(row.display.atlas, key)]))
       },
-      masks: null
+      masks: null,
+      aaids: null
     };
   }
 
   function currentPipeline(s, p) {
     if (!adoptPipeline(s, p)) throw new Error('HeroForge figure/data/target parts changed; refusing stale mutation.');
     return { parts: p.m.parts, meshes: p.display.meshes };
+  }
+
+  function restoreAAIDLookupWrappers(p) {
+    for (let index = p.aaidLookupWrappers.length - 1; index >= 0; index -= 1) {
+      const entry = p.aaidLookupWrappers[index];
+      if (entry && entry.paints && entry.paints.getAAID === entry.wrapper) restore(entry.snapshot);
+    }
+    p.aaidLookupWrappers.length = 0;
+  }
+
+  function installAAIDLookupWrapper(p) {
+    const paints = p.display && p.display.colorBake && p.display.colorBake.paints;
+    if (
+      !paints ||
+      typeof paints.getAAID !== 'function' ||
+      typeof paints.getTextureSize !== 'function'
+    ) {
+      throw new Error('HeroForge AAID lookup capability is unavailable.');
+    }
+
+    const owned = p.aaidLookupWrappers.find((entry) => entry.paints === paints && paints.getAAID === entry.wrapper);
+    if (owned) return;
+
+    const snapshot = own(paints, 'getAAID');
+    const nativeGetAAID = paints.getAAID;
+    const wrapper = function supportedBodyAAID(mesh, key) {
+      const ref = p.aaids && p.aaids[key];
+      if (!BODIES.includes(key) || !ref || !ref.required || !ref.texture) {
+        return nativeGetAAID.call(this, mesh, key);
+      }
+
+      const sizeSnapshot = own(this, 'getTextureSize');
+      const nativeGetTextureSize = this.getTextureSize;
+      if (typeof nativeGetTextureSize !== 'function') return nativeGetAAID.call(this, mesh, key);
+
+      try {
+        this.getTextureSize = function supportedBodyAAIDSize(slot) {
+          return slot === key ? ref.size : nativeGetTextureSize.call(this, slot);
+        };
+        return nativeGetAAID.call(this, mesh, key);
+      } finally {
+        restore(sizeSnapshot);
+      }
+    };
+
+    paints.getAAID = wrapper;
+    p.aaidLookupWrappers.push({ paints, snapshot, wrapper });
   }
 
   function applyPolicy(s, p) {
@@ -363,9 +461,11 @@
       rememberMesh(p, currentState.meshes[key]);
       currentState.meshes[key].masksMapOverride = p.masks[key];
     }
+    installAAIDLookupWrapper(p);
   }
 
   function restorePolicy(p) {
+    restoreAAIDLookupWrappers(p);
     for (const scaleSnapshot of p.scales) {
       for (const row of scaleSnapshot.rows) restore(row);
     }
@@ -392,7 +492,10 @@
       const ids = Object.fromEntries(TARGETS.map((key) => [key, partId(row.parts[key])]));
       if (!p) {
         p = createPipeline(row);
-        p.masks = await loadMasks(row, R || cap.R, s);
+        [p.masks, p.aaids] = await Promise.all([
+          loadMasks(row, R || cap.R, s),
+          loadAAIDs(row, R || cap.R)
+        ]);
       } else {
         p.key = row.key;
         p.primary = row.primary;
@@ -405,7 +508,10 @@
             bakeSize: row.parts[key].bakeSize,
             usedTextureSize: row.parts[key]._usedTextureSize
           }]));
-          p.masks = await loadMasks(row, R || cap.R, s);
+          [p.masks, p.aaids] = await Promise.all([
+            loadMasks(row, R || cap.R, s),
+            loadAAIDs(row, R || cap.R)
+          ]);
         }
       }
       next.push(p);
@@ -641,7 +747,9 @@
       bakeSize: {},
       usedTextureSize: {},
       nativePromoted: {},
-      masks: {}
+      masks: {},
+      aaids: {},
+      aaidLookupOwned: false
     };
 
     if (!out.sameAtlas) return { ...out, ok: false, reason: 'Display/resource atlas objects differ.' };
@@ -667,10 +775,10 @@
     for (const key of BODIES) {
       const mesh = currentState.meshes[key];
       const mat = mesh.bakeMaterials && mesh.bakeMaterials.color;
-      const actual = mat && typeof mat.getUniform === 'function' ? mat.getUniform('masksMap') : null;
+      const actualMask = mat && typeof mat.getUniform === 'function' ? mat.getUniform('masksMap') : null;
       out.masks[key] = {
         expected: texSize(p.masks[key]),
-        actual: texSize(actual),
+        actual: texSize(actualMask),
         overrideSame: mesh.masksMapOverride === p.masks[key]
       };
       const maskSize = Number(p.masks && p.masks.sizes && p.masks.sizes[key]) || USED;
@@ -681,6 +789,33 @@
       ) {
         return { ...out, ok: false, reason: `${key} color-bake mask is not the pinned ${maskSize}px supported texture.` };
       }
+
+      const ref = p.aaids && p.aaids[key];
+      const actualAAID = mat && typeof mat.getUniform === 'function' ? mat.getUniform('aaidMap') : null;
+      out.aaids[key] = {
+        required: !!(ref && ref.required),
+        expected: ref && ref.required ? [ref.size, ref.size] : null,
+        actual: texSize(actualAAID),
+        sameTexture: !!(ref && ref.required && actualAAID === ref.texture)
+      };
+      if (
+        ref && ref.required &&
+        (
+          out.aaids[key].actual[0] !== ref.size ||
+          out.aaids[key].actual[1] !== ref.size ||
+          !out.aaids[key].sameTexture
+        )
+      ) {
+        return { ...out, ok: false, reason: `${key} color-bake AAID is not the supported ${ref.size}px texture.` };
+      }
+    }
+
+    const paints = p.display && p.display.colorBake && p.display.colorBake.paints;
+    out.aaidLookupOwned = p.aaidLookupWrappers.some((entry) => (
+      entry.paints === paints && paints && paints.getAAID === entry.wrapper
+    ));
+    if (BODIES.some((key) => p.aaids && p.aaids[key] && p.aaids[key].required) && !out.aaidLookupOwned) {
+      return { ...out, ok: false, reason: 'Supported body AAID lookup wrapper is not owned by the active display.' };
     }
 
     return out;
@@ -705,7 +840,8 @@
       bakeSize: primary ? primary.bakeSize : {},
       usedTextureSize: primary ? primary.usedTextureSize : {},
       nativePromoted: primary ? primary.nativePromoted : {},
-      masks: primary ? primary.masks : {}
+      masks: primary ? primary.masks : {},
+      aaids: primary ? primary.aaids : {}
     };
     if (failed) out.reason = `${failed.label}: ${failed.reason}`;
     return out;
@@ -922,7 +1058,10 @@
 
       await Promise.all(s.pipelines.map(async (p) => {
         const row = cap.pipelines.find((entry) => entry.d === p.d);
-        p.masks = await loadMasks(row, cap.R, s);
+        [p.masks, p.aaids] = await Promise.all([
+          loadMasks(row, cap.R, s),
+          loadAAIDs(row, cap.R)
+        ]);
       }));
       if (!adoptAll(s)) throw new Error('HeroForge changed while masks loaded.');
       for (const p of s.pipelines) applyPolicy(s, p);

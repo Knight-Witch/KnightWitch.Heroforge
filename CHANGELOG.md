@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #32 public v2.2.2 payload
+
+- Promotes only the validated body-AAID binding repair onto the current Stable v2.2.1 baseline.
+- Texture Quality Native Reconcile advances 0.3.7 -> 0.3.8 / `0.3.8-supported-body-aaid-binding`.
+- High Res keeps 2048 body bake/atlas allocations while body AAID lookup binds each part's supported native asset size (1024 or 512) instead of unavailable 2048 body AAIDs.
+- Dev-only Diagnostic Capture, #58 Polymorph font assets/styles, and #34 remain excluded.
+- Human and Robot visual zone-segmentation gates passed before promotion; Robot/Human/Canine structural AAID checks and native OFF restoration passed.
+- Public launcher registry stages v2.2.2; immutable payload pin follows in the RC launcher commit.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC v2.2.1 final pin
 
 - Public RC launcher advanced to v2.2.1 / `2.2.1-self-refreshing-delivery-resize-reset`.

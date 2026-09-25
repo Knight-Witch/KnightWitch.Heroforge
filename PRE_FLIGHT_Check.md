@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #32 public v2.2.2 payload
+
+### PASS / launcher pin + Stable smoke pending
+
+- Payload is derived directly from current public Stable v2.2.1.
+- Texture Quality Native Reconcile parses at v0.3.8 / `0.3.8-supported-body-aaid-binding`.
+- manifest.json parses with Texture Quality v0.3.8 and cache identity `0.3.8-supported-body-aaid-binding`; launcher registry stages v2.2.2.
+- Promotion contains the #32 AAID source-selection/readiness repair and its non-1x1 verification invariant while retaining #24 native restore logic and supported body-mask pinning.
+- No Dev-only diagnostics, #58 font runtime/assets, #34 changes, or unrelated module versions are included.
+- Dev validation before promotion: Human + Robot visual PASS; Robot/Human/Canine structural PASS; native OFF restore PASS.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC v2.2.1 final pin
 
 ### PASS / live smoke pending
