@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #32 supported body AAID candidate
+
+### PASS / live Dev + human visual gate pending
+
+- Texture Quality Native Reconcile JavaScript parses at v0.4.1 / `0.4.1-supported-body-aaid-binding`.
+- manifest.json parses with canonical module registry v0.4.1.
+- Body AAID source size is derived from the native body bake ceiling and capped at 1024px; the 2048 destination atlas policy remains unchanged.
+- The candidate does not persist diagnostic `liveTextureSlots` or temporary body `atlasScale` changes. It preserves native `getAAID` and overrides only its synchronous `getTextureSize` call for supported body AAID resolution.
+- AAID lookup ownership is tracked and restored before native OFF reconstruction; verification now requires the expected non-1x1 body AAID texture while HR is ON.
+- Public Stable and #58 font runtime files are unchanged.
+- Next gate: canonical Dev payload/launcher integration, Robot/Human structural smoke, then Amanda visual confirmation.
+
+---
+
 ## 2026-09-25 — Issue #58 canonical Dev v1.9.0 pin
 
 ### PASS / live font gate pending

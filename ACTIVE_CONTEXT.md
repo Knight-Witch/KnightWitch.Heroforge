@@ -2,8 +2,8 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #58 — **Bundle Polymorph display fonts for Witch Dock headers**  
-**Paused task:** issue #32 — **HR body paint zone collapse**  
+**Active task:** issue #32 — **HR body paint zone collapse**  
+**Paused task:** issue #58 — **Bundle Polymorph display fonts for Witch Dock headers**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.1 / `Witch_Scripts` @ `50b22b3f9d8bf030f958b5372e008bca5404fa1d`  
@@ -12,11 +12,13 @@
 
 ## Current route
 
-Issue #58 — Bundle Polymorph display fonts for Witch Dock headers — is active. Amanda's owned full-source Polymorph Regular and Bold TTFs were recovered and verified against the source SHA-256 identities recorded by Polymorph. Both faces are staged as Witch Dock core assets; Bold is the initial display face for Dock title/tabs/section/tool/modal headings while body copy remains on the existing system-font stack. Regular is bundled but not selected by default so the display weight can be switched later without another asset-recovery pass.
+Issue #32 — HR body paint zone collapse — is active. The diagnostic boundary is proven: promoted 2048 body atlas allocations drive native body AAID lookup toward unavailable 2048 body assets, producing HeroForge's shared 1×1 fallback even though paints, channels, masks, and atlas allocations remain valid. Work confirmed supported AAIDs restore real bindings when AAID source-size selection is decoupled from the 2048 destination allocation.
 
-Canonical Dev v1.9.0 is staged for #58 with immutable payload `858416a37a31df48454f71c5a2493ddc733b5e7b`, Assets v0.2.0 / `0.2.0-polymorph-display-fonts`, and Styles v0.4.0 / `0.4.0-polymorph-display-typography`. The font-face URLs resolve from that immutable payload root rather than a third-party CDN. Public Stable remains v2.2.1 and is unchanged. Next gate is live font-load verification, then Amanda's visual approval.
+Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` is the Dev candidate. It preloads each body's supported AAID at the native body source ceiling (up to 1024px) and temporarily overrides only native `paints.getTextureSize` during body `getAAID` resolution, while preserving the 2048 bake/atlas policy. The lookup wrapper is session-owned and restored before native OFF reconstruction. Next gate: canonical Dev integration, Robot/Human structural regression, then Amanda's visual paint-zone confirmation.
 
-Issues #37/#41 are complete; only their separate mechanical branch cleanup remains under the existing handoffs. Issue #32 remains paused; do not resume it until explicitly requested. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
+Issue #58 remains staged separately on canonical Dev v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b`; its font-load/human visual gate is paused while #32 is active. Public Stable remains v2.2.1 and unchanged.
+
+Issues #37/#41 are complete; only their separate mechanical branch cleanup remains under the existing handoffs. Issue #42 remains a later Developer Mode/module-version-display cleanup task.
 
 ## Validated diagnostic runtime
 
@@ -42,10 +44,10 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 
 ## Scope boundaries
 
-- #32 remains paused.
+- #32 is active; production promotion is blocked on structural + human visual validation.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
-- #58 is Dev-only until Amanda visually approves the typography; Public Stable v2.2.1 remains unchanged.
+- #58 remains Dev-only and paused pending Amanda's typography visual approval; its staged assets/styles are not part of #32.
 - HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
 - Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32 when that issue resumes, inspect adjacent runtime/source behavior and identify missing capture layers.
 
