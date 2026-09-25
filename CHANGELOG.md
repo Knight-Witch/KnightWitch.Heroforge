@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #41 Stable self-host downgrade guard
+
+- Stable v2.2.0 now refuses to dispatch a resolved launcher whose semantic version is older than the installed wrapper.
+- This prevents RC/newer wrappers from being downgraded by a lagging canonical branch or stale compatible head.
+- Static harness PASS: pre-v2.2.0 canonical source falls back locally, compatible older v2.1.5 is refused, compatible newer v2.3.0 dispatches by immutable SHA.
+
+---
+
 ## 2026-09-25 — Issue #41 public v2.2.0 self-refreshing RC
 
 - Public launcher advances to v2.2.0 / `2.2.0-self-refreshing-delivery-header`.
