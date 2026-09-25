@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'witch-dock-modals';
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-lazy-about-open';
+  const VERSION = '0.2.0';
+  const BUILD = '0.2.0-disclaimer-in-about';
 
   if (UW.KWWitchDockModals && UW.KWWitchDockModals.version === VERSION) return;
 
@@ -95,8 +95,18 @@
       <div class="kwWDAboutBtns">
         <a class="kwWDAboutLinkBtn" href="${state.githubRepoUrl}" target="_blank" rel="noopener noreferrer">View on GitHub</a>
         <a class="kwWDAboutLinkBtn" href="${state.kofiUrl}" target="_blank" rel="noopener noreferrer">Support on Ko-fi</a>
+        <button id="kwWDAboutDisclaimerBtn" class="kwWDAboutLinkBtn" type="button">Disclaimer</button>
       </div>
     `;
+
+    const disclaimerBtn = body.querySelector('#kwWDAboutDisclaimerBtn');
+    if (disclaimerBtn) {
+      disclaimerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openDisclaimer();
+      });
+    }
 
     const footer = document.createElement('div');
     footer.id = 'kwWDAboutFooter';

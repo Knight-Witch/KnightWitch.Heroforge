@@ -42,8 +42,8 @@
     },
     {
       "issue": 37,
-      "status": "dev-refinement-awaiting-resmoke",
-      "reason": "Utilities dock-size reset previously passed live Dev validation; a Developer-Mode-only version metadata refinement stages Utilities v1.3.1 and Reset Dock Size v1.0.0 before exact Stable promotion.",
+      "status": "stable-published-smoke-blocked-by-41",
+      "reason": "Dock default-size reset passed Dev validation and public v2.1.0 is published on Witch_Scripts. Stable smoke is temporarily blocked because Amanda's installed Stable remained at v2.0.3 after reload; issue #41 owns that delivery seam.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -51,11 +51,31 @@
         "tools/Utilities.js"
       ],
       "acceptance": [
-        "Canonical Dev launcher resolves the refreshed immutable payload with zero fallback.",
-        "Utilities purple Developer Mode header reports v1.3.1 and build 1.3.1-dock-size-reset-version-meta.",
-        "Reset Dock Size shows subtool v1.0.0 only while Developer Mode is enabled.",
-        "The actual Reset Size control still restores/persists 380x520 without moving the Dock.",
-        "Only exact #37 scope is promoted to Stable after the refreshed smoke."
+        "Public Stable launcher v2.1.0 contains only the validated Dock reset scope.",
+        "Stable runtime reaches v2.1.0 or its #41 successor through the repaired delivery path.",
+        "Reset Dock Size remains visible and restores/persists 380x520 without moving the Dock.",
+        "Issue #37 can close only after the Stable smoke passes."
+      ]
+    },
+    {
+      "issue": 41,
+      "status": "dev-maintenance-candidate",
+      "reason": "Update delivery hardening is active because Dev Auto Host received stale branch bytes after a canonical launcher update and public Stable remained installed at v2.0.3 after v2.1.0 publication. Shared header/version observability changes are staged with this maintenance.",
+      "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json",
+        "features/core/Witch_Dock_Shell.js",
+        "features/core/Witch_Dock_Modals.js",
+        "features/core/Witch_Dock_Core.js",
+        "features/core/Witch_Dock_Styles.css"
+      ],
+      "acceptance": [
+        "Dev Auto Host resolves canonical branch head then fetches launcher by immutable SHA.",
+        "Canonical Dev loads the intended current launcher/payload without stale mutable-branch dependence.",
+        "Public Stable can run the current Stable launcher even when Tampermonkey has not yet replaced the installed wrapper.",
+        "Stable header visibly reports the runtime Witch Dock version.",
+        "Disclaimer is absent from the title bar and accessible from About.",
+        "High Res issues #32/#34 remain untouched."
       ]
     }
   ],

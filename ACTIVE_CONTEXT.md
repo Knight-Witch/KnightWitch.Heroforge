@@ -2,19 +2,21 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #37 — **Dock default-size reset utility / Stable promotion**  
+**Active task:** issue #41 — **Update delivery hardening / header version visibility**  
 **Paused task:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
-**Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
-**Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
+**Public Stable:** v2.1.0 / `Witch_Scripts` @ `407d9b6d46dd93a2e2818e59bbea7aa6333b6b20`  
+**Public immutable payload:** `002e0e62a21798091c96c3eb52668c8ae0844629`  
 **Canonical Dev launcher:** v1.6.1 / payload `c050a600d878a834656fbb04fad747c24c50ec53`
 
 ## Current route
 
-Issue #37 — Dock default-size reset utility — has explicit Stable promotion approval. A narrow Developer-Mode version metadata refinement is pinned in Dev v1.6.1 and is being re-smoked before exact promotion; #32 remains paused and untouched.
+Issue #41 — Update delivery hardening / header version visibility — is active. Public v2.1.0 for #37 is published, but Amanda's installed Stable remained on v2.0.3 after reload, so the #37 Stable smoke is blocked by the updater seam rather than the Reset Size implementation.
 
-Issue #37 prior live gate PASS: on Dev v1.6.0, the actual Utilities Reset Size button reset a seeded 500×966 Dock to 380×520, preserved x=954/y=261, persisted 380×520, and remained correct after reload. Public Stable is unchanged.
+#41 scope: harden Dev and Stable launcher delivery against stale mutable raw-branch responses; keep immutable payload pairing and visible failure behavior. As adjacent update observability, Stable will show its runtime version beside WITCH DOCK and Disclaimer moves from the header into About.
+
+Issue #37 remains otherwise release-ready and previously passed Dev validation. #32 and #34 remain paused and untouched. Issue #42 is a later repository-wide Developer Mode/module/subtool version-display cleanup task.
 
 Validated diagnostic runtime:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
