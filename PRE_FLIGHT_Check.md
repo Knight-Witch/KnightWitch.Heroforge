@@ -1,3 +1,23 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot hardening
+
+### Confirmed first-comparison findings
+
+- Robot native snapshot: one figure, coherent 2048×2048 atlas, 32 referenced resources, no warning.
+- Current-state capture left Texture Quality OFF/idle before and after.
+- OFF→ON paint hashes remained identical: paints `6nq1h4`, paintByIntent `7g8zac`.
+- Raw diff hit 400-path cap.
+- Initial automatic restoration raced HR busy state and returned false; readback proved HR remained ON.
+- One subsequent explicit disable, issued only after readback showed ON + idle, restored OFF successfully with native restore verification PASS.
+
+### Candidate v0.1.2
+
+- Stable-idle waits guard comparison transitions/restoration.
+- Start call returns immediate comparison ID instead of Promise-only Bridge output.
+- Semantic delta added ahead of raw diff.
+- Pending: syntax/manifest check, immutable payload pin, second Robot comparison.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.1 payload gate
 
 ### PASS

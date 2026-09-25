@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.2 Robot comparison hardening
+
+- First real Robot comparison captured identical OFF/ON `paints` and `paintByIntent` hashes while the raw structural delta reached its 400-path cap.
+- The initial comparator exposed a real restoration race: a post-enable HR busy window caused its automatic OFF restore to return false; readback showed HR still ON. A single explicit readback-confirmed disable restored Robot OFF and native restore verification passed.
+- Advanced High Res Diagnostics to v0.1.2: comparison starts return synchronously, transitions wait for a stable idle HR window, restoration waits/settles before reporting success, and a compact semantic delta summarizes paint assignments, part inventory, atlas topology, resources, materials, color bake, and warnings.
+- Added bounded comparison-facts and changed-path retrieval APIs for Bridge/GPT triage without dumping the full raw diff.
+
+---
+
 ## 2026-09-24 — Issue #35 diagnostics v0.1.1 immutable payload preparation
 
 - High Res Diagnostic Capture v0.1.1 syntax and manifest identity checks pass.

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - High Res Diagnostic Capture
 // @namespace    KnightWitch
-// @version      0.1.1
+// @version      0.1.2
 // @description  Structured read-only diagnostics and controlled OFF-to-ON comparison for Texture Quality.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,14 +16,17 @@
   const GLOBAL = 'KWTextureQualityDiagnostics';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-bridge-section-selection';
+  const VERSION = '0.1.2';
+  const BUILD = '0.1.2-stable-restore-semantic-delta';
   const FORMAT = 'witch-dock.hr-diagnostic';
   const SCHEMA_VERSION = 1;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
   const BODIES = ['bodyLower', 'bodyUpper'];
   const EVENT_LIMIT = 120;
   const DIFF_LIMIT = 400;
+  const IDLE_TIMEOUT = 20000;
+  const IDLE_STABLE_MS = 600;
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const SECTION_NAMES = [
     'environment', 'witchDock', 'highRes', 'scene', 'figures', 'paintState',
     'atlas', 'materials', 'colorBake', 'resources',
@@ -912,47 +915,181 @@
     });
   }
 
-  async function compareNativeOffToHighRes() {
-    if (operationBusy) return { ok: false, error: 'Diagnostic capture is already running.' };
-    const hr = getHighRes();
-    if (!hr || typeof hr.enable !== 'function' || typeof hr.disable !== 'function') {
-      return { ok: false, error: 'Texture Quality service is unavailable.' };
+  async function waitForHighResIdle(hr, timeout) {
+    const end = Date.now() + (Number(timeout) || IDLE_TIMEOUT);
+    let idleSince = 0;
+    while (Date.now() < end) {
+      let state = null;
+      try { state = hr.getState(); } catch (_) { state = null; }
+      const idle = !!(state && !state.busy && !state.autoPending && !state.sceneSyncPending);
+      if (idle) {
+        if (!idleSince) idleSince = Date.now();
+        if (Date.now() - idleSince >= IDLE_STABLE_MS) return state;
+      } else {
+        idleSince = 0;
+      }
+      await sleep(100);
     }
+    return null;
+  }
 
-    let original = null;
-    try { original = hr.getState(); } catch (error) { return { ok: false, error: String(error) }; }
-    if (!original || original.busy) return { ok: false, error: 'Texture Quality is currently busy.' };
-    if (original.persistent && !original.enabled) {
-      return { ok: false, error: 'OFF-to-ON comparison will not change a Persistent High Res OFF/suppressed state. Disable Persistent High Res first, or use Capture Current State.' };
+  function semanticValue(value) {
+    if (value == null || typeof value !== 'object') return value;
+    if (Array.isArray(value)) return value.map(semanticValue);
+    const out = {};
+    for (const key of Object.keys(value).sort()) {
+      if (key === 'uuid' || key === 'objectId' || /ObjectId$/.test(key)) continue;
+      out[key] = semanticValue(value[key]);
     }
+    return out;
+  }
 
-    operationBusy = true;
-    lastError = null;
-    emit();
+  function figureMap(rows) {
+    return new Map((rows || []).map((row) => [row.figureId || (row.primary ? 'primary' : row.key), row]));
+  }
 
-    const comparison = {
-      kind: 'comparison',
-      format: FORMAT,
-      schemaVersion: SCHEMA_VERSION,
-      metadata: {
-        comparisonId: 'hrc-' + Date.now().toString(36) + '-' + (captureCounter + 1).toString(36),
-        timestamp: nowIso(),
-        diagnosticVersion: VERSION,
-        diagnosticBuild: BUILD
-      },
-      originalState: {
-        enabled: !!original.enabled,
-        persistent: !!original.persistent,
-        sessionSuppressed: !!original.sessionSuppressed
-      },
-      transitions: [],
-      snapshots: {},
-      delta: null,
-      restoration: { attempted: false, ok: null, detail: null },
-      error: null,
-      summary: null
+  function resourceSemanticKey(row) {
+    return JSON.stringify({
+      source: row && row.source || null,
+      size: row && row.size || null,
+      name: row && row.name || null,
+      roles: row && row.roles || [],
+      owners: row && row.owners || []
+    });
+  }
+
+  function buildComparisonFacts(nativeOff, highResOn) {
+    const facts = {
+      changedAreas: [],
+      paintAssignments: [],
+      partInventory: [],
+      atlasTopology: [],
+      resources: null,
+      materials: [],
+      colorBake: [],
+      warnings: {
+        nativeOff: (nativeOff.warnings || []).map((row) => row.code).filter(Boolean),
+        highResOn: (highResOn.warnings || []).map((row) => row.code).filter(Boolean)
+      }
     };
 
+    const offPaint = figureMap(nativeOff.paintState);
+    const onPaint = figureMap(highResOn.paintState);
+    for (const id of Array.from(new Set([...offPaint.keys(), ...onPaint.keys()])).sort()) {
+      const a = offPaint.get(id) || null;
+      const b = onPaint.get(id) || null;
+      facts.paintAssignments.push({
+        figureId: id,
+        paintsHash: { nativeOff: a && a.paintsHash || null, highResOn: b && b.paintsHash || null },
+        paintByIntentHash: { nativeOff: a && a.paintByIntentHash || null, highResOn: b && b.paintByIntentHash || null },
+        paintCount: { nativeOff: a && a.paintCount || 0, highResOn: b && b.paintCount || 0 },
+        intentCount: { nativeOff: a && a.intentCount || 0, highResOn: b && b.intentCount || 0 },
+        changed: !a || !b || a.paintsHash !== b.paintsHash || a.paintByIntentHash !== b.paintByIntentHash
+      });
+    }
+    if (facts.paintAssignments.some((row) => row.changed)) facts.changedAreas.push('paintAssignments');
+
+    const offFigures = figureMap(nativeOff.figures);
+    const onFigures = figureMap(highResOn.figures);
+    for (const id of Array.from(new Set([...offFigures.keys(), ...onFigures.keys()])).sort()) {
+      const a = offFigures.get(id) || null;
+      const b = onFigures.get(id) || null;
+      const identityPayload = (row) => row ? {
+        inferredMonsterGroups: row.inferredMonsterGroups,
+        coreTargets: Object.fromEntries(Object.entries(row.coreTargets || {}).map(([key, value]) => [key, value && {
+          identity: value.identity,
+          id: value.id,
+          baseName: value.baseName,
+          name: value.name,
+          slot: value.slot,
+          partSlot: value.partSlot,
+          monsterGroup: value.monsterGroup,
+          skel: value.skel,
+          slotMeta: value.slotMeta
+        }])),
+        parts: (row.parts || []).map((part) => ({
+          slot: part.slot,
+          identity: part.identity,
+          id: part.id,
+          baseName: part.baseName,
+          name: part.name,
+          partSlot: part.partSlot,
+          monsterGroup: part.monsterGroup,
+          skel: part.skel,
+          slotMeta: part.slotMeta
+        }))
+      } : null;
+      const ah = stableHash(identityPayload(a));
+      const bh = stableHash(identityPayload(b));
+      facts.partInventory.push({
+        figureId: id,
+        nativeOffHash: ah,
+        highResOnHash: bh,
+        nativeOffPartCount: a && a.partCount || 0,
+        highResOnPartCount: b && b.partCount || 0,
+        changed: ah !== bh
+      });
+    }
+    if (facts.partInventory.some((row) => row.changed)) facts.changedAreas.push('partInventory');
+
+    const offAtlas = figureMap(nativeOff.atlas);
+    const onAtlas = figureMap(highResOn.atlas);
+    for (const id of Array.from(new Set([...offAtlas.keys(), ...onAtlas.keys()])).sort()) {
+      const a = offAtlas.get(id) || null;
+      const b = onAtlas.get(id) || null;
+      const offSemantic = a ? { size:a.size, resourceSize:a.resourceSize, sameAtlas:a.sameAtlas, allocations:a.allocations, atlasScale:a.atlasScale } : null;
+      const onSemantic = b ? { size:b.size, resourceSize:b.resourceSize, sameAtlas:b.sameAtlas, allocations:b.allocations, atlasScale:b.atlasScale } : null;
+      const ah = stableHash(offSemantic);
+      const bh = stableHash(onSemantic);
+      facts.atlasTopology.push({
+        figureId:id,
+        nativeOff:offSemantic,
+        highResOn:onSemantic,
+        changed:ah!==bh
+      });
+    }
+    if (facts.atlasTopology.some((row) => row.changed)) facts.changedAreas.push('atlasTopology');
+
+    const offResourceSet = new Set((nativeOff.resources || []).map(resourceSemanticKey));
+    const onResourceSet = new Set((highResOn.resources || []).map(resourceSemanticKey));
+    const added = Array.from(onResourceSet).filter((key) => !offResourceSet.has(key));
+    const removed = Array.from(offResourceSet).filter((key) => !onResourceSet.has(key));
+    facts.resources = {
+      nativeOffCount: offResourceSet.size,
+      highResOnCount: onResourceSet.size,
+      addedCount: added.length,
+      removedCount: removed.length,
+      added: added.slice(0, 80).map((key) => JSON.parse(key)),
+      removed: removed.slice(0, 80).map((key) => JSON.parse(key)),
+      truncated: added.length > 80 || removed.length > 80,
+      changed: added.length > 0 || removed.length > 0
+    };
+    if (facts.resources.changed) facts.changedAreas.push('resources');
+
+    const offMaterials = figureMap(nativeOff.materials);
+    const onMaterials = figureMap(highResOn.materials);
+    for (const id of Array.from(new Set([...offMaterials.keys(), ...onMaterials.keys()])).sort()) {
+      const ah = stableHash(semanticValue(offMaterials.get(id) || null));
+      const bh = stableHash(semanticValue(onMaterials.get(id) || null));
+      facts.materials.push({ figureId:id, nativeOffHash:ah, highResOnHash:bh, changed:ah!==bh });
+    }
+    if (facts.materials.some((row) => row.changed)) facts.changedAreas.push('materials');
+
+    const offBake = figureMap(nativeOff.colorBake);
+    const onBake = figureMap(highResOn.colorBake);
+    for (const id of Array.from(new Set([...offBake.keys(), ...onBake.keys()])).sort()) {
+      const ah = stableHash(semanticValue(offBake.get(id) || null));
+      const bh = stableHash(semanticValue(onBake.get(id) || null));
+      facts.colorBake.push({ figureId:id, nativeOffHash:ah, highResOnHash:bh, changed:ah!==bh });
+    }
+    if (facts.colorBake.some((row) => row.changed)) facts.changedAreas.push('colorBake');
+
+    if (stableHash(facts.warnings.nativeOff) !== stableHash(facts.warnings.highResOn)) facts.changedAreas.push('warnings');
+    facts.changedAreas = Array.from(new Set(facts.changedAreas));
+    return facts;
+  }
+
+  async function runComparison(comparison, hr, original) {
     let persistentTemporarilyDisabled = false;
     try {
       comparison.snapshots.original = captureSnapshot('Original State', 'comparison-original');
@@ -964,25 +1101,33 @@
       }
 
       if (original.enabled) {
+        const idle = await waitForHighResIdle(hr);
+        if (!idle) throw new Error('Texture Quality did not become idle before native-OFF transition.');
         const disabled = await hr.disable();
         transitionLog(comparison, 'disable-to-native-off', disabled, hr.lastError);
         if (!disabled) throw new Error('Could not reach a verified native OFF state: ' + (hr.lastError || 'disable returned false'));
       }
 
+      if (!await waitForHighResIdle(hr)) throw new Error('Texture Quality did not settle in native OFF state.');
       comparison.snapshots.nativeOff = captureSnapshot('Native OFF', 'comparison-native-off');
 
       const enabled = await hr.enable();
       transitionLog(comparison, 'enable-high-res', enabled, hr.lastError);
       if (!enabled) throw new Error('Could not reach a verified High Res ON state: ' + (hr.lastError || 'enable returned false'));
 
+      if (!await waitForHighResIdle(hr)) throw new Error('Texture Quality did not settle after High Res enable.');
       comparison.snapshots.highResOn = captureSnapshot('High Res ON', 'comparison-high-res-on');
       comparison.delta = compareSnapshots(comparison.snapshots.nativeOff, comparison.snapshots.highResOn);
+      comparison.facts = buildComparisonFacts(comparison.snapshots.nativeOff, comparison.snapshots.highResOn);
     } catch (error) {
       comparison.error = String(error && error.message || error);
       lastError = comparison.error;
     } finally {
       comparison.restoration.attempted = true;
       try {
+        const idleBeforeRestore = await waitForHighResIdle(hr);
+        if (!idleBeforeRestore) throw new Error('Texture Quality remained busy before original-state restoration.');
+
         const current = hr.getState();
         let restoreOk = true;
         let detail = null;
@@ -994,6 +1139,11 @@
           restoreOk = await hr.disable();
           transitionLog(comparison, 'restore-original-off', restoreOk, hr.lastError);
           if (!restoreOk) detail = hr.lastError || 'disable returned false during restoration';
+        }
+
+        if (restoreOk && !await waitForHighResIdle(hr)) {
+          restoreOk = false;
+          detail = 'Texture Quality did not settle after original-state restoration.';
         }
 
         if (persistentTemporarilyDisabled) {
@@ -1019,6 +1169,7 @@
         ok: !comparison.error && comparison.restoration.ok !== false && !!comparison.delta,
         error: comparison.error,
         restorationOk: comparison.restoration.ok,
+        restorationDetail: comparison.restoration.detail,
         nativeOffCaptureId: nativeSummary && nativeSummary.captureId || null,
         highResOnCaptureId: onSummary && onSummary.captureId || null,
         figureCount: nativeSummary && nativeSummary.figureCount || onSummary && onSummary.figureCount || 0,
@@ -1026,6 +1177,7 @@
         highResPaintsHash: onSummary && onSummary.primaryPaintsHash || null,
         nativePaintByIntentHash: nativeSummary && nativeSummary.primaryPaintByIntentHash || null,
         highResPaintByIntentHash: onSummary && onSummary.primaryPaintByIntentHash || null,
+        semanticChangedAreas: comparison.facts && comparison.facts.changedAreas || [],
         changedPathCount: comparison.delta && comparison.delta.changedPathCount || 0,
         diffLimitReached: comparison.delta && comparison.delta.diffLimitReached || false
       };
@@ -1035,11 +1187,59 @@
       operationBusy = false;
       emit();
     }
+  }
+
+  function compareNativeOffToHighRes() {
+    if (operationBusy) return { ok: false, error: 'Diagnostic capture is already running.' };
+    const hr = getHighRes();
+    if (!hr || typeof hr.enable !== 'function' || typeof hr.disable !== 'function') {
+      return { ok: false, error: 'Texture Quality service is unavailable.' };
+    }
+
+    let original = null;
+    try { original = hr.getState(); } catch (error) { return { ok: false, error: String(error) }; }
+    if (!original || original.busy) return { ok: false, error: 'Texture Quality is currently busy.' };
+    if (original.persistent && !original.enabled) {
+      return { ok: false, error: 'OFF-to-ON comparison will not change a Persistent High Res OFF/suppressed state. Disable Persistent High Res first, or use Capture Current State.' };
+    }
+
+    const comparison = {
+      kind: 'comparison',
+      format: FORMAT,
+      schemaVersion: SCHEMA_VERSION,
+      metadata: {
+        comparisonId: 'hrc-' + Date.now().toString(36) + '-' + (captureCounter + 1).toString(36),
+        timestamp: nowIso(),
+        diagnosticVersion: VERSION,
+        diagnosticBuild: BUILD
+      },
+      originalState: {
+        enabled: !!original.enabled,
+        persistent: !!original.persistent,
+        sessionSuppressed: !!original.sessionSuppressed
+      },
+      transitions: [],
+      snapshots: {},
+      delta: null,
+      facts: null,
+      restoration: { attempted: false, ok: null, detail: null },
+      error: null,
+      summary: null
+    };
+
+    operationBusy = true;
+    lastError = null;
+    emit();
+    runComparison(comparison, hr, original).catch((error) => {
+      lastError = String(error && error.message || error);
+      operationBusy = false;
+      emit();
+    });
 
     return {
-      ok: !!(lastComparison && lastComparison.summary && lastComparison.summary.ok),
-      comparisonId: lastComparison && lastComparison.metadata.comparisonId || null,
-      summary: lastComparison && lastComparison.summary || null
+      ok: true,
+      status: 'started',
+      comparisonId: comparison.metadata.comparisonId
     };
   }
 
@@ -1138,6 +1338,13 @@
     getLatestSection,
     getComparisonSnapshot,
     getComparisonDelta,
+    getComparisonFacts: () => cloneJson(lastComparison && lastComparison.facts || null),
+    getComparisonChangedPaths: (offset, limit) => {
+      const rows = lastComparison && lastComparison.delta && lastComparison.delta.changedPaths || [];
+      const start = Math.max(0, Number(offset) || 0);
+      const count = Math.max(1, Math.min(100, Number(limit) || 40));
+      return cloneJson(rows.slice(start, start + count));
+    },
     onChange,
     dispose
   };
