@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #37 public RC payload staging
+
+### PASS / launcher pin pending
+
+- Promoted Interactions and Utilities source parse successfully.
+- Stable manifest parses with Interactions v0.6.0 and Utilities v1.3.1.
+- No High Res runtime/diagnostic files were promoted.
+- Existing Stable launcher remains v2.0.3 until the immutable RC payload SHA is established.
+
+---
+
 ## 2026-09-24 — Public 2.0.3 corrected Stable candidate gate
 
 ### PASS / pending live Stable smoke
