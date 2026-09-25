@@ -1,8 +1,8 @@
 ## 2026-09-25 — Issue #83 reusable notification architecture candidate
 
-- Added `KWWitchDockNotifications` v0.1.0 / `0.1.0-reusable-one-time-notices` as a generic core notification service.
+- Added `KWWitchDockNotifications` v0.1.0 / `0.1.0-reusable-one-time-notices` as an isolated hidden notification-service module.
 - Added `Witch_Dock_Release_Notices.js` v0.1.0 / `0.1.0-v230-wrapper-update` as a hidden release-specific registration module.
-- Core -> v2.4.0 / `2.4.0-notification-service`; Styles -> v0.7.0 / `0.7.0-notification-overlay`.
+- Styles -> v0.7.0 / `0.7.0-notification-overlay`; accepted #58 Core v2.3.0 remains unchanged.
 - Generic notices support stable IDs, per-notice acknowledgement, priority queueing, close/Escape handling, optional primary links, and show/dismiss/action acknowledgement timing.
 - First release notice targets Stable v2.3.0 and uses `KWWitchDockStableHost.getState().installedWrapperVersion` to distinguish an outdated installed Tampermonkey wrapper from the newer self-hosted runtime.
 - The v2.3.0 notice acknowledges on first display and links directly to the canonical public userscript for the one-time installed-wrapper refresh.
