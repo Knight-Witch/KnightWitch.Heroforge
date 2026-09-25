@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-interactions";
-  const VERSION = "0.5.0";
-  const BUILD = "0.5.0-dock-hotkey";
+  const VERSION = "0.6.0";
+  const BUILD = "0.6.0-dock-size-reset";
 
   let CONTEXT = null;
   const STATE = {
@@ -20,6 +20,7 @@
     startResizeBottomCalls: 0,
     resizeBottomMoveCalls: 0,
     resizeBottomEndCalls: 0,
+    resetDockSizeCalls: 0,
     startCompactDragCalls: 0,
     compactDragMoveCalls: 0,
     compactDragEndCalls: 0,
@@ -225,6 +226,33 @@
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
     STATE.lastError = null;
+  }
+
+  function resetDockSize() {
+    const ctx = requireContext();
+    const { state, prefs, defaults } = ctx;
+    STATE.resetDockSizeCalls += 1;
+
+    state.minWidth = 260;
+    prefs.width = defaults.width;
+    prefs.height = defaults.height;
+    prefs.lastOpenWidth = defaults.width;
+    prefs.lastOpenHeight = defaults.height;
+    ctx.savePrefs(prefs);
+
+    if (state.root) {
+      state.root.style.width = `${defaults.width}px`;
+      state.root.style.height = prefs.minimized
+        ? `${ctx.computeMinDockHeightCollapsed()}px`
+        : `${defaults.height}px`;
+    }
+
+    STATE.lastError = null;
+    return {
+      width: defaults.width,
+      height: defaults.height,
+      minimized: !!prefs.minimized
+    };
   }
 
   function startCompactDrag(e) {
@@ -455,6 +483,7 @@
       startResizeBottomCalls: STATE.startResizeBottomCalls,
       resizeBottomMoveCalls: STATE.resizeBottomMoveCalls,
       resizeBottomEndCalls: STATE.resizeBottomEndCalls,
+      resetDockSizeCalls: STATE.resetDockSizeCalls,
       startCompactDragCalls: STATE.startCompactDragCalls,
       compactDragMoveCalls: STATE.compactDragMoveCalls,
       compactDragEndCalls: STATE.compactDragEndCalls,
@@ -476,6 +505,7 @@
     startDockDrag,
     startResizeCorner,
     startResizeBottom,
+    resetDockSize,
     startCompactDrag,
     installDockHotkey,
     toggleMinimize,
