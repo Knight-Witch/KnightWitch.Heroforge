@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #41 canonical Dev v1.7.0 pin
+
+- Dev launcher advanced to v1.7.0 / `1.7.0-issue-41-delivery-header`.
+- Immutable payload pinned to canonical commit `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`.
+- Launcher expectations now require Modals v0.2.0, Shell v0.3.0, and Core v2.1.0.
+- High Res runtime scope remains untouched.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev v1.7.0 payload staging
 
 - Staged canonical Dev launcher registry v1.7.0 / `1.7.0-issue-41-delivery-header`.

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.6.1
+// @version      1.7.0
 // @description  Witch Dock modular Dev bootstrap.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -22,12 +22,12 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.6.1";
-  const DEV_BUILD = "1.6.1-issue-37-version-meta";
+  const DEV_VERSION = "1.7.0";
+  const DEV_BUILD = "1.7.0-issue-41-delivery-header";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "WITCH_DEV_MAIN";
-  const PAYLOAD_REF = "c050a600d878a834656fbb04fad747c24c50ec53";
+  const PAYLOAD_REF = "b38c7e4077cd0d10f6ee1aec27c541b8d4604d23";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
@@ -53,16 +53,16 @@
   ]);
 
   const EXPECTED = Object.freeze({
-    KWWitchDockModals: ["0.1.1", "0.1.1-lazy-about-open"],
+    KWWitchDockModals: ["0.2.0", "0.2.0-disclaimer-in-about"],
     KWWitchDockBoneHUD: ["0.1.0", "0.1.0-extracted-bone-hud"],
     KWWitchDockPreferences: ["0.3.0", "0.3.0-tool-enablement-store"],
     KWWitchDockRegistry: ["0.1.0", "0.1.0-tab-tool-state-containers"],
-    KWWitchDockShell: ["0.2.0", "0.2.0-main-and-compact-dom"],
+    KWWitchDockShell: ["0.3.0", "0.3.0-header-version"],
     KWWitchDockInteractions: ["0.6.0", "0.6.0-dock-size-reset"],
     KWWitchDockHistory: ["0.1.0", "0.1.0-undo-redo-owner"],
     KWWitchDockApplication: ["0.1.0", "0.1.0-shell-registry-orchestration"],
     KWWitchDockAssets: ["0.1.0", "0.1.0-known-good-compact-emblem"],
-    KWWitchDockCore: ["2.0.0", "2.0.0-modular-orchestrator"],
+    KWWitchDockCore: ["2.1.0", "2.1.0-title-version-render"],
     KWModuleLoader: ["0.2.0", "0.2.0-immutable-payload-root"]
   });
 
