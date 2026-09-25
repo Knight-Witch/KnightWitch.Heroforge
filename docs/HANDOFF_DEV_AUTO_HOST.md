@@ -1,24 +1,26 @@
 # Handoff — Witch Dock Dev Auto Host
 
 **Branch:** `wd/dev-auto-host`  
-**Status:** v0.1.1 canonical-Dev retarget candidate  
+**Status:** v0.2.0 immutable-head delivery candidate  
 **Release task:** issue #28
 
 ## Architecture
 
-`devtools/Witch_Dock_DEV_Auto_Host.user.js` is the separately installed Tampermonkey delivery host. On each HeroForge page load it fetches the canonical Dev launcher, validates its userscript identity/version/branch/grant contract, and executes it once with synthetic payload-correct `GM_info`.
+`devtools/Witch_Dock_DEV_Auto_Host.user.js` is the separately installed Tampermonkey delivery host. On each HeroForge page load it resolves canonical `WITCH_DEV_MAIN` to its current commit SHA through GitHub's ref API, fetches the launcher by that immutable SHA, validates its userscript identity/version/branch/grant contract, and executes it once with synthetic payload-correct `GM_info`.
 
 The direct Dev launcher remains the behavior/source contract. The auto-host provides only privileged delivery so normal Dev revisions can be applied by a Bridge-driven HeroForge reload rather than repeated direct launcher installation.
 
-## v0.1.1 change
+## v0.2.0 change
 
-The original v0.1.0 target `wd/10-modular-bootstrap` was correct while issue #10 was isolated there. Issue #10 is now complete and canonical Dev has been reconciled.
+Issue #41 hardens the delivery seam after a live reload received stale mutable branch bytes even though `WITCH_DEV_MAIN` had already advanced.
 
-v0.1.1 changes only:
-- host version -> 0.1.1;
-- target branch -> `WITCH_DEV_MAIN`.
+v0.2.0 changes only the delivery lookup:
+- host version -> 0.2.0;
+- resolve `WITCH_DEV_MAIN` head through GitHub's ref API;
+- fetch `Witch_Dock_DEV.user.js` by the resolved immutable SHA;
+- report the resolved SHA/URL in diagnostics.
 
-Everything else remains protected.
+Launcher ownership, validation, retries, one-execution-per-page behavior, and rollback remain protected.
 
 ## Required live gate
 
