@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.3 launcher
+
+- Dev launcher -> v1.9.3 / `1.9.3-title-alignment-fix`.
+- Pins immutable payload `47208351d47baec3cc0fa08d6446b37e1b2261c4`.
+- Expected Shell updated to v0.5.1 / `0.5.1-inline-version-title-alignment`.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.3 payload staging
 
 - Dev launcher registry staged at v1.9.3 / `1.9.3-title-alignment-fix`.
