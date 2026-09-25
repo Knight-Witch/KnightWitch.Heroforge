@@ -27,6 +27,7 @@
   cursor: move;
 }
 #kwWDTitle{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: 0.25px;
 }
@@ -235,6 +236,7 @@
 
 .kwWDMinimized #kwWDFooter{ display: none; }
 .kwWDTab{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
@@ -427,6 +429,7 @@
 .kwWDDragHandle{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:18px;opacity:0.75;cursor:grab;user-select:none;margin-left:auto;}
 .kwWDSectionHeader.dragging .kwWDDragHandle{cursor:grabbing;opacity:0.95;}
 .kwWDSectionHeaderName{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   font-weight: 800;
   font-size: 13px;
   letter-spacing: 0.2px;
@@ -458,6 +461,7 @@
 }
 .kwWDToolHeader:active{ cursor: grabbing; }
 .kwWDToolTitle{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   font-weight: 800;
   font-size: 13px;
   letter-spacing: 0.2px;
@@ -584,6 +588,7 @@
   background: rgba(0,0,0,0.18);
 }
 #kwWDAboutTitle{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: 0.2px;
   font-size: 12px;
@@ -691,6 +696,7 @@
   background: rgba(0,0,0,0.18);
 }
 #kwWDDisclaimerTitle{
+  font-family: "KW Polymorph", system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: 0.2px;
   font-size: 12px;
