@@ -1,8 +1,8 @@
 # Witch Dock Dev Auto Host
 
-**Status:** isolated candidate on `wd/dev-auto-host`; live Tampermonkey/HeroForge gate pending.  
-**Payload:** `Witch_Dock_DEV.user.js` from `wd/10-modular-bootstrap`.  
-**Purpose:** remove repeated Tampermonkey installs during the issue #10 development loop without changing the paused v1.4.6 launcher or its modules.
+**Status:** canonical Dev delivery helper on `wd/dev-auto-host`; v0.2.0 live gate pending.  
+**Payload:** current `WITCH_DEV_MAIN/Witch_Dock_DEV.user.js`, resolved by immutable branch-head SHA.  
+**Purpose:** let Dev reloads execute the current canonical launcher without waiting on Tampermonkey's scheduled update cycle or mutable raw-branch propagation.
 
 ## Operating model
 
@@ -23,11 +23,11 @@ The host deliberately fails with a visible error if the direct Dev launcher is a
 
 ## Safety boundary
 
-- Only the fixed public repository path on `wd/10-modular-bootstrap` is loaded.
+- Only the fixed `Knight-Witch/KnightWitch.Heroforge` repository and canonical `WITCH_DEV_MAIN` ref are resolved.
 - Branch freshness is resolved through `api.github.com` first; launcher bytes are then fetched by immutable commit SHA from `raw.githubusercontent.com`.
 - Every request uses a fresh cache key and `Cache-Control: no-cache`.
 - Fetch retry is bounded to three attempts; execution occurs at most once per page load.
-- The fetched source must remain `WITCH DOCK - DEV` / `KnightWitch`, have synchronized metadata/runtime versions, declare the expected branch, request only the host's known grants, and use only `raw.githubusercontent.com` in `@connect`.
+- The fetched source must remain `WITCH DOCK - DEV` / `KnightWitch`, have synchronized metadata/runtime versions, declare the expected branch, request only the host's known grants, and keep its launcher connection scope within the validated contract.
 - New Tampermonkey permissions, `@require`, `@resource`, branch migration, or host-boundary changes fail visibly and require a deliberate host update/live gate.
 - Normal launcher, core, module, timing, storage, UI, and rollback behavior remain owned by the fetched source. This candidate changes delivery only.
 - Human gates remain required for visual correctness. Route/runtime success does not certify pixels.
