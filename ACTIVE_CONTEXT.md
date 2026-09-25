@@ -42,7 +42,7 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 - #32 remains the active bug investigation.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
-- Public Stable stays untouched while #32 investigation continues.
+- Public Stable may change only for the explicitly authorized #37 release and #41 delivery maintenance; #32/#34 runtime scope remains untouched.
 - HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.
 - Diagnostic capture is evidence collection, not a root-cause constraint: if captured evidence does not explain #32, inspect adjacent runtime/source behavior and identify missing capture layers.
 
