@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 title/version baseline correction
+
+- Witch Dock Styles -> v0.6.1 / `0.6.1-title-version-baseline`.
+- Runtime geometry showed the Polymorph title glyphs ending at y=35.73 while `DEV · v1.9.5` ended at y=32.73.
+- Moved the version metadata down exactly 3px so its bottom aligns with the title-glyph bottom without changing header height, font size, spacing, or title layout.
+- Public Stable remains v2.2.2 pending the final Dev/human gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 live UI gate
 
 - Dev Auto Host resolved canonical head `23e003d03824d70d036f988ae00c854461f482b9` and executed v1.9.5 in one attempt with no error.

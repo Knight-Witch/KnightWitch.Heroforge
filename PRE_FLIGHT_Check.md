@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 title/version baseline correction
+
+### PENDING live/human gate
+
+- Bridge geometry confirmed title-word bottom y=35.73 and version bottom y=32.73 in v1.9.5.
+- Styles v0.6.1 changes only the version metadata transform from +1px to +4px, targeting exact bottom alignment.
+- Header height, emblem size, title spacing, button/theme work, and runtime ownership are unchanged.
+- Public Stable remains v2.2.2.
+- Next: static check, immutable Dev v1.9.6 payload/launcher staging, live geometry verification, then Amanda final visual gate.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.5 live UI gate
 
 ### PASS — human visual gate pending
