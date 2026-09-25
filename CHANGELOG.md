@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 launcher
+
+- Dev launcher -> v1.9.4 / `1.9.4-compact-left-brand-header`.
+- Pins immutable payload `730794910cd23bb3e3d2fce4d52415b60fe52aeb`.
+- Shared runtime APIs remain Core v2.3.0 / Shell v0.5.1; visual change is carried by Styles v0.5.2.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 payload staging
 
 - Dev launcher registry staged at v1.9.4 / `1.9.4-compact-left-brand-header`.
