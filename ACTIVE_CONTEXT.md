@@ -14,7 +14,7 @@
 
 Issue #32 — HR body paint zone collapse — is active. The diagnostic boundary is proven: promoted 2048 body atlas allocations drive native body AAID lookup toward unavailable 2048 body assets, producing HeroForge's shared 1×1 fallback even though paints, channels, masks, and atlas allocations remain valid. Work confirmed supported AAIDs restore real bindings when AAID source-size selection is decoupled from the 2048 destination allocation.
 
-Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` is the Dev candidate. It preloads each body's supported AAID at the native body source ceiling (up to 1024px) and temporarily overrides only native `paints.getTextureSize` during body `getAAID` resolution, while preserving the 2048 bake/atlas policy. The lookup wrapper is session-owned and restored before native OFF reconstruction. Canonical Dev v1.9.1 is pinned to the immutable #32 payload. Next gate: live Robot/Human structural regression, then Amanda's visual paint-zone confirmation.
+Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` is the Dev candidate. It preloads each body's supported AAID at the native body source ceiling (up to 1024px) and temporarily overrides only native `paints.getTextureSize` during body `getAAID` resolution, while preserving the 2048 bake/atlas policy. The lookup wrapper is session-owned and restored before native OFF reconstruction. Canonical Dev v1.9.1 is pinned to the immutable #32 payload. Automated structural regression is PASS on Robot and Human: real supported body AAIDs are bound under HR ON while 2048 body allocations and supported masks remain intact; Robot native OFF restore also passed with the native AAID lookup restored. Human `59567957` is currently left HR ON for Amanda's visual paint-zone confirmation.
 
 Issue #58 remains staged separately on canonical Dev v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b`; its font-load/human visual gate is paused while #32 is active. Public Stable remains v2.2.1 and unchanged.
 
@@ -44,7 +44,7 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 
 ## Scope boundaries
 
-- #32 is active; production promotion is blocked on structural + human visual validation.
+- #32 is active; automated structural validation is PASS and production promotion is blocked only on the human visual gate.
 - #34 remains separate.
 - #24 remains resolved unless its actual visual ON→OFF tint defect returns.
 - #58 remains Dev-only and paused pending Amanda's typography visual approval; its staged assets/styles are not part of #32.

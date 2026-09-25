@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #32 automated Dev structural gate
+
+### PASS / human visual gate pending
+
+- Canonical Dev v1.9.1 loaded from immutable payload `9aed4edee07e9ca746b6e49a8a8bf071e50fd996`.
+- Loader: 25/25 executed; 0 failed; immutable=25; fallback=0.
+- Robot HR ON: verify PASS; bodyLower/bodyUpper allocations 2048×2048; supported AAID bindings present; masks pinned; same atlas.
+- Robot HR OFF: restore verification PASS; native sizes and native AAID lookup restored.
+- Human HR ON: verify PASS; bodyLower/bodyUpper/face allocations 2048×2048; body AAIDs 1024/1024 and face AAID 2048.
+- Remaining required gate is Amanda's visual confirmation that native body paint-zone segmentation is preserved under HR ON.
+- Public Stable remains v2.2.1.
+
+---
+
 ## 2026-09-25 — Issue #32 canonical Dev v1.9.1 pin
 
 ### PASS / live #32 gate pending

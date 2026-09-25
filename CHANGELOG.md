@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #32 automated Dev structural gate
+
+- Canonical Dev v1.9.1 / payload `9aed4edee07e9ca746b6e49a8a8bf071e50fd996`: loader PASS 25/25, failed=0, immutable=25, fallback=0.
+- Robot `59568049`: HR ON verification PASS with 2048 body allocations, supported real body AAIDs, pinned masks, and coherent atlas ownership; HR OFF native restore PASS and native `paints.getAAID` ownership restored.
+- Human `59567957`: HR ON verification PASS with bodyLower/bodyUpper/face 2048 allocations and real 1024/1024/2048 AAID bindings.
+- Human remains HR ON for Amanda's visual paint-zone confirmation. Public Stable remains unchanged.
+
+---
+
 ## 2026-09-25 — Issue #32 canonical Dev v1.9.1 pin
 
 - Dev launcher advanced to v1.9.1 / `1.9.1-issue-32-body-aaid-binding`.
