@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-shell";
-  const VERSION = "0.5.0";
-  const BUILD = "0.5.0-centered-brand-title-emblem";
+  const VERSION = "0.5.1";
+  const BUILD = "0.5.1-inline-version-title-alignment";
 
   const STATE = {
     createCalls: 0,
@@ -59,9 +59,9 @@
               alt: "",
               draggable: "false"
             }),
-            el("span", { class: "kwWDTitleWord", text: "DOCK" })
-          ]),
-          el("span", { id: "kwWDTitleVersion", text: "" })
+            el("span", { class: "kwWDTitleWord", text: "DOCK" }),
+            el("span", { id: "kwWDTitleVersion", text: "" })
+          ])
         ]),
         el("div", { id: "kwWDControls" }, [
           el("button", {
