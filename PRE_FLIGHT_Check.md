@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #32 public RC v2.2.2 launcher
+
+### PASS / live Stable smoke pending
+
+- Launcher JavaScript parses.
+- @name / @version / runtime VERSION / SCRIPT_NAME are synchronized at v2.2.2.
+- BUILD is `2.2.2-issue-32-body-aaid-binding`.
+- PAYLOAD_REF is immutable `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`.
+- manifest launcher registry is synchronized to v2.2.2 and payload Texture Quality is v0.3.8.
+- Stable branch identity/update/download URLs and self-refresh host contract are unchanged.
+- RC scope excludes #58 fonts, Dev-only diagnostics, #34, and unrelated runtime modules.
+
+---
+
 ## 2026-09-25 — Issue #32 public v2.2.2 payload
 
 ### PASS / launcher pin + Stable smoke pending

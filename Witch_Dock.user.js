@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v2.2.1
+// @name         Witch Dock v2.2.2
 // @namespace    KnightWitch
-// @version      2.2.1
+// @version      2.2.2
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -24,12 +24,12 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.2.1";
-  const BUILD = "2.2.1-self-refreshing-delivery-resize-reset";
-  const SCRIPT_NAME = "Witch Dock v2.2.1";
+  const VERSION = "2.2.2";
+  const BUILD = "2.2.2-issue-32-body-aaid-binding";
+  const SCRIPT_NAME = "Witch Dock v2.2.2";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "d2be75fbab7a76a9833debe5145d7dd9e8e8b831";
+  const PAYLOAD_REF = "1a586ec3540138694b2342a5fd074b5ec4b1a8e5";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;

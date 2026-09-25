@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #32 public RC v2.2.2 launcher
+
+- Public launcher advances to v2.2.2 / `2.2.2-issue-32-body-aaid-binding`.
+- Immutable payload is pinned to `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`, derived directly from Stable v2.2.1 with only Texture Quality v0.3.8 plus release metadata.
+- Stable self-refresh delivery, Dock/core runtime, and all unrelated modules remain unchanged.
+- Next gate is non-forced promotion to `Witch_Scripts` and live Stable smoke.
+
+---
+
 ## 2026-09-25 — Issue #32 public v2.2.2 payload
 
 - Promotes only the validated body-AAID binding repair onto the current Stable v2.2.1 baseline.
