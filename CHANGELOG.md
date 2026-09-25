@@ -1,3 +1,11 @@
+## 2026-09-25 — Issue #58 Dev v1.9.5 payload staging
+
+- Dev launcher registry staged at v1.9.5 / `1.9.5-ui-standardization`.
+- Payload contains Styles v0.6.0 and Texture Quality UI v0.3.0 on top of Core v2.3.0, Shell v0.5.1, and Assets v0.2.0.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dock UI consistency candidate
 
 - Witch Dock Styles -> v0.6.0 / `0.6.0-shared-control-theme`.
