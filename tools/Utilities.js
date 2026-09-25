@@ -2,6 +2,9 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+  const VERSION = "1.3.1";
+  const BUILD = "1.3.1-dock-size-reset-version-meta";
+  const RESET_DOCK_SIZE_VERSION = "1.0.0";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
   const SLOT_URL = RAW_ROOT + "HeroForge_UI/HF_UI_Slot_Bridge.js";
@@ -50,7 +53,9 @@
       ".kwu .feature-name{font-weight:800;font-size:12px;color:rgba(255,255,255,.92);margin-bottom:7px;}" +
       ".kwu .booth-defaults{display:flex;flex-direction:column;gap:8px;}" +
       ".kwu .action-btn{background:rgba(255,255,255,.10);color:#e8e8e8;border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700;}" +
-      ".kwu .action-btn:hover{background:rgba(255,255,255,.16);}";
+      ".kwu .action-btn:hover{background:rgba(255,255,255,.16);}" +
+      ".kwu .dev-subtool-version{display:none;margin-left:5px;font-size:9px;font-weight:650;opacity:.58;font-variant-numeric:tabular-nums;}" +
+      "#kwWitchDock.kwWDDeveloperMode .kwu .dev-subtool-version{display:inline;}";
     document.head.appendChild(style);
   }
 
@@ -253,6 +258,10 @@
     const name = document.createElement("div");
     name.className = "name";
     name.textContent = "Reset Dock Size";
+    const version = document.createElement("span");
+    version.className = "dev-subtool-version";
+    version.textContent = `v${RESET_DOCK_SIZE_VERSION}`;
+    name.appendChild(version);
 
     const desc = document.createElement("div");
     desc.className = "desc";
@@ -484,6 +493,8 @@
       id: "utilities",
       tab: "Utilities",
       title: "Utilities",
+      version: VERSION,
+      build: BUILD,
       render: function (container, api) {
         renderTool(container, api);
       }

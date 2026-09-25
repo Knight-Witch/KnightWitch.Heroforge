@@ -381,9 +381,9 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.3.0",
-      "versionOrigin": "issue-37-dock-size-reset-2026-09-25",
-      "build": "1.3.0-dock-size-reset"
+      "version": "1.3.1",
+      "versionOrigin": "issue-37-dock-size-reset-version-meta-2026-09-25",
+      "build": "1.3.1-dock-size-reset-version-meta"
     }
   ],
   "tools": [

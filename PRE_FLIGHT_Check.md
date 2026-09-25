@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #37 version metadata refinement
+
+### PASS / live Dev re-smoke pending
+
+- Utilities JavaScript parse passed after explicit runtime version/build metadata and Developer-Mode-only Reset Dock Size v1.0.0 label.
+- manifest.json parses with Utilities v1.3.1 / `1.3.1-dock-size-reset-version-meta`.
+- No High Res files or runtime paths changed.
+- Public Stable remains unchanged pending exact promotion.
+
+---
+
 ## 2026-09-25 — Issue #37 Dev live gate
 
 ### PASS
