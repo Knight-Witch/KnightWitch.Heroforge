@@ -2,44 +2,43 @@
 
 **Updated:** 2026-09-24  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #24 — **HR ON/OFF body visual paint tint change** (REOPENED / failed broader Stable smoke)  
+**Active task:** issue #34 — **HR false restore warning / native body mask verification**  
 **Separate active bug:** issue #32 — **HR body paint zone collapse**  
-**Public Stable:** v2.0.2 / `Witch_Scripts` @ `1b7d45bad6a602ffe6a39d9457b64f7daeca72d8`  
-**Public immutable payload:** `fa442b99a7376aa31882f66fd20ae8cded32fe67`  
-**Canonical Dev launcher:** v1.5.4 / payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`  
+**Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
+**Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
+**Canonical Dev launcher:** v1.5.4 / payload `6aee7fd8716d986e39b7415cf8927fa7043e776b`
 
 ## Current route
 
-Issue #24 is classified as a stale body color-bake cache after ON→OFF native restore. Dev candidate v0.3.7 forces the bounded native color-bake cache refresh that restored Quinn's body outputs byte-for-byte; integrated live Quinn/D4 validation is next. Do not close it.
+Issue #24 — **HR ON/OFF body visual paint tint change** is resolved and promoted.
 
-Primary handoff:
-`docs/investigations/ISSUE_24_REOPEN_HANDOFF_2026-09-24.md`
+Public v2.0.3 live smoke confirms Stable identity v2.0.3 / `2.0.3-issue-24-colorbake-restore`, immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`, loader 23/23 with 0 failures, and Texture Quality v0.3.7 / `0.3.7-refresh-native-color-bake`. Amanda confirmed the Stable ON→OFF body-tint result is visually correct.
 
-The highest-value new evidence is the High Res resource-failure family on current HeroForge `heroforge08.1.10.5`: Witch Dock can fail an assumed 1024 body mask preload, while High Res policy triggers native 2048 mask/AAID/normal requests that 404. Determine whether invalid source-resolution assumptions create the fallback/partial generation that later fails restore/adoption and visibly changes body tint.
+During that smoke, an intermittent `OFF / restore warning — primary: bodyLower native color-bake mask was not adopted` was captured while the resulting native state remained visually correct and structurally coherent. That warning is isolated as **#34** and must not reopen #24 unless an actual visual tint regression returns.
 
-Amanda is restarting Chrome/PC. First clean pass after restart:
-- Dev only;
-- Bridge runtime/workbench;
-- 2000 Kitbash Parts only if needed for Quinn;
-- Core Tweaks and all unrelated texture/helper scripts OFF;
-- Quinn A/B/C (OFF -> ON -> OFF), then D4 control.
+For #34, start with the captured verifier hypotheses:
+1. restore verification may incorrectly derive expected body-mask size from `nativeSources.usedTextureSize` when the supported native mask is smaller;
+2. HeroForge shared-resource cache identity may make a correctly restored native mask object equal the previously loaded HR mask object, falsely triggering the retained-override assertion.
 
-## Release state
+Bridge evidence: HF-Chat-Bridge #3391, #3392, #3394, #3395.
 
-Public v2.0.2 is already merged but its final Stable smoke did not pass. Release janitorial cleanup is therefore **paused**:
-- do not close #24;
-- do not delete `wd/24-public-2.0.2`;
-- do not perform another Stable mutation until a corrected Dev candidate passes the required Quinn/D4/control gates.
+## #24 reconciliation / janitorial state
 
-## Scope boundary
+- Dev and Stable Texture Quality source blob are identical: `09d92a14595077d49ec928263c6aab7ca3ef468a`.
+- All 36 shared non-launcher runtime JS/CSS paths were checked byte-for-byte with zero mismatches.
+- Non-launcher module registry parity is restored; issue #24 is removed from `DEV_DIVERGENCES.json`.
+- Temporary #24 branches are queued for exact mechanical deletion through `docs/BRANCH_DELETION_HANDOFF_ISSUE_24_2026-09-24.md`.
+- Janitorial branch deletion is tracked by issue #14. Do not re-audit unless live branch state contradicts the handoff.
 
-#32 — **HR body paint zone collapse** remains separate. Do not merge body-zone-collapse diagnosis/fix into #24.
+## Scope boundaries
 
-HF Core Tweaks' independent console flood remains separate issue #29 and should be disabled during #24 diagnostics.
+- #32 — **HR body paint zone collapse** remains separate from #34.
+- #34 is a restore-verification/warning problem unless evidence proves an actual restore failure.
+- #29 — HF Core Tweaks console flood remains unrelated.
 
 ## Protected state
 
 - Keep `Witch_Scripts` public Stable.
 - Keep `WITCH_DEV_MAIN` canonical Dev.
-- Keep rollback/protected branches listed by project contract.
+- Keep the exact protected branches listed in the #24 deletion handoff.
 - HF-Chat-Bridge remains development infrastructure only and never a Witch Dock runtime dependency.

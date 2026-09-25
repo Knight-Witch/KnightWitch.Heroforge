@@ -1,3 +1,21 @@
+## 2026-09-24 — Issue #24 public v2.0.3 Stable closeout
+
+### PASS
+
+- Stable v2.0.3 / `2.0.3-issue-24-colorbake-restore`; immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`.
+- Loader complete: 23/23 executed, 0 failed, immutable=23, fallback=0.
+- Texture Quality v0.3.7 / `0.3.7-refresh-native-color-bake`.
+- Amanda accepted the Stable ON→OFF visual body-tint result.
+- Intermittent `bodyLower native color-bake mask was not adopted` warning is isolated to #34.
+- Dev/Stable Texture Quality source SHA is `09d92a14595077d49ec928263c6aab7ca3ef468a`.
+- 36/36 shared non-launcher runtime JS/CSS blobs match exactly.
+- #24 removed from `DEV_DIVERGENCES.json`; Stable baseline advanced to `0a5ee9c99f1ca999ead93baa39948d8595830064`.
+- Six disposable #24 refs are queued through `docs/BRANCH_DELETION_HANDOFF_ISSUE_24_2026-09-24.md` because this connector has no branch-delete action.
+
+**Runtime/module/public behavior changed:** no. Manifest provenance metadata and project/release records only.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.4 candidate for issue #24
 
 ### PASS / pending integrated live reload

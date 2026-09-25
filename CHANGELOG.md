@@ -1,3 +1,14 @@
+## 2026-09-24 — Issue #24 public v2.0.3 Stable smoke / Dev reconciliation
+
+- Public Stable v2.0.3 is live from immutable payload `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`; live loader smoke passed 23/23 executed, 0 failed, immutable=23, fallback=0.
+- Texture Quality Native Reconcile is v0.3.7 / `0.3.7-refresh-native-color-bake`; Amanda confirmed the scoped Stable ON→OFF body-tint result is visually correct.
+- Captured an intermittent post-disable native-mask adoption warning during smoke and split it to issue #34 rather than reopening resolved #24.
+- Reconciliation PASS: Dev/Stable Texture Quality blob is identical; all 36 shared non-launcher runtime JS/CSS blobs match; normalized the Texture Quality registry provenance label; removed #24 from `DEV_DIVERGENCES.json`; Stable baseline advanced to v2.0.3.
+- Added exact six-ref branch deletion handoff `docs/BRANCH_DELETION_HANDOFF_ISSUE_24_2026-09-24.md`.
+- No runtime/module behavior changed by this closeout commit; manifest provenance metadata and project/release records only.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.4 for issue #24
 
 - Advanced the fixed-name Dev launcher to v1.5.4 / `1.5.4-issue-24-colorbake-restore`.

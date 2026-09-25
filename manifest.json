@@ -304,7 +304,7 @@
       "load": "manifest",
       "version": "0.3.7",
       "build": "0.3.7-refresh-native-color-bake",
-      "versionOrigin": "issue-24-native-color-bake-restore-2026-09-24"
+      "versionOrigin": "issue-24-colorbake-cache-restore-2026-09-24"
     },
     {
       "id": "texture-quality-same-figure-drift-guard",
