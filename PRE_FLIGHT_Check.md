@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #41 shared UI maintenance candidate
+
+### PASS / integration smoke pending
+
+- Shell, Modals, and Core JavaScript parse after the header/version/disclaimer changes.
+- Styles change is scoped to title-version presentation and removal of dead header Disclaimer-button CSS.
+- Manifest stages Shell v0.3.0, Modals v0.2.0, Core v2.1.0, Styles v0.2.0.
+- No High Res runtime or diagnostic files changed.
+- Public Stable remains v2.1.0 while #41 is prepared in Dev.
+
+---
+
 ## 2026-09-25 — Issue #37 canonical Dev v1.6.1 pin
 
 ### PASS / live Dev re-smoke pending
