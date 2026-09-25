@@ -43,26 +43,28 @@
     {
       "issue": 58,
       "status": "dev-candidate",
-      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold fonts for the main branded title only. The current visual candidate left-aligns the brand, substantially enlarges the emblem while tightening WITCH/DOCK spacing, tucks muted Dev/version metadata close after DOCK, reduces title-bar vertical padding, and uses lighter readable system typography elsewhere with optical button-text centering. Public Stable remains v2.2.2 until the live and human visual gates pass.",
+      "reason": "Witch Dock Dev stages Amanda's owned Polymorph Regular/Bold for the branded title plus a shared UI consistency pass: tighter title/emblem spacing, system-font control typography, exact tab centering, compact subtool headers, dark body-scrollbar track, purple checkbox accent, and shared purple hover treatment. High Res persistence is visually aligned with Utilities and labels its checkbox Enabled. Public Stable remains v2.2.2 until live and human visual gates pass.",
       "paths": [
         "manifest.json",
         "features/core/Witch_Dock_Assets.js",
         "features/core/Witch_Dock_Core.js",
         "features/core/Witch_Dock_Shell.js",
         "features/core/Witch_Dock_Styles.css",
+        "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
         "features/core/assets/fonts/Polymorph-Regular.ttf",
         "features/core/assets/fonts/Polymorph-Bold.ttf"
       ],
       "acceptance": [
-        "Full-source Polymorph Regular and Bold assets match the provenance hashes recorded by Polymorph.",
-        "Both faces are bundled from the immutable Witch Dock payload with no Google Fonts or other third-party runtime dependency.",
-        "Polymorph is used only for the main WITCH [emblem] DOCK brand title; body copy remains on the existing system-font stack.",
-        "The main title is left-aligned with the Dock content, remains larger and visibly letter-spaced, and uses a substantially larger emblem between WITCH and DOCK without excessive horizontal separation.",
-        "Dev/version metadata sits immediately after DOCK with minimal gap, smaller and lower-contrast; Stable will show only its version metadata when promoted.",
-        "Tabs and section/tool/modal headings use the readable system stack, lighter semibold weight, uniform uppercase, and modest letter spacing.",
-        "Text buttons and prominent labels use the readable system stack at lighter weights and are optically vertically centered.",
-        "Font loading and the revised title DOM succeed in live Dev with no loader/module regression.",
-        "Amanda visually approves the typography before any Stable promotion."
+        "Polymorph Regular and Bold remain bundled from the immutable Witch Dock payload and the title uses the branded face only.",
+        "WITCH and DOCK sit materially closer to the large emblem than in the v1.9.4 candidate without shrinking the emblem.",
+        "Tool tabs are horizontally and vertically centered at a consistent fixed height.",
+        "Section/tool headers retain the readable system face, uniform uppercase, and reduced vertical padding.",
+        "Common text buttons use consistent 12px semibold typography and centered content; High Res, Utilities action buttons, and decal gizmo mode buttons align visually.",
+        "Checked Dock checkboxes use the shared purple accent.",
+        "Tabs and common tool buttons use the same purple hover treatment as High Res controls.",
+        "The main Dock body scrollbar uses a dark track consistent with the Dock shell.",
+        "High Res persistence row matches the Utilities persistence layout and its checkbox label reads Enabled.",
+        "Live Dev loader/module/font behavior remains clean and Amanda visually approves before Stable promotion."
       ]
     }
   ],
