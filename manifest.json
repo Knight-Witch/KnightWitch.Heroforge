@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.6.0",
-      "build": "0.6.0-shared-control-theme",
-      "versionOrigin": "issue-58-ui-standardization-2026-09-25"
+      "version": "0.6.1",
+      "build": "0.6.1-title-version-baseline",
+      "versionOrigin": "issue-58-version-baseline-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
