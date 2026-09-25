@@ -39,6 +39,26 @@
         "Diagnostics UI is registered under Utilities and Booth remains untouched.",
         "Public Stable remains untouched."
       ]
+    },
+    {
+      "issue": 58,
+      "status": "dev-candidate",
+      "reason": "Witch Dock Dev is staging Amanda's owned Polymorph Regular/Bold display fonts for header and bold-label typography. Public Stable remains v2.2.1 until the live font-load and human visual gates pass.",
+      "paths": [
+        "manifest.json",
+        "features/core/Witch_Dock_Assets.js",
+        "features/core/Witch_Dock_Styles.css",
+        "features/core/assets/fonts/Polymorph-Regular.ttf",
+        "features/core/assets/fonts/Polymorph-Bold.ttf"
+      ],
+      "acceptance": [
+        "Full-source Polymorph Regular and Bold assets match the provenance hashes recorded by Polymorph.",
+        "Both faces are bundled from the immutable Witch Dock payload with no Google Fonts or other third-party runtime dependency.",
+        "Bold applies only to Dock display/header surfaces while ordinary body text remains on the existing system-font stack.",
+        "Font loading succeeds in live Dev with no loader/module regression.",
+        "Amanda visually approves the typography before any Stable promotion.",
+        "High Res issues #32/#34 remain untouched."
+      ]
     }
   ],
   "notes": [
