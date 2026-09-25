@@ -1,3 +1,20 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.3 candidate
+
+### PASS so far
+
+- v0.1.2 live runtime: launcher v1.5.7, loader 25/25, 0 failed, immutable=25, fallback=0.
+- Robot identity confirmed in captured figure inventory: bodyLower 1961 robot, bodyUpper 1962 robot, face 21906 robotZ.
+- Robot comparison preserved paints / paintByIntent hashes and part inventory while identifying atlas/resource/material deltas.
+- Read-only capture proof: Texture Quality before/after state remained OFF, idle, no error, 2048×2048 native atlas, valid native restore verification.
+- Whole-snapshot Bridge retrieval exceeded the 56k result bound as expected; v0.1.3 adds addressable snapshot-section retrieval rather than weakening transport bounds.
+
+### Pending
+
+- Syntax/manifest checks for v0.1.3.
+- Immutable payload + launcher repin.
+- Live call gate for getComparisonSection(nativeOff|highResOn, section).
+
+---
 ## 2026-09-24 — Issue #35 diagnostics v0.1.2 payload gate
 
 ### PASS

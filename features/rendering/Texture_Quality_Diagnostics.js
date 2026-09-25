@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - High Res Diagnostic Capture
 // @namespace    KnightWitch
-// @version      0.1.2
+// @version      0.1.3
 // @description  Structured read-only diagnostics and controlled OFF-to-ON comparison for Texture Quality.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityDiagnostics';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.2';
-  const BUILD = '0.1.2-stable-restore-semantic-delta';
+  const VERSION = '0.1.3';
+  const BUILD = '0.1.3-addressable-comparison-sections';
   const FORMAT = 'witch-dock.hr-diagnostic';
   const SCHEMA_VERSION = 1;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
@@ -1271,6 +1271,15 @@
     if (!lastComparison || !lastComparison.snapshots || !Object.prototype.hasOwnProperty.call(lastComparison.snapshots, key)) return null;
     return cloneJson(lastComparison.snapshots[key]);
   }
+  function getComparisonSection(snapshotName, sectionName) {
+    const snapshotKey = String(snapshotName || '');
+    const sectionKey = String(sectionName || '');
+    const allowedSections = SECTION_NAMES.concat(['manifest', 'summary', 'metadata']);
+    if (!allowedSections.includes(sectionKey)) return null;
+    if (!lastComparison || !lastComparison.snapshots || !Object.prototype.hasOwnProperty.call(lastComparison.snapshots, snapshotKey)) return null;
+    const snapshot = lastComparison.snapshots[snapshotKey];
+    return cloneJson(snapshot && snapshot[sectionKey]);
+  }
 
   function getComparisonDelta() {
     return cloneJson(lastComparison && lastComparison.delta || null);
@@ -1337,6 +1346,7 @@
     getLatestManifest,
     getLatestSection,
     getComparisonSnapshot,
+    getComparisonSection,
     getComparisonDelta,
     getComparisonFacts: () => cloneJson(lastComparison && lastComparison.facts || null),
     getComparisonChangedPaths: (offset, limit) => {

@@ -1,3 +1,12 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.3 addressable comparison sections
+
+- Live v0.1.2 startup gate passed: Dev v1.5.7, exact immutable payload, loader 25/25 executed, 0 failed, immutable=25, fallback=0.
+- Robot #32 was confirmed as the first comparison fixture. Compact facts surfaced unchanged model paint assignments/part inventory/color-bake structure alongside changed atlas/resources/materials, including Robot AAID resources resolving to a 1×1 fallback in High Res.
+- Capture Current State passed a before/after non-mutation gate with identical HR OFF/idle/error/atlas/restore-verification state.
+- Added getComparisonSection(snapshotName, sectionName) so GPT/Bridge triage can retrieve a specific Native OFF / High Res ON section without serializing the entire diagnostic snapshot.
+- Public Stable remains untouched.
+
+---
 ## 2026-09-24 — Issue #35 diagnostics v0.1.2 immutable payload preparation
 
 - Static PASS for Texture Quality v0.4.0, High Res Diagnostics v0.1.2, Diagnostics UI v0.1.0, manifest JSON, and divergence JSON.
