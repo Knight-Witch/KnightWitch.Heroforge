@@ -302,9 +302,19 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.3.7",
-      "build": "0.3.7-refresh-native-color-bake",
-      "versionOrigin": "issue-24-colorbake-cache-restore-2026-09-24"
+      "version": "0.4.0",
+      "build": "0.4.0-diagnostic-state-seam",
+      "versionOrigin": "issue-35-read-only-diagnostic-seam-2026-09-24"
+    },
+    {
+      "id": "texture-quality-diagnostics",
+      "title": "High Res Diagnostic Capture Service",
+      "path": "features/rendering/Texture_Quality_Diagnostics.js",
+      "kind": "feature-service",
+      "load": "manifest",
+      "version": "0.1.3",
+      "build": "0.1.3-addressable-comparison-sections",
+      "versionOrigin": "issue-35-addressable-comparison-sections-2026-09-24"
     },
     {
       "id": "texture-quality-same-figure-drift-guard",
@@ -335,6 +345,16 @@
       "version": "0.2.0",
       "build": "0.2.0-dev-persistence-advanced-controls",
       "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
+    },
+    {
+      "id": "texture-quality-diagnostics-ui",
+      "title": "High Res Diagnostic Capture UI",
+      "path": "features/rendering/Texture_Quality_Diagnostics_UI.js",
+      "kind": "feature-ui",
+      "load": "manifest",
+      "version": "0.1.0",
+      "build": "0.1.0-hr-capture-v1-ui",
+      "versionOrigin": "issue-35-hr-diagnostic-capture-2026-09-24"
     },
     {
       "id": "texture-quality-beta-notice",
@@ -518,7 +538,16 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.7-refresh-native-color-bake",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.4.0-diagnostic-state-seam",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "texture-quality-diagnostics",
+      "title": "High Res Diagnostic Capture Service",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Diagnostics.js?v=0.1.3-addressable-comparison-sections",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -546,6 +575,15 @@
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Native_Reconcile_UI.js?v=0.2.0-dev-persistence-advanced-controls",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "texture-quality-diagnostics-ui",
+      "title": "High Res Diagnostic Capture UI",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Diagnostics_UI.js?v=0.1.0-hr-capture-v1-ui",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.3.7
+// @version      0.4.0
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.3.7';
-  const BUILD = '0.3.7-refresh-native-color-bake';
+  const VERSION = '0.4.0';
+  const BUILD = '0.4.0-diagnostic-state-seam';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -834,6 +834,83 @@
     };
   }
 
+
+  function diagnosticTextureRef(texture) {
+    if (!texture || typeof texture !== 'object') return null;
+    let source = null;
+    try {
+      const image = texture.image;
+      source = image && (image.currentSrc || image.src) || texture.path || texture.url || null;
+    } catch (_) {}
+    return {
+      uuid: typeof texture.uuid === 'string' ? texture.uuid : null,
+      name: typeof texture.name === 'string' ? texture.name : null,
+      size: texSize(texture),
+      source: typeof source === 'string' ? source.slice(0, 1000) : null
+    };
+  }
+
+  function diagnosticSessionState() {
+    if (!session) return { available: false, reason: 'No active High Res session.' };
+    return {
+      available: true,
+      figureCount: session.pipelines.length,
+      partSnapshots: (session.partSnapshots || []).map((snapshot) => ({
+        part: partId(snapshot.o),
+        bakeSize: snapshot.bakeSize,
+        usedTextureSize: snapshot.used
+      })),
+      figures: session.pipelines.map((p) => ({
+        key: p.key,
+        primary: p.primary,
+        targetIds: { ...p.ids },
+        baseline: {
+          atlas: p.baseline && Array.isArray(p.baseline.atlas) ? p.baseline.atlas.slice() : null,
+          allocations: p.baseline && p.baseline.allocations
+            ? Object.fromEntries(Object.entries(p.baseline.allocations).map(([key, value]) => [key, Array.isArray(value) ? value.slice() : value]))
+            : {}
+        },
+        nativeSources: Object.fromEntries(TARGETS.map((key) => {
+          const native = p.nativeSources && p.nativeSources[key];
+          return [key, native ? {
+            bakeSize: native.bakeSize,
+            usedTextureSize: native.usedTextureSize
+          } : null];
+        })),
+        masks: p.masks ? {
+          paths: Array.isArray(p.masks.paths) ? p.masks.paths.slice() : [],
+          sizes: p.masks.sizes ? { ...p.masks.sizes } : {},
+          bodyLower: diagnosticTextureRef(p.masks.bodyLower),
+          bodyUpper: diagnosticTextureRef(p.masks.bodyUpper)
+        } : null,
+        adoptedGenerations: Number(p.adoptions) || 0,
+        restoreColorBakeRefreshes: Number(p.restoreColorBakeRefreshes) || 0,
+        trackedSnapshots: {
+          scales: Array.isArray(p.scales) ? p.scales.length : 0,
+          parts: Array.isArray(p.partsSeen) ? p.partsSeen.length : 0,
+          meshes: Array.isArray(p.meshesSeen) ? p.meshesSeen.length : 0
+        }
+      }))
+    };
+  }
+
+  function getDiagnosticState() {
+    return {
+      version: VERSION,
+      build: BUILD,
+      enabled,
+      busy,
+      persistent,
+      sessionSuppressed,
+      autoPending: !!autoPromise,
+      sceneSyncPending: !!sceneSyncPromise,
+      statusText,
+      statusError,
+      lastError,
+      session: diagnosticSessionState()
+    };
+  }
+
   function snapshotState() {
     const cap = capabilities();
     const primary = cap.ok ? (cap.pipelines.find((row) => row.primary) || cap.pipelines[0]) : null;
@@ -1128,6 +1205,7 @@
     refresh,
     onChange,
     getState: snapshotState,
+    getDiagnosticState,
     verify: () => session ? verify(session) : { ok: false, reason: 'No active session.' },
     capabilities: () => {
       const cap = capabilities();
