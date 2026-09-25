@@ -302,9 +302,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.4.0",
-      "build": "0.4.0-diagnostic-state-seam",
-      "versionOrigin": "issue-35-read-only-diagnostic-seam-2026-09-24"
+      "version": "0.4.1",
+      "build": "0.4.1-supported-body-aaid-binding",
+      "versionOrigin": "issue-32-supported-body-aaid-binding-2026-09-25"
     },
     {
       "id": "texture-quality-diagnostics",

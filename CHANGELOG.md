@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #32 supported body AAID candidate
+
+- Texture Quality Native Reconcile -> v0.4.1 / `0.4.1-supported-body-aaid-binding`.
+- Preloads each body's supported AAID at its native body source ceiling (capped at 1024px) instead of allowing the protected 2048 atlas allocation to select unavailable 2048 body AAIDs.
+- Wraps native `paints.getAAID` only while High Res owns the session; each body lookup temporarily reports its supported AAID size through `getTextureSize`, then restores that method synchronously.
+- Keeps 2048 body bake/atlas allocations, supported mask pinning, native paint/channel data, and #24 restore ownership unchanged.
+- Public Stable remains v2.2.1; #58 font assets/styles are untouched. Next gate is live Robot/Human structural validation plus Amanda's visual paint-zone check.
+
+---
+
 ## 2026-09-25 — Issue #58 canonical Dev v1.9.0 pin
 
 - Dev launcher advanced to v1.9.0 / `1.9.0-polymorph-display-fonts`.
