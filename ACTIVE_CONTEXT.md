@@ -8,11 +8,11 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.0.3 / `Witch_Scripts` @ `0a5ee9c99f1ca999ead93baa39948d8595830064`  
 **Public immutable payload:** `caef7c8b54c695934f26b1cc88ee2c79df7d65b1`  
-**Canonical Dev launcher:** v1.6.0 / payload `67f06a0e691c4a96a71c83258fac8130df73b950`
+**Canonical Dev launcher:** v1.6.1 / payload `c050a600d878a834656fbb04fad747c24c50ec53`
 
 ## Current route
 
-Issue #37 — Dock default-size reset utility — has explicit Stable promotion approval. A narrow Developer-Mode version metadata refinement is being re-smoked before exact promotion; #32 remains paused and untouched.
+Issue #37 — Dock default-size reset utility — has explicit Stable promotion approval. A narrow Developer-Mode version metadata refinement is pinned in Dev v1.6.1 and is being re-smoked before exact promotion; #32 remains paused and untouched.
 
 Issue #37 prior live gate PASS: on Dev v1.6.0, the actual Utilities Reset Size button reset a seeded 500×966 Dock to 380×520, preserved x=954/y=261, persisted 380×520, and remained correct after reload. Public Stable is unchanged.
 

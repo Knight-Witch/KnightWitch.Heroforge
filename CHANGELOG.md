@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #37 canonical Dev v1.6.1 pin
+
+- Dev launcher advanced to v1.6.1 / `1.6.1-issue-37-version-meta`.
+- Immutable payload pinned to canonical commit `c050a600d878a834656fbb04fad747c24c50ec53`.
+- Payload contains Utilities v1.3.1 and Reset Dock Size subtool v1.0.0 Developer Mode metadata.
+- No High Res runtime files changed.
+
+---
+
 ## 2026-09-25 — Issue #37 Dev v1.6.1 payload staging
 
 - Staged canonical Dev launcher registry v1.6.1 / `1.6.1-issue-37-version-meta`.

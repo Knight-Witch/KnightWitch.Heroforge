@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #37 canonical Dev v1.6.1 pin
+
+### PASS / live Dev re-smoke pending
+
+- Launcher JavaScript parse passed.
+- @version and DEV_VERSION synchronized at v1.6.1.
+- DEV_BUILD: `1.6.1-issue-37-version-meta`.
+- PAYLOAD_REF: `c050a600d878a834656fbb04fad747c24c50ec53`.
+- Payload manifest launcher registry is v1.6.1 and Utilities registry is v1.3.1.
+- High Res runtime scope untouched.
+
+---
+
 ## 2026-09-25 — Issue #37 Dev v1.6.1 payload staging
 
 ### PASS / launcher pin pending
