@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #41 resize-border reset affordance
+
+### PASS / live gesture smoke pending
+
+- Shell and Core JavaScript parse after adding the reset handler seam.
+- Both resize handles retain their existing `pointerdown` drag-resize handlers and add only a `dblclick` reset handler.
+- Double-click delegates to the existing Interactions `resetDockSize()`; no duplicate reset implementation was introduced.
+- Manifest parses with Shell v0.4.0, Core v2.2.0, and Styles v0.3.0.
+- Tooltip is scoped to the two resize handles and hidden automatically with the existing minimized handle rules.
+- No Interactions, Utilities, High Res runtime, or diagnostic source changed.
+
+---
+
+
 ## 2026-09-25 — Issue #41 Dev live gate
 
 ### PASS

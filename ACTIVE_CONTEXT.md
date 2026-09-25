@@ -14,7 +14,7 @@
 
 Issue #41 — Update delivery hardening / header version visibility — is active. Public v2.1.0 for #37 is published, but Amanda's installed Stable remained on v2.0.3 after reload, so the #37 Stable smoke is blocked by the updater seam rather than the Reset Size implementation.
 
-#41 Dev live gate PASS. Dev Auto Host v0.2.0 resolved canonical `WITCH_DEV_MAIN` by ref API -> immutable SHA, Dev v1.7.0 loaded payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`, loader completed 25/25 with 0 failed/fallback, and the header/About changes passed. Public RC PR #51 is next: v2.2.0 with self-refreshing Stable delivery, visible Stable runtime version beside WITCH DOCK, and Disclaimer moved into About.
+#41 Dev live gate PASS. Dev Auto Host v0.2.0 resolved canonical `WITCH_DEV_MAIN` by ref API -> immutable SHA, Dev v1.7.0 loaded payload `b38c7e4077cd0d10f6ee1aec27c541b8d4604d23`, loader completed 25/25 with 0 failed/fallback, and the header/About changes passed. Public RC PR #51 is being refreshed once more before final smoke: the bottom edge and bottom-right resize corner now double-click through the existing Reset Dock Size handler, with a hover hint. Self-refreshing Stable delivery, visible Stable runtime version beside WITCH DOCK, and Disclaimer-in-About remain unchanged.
 
 Issue #37 remains published as public v2.1.0 but its Stable smoke is waiting on #41. #32 and #34 remain paused and untouched. Issue #42 is a later repository-wide Developer Mode/module/subtool version-display cleanup task.
 

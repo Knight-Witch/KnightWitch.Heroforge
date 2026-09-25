@@ -17,9 +17,9 @@
       "path": "features/core/Witch_Dock_Core.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "2.1.0",
-      "build": "2.1.0-title-version-render",
-      "versionOrigin": "issue-41-header-version-2026-09-25"
+      "version": "2.2.0",
+      "build": "2.2.0-resize-border-reset",
+      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
     },
     {
       "id": "witch-dock-assets",
@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.2.0",
-      "build": "0.2.0-header-version-about-disclaimer",
-      "versionOrigin": "issue-41-header-version-2026-09-25"
+      "version": "0.3.0",
+      "build": "0.3.0-resize-border-reset-tooltip",
+      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -87,9 +87,9 @@
       "path": "features/core/Witch_Dock_Shell.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.3.0",
-      "build": "0.3.0-header-version",
-      "versionOrigin": "issue-41-header-version-2026-09-25"
+      "version": "0.4.0",
+      "build": "0.4.0-resize-border-reset",
+      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
     },
     {
       "id": "witch-dock-interactions",
