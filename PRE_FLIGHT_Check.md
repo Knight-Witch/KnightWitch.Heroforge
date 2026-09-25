@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #32 Dev v1.9.1 payload staging
+
+### PASS / launcher pin pending
+
+- manifest.json parses with Dev launcher registry v1.9.1.
+- Texture Quality Native Reconcile is registered at v0.4.1 / `0.4.1-supported-body-aaid-binding`.
+- Candidate source parse already passed; no Stable runtime changed.
+- #58 font assets/styles remain byte-untouched by #32.
+- Next gate: pin Dev launcher to this immutable staging commit.
+
+---
+
 ## 2026-09-25 — Issue #32 supported body AAID candidate
 
 ### PASS / live Dev + human visual gate pending

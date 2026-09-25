@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.9.0",
-      "build": "1.9.0-polymorph-display-fonts",
-      "versionOrigin": "issue-58-polymorph-fonts-2026-09-25"
+      "version": "1.9.1",
+      "build": "1.9.1-issue-32-body-aaid-binding",
+      "versionOrigin": "issue-32-body-aaid-binding-2026-09-25"
     },
     {
       "id": "witch-dock-core",

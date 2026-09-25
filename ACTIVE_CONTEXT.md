@@ -8,13 +8,13 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.1 / `Witch_Scripts` @ `50b22b3f9d8bf030f958b5372e008bca5404fa1d`  
 **Public immutable payload:** `d2be75fbab7a76a9833debe5145d7dd9e8e8b831`  
-**Canonical Dev launcher:** v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b`
+**Canonical Dev launcher:** v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b` (v1.9.1 payload staged; pin pending)
 
 ## Current route
 
 Issue #32 — HR body paint zone collapse — is active. The diagnostic boundary is proven: promoted 2048 body atlas allocations drive native body AAID lookup toward unavailable 2048 body assets, producing HeroForge's shared 1×1 fallback even though paints, channels, masks, and atlas allocations remain valid. Work confirmed supported AAIDs restore real bindings when AAID source-size selection is decoupled from the 2048 destination allocation.
 
-Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` is the Dev candidate. It preloads each body's supported AAID at the native body source ceiling (up to 1024px) and temporarily overrides only native `paints.getTextureSize` during body `getAAID` resolution, while preserving the 2048 bake/atlas policy. The lookup wrapper is session-owned and restored before native OFF reconstruction. Next gate: canonical Dev integration, Robot/Human structural regression, then Amanda's visual paint-zone confirmation.
+Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` is the Dev candidate. It preloads each body's supported AAID at the native body source ceiling (up to 1024px) and temporarily overrides only native `paints.getTextureSize` during body `getAAID` resolution, while preserving the 2048 bake/atlas policy. The lookup wrapper is session-owned and restored before native OFF reconstruction. Canonical Dev payload staging is complete for launcher registry v1.9.1. Next gate: pin the launcher to this immutable payload, then run Robot/Human structural regression and Amanda's visual paint-zone confirmation.
 
 Issue #58 remains staged separately on canonical Dev v1.9.0 / payload `858416a37a31df48454f71c5a2493ddc733b5e7b`; its font-load/human visual gate is paused while #32 is active. Public Stable remains v2.2.1 and unchanged.
 

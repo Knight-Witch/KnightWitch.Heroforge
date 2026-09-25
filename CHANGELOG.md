@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #32 Dev v1.9.1 payload staging
+
+- Staged canonical Dev launcher registry v1.9.1 / `1.9.1-issue-32-body-aaid-binding`.
+- Payload includes Texture Quality Native Reconcile v0.4.1 / `0.4.1-supported-body-aaid-binding` with supported body AAID selection while retaining 2048 destination allocations.
+- Public Stable remains v2.2.1; #58 Polymorph assets/styles remain staged and unchanged.
+- Next step is immutable launcher pin + live Robot/Human structural validation.
+
+---
+
 ## 2026-09-25 — Issue #32 supported body AAID candidate
 
 - Texture Quality Native Reconcile -> v0.4.1 / `0.4.1-supported-body-aaid-binding`.
