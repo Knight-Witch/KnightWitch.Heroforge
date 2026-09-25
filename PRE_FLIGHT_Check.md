@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #58 Dev v1.9.6 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.9.6 / `1.9.6-title-version-baseline`.
+- Styles v0.6.1 is present in the same payload; Core/Shell/Assets and UI consistency scope are unchanged.
+- Public Stable remains v2.2.2.
+- Next: pin this immutable payload from Dev launcher v1.9.6 and reload through Dev Auto Host.
+
+---
+
 ## 2026-09-25 — Issue #58 title/version baseline correction
 
 ### PENDING live/human gate
