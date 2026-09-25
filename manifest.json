@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.5.0",
-      "build": "0.5.0-brand-title-readable-controls",
-      "versionOrigin": "issue-58-brand-title-2026-09-25"
+      "version": "0.5.1",
+      "build": "0.5.1-title-button-alignment",
+      "versionOrigin": "issue-58-title-alignment-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -87,9 +87,9 @@
       "path": "features/core/Witch_Dock_Shell.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.5.0",
-      "build": "0.5.0-centered-brand-title-emblem",
-      "versionOrigin": "issue-58-brand-title-2026-09-25"
+      "version": "0.5.1",
+      "build": "0.5.1-inline-version-title-alignment",
+      "versionOrigin": "issue-58-title-alignment-2026-09-25"
     },
     {
       "id": "witch-dock-interactions",
