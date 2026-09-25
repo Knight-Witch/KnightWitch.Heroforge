@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #37 Dev v1.6.1 payload staging
+
+- Staged canonical Dev launcher registry v1.6.1 / `1.6.1-issue-37-version-meta`.
+- Payload includes Utilities v1.3.1 and Reset Dock Size subtool v1.0.0 metadata.
+- No High Res runtime files changed.
+- Next step is an immutable launcher pin to this canonical payload.
+
+---
+
 ## 2026-09-25 — Issue #37 version metadata refinement
 
 - Utilities now explicitly reports v1.3.1 / `1.3.1-dock-size-reset-version-meta` to Developer Mode instead of relying only on manifest fallback.
