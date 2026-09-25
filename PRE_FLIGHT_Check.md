@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #37 Dev v1.6.1 payload staging
+
+### PASS / launcher pin pending
+
+- manifest.json parses with Dev launcher registry v1.6.1 and Utilities v1.3.1.
+- Utilities source already passed JavaScript parse on the prior canonical merge.
+- No High Res runtime files changed.
+- Public Stable remains unchanged.
+
+---
+
 ## 2026-09-25 — Issue #37 version metadata refinement
 
 ### PASS / live Dev re-smoke pending
