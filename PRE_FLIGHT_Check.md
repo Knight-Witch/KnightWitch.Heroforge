@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #58 Dev v1.9.2 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.9.2 / `1.9.2-title-typography-refine`.
+- Core/Shell/Styles candidate versions are present in the same payload.
+- Existing font assets remain bundled and immutable.
+- Public Stable remains v2.2.2.
+- Next step: pin this payload from the Dev launcher, reload through Dev Auto Host, and verify runtime/font/title state.
+
+---
+
 ## 2026-09-25 — Issue #58 typography refinement candidate
 
 ### PENDING live/human gate
