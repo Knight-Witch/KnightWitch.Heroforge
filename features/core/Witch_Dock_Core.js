@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-core";
-  const VERSION = "2.4.0";
-  const BUILD = "2.4.0-notification-service";
+  const VERSION = "2.3.0";
+  const BUILD = "2.3.0-branded-title-meta";
   const DEFAULTS = Object.freeze({
     x: null, y: null, width: 380, height: 520,
     minimized: false, closed: false,
@@ -102,7 +102,6 @@
     const modals = requireApi("KWWitchDockModals", ["configure","ensureAbout","openAbout","openDisclaimer"]);
     const boneHud = requireApi("KWWitchDockBoneHUD", ["configure","init"]);
     const assets = requireApi("KWWitchDockAssets", ["getState"]);
-    const notifications = requireApi("KWWitchDockNotifications", ["configure","register","preview","getState"]);
 
     const styleText = String(opts.styleText || "");
     if (!styleText.includes("#kwWitchDock") || !styleText.includes("#kwWDCompactIcon")) {
@@ -113,7 +112,6 @@
     }
 
     preferences.configure({ storage: host.storage, pageStorage: host.pageStorage });
-    notifications.configure({ pageStorage: host.pageStorage, emblemUrl: assets.compactEmblemUrl });
 
     const state = createState(registry);
     const prefs = preferences.load();
