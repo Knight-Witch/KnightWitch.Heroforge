@@ -43,7 +43,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 4px;
+  gap: 1px;
   font-family: "KW Polymorph", system-ui, sans-serif;
   font-size: 16px;
   line-height: 1;
@@ -57,13 +57,13 @@
   flex: 0 0 auto;
   display: block;
   object-fit: contain;
-  margin-left: -6px;
-  margin-right: -6px;
+  margin-left: -11px;
+  margin-right: -11px;
   opacity: 1;
 }
 #kwWDTitleVersion{
   align-self: center;
-  margin-left: -2px;
+  margin-left: 0;
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
   font-size: 8px;
   line-height: 1;
@@ -266,16 +266,23 @@
 
 .kwWDMinimized #kwWDFooter{ display: none; }
 .kwWDTab{
+  height: 30px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: inherit;
   border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   color: #eee;
   border-radius: 6px;
-  padding: 6px 10px 4px;
+  padding: 0 10px;
   cursor: default;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1;
   letter-spacing: 0.45px;
+  text-indent: -0.45px;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -425,7 +432,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
+  padding: 7px 10px;
   cursor: default;
   user-select: none;
   background: rgba(255,255,255,0.03);
@@ -465,6 +472,7 @@
   font-family: inherit;
   font-weight: 600;
   font-size: 14px;
+  line-height: 1.1;
   letter-spacing: 0.65px;
   text-transform: uppercase;
 }
@@ -487,7 +495,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px;
+  padding: 7px 10px;
   user-select: none;
   cursor: default;
   background: rgba(255,255,255,0.03);
@@ -498,6 +506,7 @@
   font-family: inherit;
   font-weight: 600;
   font-size: 14px;
+  line-height: 1.1;
   letter-spacing: 0.65px;
   text-transform: uppercase;
 }
@@ -805,18 +814,58 @@
   letter-spacing: 0.15px;
 }
 
-/* Optical centering for common text-button surfaces. Keep total vertical padding unchanged. */
+/* Shared Witch Dock control theme. */
+#kwWitchDock{
+  --kw-accent: #aa55ff;
+  --kw-accent-hover: rgba(170,85,255,0.24);
+  --kw-accent-border: rgba(190,130,255,0.72);
+  --kw-scroll-track: rgba(20,20,22,0.96);
+  --kw-scroll-thumb: rgba(255,255,255,0.34);
+}
+
+#kwWDBody{
+  scrollbar-color: var(--kw-scroll-thumb) var(--kw-scroll-track);
+  scrollbar-width: auto;
+}
+#kwWDBody::-webkit-scrollbar{ width: 12px; height: 12px; }
+#kwWDBody::-webkit-scrollbar-track{ background: var(--kw-scroll-track); }
+#kwWDBody::-webkit-scrollbar-thumb{
+  background: var(--kw-scroll-thumb);
+  border: 3px solid var(--kw-scroll-track);
+  border-radius: 999px;
+}
+#kwWDBody::-webkit-scrollbar-thumb:hover{ background: rgba(190,130,255,0.72); }
+
+#kwWitchDock input[type="checkbox"]{ accent-color: var(--kw-accent); }
+
+#kwWitchDock button:not(.kwWDBtn):not(#kwWDAboutBtn):not(.kwWDActionBtn):not(#kwWDAboutClose):not(#kwWDDisclaimerClose){
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
 #kwWitchDock .kwTextureQualityActions button,
-#kwWitchDock .kwTextureQualityAdvanced button{
-  padding-top: 8px;
-  padding-bottom: 6px;
-}
-#kwWitchDock .kwu .action-btn{
-  padding-top: 8px;
-  padding-bottom: 6px;
-}
+#kwWitchDock .kwTextureQualityAdvanced button,
+#kwWitchDock .kwu .action-btn,
 #kwWitchDock .kwu .gizmo-modes button{
-  padding-top: 7px;
-  padding-bottom: 5px;
+  min-height: 30px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+#kwWitchDock .kwu .gizmo-modes button{ padding-inline: 8px; }
+
+#kwWitchDock .kwWDTab:hover,
+#kwWitchDock .kwTextureQualityActions button:hover:not(:disabled),
+#kwWitchDock .kwTextureQualityAdvanced button:hover:not(:disabled),
+#kwWitchDock .kwu .action-btn:hover:not(:disabled),
+#kwWitchDock .kwu .gizmo-modes button:hover:not(:disabled),
+#kwWitchDock .kwBoothTool button:hover:not(:disabled),
+#kwWitchDock .kwWDAboutLinkBtn:hover{
+  background: var(--kw-accent-hover);
+  border-color: var(--kw-accent-border);
 }
 
