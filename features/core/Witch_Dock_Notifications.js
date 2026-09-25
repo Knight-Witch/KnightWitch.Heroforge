@@ -26,6 +26,7 @@
   let emblemUrl = "";
   let queue = [];
   let active = null;
+  let activeKeydownHandler = null;
   let scheduled = false;
 
   function cloneState() {
@@ -126,6 +127,10 @@
     if (!active) return false;
     acknowledgeActive(reason || "dismiss");
     removeOverlay();
+    if (activeKeydownHandler) {
+      document.removeEventListener("keydown", activeKeydownHandler, true);
+      activeKeydownHandler = null;
+    }
     active = null;
     state.activeId = null;
     state.closeCount += 1;
@@ -221,8 +226,8 @@
       if (event.code !== "Escape" || state.activeId !== notice.id) return;
       event.preventDefault();
       closeActive("dismiss");
-      document.removeEventListener("keydown", onKeyDown, true);
     };
+    activeKeydownHandler = onKeyDown;
     document.addEventListener("keydown", onKeyDown, true);
 
     document.body.appendChild(overlay);
@@ -288,6 +293,10 @@
     queue = [];
     scheduled = false;
     removeOverlay();
+    if (activeKeydownHandler) {
+      document.removeEventListener("keydown", activeKeydownHandler, true);
+      activeKeydownHandler = null;
+    }
     active = null;
     state.activeId = null;
     try { delete UW[GLOBAL]; } catch (_) { UW[GLOBAL] = undefined; }
