@@ -483,7 +483,7 @@
   };
 
   function showBootError(error) {
-    const message = error && error.message ? error.message : String(error || "unknown Dev bootstrap error");
+    const message = error && error.message ? error.message : String(error || "unknown Stable bootstrap error");
     state.status = "error";
     state.error = message;
     try { console.error("[Witch Dock] Bootstrap failed:", error); } catch (_) {}
