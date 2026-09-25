@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #41 Dev v1.8.0 payload staging
+
+- Staged canonical Dev launcher registry v1.8.0 / `1.8.0-resize-border-reset`.
+- Payload includes Shell v0.4.0, Core v2.2.0, and Styles v0.3.0 for the double-click resize-border reset affordance.
+- Interactions remains v0.6.0; the existing reset implementation is reused unchanged.
+- Next step is to pin the Dev launcher to this immutable canonical payload.
+
+---
+
 ## 2026-09-25 — Issue #41 resize-border reset affordance
 
 - Added double-click reset behavior to both existing Dock resize surfaces: bottom edge and bottom-right corner.
