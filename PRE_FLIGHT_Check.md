@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #58 Dev v1.9.0 payload staging
+
+### PASS / launcher pin pending
+
+- manifest.json parses with Dev launcher registry v1.9.0.
+- Assets v0.2.0 and Styles v0.4.0 remain synchronized with the font candidate.
+- Both full-source Polymorph TTF assets are present in the payload tree.
+- No High Res runtime/diagnostic or Public Stable file changed in this staging step.
+
+---
+
 ## 2026-09-25 — Issue #58 Polymorph display-font candidate
 
 ### PASS / live Dev + human visual gate pending
