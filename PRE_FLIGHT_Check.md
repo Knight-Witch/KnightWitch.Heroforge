@@ -1,3 +1,14 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.6 candidate
+
+### PASS / pending reload
+
+- Fixed Tampermonkey identity remains `WITCH DOCK - DEV`.
+- Launcher version/build synchronized at v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
+- Exact payload: `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb`.
+- Pending live gate: 25/25 executed, 0 failed, immutable=25, fallback=0; Diagnostics v0.1.1.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.5 candidate for issue #35
 
 ### PASS / pending live reload

@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.6 for diagnostics v0.1.1
+
+- Advanced Dev Auto Host target launcher to v1.5.6 / `1.5.6-issue-35-hr-diagnostics-v011`.
+- Pinned exact immutable task payload `5dbccc5fc6406f2838613eecb5aa572ff3f1f0fb` containing High Res Diagnostics v0.1.1.
+- Prior v0.1.0 live startup gate passed 25/25 modules with zero failures; v0.1.1 corrects Bridge return/section selection only.
+- Public Stable remains untouched.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.5 for issue #35 live validation
 
 - Advanced the fixed-name Dev launcher to v1.5.5 / `1.5.5-issue-35-hr-diagnostics`.
