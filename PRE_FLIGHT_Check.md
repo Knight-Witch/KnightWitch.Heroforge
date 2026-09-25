@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #58 Dev v1.9.3 live gate
+
+### PASS — human visual gate pending
+
+- Auto Host v0.2.0 resolved exact canonical Dev head and launched v1.9.3 with error=null.
+- Runtime channel: v1.9.3 / `1.9.3-title-alignment-fix`, immutable payload `47208351d47baec3cc0fa08d6446b37e1b2261c4`.
+- Loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Polymorph Bold: loaded=true from immutable payload; Regular remains bundled for future selection.
+- Header DOM: 20px emblem, inline `DEV · v1.9.3`, title row vertically centered, no control overlap (14px gap).
+- Shared button alignment rule is active in Styles v0.5.1; final appearance requires Amanda's visual gate.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.3 launcher
 
 ### PASS — source pin / live gate pending
