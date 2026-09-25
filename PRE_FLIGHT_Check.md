@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 payload staging
+
+### PASS — payload composition / live gate pending
+
+- Manifest launcher registry synchronized to v1.9.4 / `1.9.4-compact-left-brand-header`.
+- Styles v0.5.2 is present with the accepted style-only scope; Core/Shell/Assets remain unchanged from v1.9.3.
+- Public Stable remains v2.2.2.
+- Next: pin this immutable payload from Dev launcher v1.9.4 and reload through Dev Auto Host.
+
+---
+
 ## 2026-09-25 — Issue #58 compact left header refinement
 
 ### PENDING live/human gate
