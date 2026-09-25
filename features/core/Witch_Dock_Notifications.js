@@ -315,4 +315,24 @@
     getState: cloneState,
     dispose
   });
+
+  const defaultPageStorage = Object.freeze({
+    getItem(key) {
+      try { return UW.localStorage.getItem(String(key)); }
+      catch (_) { return null; }
+    },
+    setItem(key, value) {
+      try {
+        UW.localStorage.setItem(String(key), String(value));
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+  });
+  const assets = UW.KWWitchDockAssets;
+  configure({
+    pageStorage: defaultPageStorage,
+    emblemUrl: assets && typeof assets.compactEmblemUrl === "string" ? assets.compactEmblemUrl : ""
+  });
 })();
