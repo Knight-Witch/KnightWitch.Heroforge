@@ -16,7 +16,7 @@
       "title": "Witch Dock Notifications",
       "path": "features/core/Witch_Dock_Notifications.js",
       "kind": "core-feature",
-      "load": "bootstrap-module",
+      "load": "module-loader",
       "version": "0.1.0",
       "build": "0.1.0-reusable-one-time-notices",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
@@ -27,9 +27,9 @@
       "path": "features/core/Witch_Dock_Core.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "2.4.0",
-      "build": "2.4.0-notification-service",
-      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
+      "version": "2.3.0",
+      "build": "2.3.0-branded-title-meta",
+      "versionOrigin": "issue-58-brand-title-2026-09-25"
     },
     {
       "id": "witch-dock-assets",
@@ -418,6 +418,15 @@
     }
   ],
   "modules": [
+    {
+      "id": "witch-dock-notifications",
+      "title": "Witch Dock Notifications",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Notifications.js?v=0.1.0-reusable-one-time-notices",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
     {
       "id": "witch-dock-release-notices",
       "title": "Witch Dock Release Notices",
