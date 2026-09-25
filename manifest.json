@@ -17,9 +17,9 @@
       "path": "features/core/Witch_Dock_Core.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "2.0.0",
-      "build": "2.0.0-modular-orchestrator",
-      "versionOrigin": "issue-10-stage-e-modular-core-2026-09-19"
+      "version": "2.1.0",
+      "build": "2.1.0-title-version-render",
+      "versionOrigin": "issue-41-header-version-2026-09-25"
     },
     {
       "id": "witch-dock-assets",
@@ -37,9 +37,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.1.0",
-      "build": "0.1.0-extracted-core-css",
-      "versionOrigin": "issue-10-core-css-extraction-2026-09-17"
+      "version": "0.2.0",
+      "build": "0.2.0-header-version-about-disclaimer",
+      "versionOrigin": "issue-41-header-version-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -47,9 +47,9 @@
       "path": "features/core/Witch_Dock_Modals.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.1.1",
-      "build": "0.1.1-lazy-about-open",
-      "versionOrigin": "issue-10-modal-lazy-open-fix-2026-09-17"
+      "version": "0.2.0",
+      "build": "0.2.0-disclaimer-in-about",
+      "versionOrigin": "issue-41-disclaimer-about-2026-09-25"
     },
     {
       "id": "witch-dock-bone-hud",
@@ -87,9 +87,9 @@
       "path": "features/core/Witch_Dock_Shell.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.2.0",
-      "build": "0.2.0-main-and-compact-dom",
-      "versionOrigin": "issue-10-stage-d-compact-dom-2026-09-18"
+      "version": "0.3.0",
+      "build": "0.3.0-header-version",
+      "versionOrigin": "issue-41-header-version-2026-09-25"
     },
     {
       "id": "witch-dock-interactions",
