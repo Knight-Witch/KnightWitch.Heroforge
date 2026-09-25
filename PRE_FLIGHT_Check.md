@@ -1,3 +1,18 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.9 candidate
+
+### PASS / pending final smoke
+
+- Canonical payload: `904dd039d5e05511ab9d3737622991fd9970c5bb`.
+- Payload contains Texture Quality v0.4.0, Diagnostics v0.1.3, Diagnostics UI v0.1.0, 25 modules.
+- Launcher identity/version/build synchronized at v1.5.9 / `1.5.9-issue-35-canonical-diagnostics`.
+- Public Stable unchanged.
+
+### Pending
+
+- Auto Host reload and 25/25 immutable loader smoke.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.8 candidate
 
 ### PASS / pending live reload

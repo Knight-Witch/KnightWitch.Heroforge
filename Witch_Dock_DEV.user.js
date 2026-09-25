@@ -27,7 +27,7 @@
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "WITCH_DEV_MAIN";
-  const PAYLOAD_REF = "c4fe7ef7f6307578823706de552b44b8a2a378dd";
+  const PAYLOAD_REF = "904dd039d5e05511ab9d3737622991fd9970c5bb";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;

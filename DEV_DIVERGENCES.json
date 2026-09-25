@@ -22,8 +22,8 @@
     },
     {
       "issue": 35,
-      "status": "validated-dev-only-diagnostics",
-      "reason": "High Res Diagnostic Capture is intentionally Dev-only after issue #35 completion. Canonical Dev contains Texture Quality v0.4.0 read-only diagnostic state plus Diagnostics v0.1.3/UI v0.1.0; public Stable remains unchanged until a separate explicit promotion decision.",
+      "status": "canonical-dev-final-smoke",
+      "reason": "High Res Diagnostics v0.1.3 is integrated into WITCH_DEV_MAIN. Canonical Dev launcher v1.5.9 pins the canonical integration commit for final startup smoke; public Stable remains intentionally unchanged.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -32,11 +32,10 @@
         "features/rendering/Texture_Quality_Diagnostics_UI.js"
       ],
       "acceptance": [
-        "Canonical Dev launcher v1.5.9 resolves integrated immutable payload c4fe7ef7f6307578823706de552b44b8a2a378dd.",
-        "Loader executes 25/25 modules with zero failures and zero fallback.",
-        "Current-state capture is observational.",
-        "Controlled comparison restores original HR state and preserves evidence.",
-        "Sectional retrieval avoids whole-snapshot transport overflow.",
+        "Launcher v1.5.5 resolves the exact issue #35 payload with zero fallback.",
+        "Loader executes 25/25 modules with zero failures.",
+        "Capture Current State is observational.",
+        "Robot #32 provides the first controlled Native OFF to High Res ON differential.",
         "Public Stable remains untouched."
       ]
     }

@@ -1,3 +1,12 @@
+## 2026-09-24 — Canonical Dev launcher v1.5.9 for integrated High Res diagnostics
+
+- Repinned Dev Auto Host to canonical-main payload `904dd039d5e05511ab9d3737622991fd9970c5bb` containing the validated #35 runtime integration.
+- Launcher advanced to v1.5.9 / `1.5.9-issue-35-canonical-diagnostics`.
+- This removes the temporary dependency on the task-branch payload; public Stable remains untouched.
+- Final gate: one Auto Host reload with 25/25 modules and Diagnostics v0.1.3.
+
+---
+
 ## 2026-09-24 — Canonical Dev launcher v1.5.8 for diagnostics v0.1.3
 
 - Advanced canonical Dev launcher to v1.5.8 / 1.5.8-issue-35-hr-diagnostics-v013.

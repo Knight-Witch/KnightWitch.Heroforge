@@ -8,8 +8,8 @@
       "kind": "dev-bootstrap",
       "load": "userscript",
       "version": "1.5.9",
-      "build": "1.5.9-issue-35-integrated",
-      "versionOrigin": "issue-35-canonical-dev-integration-2026-09-24"
+      "build": "1.5.9-issue-35-canonical-diagnostics",
+      "versionOrigin": "issue-35-canonical-dev-diagnostics-2026-09-24"
     },
     {
       "id": "witch-dock-core",
