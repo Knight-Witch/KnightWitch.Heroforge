@@ -6,7 +6,7 @@ const hostSource = fs.readFileSync('devtools/Witch_Dock_DEV_Auto_Host.user.js', 
 const launcherSource = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
 
 assert.doesNotThrow(() => new Function(hostSource), 'auto host parses');
-assert.match(hostSource, /const HOST_VERSION = "0\\.2\\.0";/);
+assert.match(hostSource, /const HOST_VERSION = "0\.2\.0";/);
 assert.match(hostSource, /const TARGET_BRANCH = "WITCH_DEV_MAIN";/);
 
 const metadata = text => text.match(/^\/\/ ==UserScript==\s*\n([\s\S]*?)^\/\/ ==\/UserScript==\s*$/m)[1];
