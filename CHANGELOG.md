@@ -1,3 +1,16 @@
+## 2026-09-25 — Issue #41 public v2.2.0 self-refreshing RC
+
+- Public launcher advances to v2.2.0 / `2.2.0-self-refreshing-delivery-header`.
+- The installed Stable wrapper now resolves `Witch_Scripts` through GitHub's ref API and fetches the current launcher by immutable commit SHA.
+- A five-minute cached head avoids repeated ref-API traffic; stale cache may be used if GitHub ref resolution is temporarily unavailable, and the installed wrapper remains a final local fallback.
+- Resolved launcher metadata/grants/connect scope, branch identity, runtime version/build, and immutable payload ref are validated before execution.
+- Synthetic `GM_info` preserves the resolved launcher's actual version so the Dock title/About report runtime truth even if Tampermonkey's installed wrapper has not updated yet.
+- Static harness passed both remote-newer-launcher dispatch and local-current-wrapper paths.
+- Stable title-version UI and Disclaimer-in-About payload are pinned to immutable RC payload `2601c26a474ed41a41e2fc930dd1d9bf5d7cbfe9`.
+- High Res issues #32/#34 remain untouched.
+
+---
+
 ## 2026-09-25 — Issue #41 public RC payload staging
 
 - Staged the shared header/version observability changes from canonical Dev: Shell v0.3.0, Modals v0.2.0, Core v2.1.0, Styles v0.2.0.
