@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #41 Dev v1.7.0 payload staging
+
+### PASS / launcher pin pending
+
+- manifest.json parses with Dev launcher registry v1.7.0.
+- Shared Shell/Modals/Core source already passed JavaScript parse on canonical integration.
+- No High Res runtime or diagnostic file changed.
+- Dev Auto Host v0.2.0 is separately published on `wd/dev-auto-host` and awaits its one-time installed-host smoke.
+
+---
+
 ## 2026-09-25 — Issue #41 shared UI maintenance candidate
 
 ### PASS / integration smoke pending
