@@ -2,8 +2,8 @@
   "use strict";
 
   const FEATURE_ID = "witch-dock-shell";
-  const VERSION = "0.3.0";
-  const BUILD = "0.3.0-header-version";
+  const VERSION = "0.4.0";
+  const BUILD = "0.4.0-resize-border-reset";
 
   const STATE = {
     createCalls: 0,
@@ -30,7 +30,8 @@
       "triggerUndo",
       "triggerRedo",
       "startResizeBottom",
-      "startResizeCorner"
+      "startResizeCorner",
+      "resetDockSize"
     ]) {
       if (typeof handlers[name] !== "function") {
         STATE.lastError = `missing handler ${name}`;
@@ -101,8 +102,28 @@
       ]),
       el("div", { id: "kwWDBody" }),
       el("div", { id: "kwWDFooter" }),
-      el("div", { id: "kwWDResizeHandleBottom", onpointerdown: handlers.startResizeBottom }),
-      el("div", { id: "kwWDResizeHandleCorner", onpointerdown: handlers.startResizeCorner })
+      el("div", {
+        id: "kwWDResizeHandleBottom",
+        class: "kwWDResizeResetHandle",
+        "data-tooltip": "Double click border to reset dock size.",
+        onpointerdown: handlers.startResizeBottom,
+        ondblclick: (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handlers.resetDockSize();
+        }
+      }),
+      el("div", {
+        id: "kwWDResizeHandleCorner",
+        class: "kwWDResizeResetHandle",
+        "data-tooltip": "Double click border to reset dock size.",
+        onpointerdown: handlers.startResizeCorner,
+        ondblclick: (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handlers.resetDockSize();
+        }
+      })
     ]);
 
     return {
