@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #37 public v2.1.0 RC launcher
+
+- Public launcher advanced to v2.1.0 / `2.1.0-dock-size-reset`.
+- Immutable payload pinned to RC commit `002e0e62a21798091c96c3eb52668c8ae0844629`.
+- Launcher expects Witch Dock Interactions v0.6.0 / `0.6.0-dock-size-reset`.
+- Utilities v1.3.1 carries Reset Dock Size v1.0.0 Developer Mode metadata.
+- High Res runtime and diagnostic scope is unchanged.
+
+---
+
 ## 2026-09-25 — Issue #37 public RC payload staging
 
 - Staged Dock default-size reset for public Stable.
