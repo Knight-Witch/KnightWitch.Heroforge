@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-25  
 **Canonical Dev:** `WITCH_DEV_MAIN`  
-**Active task:** issue #37 — **Dock default-size reset utility**  
+**Active task:** issue #37 — **Dock default-size reset utility / Stable promotion**  
 **Paused task:** issue #32 — **HR body paint zone collapse**  
 **Separate open bug:** issue #34 — **HR false restore warning / native body mask verification**  
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
@@ -12,9 +12,9 @@
 
 ## Current route
 
-Issue #37 — Dock default-size reset utility — is Dev-validated and awaiting explicit Stable promotion approval. Do not promote without Amanda's approval; #32 remains paused until this narrow release decision is resolved.
+Issue #37 — Dock default-size reset utility — has explicit Stable promotion approval. A narrow Developer-Mode version metadata refinement is being re-smoked before exact promotion; #32 remains paused and untouched.
 
-Issue #37 live gate PASS: on Dev v1.6.0, the actual Utilities Reset Size button reset a seeded 500×966 Dock to 380×520, preserved x=954/y=261, persisted 380×520, and remained correct after reload. Public Stable is unchanged.
+Issue #37 prior live gate PASS: on Dev v1.6.0, the actual Utilities Reset Size button reset a seeded 500×966 Dock to 380×520, preserved x=954/y=261, persisted 380×520, and remained correct after reload. Public Stable is unchanged.
 
 Validated diagnostic runtime:
 - Texture Quality Native Reconcile v0.4.0 / `0.4.0-diagnostic-state-seam`;
@@ -49,3 +49,8 @@ Robot config `59568049` was used only as the diagnostic tool's validation fixtur
 ## Cleanup
 
 Issue #35 and PR #36 are closed. Temporary branch `wd/35-hr-diagnostic-capture` is disposable; deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_35_2026-09-24.md`.
+
+
+## Immediate maintenance after #37
+
+Issue #41 — update delivery hardening — is authorized next because stale mutable raw-branch delivery can undermine Dev/Stable validation. Preserve all paused #32/#34 state while doing that maintenance. Issue #42 is a later, non-bug Developer Mode version-display cleanup task.
