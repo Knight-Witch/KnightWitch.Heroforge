@@ -1,3 +1,11 @@
+## 2026-09-24 — Issue #35 immutable Dev payload for diagnostics v0.1.3
+
+- Static PASS on High Res Diagnostics v0.1.3 / 0.1.3-addressable-comparison-sections.
+- Payload manifest launcher registry advanced to v1.5.8 / 1.5.8-issue-35-hr-diagnostics-v013.
+- Payload still contains 25 modules; no unrelated runtime modules changed.
+- Next gate is canonical Dev launcher pin and live Auto Host reload.
+
+---
 ## 2026-09-24 — Issue #35 diagnostics v0.1.3 addressable comparison sections
 
 - Live v0.1.2 startup gate passed: Dev v1.5.7, exact immutable payload, loader 25/25 executed, 0 failed, immutable=25, fallback=0.

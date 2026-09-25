@@ -1,3 +1,19 @@
+## 2026-09-24 — Issue #35 diagnostics v0.1.3 immutable payload
+
+### PASS
+
+- High Res Diagnostics v0.1.3 syntax parses.
+- Registry version/build and module cache key match the source.
+- No duplicate registry/module IDs; 25 modules scheduled.
+- getComparisonSection is present and exported.
+- Payload manifest launcher identity advanced to v1.5.8.
+
+### Pending
+
+- Canonical Dev launcher v1.5.8 pin.
+- Live loader gate and Robot comparison retrieval gate.
+
+---
 ## 2026-09-24 — Issue #35 diagnostics v0.1.3 candidate
 
 ### PASS so far
