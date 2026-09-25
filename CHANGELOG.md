@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-09-25 — Issue #41 resize-border reset affordance
+
+- Added double-click reset behavior to both existing Dock resize surfaces: bottom edge and bottom-right corner.
+- Both gestures call the existing `KWWitchDockInteractions.resetDockSize()` path used by Utilities Reset Size; reset semantics, persistence, position preservation, and telemetry remain single-owned by Interactions.
+- Added the hover hint: `Double click border to reset dock size.`
+- Shell -> v0.4.0 / `0.4.0-resize-border-reset`.
+- Core -> v2.2.0 / `2.2.0-resize-border-reset`.
+- Styles -> v0.3.0 / `0.3.0-resize-border-reset-tooltip`.
+- Interactions remains v0.6.0 because its reset implementation is reused unchanged.
+- #32/#34 High Res runtime and diagnostics remain untouched.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev live gate PASS
 
 - Dev Auto Host v0.2.0 resolved canonical `WITCH_DEV_MAIN` head `4083e846691290da2288e1017f6d03777dd8dabf` through GitHub's ref API and fetched the launcher from that immutable SHA.
