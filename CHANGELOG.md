@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #41 Dev v1.7.0 payload staging
+
+- Staged canonical Dev launcher registry v1.7.0 / `1.7.0-issue-41-delivery-header`.
+- Payload contains Shell v0.3.0, Modals v0.2.0, Core v2.1.0, and Styles v0.2.0 for header-version visibility and Disclaimer-in-About behavior.
+- High Res issue #32/#34 runtime files remain untouched.
+- Next step is to pin the Dev launcher to this canonical immutable payload.
+
+---
+
 ## 2026-09-25 — Issue #41 update-delivery/header maintenance candidate
 
 - Added a dedicated compact runtime-version slot beside the Witch Dock title; Stable will show its version there while Dev keeps its existing versioned title without duplication.
