@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #41 Dev v1.8.0 payload staging
+
+### PASS / launcher pin pending
+
+- manifest.json parses with Dev launcher registry v1.8.0.
+- Shell v0.4.0 / Core v2.2.0 / Styles v0.3.0 are present in canonical Dev.
+- No High Res runtime or diagnostic file changed in this staging step.
+- Next step is immutable launcher pin + live gesture smoke.
+
+---
+
 ## 2026-09-25 — Issue #41 resize-border reset affordance
 
 ### PASS / live gesture smoke pending
