@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 live gate
+
+- Dev Auto Host resolved canonical head `5ff9534dc152f68267b9db830152f9eae6480960` and executed v1.9.4 in one attempt with no error.
+- Loader passed 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Bundled Polymorph Bold loaded from immutable payload `730794910cd23bb3e3d2fce4d52415b60fe52aeb`.
+- Header height is now ~38.9px (previous candidate ~48.9px); title starts 10px from the Dock's left edge; emblem box is 34px; muted Dev/version metadata stays inline after DOCK.
+- Tab and common tool-button boxes reflect the revised optical-centering rules.
+- Public Stable remains v2.2.2; human visual approval remains pending.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 launcher
 
 - Dev launcher -> v1.9.4 / `1.9.4-compact-left-brand-header`.

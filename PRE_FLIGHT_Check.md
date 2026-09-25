@@ -1,3 +1,17 @@
+## 2026-09-25 — Issue #58 Dev v1.9.4 live gate
+
+### PASS — human visual gate pending
+
+- Auto Host v0.2.0 resolved exact canonical Dev head and launched v1.9.4 with error=null.
+- Runtime channel: v1.9.4 / `1.9.4-compact-left-brand-header`, immutable payload `730794910cd23bb3e3d2fce4d52415b60fe52aeb`.
+- Loader: 25/25 executed, 0 failed, 25 immutable, 0 fallback.
+- Polymorph Bold: loaded=true from immutable payload; Regular remains bundled.
+- Header DOM: ~38.9px total height, 34px emblem box, left-aligned title at 10px inset, inline muted `DEV · v1.9.4`, no control overlap.
+- Revised tab / Texture Quality / Utilities button box metrics are present; final optical judgment remains Amanda's human visual gate.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #58 Dev v1.9.4 launcher
 
 ### PASS — source pin / live gate pending
