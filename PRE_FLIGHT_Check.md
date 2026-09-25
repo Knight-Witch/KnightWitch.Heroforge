@@ -1,3 +1,14 @@
+## 2026-09-25 — Issue #41 Stable self-host downgrade guard
+
+### PASS
+
+- Launcher parse passed after semantic version guard.
+- Pre-promotion RC path is safe: current canonical v2.1.0 lacks the new self-host permission contract, so v2.2.0 RC falls back to its own installed launcher rather than downgrading.
+- Compatible older branch launcher is explicitly refused.
+- Compatible newer branch launcher still dispatches through the resolved immutable SHA.
+
+---
+
 ## 2026-09-25 — Issue #41 public v2.2.0 self-refreshing RC
 
 ### PASS / live smoke pending
