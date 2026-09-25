@@ -2,7 +2,7 @@
 
 **Branch:** `wd/dev-auto-host`  
 **Status:** v0.2.0 immutable-head delivery candidate  
-**Release task:** issue #28
+**Maintenance task:** issue #41
 
 ## Architecture
 
@@ -24,15 +24,17 @@ Launcher ownership, validation, retries, one-execution-per-page behavior, and ro
 
 ## Required live gate
 
-Update/install v0.1.1 once with direct Dev disabled, then Bridge-reload and verify:
-- auto-host v0.1.1;
+Update/install v0.2.0 once with direct Dev disabled, then reload through the Bridge and verify:
+- auto-host v0.2.0;
 - target branch `WITCH_DEV_MAIN`;
-- payload launcher v1.5.1;
-- launcher channel branch `WITCH_DEV_MAIN`;
-- immutable payload `6603911658b426c6b95367697bedcc4c7acf67eb`;
-- Core v2.0.0 running;
-- Loader v0.2.0 23/23 / 0 failed;
+- `resolvedHeadSha` equals the current canonical Dev head;
+- `resolvedTargetUrl` uses that immutable SHA;
+- current canonical Dev launcher/version executes;
+- launcher channel remains `WITCH_DEV_MAIN`;
+- loader completes with zero failures/fallback;
 - one Dock/compact/icon and normal geometry.
+
+Then publish one bounded canonical Dev launcher bump and reload again without touching Tampermonkey; the auto-host must resolve and execute the newer branch head automatically.
 
 ## Rollback
 
