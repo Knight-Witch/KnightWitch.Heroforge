@@ -2270,3 +2270,14 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - No launcher/source/runtime behavior changes in this staging commit. Next: pin the exact immutable Dev payload and run the focused live layout/navigation gate.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 launcher
+
+### PASS static; focused live gate pending
+
+- Userscript `@version`, `DEV_VERSION`, runtime build, and payload manifest launcher registry match v1.10.1 / `1.10.1-release-details-preview`.
+- Exact immutable payload `f1fac5e680e37549812d73ef497a28f3edb2510b` includes the changed JS/CSS and matching hidden module versions/cache keys.
+- `node --check` on the launcher and changed modules, manifest JSON validation, and diff check pass.
+- Next: Dev Auto Host reload; verify overview, header/footer detail controls, Back, close/Escape, emblem/X alignment, and no loader error. Amanda's human visual gate follows. Do not replay the completed acknowledgement/no-repeat validation.
+- Public Stable remains v2.2.2.
+
+---

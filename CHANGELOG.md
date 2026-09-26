@@ -1577,3 +1577,10 @@ Date: 2026-09-17
 - Public Stable remains v2.2.2; no live behavior changes until the launcher pin is advanced.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 launcher
+
+- Dev launcher -> v1.10.1 / `1.10.1-release-details-preview`, pinned to immutable payload `f1fac5e680e37549812d73ef497a28f3edb2510b`.
+- The payload includes #58's accepted Dock UI, Notification service v0.2.0, Release Notices v0.2.0, and Styles v0.8.0. The Dev preview notice uses a distinct v2 ID for this visual feedback pass.
+- Public Stable remains v2.2.2. Focused live detail-navigation and human visual gates precede the combined RC.
+
+---
