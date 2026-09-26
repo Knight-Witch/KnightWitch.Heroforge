@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #88 diagnostic capture architecture scaffolding
+
+- Added documentation-only general capture architecture, provider contract, and provider inventory.
+- Anchored future generic Bug Capture #59 to HF.Status's shared diagnostic-report contract rather than duplicating intake/storage ownership.
+- High Res Diagnostic Capture v0.1.3 remains the protected reference implementation.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — #83 Dev v1.10.3 launcher pin
 
 - Dev launcher v1.10.3 pins immutable canonical Dev payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc` with the reconciled Release Notices v0.2.2. #35 diagnostic modules remain intentional Dev-only scope.

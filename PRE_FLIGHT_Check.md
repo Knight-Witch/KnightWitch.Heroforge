@@ -1,3 +1,13 @@
+## 2026-09-25 — Issue #88 documentation-only architecture setup
+
+### PASS
+
+- Added capture architecture, provider contract, provider inventory, and cross-repo ownership boundary.
+- Branch is isolated from active #83 runtime/release work.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — #83 Dev v1.10.3 launcher pin
 
 ### PASS / Dev live smoke pending
