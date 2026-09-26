@@ -1,3 +1,14 @@
+## 2026-09-26 — #58/#83 release janitorial gate
+
+### PASS / exact branch deletion handoff pending
+
+- Stable v2.3.1 Bridge smoke passed on public immutable payload `50405ca027e28227123f475c488538d214644b0d`: loader 25/25, 0 failed/fallback.
+- Nine promoted shared files, including both Polymorph fonts, match Dev byte-for-byte. Non-launcher registry differs only for intentional #35 diagnostic seam/service/UI; #19 Dev channel routing remains.
+- No temporary probes or adapters in promoted scope; #58/#83 divergence entries removed. Branch inventory: 27 exact DELETE refs, all remaining refs KEEP under the handoff.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed in this commit.
+
+---
+
 ## 2026-09-26 — #83 Dev v1.10.3 launcher pin
 
 ### PASS / Dev live smoke pending

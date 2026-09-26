@@ -1,3 +1,11 @@
+## 2026-09-26 — #58/#83 Dev post-release reconciliation and branch handoff
+
+- Public Stable v2.3.1 live smoke passed: installed v2.3.0 wrapper self-hosted v2.3.1, loader 25/25, zero failures/fallback; Release Notices v0.2.2. Dev v1.10.3 mirrors all promoted shared files.
+- Removes resolved #58/#83 runtime divergences; retains #19 Dev channel and #35 diagnostics. ACTIVE_CONTEXT routes away from completed release work. Exact 27-ref branch deletion handoff is staged under docs and tracked by #14.
+- Documentation-only closeout; no runtime, module, manifest, or public behavior changed in this commit.
+
+---
+
 ## 2026-09-26 — #83 Dev v1.10.3 launcher pin
 
 - Dev launcher v1.10.3 pins immutable canonical Dev payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc` with the reconciled Release Notices v0.2.2. #35 diagnostic modules remain intentional Dev-only scope.
