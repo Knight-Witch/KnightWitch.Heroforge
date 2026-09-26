@@ -1,3 +1,13 @@
+## 2026-09-26 — #58/#83 public v2.3.1 Stable smoke
+
+### PASS
+
+- Live HF-Chat-Bridge: Stable host installed wrapper v2.3.0 resolved v2.3.1 public head and dispatched immutable payload; Stable channel running, 12/12 bootstrap components fetched, 25/25 modules fetched/executed, 0 failures, 0 fallback, Release Notices v0.2.2.
+- Focused isolated notice gate: installed 2.2.2 registers corrected one-time removal instruction; installed 2.3.0/2.3.1 suppresses wrapper-update notice. Prior Dev human popup visual gate was approved.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed.
+
+---
+
 ## 2026-09-26 — #83 public v2.3.1 launcher pin
 
 ### PASS / public readback and live Stable smoke pending

@@ -1,3 +1,10 @@
+## 2026-09-26 — #58/#83 public v2.3.1 live Stable smoke
+
+- Bridge live smoke passed: installed v2.3.0 wrapper self-hosted v2.3.1 from public head `327053785876bb8c7cd0a45876bc86c9b693c108`, immutable payload `50405ca027e28227123f475c488538d214644b0d`; loader 25/25, zero failures and zero fallback. Release Notices v0.2.2 registered.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed.
+
+---
+
 ## 2026-09-26 — #83 public v2.3.1 launcher pin
 
 - Pins v2.3.1 to immutable public hotfix payload `50405ca027e28227123f475c488538d214644b0d`, which carries the old-script removal instruction. No Shell/Core/Styles or generic Notifications change.
