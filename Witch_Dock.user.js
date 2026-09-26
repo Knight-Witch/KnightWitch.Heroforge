@@ -29,7 +29,7 @@
   const SCRIPT_NAME = "Witch Dock v2.3.1";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "08429de8fe1c3b43dbd223a686ce643b2f34320f";
+  const PAYLOAD_REF = "50405ca027e28227123f475c488538d214644b0d";
   const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;

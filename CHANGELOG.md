@@ -1,3 +1,9 @@
+## 2026-09-26 — #83 public v2.3.1 launcher pin
+
+- Pins v2.3.1 to immutable public hotfix payload `50405ca027e28227123f475c488538d214644b0d`, which carries the old-script removal instruction. No Shell/Core/Styles or generic Notifications change.
+
+---
+
 ## 2026-09-26 — #83 public v2.3.1 old-script guidance payload
 
 - Release Notices v0.2.2 adds one instruction in the overview and detailed view: after installing the latest Witch Dock, remove the old v2.2.2-or-earlier Tampermonkey entry before refreshing, since both installed entries can run. Amanda’s other release wording remains intact.

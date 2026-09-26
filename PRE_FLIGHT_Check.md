@@ -1,3 +1,12 @@
+## 2026-09-26 — #83 public v2.3.1 launcher pin
+
+### PASS / public readback and live Stable smoke pending
+
+- Userscript @name/@version, runtime VERSION/BUILD, manifest launcher registry, and immutable payload pin agree.
+- Stable self-host/update URL and core bootstrap expectations remain unchanged; JavaScript syntax and diff checks pass.
+
+---
+
 ## 2026-09-26 — #83 public v2.3.1 old-script guidance payload
 
 ### PASS / launcher pin pending
