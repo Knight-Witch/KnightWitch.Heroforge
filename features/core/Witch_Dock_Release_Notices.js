@@ -4,12 +4,12 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockReleaseNotices";
   const FEATURE_ID = "witch-dock-release-notices";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-v230-wrapper-update";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-v230-release-overview";
   const TARGET_STABLE_VERSION = "2.3.0";
   const UPDATE_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js";
   const STABLE_NOTICE_ID = "stable-wrapper-update-v2.3.0";
-  const DEV_PREVIEW_NOTICE_ID = "stable-wrapper-update-v2.3.0-dev-preview-v1";
+  const DEV_PREVIEW_NOTICE_ID = "stable-wrapper-update-v2.3.0-dev-preview-v2";
 
   if (UW[GLOBAL] && UW[GLOBAL].version === VERSION && UW[GLOBAL].build === BUILD) return;
 
@@ -58,17 +58,63 @@
       id,
       eyebrow: preview ? "DEV PREVIEW" : "ONE-TIME UPDATE",
       title: "Witch Dock update required",
-      paragraphs: preview
-        ? [
-            `Preview of the public wrapper-update notice for Witch Dock v${TARGET_STABLE_VERSION}.`,
-            "Users running an older installed Tampermonkey wrapper will see this once. The Update Witch Dock button points to the canonical public userscript so Tampermonkey can replace the outdated installed script.",
-            "After this one-time wrapper refresh, normal Witch Dock runtime/automatic updates should resume going forward."
+      paragraphs: [
+        `Users running v2.2.2 and older will need to do a one-time manual update to Witch Dock.`,
+        `Please install the latest version, then refresh your browser. Once v${TARGET_STABLE_VERSION} or higher is installed, normal Witch Dock automatic updates should resume.`
+      ],
+      overview: {
+        title: "Release overview",
+        items: [
+          "High Res: two body paint fixes",
+          "Booth Settings JSON import/export restored",
+          "Dock typography, controls, and window resizing improved"
+        ]
+      },
+      details: [
+        {
+          title: "Manual update required",
+          items: [
+            { text: "A backend migration changed how Witch Dock updates. Users with an older installed script need this one-time manual refresh." },
+            { text: `Install v${TARGET_STABLE_VERSION} or higher and refresh your browser. Automatic runtime updates should resume afterward.` }
           ]
-        : [
-            `Witch Dock needs an update to v${TARGET_STABLE_VERSION}.`,
-            "Please update the installed Witch Dock userscript in Tampermonkey. This one-time update refreshes the installed wrapper; normal Witch Dock updates should resume automatically going forward.",
-            "Click Update Witch Dock below. Tampermonkey should replace your existing Witch Dock install."
-          ],
+        },
+        {
+          title: "Booth Settings JSON",
+          items: [
+            { text: "Import and export have been restored. The Save/Load JSON controls now live in Witch Dock’s Booth tab." },
+            { text: "Hero Forge’s native UI buttons are planned to return separately; they are not part of this fix." }
+          ]
+        },
+        {
+          title: "Textures · High Res",
+          items: [
+            { text: "High Res applies to the detected figures in a scene, including a third or later mini." },
+            { text: "Broader coverage for hair, character creator items, clothing, equipment, kitbash items, and creatures is planned. Per-group performance toggles are also planned; these are not included in this release." }
+          ]
+        },
+        {
+          title: "Fixed bugs · Textures",
+          items: [
+            { label: "Body paint zone collapse", text: "High Res no longer merges distinct upper and lower body paint zones into broad color regions." },
+            { label: "Visible color mismatch on disable", text: "Turning High Res off now refreshes the native body color bake so the visible colors return to the selected paints.", notes: ["A brief color mismatch may appear while the native bake refreshes, then resolve."] }
+          ]
+        },
+        {
+          title: "Witch Dock UI",
+          items: [
+            { label: "Look and feel", text: "Polymorph display typography and more consistent labels and controls." },
+            { label: "Reset Dock size", text: "Double-click the bottom border or bottom-right corner, or use Utilities → Witch Dock → Reset Size. This also helps when the Dock refuses to shrink to its normal dimensions." },
+            { label: "Update and navigation", text: "The Dock shows its runtime version, and the Disclaimer is now inside About." }
+          ]
+        },
+        {
+          title: "Coming soon",
+          items: [
+            { label: "Hero Forge Script Status", text: "A hub for known bugs, monthly Hero Forge breakage, fixes, current script versions, and the status of your report." },
+            { label: "Built-in bug reporting", text: "Report a problem from Witch Dock and capture useful figure and tool diagnostics at the scene of the issue.", notes: ["The planned shared tracker will bring reports from major Hero Forge scripts into one place and notify you when your report is fixed.", "Better diagnostic data should help developers repair problems faster without chasing reports across Discord, Reddit, and DMs."] }
+          ]
+        }
+      ],
       action: {
         label: "Update Witch Dock",
         href: UPDATE_URL,

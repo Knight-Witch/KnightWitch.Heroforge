@@ -1563,3 +1563,11 @@ Date: 2026-09-17
 - **003:** issue #10 core contract freeze.
 - **002:** canonical Dev identity/routing and cleanup rules.
 - **001:** clean Stable-derived `WITCH_DEV_MAIN` governance baseline.
+## 2026-09-25 — Issue #83 release notice visual feedback candidate
+
+- Notifications -> v0.2.0 / `0.2.0-expandable-release-details`; release-specific copy -> v0.2.0 / `0.2.0-v230-release-overview`; Styles -> v0.8.0 / `0.8.0-expandable-release-overlay`.
+- Centered the close icon with a fixed SVG and enlarged the header emblem. The compact overview now links to an expandable in-modal release breakdown, with a footer See details / Back to overview control.
+- The release copy covers the one-time v2.3.0 installed-wrapper update, two shipped High Res body-paint fixes, Booth JSON repair, Dock UI/reset/update changes, and clearly marked planned work. The still-open #34 warning and #25 targeted host expansion are not presented as shipped fixes.
+- Dev-only payload candidate; Public Stable remains v2.2.2. Previous one-time notice validation remains applicable; the new detail navigation and visual layout require a focused Dev gate.
+
+---

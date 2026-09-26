@@ -2251,3 +2251,14 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - **005:** v1.3.1 host-owned core fetch; PASS.
 - **004:** v1.3.0 privileged-host seam; PASS.
 - **003:** issue #10 monolith contract freeze.
+## 2026-09-25 — Issue #83 release notice visual feedback candidate
+
+### PASS static; live visual gate pending
+
+- Notifications v0.2.0, Release Notices v0.2.0, and Styles v0.8.0 are registered in `manifest.json`; both hidden module cache keys match their source build tags.
+- Node syntax checks for the two changed modules, manifest JSON validation, and `git diff --check` pass.
+- The popup keeps existing per-ID show acknowledgement and Stable installed-wrapper eligibility; details only change the active modal view and do not acknowledge a second time.
+- Next: pin an immutable Dev payload, check both overview and expanded detail controls in live Dev, obtain Amanda's visual gate, then construct the combined #58/#83 public RC.
+- Public Stable remains v2.2.2.
+
+---

@@ -17,8 +17,8 @@
       "path": "features/core/Witch_Dock_Notifications.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.1.0",
-      "build": "0.1.0-reusable-one-time-notices",
+      "version": "0.2.0",
+      "build": "0.2.0-expandable-release-details",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
@@ -47,8 +47,8 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.7.0",
-      "build": "0.7.0-notification-overlay",
+      "version": "0.8.0",
+      "build": "0.8.0-expandable-release-overlay",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
@@ -401,8 +401,8 @@
       "path": "features/core/Witch_Dock_Release_Notices.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.1.0",
-      "build": "0.1.0-v230-wrapper-update",
+      "version": "0.2.0",
+      "build": "0.2.0-v230-release-overview",
       "versionOrigin": "issue-83-v230-wrapper-notice-2026-09-25"
     }
   ],
@@ -422,7 +422,7 @@
       "id": "witch-dock-notifications",
       "title": "Witch Dock Notifications",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Notifications.js?v=0.1.0-reusable-one-time-notices",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Notifications.js?v=0.2.0-expandable-release-details",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -431,7 +431,7 @@
       "id": "witch-dock-release-notices",
       "title": "Witch Dock Release Notices",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Release_Notices.js?v=0.1.0-v230-wrapper-update",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Release_Notices.js?v=0.2.0-v230-release-overview",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

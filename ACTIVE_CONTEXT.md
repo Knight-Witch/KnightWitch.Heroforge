@@ -8,11 +8,13 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.2 / `Witch_Scripts` @ `d2d2298e1949da71d64bb11e880f5af6868809f8`  
 **Public immutable payload:** `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`  
-**Canonical Dev launcher:** v1.10.0 / payload `a6e38936f30673528e7284127ed8bed42e808f3d`
+**Canonical Dev launcher:** v1.10.0 / payload `a6e38936f30673528e7284127ed8bed42e808f3d` (visual-feedback candidate staging)
 
 ## Current route
 
-Issue #83 — Reusable Witch Dock notification / update-alert system — is the active Dev task. The generic notification service is staged as an isolated hidden module (`KWWitchDockNotifications` v0.1.0) with per-notice IDs, one-time page-storage acknowledgement, priority/queueing, optional primary actions, close/Escape handling, and a reusable modal surface. Release-specific copy is isolated in hidden module `Witch_Dock_Release_Notices.js` v0.1.0 rather than hard-coded into Core.
+Issue #83 — Reusable Witch Dock notification / update-alert system — is the active Dev task. The generic notification service is staged as an isolated hidden module (`KWWitchDockNotifications` v0.2.0) with per-notice IDs, one-time page-storage acknowledgement, priority/queueing, optional primary actions, close/Escape handling, and an expandable modal surface. Release-specific copy is isolated in hidden module `Witch_Dock_Release_Notices.js` v0.2.0 rather than hard-coded into Core.
+
+Amanda accepted the popup direction and requested a centered X, a larger emblem with less header margin, concise update instructions and release overview, and an expandable detailed release breakdown. The new Dev candidate stages Notifications v0.2.0, Release Notices v0.2.0, and Styles v0.8.0. Release copy is grounded in the fixed log: Booth JSON (#20), body color-bake restore (#24), body paint zones (#32), Dock size reset (#37/#41), update/header changes (#41), and approved UI polish (#58). #34 and #25 remain open; upcoming status/bug tools are labeled as planned. The existing no-repeat gate need not be replayed. Only new detail navigation/visuals and combined RC remain to be gated.
 
 The first notice targets the upcoming combined public v2.3.0 release. Stable logic will show it only when `KWWitchDockStableHost.getState().installedWrapperVersion` proves the installed Tampermonkey wrapper is older than v2.3.0. It acknowledges on first successful display, links `Update Witch Dock` to the canonical public userscript URL, and tells the user this is a one-time wrapper refresh before normal automatic/runtime updates resume. Dev registers a separate one-time preview notice for visual validation.
 

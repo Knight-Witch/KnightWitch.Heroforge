@@ -4,8 +4,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockNotifications";
   const FEATURE_ID = "witch-dock-notifications";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-reusable-one-time-notices";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-expandable-release-details";
   const OVERLAY_ID = "kwWDNoticeOverlay";
   const DEFAULT_PRIORITY = 0;
 
@@ -85,6 +85,19 @@
     if (!paragraphs.length && def.message) paragraphs.push(String(def.message).trim());
     if (!paragraphs.length) throw new Error(`Witch Dock notice ${id} requires message text.`);
 
+    const overview = def.overview && typeof def.overview === "object" ? {
+      title: String(def.overview.title || "Release overview").trim(),
+      items: Array.isArray(def.overview.items) ? def.overview.items.map((item) => String(item || "").trim()).filter(Boolean) : []
+    } : null;
+    const details = Array.isArray(def.details) ? def.details.filter((section) => section && typeof section === "object").map((section) => ({
+      title: String(section.title || "").trim(),
+      items: Array.isArray(section.items) ? section.items.filter((item) => item && typeof item === "object").map((item) => ({
+        label: String(item.label || "").trim(),
+        text: String(item.text || "").trim(),
+        notes: Array.isArray(item.notes) ? item.notes.map((note) => String(note || "").trim()).filter(Boolean) : []
+      })).filter((item) => item.label || item.text) : []
+    })).filter((section) => section.title && section.items.length) : [];
+
     const action = def.action && typeof def.action === "object" ? {
       label: String(def.action.label || "").trim(),
       href: String(def.action.href || "").trim(),
@@ -103,6 +116,8 @@
       id,
       title,
       paragraphs,
+      overview,
+      details,
       action,
       acknowledgeWhen,
       priority: Number.isFinite(def.priority) ? Number(def.priority) : DEFAULT_PRIORITY,
@@ -182,7 +197,7 @@
     close.className = "kwWDNoticeClose";
     close.title = notice.closeLabel;
     close.setAttribute("aria-label", notice.closeLabel);
-    close.textContent = "×";
+    close.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5 5L19 19M19 5L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
     close.addEventListener("click", () => closeActive("dismiss"));
     header.appendChild(close);
 
@@ -194,8 +209,92 @@
       body.appendChild(p);
     }
 
+    const hasDetails = notice.details.length > 0;
+    const detailBody = document.createElement("div");
+    detailBody.className = "kwWDNoticeBody kwWDNoticeDetails";
+    detailBody.hidden = true;
+    let detailsToggle = null;
+    let detailsLink = null;
+    const setDetailsOpen = (open) => {
+      body.hidden = open;
+      detailBody.hidden = !open;
+      card.classList.toggle("kwWDNoticeExpanded", open);
+      detailsToggle.textContent = open ? "Back to overview" : "See details";
+      if (detailsLink) detailsLink.setAttribute("aria-expanded", String(open));
+      detailsToggle.setAttribute("aria-expanded", String(open));
+      (open ? detailBody : body).scrollTop = 0;
+      detailsToggle.focus();
+    };
+
+    if (notice.overview && notice.overview.items.length) {
+      const section = document.createElement("section");
+      section.className = "kwWDNoticeSection";
+      const heading = document.createElement("h3");
+      heading.textContent = notice.overview.title;
+      section.appendChild(heading);
+      if (hasDetails) {
+        detailsLink = document.createElement("button");
+        detailsLink.type = "button";
+        detailsLink.className = "kwWDNoticeDetailsLink";
+        detailsLink.textContent = "See details";
+        detailsLink.setAttribute("aria-expanded", "false");
+        detailsLink.addEventListener("click", () => setDetailsOpen(true));
+        section.appendChild(detailsLink);
+      }
+      const list = document.createElement("ul");
+      for (const item of notice.overview.items) {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
+      }
+      section.appendChild(list);
+      body.appendChild(section);
+    }
+
+    if (hasDetails) {
+      for (const section of notice.details) {
+        const group = document.createElement("section");
+        group.className = "kwWDNoticeDetailSection";
+        const heading = document.createElement("h3");
+        heading.textContent = section.title;
+        group.appendChild(heading);
+        const list = document.createElement("ul");
+        for (const item of section.items) {
+          const li = document.createElement("li");
+          if (item.label) {
+            const label = document.createElement("strong");
+            label.textContent = item.label;
+            li.appendChild(label);
+          }
+          if (item.text) li.appendChild(document.createTextNode(`${item.label ? " — " : ""}${item.text}`));
+          if (item.notes.length) {
+            const notes = document.createElement("ul");
+            notes.className = "kwWDNoticeNotes";
+            for (const note of item.notes) {
+              const sub = document.createElement("li");
+              sub.textContent = note;
+              notes.appendChild(sub);
+            }
+            li.appendChild(notes);
+          }
+          list.appendChild(li);
+        }
+        group.appendChild(list);
+        detailBody.appendChild(group);
+      }
+    }
+
     const footer = document.createElement("div");
     footer.className = "kwWDNoticeFooter";
+    if (hasDetails) {
+      detailsToggle = document.createElement("button");
+      detailsToggle.type = "button";
+      detailsToggle.className = "kwWDNoticeDetailsButton";
+      detailsToggle.textContent = "See details";
+      detailsToggle.setAttribute("aria-expanded", "false");
+      detailsToggle.addEventListener("click", () => setDetailsOpen(!card.classList.contains("kwWDNoticeExpanded")));
+      footer.appendChild(detailsToggle);
+    }
     let primary = null;
     if (notice.action) {
       primary = document.createElement("a");
@@ -215,7 +314,8 @@
 
     card.appendChild(header);
     card.appendChild(body);
-    if (notice.action) card.appendChild(footer);
+    if (hasDetails) card.appendChild(detailBody);
+    if (notice.action || hasDetails) card.appendChild(footer);
     overlay.appendChild(card);
 
     overlay.addEventListener("click", (event) => {
