@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 notification live gate
+
+- Dev Auto Host resolved canonical head `30cbe4a98ef850986ade4254251314a6d7758137` and executed v1.10.0 with no error.
+- Loader passed 27/27 executed, 0 failed, 27 immutable, 0 fallback.
+- Notification service and release-notice modules loaded in the intended order and reported no runtime error.
+- Dev preview rendered with the canonical public `Update Witch Dock` action URL.
+- The preview acknowledgement persisted immediately on first successful display; after dismissal and reload the same notice did not render again.
+- A non-persistent forced preview was opened afterward for Amanda's visual gate without altering the production notice acknowledgement.
+- Public Stable remains v2.2.2; combined #58/#83 public RC is pending human approval of the notification UI.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 launcher
 
 - Dev launcher -> v1.10.0 / `1.10.0-reusable-notifications`.
