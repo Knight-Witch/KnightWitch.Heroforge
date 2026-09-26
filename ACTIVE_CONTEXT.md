@@ -8,7 +8,7 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.2 / `Witch_Scripts` @ `d2d2298e1949da71d64bb11e880f5af6868809f8`  
 **Public immutable payload:** `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`  
-**Canonical Dev launcher:** v1.10.1 / payload `f1fac5e680e37549812d73ef497a28f3edb2510b`; v1.10.2 copy correction staged
+**Canonical Dev launcher:** v1.10.2 / payload `f474c0fc057ed05e574348c87d4e11546786af70`
 
 ## Current route
 
@@ -16,7 +16,7 @@ Issue #83 — Reusable Witch Dock notification / update-alert system — is the 
 
 Amanda accepted the popup layout direction and requested a centered X, a larger emblem with less header margin, and an expandable detailed release breakdown. Dev v1.10.1 (Notifications v0.2.0, Release Notices v0.2.0, Styles v0.8.0) passed its focused structural gate through HF-Chat-Bridge v0.4.0: launcher/payload exact, loader 27/27 with zero failures/fallbacks, both detail entry controls and Back work, emblem is 52px, and the SVG X is centered. Its editorially rewritten release copy is superseded by the correction below. The prior no-repeat test was not replayed.
 
-Amanda rejected the v1.10.1 editorial paraphrase of the release contents: her supplied wording must be the popup copy. The v1.10.2 candidate restores it verbatim apart from filling the version/count placeholders; extra fix suggestions belong outside the popup unless she adds them. Stage includes Notifications v0.2.1, Release Notices v0.2.1, and Styles v0.8.1. Re-run only the focused copy/detail live check after pinning, then ask for her visual approval. Do not replay the completed acknowledgement/no-repeat gate.
+Amanda rejected the v1.10.1 editorial paraphrase of the release contents: her supplied wording must be the popup copy. Dev v1.10.2 restores it verbatim apart from filling the version/count placeholders; extra fix suggestions belong outside the popup unless she adds them. Payload includes Notifications v0.2.1, Release Notices v0.2.1, and Styles v0.8.1. Re-run only the focused copy/detail live check, then ask for her visual approval. Do not replay the completed acknowledgement/no-repeat gate.
 
 The first notice targets the upcoming combined public v2.3.0 release. Stable logic will show it only when `KWWitchDockStableHost.getState().installedWrapperVersion` proves the installed Tampermonkey wrapper is older than v2.3.0. It acknowledges on first successful display, links `Update Witch Dock` to the canonical public userscript URL, and tells the user this is a one-time wrapper refresh before normal automatic/runtime updates resume. Dev registers a separate one-time preview notice for visual validation.
 

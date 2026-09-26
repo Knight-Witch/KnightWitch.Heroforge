@@ -2303,3 +2303,12 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - Next: immutable launcher pin, focused live copy/navigation check, then Amanda's human visual gate. Public Stable unchanged.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.2 copy correction launcher
+
+### PASS static; focused live gate pending
+
+- Launcher userscript/runtime version/build and payload manifest registry match v1.10.2 / `1.10.2-user-release-copy`.
+- Immutable payload `f474c0fc057ed05e574348c87d4e11546786af70` contains Notifications v0.2.1, Release Notices v0.2.1, Styles v0.8.1 and the v3 Dev preview ID.
+- Node syntax, manifest JSON, and diff checks pass. Next: Bridge reload and focused live copy/detail gate; prior no-repeat validation remains recorded.
+
+---

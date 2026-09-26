@@ -1602,3 +1602,9 @@ Date: 2026-09-17
 - No additional fixes or release claims were inserted into Amanda's copy. Public Stable remains v2.2.2.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.2 copy correction launcher
+
+- Dev launcher -> v1.10.2 / `1.10.2-user-release-copy`, pinned to immutable payload `f474c0fc057ed05e574348c87d4e11546786af70`.
+- The preview uses a distinct v3 notice ID for Amanda's corrected copy. Public Stable remains v2.2.2; focused live copy/detail gate and human visual approval remain.
+
+---
