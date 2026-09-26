@@ -1,3 +1,10 @@
+## 2026-09-26 — #83 Dev reconciliation payload for public v2.3.1
+
+- Mirrors public Release Notices v0.2.2 and its old-script removal copy/new acknowledgement ID into canonical Dev; all other shared runtime remains byte-identical to Stable.
+- Dev launcher registry stages v1.10.3 and notice module cache identity advances. Dev-only #35 diagnostics remain. Launcher pin and release closeout follow the live Stable hotfix smoke.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 notification live gate
 
 - Dev Auto Host resolved canonical head `30cbe4a98ef850986ade4254251314a6d7758137` and executed v1.10.0 with no error.

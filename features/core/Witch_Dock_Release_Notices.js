@@ -4,12 +4,12 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockReleaseNotices";
   const FEATURE_ID = "witch-dock-release-notices";
-  const VERSION = "0.2.1";
-  const BUILD = "0.2.1-amanda-release-copy";
+  const VERSION = "0.2.2";
+  const BUILD = "0.2.2-remove-old-script-guidance";
   const TARGET_STABLE_VERSION = "2.3.0";
   const UPDATE_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js";
-  const STABLE_NOTICE_ID = "stable-wrapper-update-v2.3.0";
-  const DEV_PREVIEW_NOTICE_ID = "stable-wrapper-update-v2.3.0-dev-preview-v3";
+  const STABLE_NOTICE_ID = "stable-wrapper-update-v2.3.0-remove-old-v2";
+  const DEV_PREVIEW_NOTICE_ID = "stable-wrapper-update-v2.3.0-dev-preview-v4";
 
   if (UW[GLOBAL] && UW[GLOBAL].version === VERSION && UW[GLOBAL].build === BUILD) return;
 
@@ -63,6 +63,7 @@
       ],
       instructions: [
         "Please install the latest version & refresh your browser once finished.",
+        "After installing the latest version, remove your old Witch Dock v2.2.2 (or earlier) script from Tampermonkey before refreshing. Keeping both scripts installed can cause Witch Dock to run twice.",
         `Once installed on version ${TARGET_STABLE_VERSION} and higher, normal Witch Dock runtime/automatic updates will resume going forward.`
       ],
       overview: {
@@ -78,6 +79,7 @@
           title: "MANUAL UPDATE REQUIRED:",
           items: [
             { text: "A backend refactor/migration occurred over the weekend & has changed the update path for Witch Dock." },
+            { text: "After installing the latest version, remove your old Witch Dock v2.2.2 (or earlier) script from Tampermonkey before refreshing. Keeping both scripts installed can cause Witch Dock to run twice." },
             { text: "Once updated to the latest version, automatic updates should resume, going forward." }
           ]
         },

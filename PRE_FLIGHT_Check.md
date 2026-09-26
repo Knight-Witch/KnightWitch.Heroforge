@@ -1,3 +1,12 @@
+## 2026-09-26 — #83 Dev reconciliation payload
+
+### PASS / launcher pin pending
+
+- Release Notices v0.2.2 matches public Stable bytes; manifest registry/cache URL updated and Dev launcher registry stages v1.10.3.
+- Syntax, JSON and diff checks pass. #35 diagnostics stay Dev-only.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 notification live gate
 
 ### PASS — human visual gate pending
