@@ -1,3 +1,13 @@
+## 2026-09-26 — #83 public v2.3.1 old-script guidance payload
+
+### PASS / launcher pin pending
+
+- Release Notices v0.2.2 copy and new acknowledgement ID; no other popup wording changed.
+- Manifest module registry and release-notice cache URL updated; Stable launcher registry stages v2.3.1.
+- JavaScript syntax, manifest JSON, and diff checks pass. Shell/Core/Styles/Notifications source is untouched.
+
+---
+
 ## 2026-09-26 — public launcher metadata correction
 
 ### PASS / Stable live smoke pending

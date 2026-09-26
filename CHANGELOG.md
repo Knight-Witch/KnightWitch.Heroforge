@@ -1,3 +1,10 @@
+## 2026-09-26 — #83 public v2.3.1 old-script guidance payload
+
+- Release Notices v0.2.2 adds one instruction in the overview and detailed view: after installing the latest Witch Dock, remove the old v2.2.2-or-earlier Tampermonkey entry before refreshing, since both installed entries can run. Amanda’s other release wording remains intact.
+- A new one-time notice ID surfaces this important correction for users who already acknowledged the prior notice. Stable launcher registry stages v2.3.1; immutable payload pin follows. Shell/Core/Styles and generic Notifications versions do not change.
+
+---
+
 ## 2026-09-26 — v2.3.0 public launcher metadata correction
 
 - Corrects Tampermonkey `@version` to 2.3.0 to match the already-promoted runtime VERSION, @name, manifest registry, and immutable payload. No module behavior changes.

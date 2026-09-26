@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v2.3.0
+// @name         Witch Dock v2.3.1
 // @namespace    KnightWitch
-// @version      2.3.0
+// @version      2.3.1
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -24,9 +24,9 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.3.0";
-  const BUILD = "2.3.0-notifications-polymorph";
-  const SCRIPT_NAME = "Witch Dock v2.3.0";
+  const VERSION = "2.3.1";
+  const BUILD = "2.3.1-old-script-guidance";
+  const SCRIPT_NAME = "Witch Dock v2.3.1";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
   const PAYLOAD_REF = "08429de8fe1c3b43dbd223a686ce643b2f34320f";

@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.3.0",
-      "build": "2.3.0-notifications-polymorph",
-      "versionOrigin": "issues-58-83-combined-release-2026-09-26"
+      "version": "2.3.1",
+      "build": "2.3.1-old-script-guidance",
+      "versionOrigin": "issue-83-old-script-removal-2026-09-26"
     },
     {
       "id": "witch-dock-notifications",
@@ -381,9 +381,9 @@
       "path": "features/core/Witch_Dock_Release_Notices.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.2.1",
-      "build": "0.2.1-amanda-release-copy",
-      "versionOrigin": "issue-83-v230-wrapper-notice-2026-09-25"
+      "version": "0.2.2",
+      "build": "0.2.2-remove-old-script-guidance",
+      "versionOrigin": "issue-83-old-script-removal-2026-09-26"
     }
   ],
   "tools": [
@@ -411,7 +411,7 @@
       "id": "witch-dock-release-notices",
       "title": "Witch Dock Release Notices",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Release_Notices.js?v=0.2.1-amanda-release-copy",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Release_Notices.js?v=0.2.2-remove-old-script-guidance",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
