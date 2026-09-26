@@ -1,3 +1,12 @@
+## 2026-09-26 — Issues #58/#83 public v2.3.0 RC payload
+
+- Promotes approved Polymorph/header/UI consistency and reusable notifications with Amanda’s approved release wording onto public v2.2.2.
+- Core v2.3.0, Assets v0.2.0, Shell v0.5.1, Styles v0.8.1, High Res UI v0.3.0; adds Notifications v0.2.1 and Release Notices v0.2.1. Launcher registry stages v2.3.0.
+- Dev-only High Res diagnostic service/UI and v0.4.1 diagnostic seam remain excluded; Texture Quality service stays Stable v0.3.8.
+- Immutable payload pin and RC/Stable smoke follow.
+
+---
+
 ## 2026-09-25 — Issue #32 public RC v2.2.2 launcher
 
 - Public launcher advances to v2.2.2 / `2.2.2-issue-32-body-aaid-binding`.

@@ -1,3 +1,13 @@
+## 2026-09-26 — Issues #58/#83 public v2.3.0 RC payload
+
+### PASS / RC launcher pin and live gate pending
+
+- Narrow copy of Dev-approved Core v2.3.0, Assets v0.2.0, Shell v0.5.1, Styles v0.8.1, High Res UI v0.3.0, Notifications v0.2.1, Release Notices v0.2.1, and Polymorph fonts.
+- Stable manifest keeps all unaffected registry entries, Stable module URLs, and Texture Quality service v0.3.8; 25 module definitions include the two new hidden modules.
+- Stable launcher stages v2.3.0, matching expected Core/Assets/Shell builds; JavaScript syntax, manifest JSON and whitespace checks pass.
+
+---
+
 ## 2026-09-25 — Issue #32 public RC v2.2.2 launcher
 
 ### PASS / live Stable smoke pending

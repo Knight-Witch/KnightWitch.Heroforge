@@ -7,9 +7,19 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.2.2",
-      "build": "2.2.2-issue-32-body-aaid-binding",
-      "versionOrigin": "issue-32-body-aaid-binding-2026-09-25"
+      "version": "2.3.0",
+      "build": "2.3.0-notifications-polymorph",
+      "versionOrigin": "issues-58-83-combined-release-2026-09-26"
+    },
+    {
+      "id": "witch-dock-notifications",
+      "title": "Witch Dock Notifications",
+      "path": "features/core/Witch_Dock_Notifications.js",
+      "kind": "core-feature",
+      "load": "module-loader",
+      "version": "0.2.1",
+      "build": "0.2.1-release-copy-formatting",
+      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
       "id": "witch-dock-core",
@@ -17,9 +27,9 @@
       "path": "features/core/Witch_Dock_Core.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "2.2.0",
-      "build": "2.2.0-resize-border-reset",
-      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
+      "version": "2.3.0",
+      "build": "2.3.0-branded-title-meta",
+      "versionOrigin": "issue-58-brand-title-2026-09-25"
     },
     {
       "id": "witch-dock-assets",
@@ -27,9 +37,9 @@
       "path": "features/core/Witch_Dock_Assets.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.1.0",
-      "build": "0.1.0-known-good-compact-emblem",
-      "versionOrigin": "issue-10-stage-e-core-assets-2026-09-19"
+      "version": "0.2.0",
+      "build": "0.2.0-polymorph-display-fonts",
+      "versionOrigin": "issue-58-polymorph-fonts-2026-09-25"
     },
     {
       "id": "witch-dock-styles",
@@ -37,9 +47,9 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.3.0",
-      "build": "0.3.0-resize-border-reset-tooltip",
-      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
+      "version": "0.8.1",
+      "build": "0.8.1-release-heading-formatting",
+      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
       "id": "witch-dock-modals",
@@ -87,9 +97,9 @@
       "path": "features/core/Witch_Dock_Shell.js",
       "kind": "core-feature",
       "load": "bootstrap-module",
-      "version": "0.4.0",
-      "build": "0.4.0-resize-border-reset",
-      "versionOrigin": "issue-41-resize-border-reset-2026-09-25"
+      "version": "0.5.1",
+      "build": "0.5.1-inline-version-title-alignment",
+      "versionOrigin": "issue-58-title-alignment-2026-09-25"
     },
     {
       "id": "witch-dock-interactions",
@@ -332,9 +342,9 @@
       "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "kind": "feature-ui",
       "load": "manifest",
-      "version": "0.2.0",
-      "build": "0.2.0-dev-persistence-advanced-controls",
-      "versionOrigin": "stable-promoted-dev-validated-2026-09-14"
+      "version": "0.3.0",
+      "build": "0.3.0-ui-consistency",
+      "versionOrigin": "issue-58-ui-standardization-2026-09-25"
     },
     {
       "id": "texture-quality-beta-notice",
@@ -364,6 +374,16 @@
       "version": "1.3.1",
       "versionOrigin": "issue-37-dock-size-reset-version-meta-2026-09-25",
       "build": "1.3.1-dock-size-reset-version-meta"
+    },
+    {
+      "id": "witch-dock-release-notices",
+      "title": "Witch Dock Release Notices",
+      "path": "features/core/Witch_Dock_Release_Notices.js",
+      "kind": "core-feature",
+      "load": "module-loader",
+      "version": "0.2.1",
+      "build": "0.2.1-amanda-release-copy",
+      "versionOrigin": "issue-83-v230-wrapper-notice-2026-09-25"
     }
   ],
   "tools": [
@@ -378,6 +398,24 @@
     }
   ],
   "modules": [
+    {
+      "id": "witch-dock-notifications",
+      "title": "Witch Dock Notifications",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Notifications.js?v=0.2.1-release-copy-formatting",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "witch-dock-release-notices",
+      "title": "Witch Dock Release Notices",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Release_Notices.js?v=0.2.1-amanda-release-copy",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
     {
       "id": "witch-dock-developer-mode",
       "title": "Developer Mode",

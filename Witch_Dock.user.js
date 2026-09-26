@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Witch Dock v2.2.2
+// @name         Witch Dock v2.3.0
 // @namespace    KnightWitch
 // @version      2.2.2
 // @description  UI for all Witch Scripts - The official release!
@@ -24,9 +24,9 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.2.2";
-  const BUILD = "2.2.2-issue-32-body-aaid-binding";
-  const SCRIPT_NAME = "Witch Dock v2.2.2";
+  const VERSION = "2.3.0";
+  const BUILD = "2.3.0-notifications-polymorph";
+  const SCRIPT_NAME = "Witch Dock v2.3.0";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
   const PAYLOAD_REF = "1a586ec3540138694b2342a5fd074b5ec4b1a8e5";
@@ -353,12 +353,12 @@
     KWWitchDockBoneHUD: ["0.1.0", "0.1.0-extracted-bone-hud"],
     KWWitchDockPreferences: ["0.3.0", "0.3.0-tool-enablement-store"],
     KWWitchDockRegistry: ["0.1.0", "0.1.0-tab-tool-state-containers"],
-    KWWitchDockShell: ["0.4.0", "0.4.0-resize-border-reset"],
+    KWWitchDockShell: ["0.5.1", "0.5.1-inline-version-title-alignment"],
     KWWitchDockInteractions: ["0.6.0", "0.6.0-dock-size-reset"],
     KWWitchDockHistory: ["0.1.0", "0.1.0-undo-redo-owner"],
     KWWitchDockApplication: ["0.1.0", "0.1.0-shell-registry-orchestration"],
-    KWWitchDockAssets: ["0.1.0", "0.1.0-known-good-compact-emblem"],
-    KWWitchDockCore: ["2.2.0", "2.2.0-resize-border-reset"],
+    KWWitchDockAssets: ["0.2.0", "0.2.0-polymorph-display-fonts"],
+    KWWitchDockCore: ["2.3.0", "2.3.0-branded-title-meta"],
     KWModuleLoader: ["0.2.0", "0.2.0-immutable-payload-root"]
   });
 
