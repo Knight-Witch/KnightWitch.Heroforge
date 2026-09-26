@@ -1,3 +1,10 @@
+## 2026-09-26 — Issues #58/#83 public v2.3.0 RC launcher pin
+
+- Pins the v2.3.0 Stable wrapper to immutable public candidate payload `08429de8fe1c3b43dbd223a686ce643b2f34320f`.
+- Candidate live gate and public promotion follow.
+
+---
+
 ## 2026-09-26 — Issues #58/#83 public v2.3.0 RC payload
 
 - Promotes approved Polymorph/header/UI consistency and reusable notifications with Amanda’s approved release wording onto public v2.2.2.

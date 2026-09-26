@@ -1,3 +1,13 @@
+## 2026-09-26 — Issues #58/#83 v2.3.0 RC launcher pin
+
+### PASS / live RC gate pending
+
+- Launcher @name, @version, VERSION, BUILD, manifest registry, and immutable payload ref are synchronized for v2.3.0.
+- Stable branch identity and self-refresh host logic remain intact; pinned payload is the narrow RC commit `08429de8fe1c3b43dbd223a686ce643b2f34320f`.
+- Syntax and diff checks pass.
+
+---
+
 ## 2026-09-26 — Issues #58/#83 public v2.3.0 RC payload
 
 ### PASS / RC launcher pin and live gate pending
