@@ -1,3 +1,9 @@
+## 2026-09-26 — #83 Dev v1.10.3 launcher pin
+
+- Dev launcher v1.10.3 pins immutable canonical Dev payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc` with the reconciled Release Notices v0.2.2. #35 diagnostic modules remain intentional Dev-only scope.
+
+---
+
 ## 2026-09-26 — #83 Dev reconciliation payload for public v2.3.1
 
 - Mirrors public Release Notices v0.2.2 and its old-script removal copy/new acknowledgement ID into canonical Dev; all other shared runtime remains byte-identical to Stable.

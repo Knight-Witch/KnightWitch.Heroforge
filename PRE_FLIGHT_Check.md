@@ -1,3 +1,12 @@
+## 2026-09-26 — #83 Dev v1.10.3 launcher pin
+
+### PASS / Dev live smoke pending
+
+- @version, DEV_VERSION/BUILD, registry launcher entry, and immutable payload ref are synchronized; Dev update/download URLs still resolve to WITCH_DEV_MAIN.
+- JavaScript syntax and diff checks pass.
+
+---
+
 ## 2026-09-26 — #83 Dev reconciliation payload
 
 ### PASS / launcher pin pending
