@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #88 capture design alignment / janitorial pass
+
+- Updated capture/provider design for triage's manifest-first, selective-evidence workflow with stable `captureId / providerId / sectionName` addressing.
+- Added #24/#32/#34 as architecture pressure tests for reusable diagnostic surfaces without encoding symptom-specific probes.
+- Added provider feedback rule for repeated triage capture gaps.
+- Removed stale #83-active routing from the #88 branch context; canonical v2.3.1 release state is now reflected accurately.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-25 — Issue #88 diagnostic capture architecture scaffolding
 
 - Added documentation-only general capture architecture, provider contract, and provider inventory.

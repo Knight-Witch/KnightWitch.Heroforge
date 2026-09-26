@@ -125,6 +125,23 @@ Providers should expose meaningful surfaces rather than symptom-specific one-off
 
 A field discovered during investigation should be promoted when it represents a reusable diagnostic surface, not merely because it helped one bug.
 
+When triage repeatedly records the same capture gap, treat that as provider-design evidence. The provider may evolve after reviewing privacy, size, stability, and runtime ownership; triage does not edit provider schemas itself.
+
+## Triage-readiness
+
+Providers must support downstream **manifest-first / selective-evidence** triage.
+
+At minimum:
+- every published section has a stable section name;
+- provider schema identity is explicit;
+- deterministic summaries contain high-value factual state only;
+- hashes/signatures are used when they help detect equality/change without hiding normalized values needed for investigation;
+- warning/error codes are stable when the provider owns the condition;
+- coverage truthfully records unavailable/partial/bounded evidence;
+- large or expensive evidence is independently addressable where practical.
+
+Providers must not require triage to deserialize arbitrary live objects or load the entire capture merely to discover what evidence exists.
+
 ## Summary
 
 Each provider returns a compact deterministic summary containing factual high-value state.

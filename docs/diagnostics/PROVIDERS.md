@@ -35,3 +35,16 @@ Examples:
 - Booth rendering failure under load: general + `booth` + `rendering-performance`.
 
 Do not execute all providers for every report.
+
+
+## Design validation cases
+
+Provider/core design should be pressure-tested against prior resolved or well-bounded failures before implementation:
+
+| Issue | What the architecture should have made cheap to retrieve |
+|---|---|
+| #24 — HR ON/OFF body visual paint tint change | restore lifecycle state, color-bake state, before/after verification, exact coverage |
+| #32 — HR body paint zone collapse | paint intent, atlas/material/resource/AAID/mask state, stable OFF/ON section comparison |
+| #34 — HR false restore warning | bounded pre-failure verifier inputs and transient state before cleanup destroys it |
+
+The goal is not to encode these bugs into the provider. The goal is to prove the provider surfaces are broad enough that future bugs in the same subsystem do not require rebuilding the same probes.

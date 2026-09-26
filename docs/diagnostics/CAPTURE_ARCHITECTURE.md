@@ -157,6 +157,19 @@ The package manifest must expose:
 - approximate serialized size;
 - stable deterministic hash when useful.
 
+### Triage-facing retrieval rule
+
+The default downstream workflow is **manifest first, selective evidence second**.
+
+Capture must therefore make it possible for triage/backend consumers to:
+- identify providers and sections without loading the full bundle;
+- compare deterministic summaries/hashes before requesting raw sections;
+- address evidence stably as `captureId / providerId / sectionName`;
+- retrieve only the section needed to answer a discriminator question;
+- see explicit limitations when a section was partial, unavailable, intentionally omitted, or not applicable.
+
+The local JSON remains the complete private source evidence. Section addressing is a logical contract and does not require Witch Dock to physically split one export into many files.
+
 ## Coverage
 
 Coverage is mandatory.
@@ -229,6 +242,17 @@ High Res v0.1.3 is the reference implementation because it proved:
 - addressable OFF/ON section retrieval.
 
 Generalization must preserve these working behaviors. Do not rewrite the provider simply to make it aesthetically generic.
+
+## Architecture pressure tests
+
+Use real prior bugs to test whether the architecture exposes reusable evidence, without hard-coding providers around those symptoms.
+
+Reference cases:
+- **#24 — HR ON/OFF body visual paint tint change:** capture should preserve the lifecycle/restore evidence needed to distinguish a visually wrong restored color-bake result from a healthy restore.
+- **#32 — HR body paint zone collapse:** capture should preserve model paint intent, atlas/material/resource identity, AAID/mask bindings, and coverage well enough to locate the first runtime divergence without rebuilding broad ad hoc probes.
+- **#34 — HR false restore warning / native body mask verification:** failure capture should preserve the exact bounded verifier inputs/state needed to distinguish a real restore failure from a verifier false positive before transient session state is destroyed.
+
+These are validation cases, not provider-specific requirements. A useful field should enter a provider contract because it represents a reusable diagnostic surface.
 
 ## Implementation Sequence
 

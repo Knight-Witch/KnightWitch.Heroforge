@@ -1,3 +1,16 @@
+## 2026-09-26 — Issue #88 design alignment / janitorial pass
+
+### PASS
+
+- Capture architecture and provider contract align with the current HF.Status triage design.
+- Manifest-first/selective retrieval, stable section addressing, coverage, deterministic summaries, warnings/codes, and bounded evidence are explicit.
+- #24/#32/#34 are recorded only as architecture validation cases.
+- Stale #83 branch routing removed.
+- No duplicate architecture document added; existing three diagnostic design docs remain the source set.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-25 — Issue #88 documentation-only architecture setup
 
 ### PASS
