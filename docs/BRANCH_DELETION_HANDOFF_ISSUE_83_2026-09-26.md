@@ -1,6 +1,6 @@
 # Branch Deletion Handoff — Issues #58/#83 combined public v2.3.1
 
-**Status:** READY FOR WORK — exact mechanical deletion only
+**Status:** COMPLETE — 27 exact branch refs deleted, 29 KEEP refs verified
 **Repository:** `Knight-Witch/KnightWitch.Heroforge`
 **Prepared:** 2026-09-26 UTC
 **Tracking:** issue #14; source issues #58 and #83
@@ -82,6 +82,10 @@ These SHAs are the preparation snapshot. `WITCH_DEV_MAIN` advances when this han
 - `wd/payload-1.5.1` @ `6603911658b426c6b95367697bedcc4c7acf67eb`
 - `wd/payload-1.5.4` @ `6aee7fd8716d986e39b7415cf8927fa7043e776b`
 
+## Completed execution
+
+GitHub branch UI deleted the 27 exact matching refs. A fresh live `ls-remote --heads` inventory contained exactly the 29 KEEP names listed below, zero DELETE names, unchanged KEEP SHAs except the documented canonical Dev closeout advance to `946362d95edc3ec3fd55416a50d1e2bde1bad27c`. No other refs were touched.
+
 ## Execution and verification
 
 1. Read the live branch inventory. For each DELETE ref, require the exact SHA above; if absent, treat it as already deleted; if it moved, stop and report the mismatch.
@@ -90,6 +94,6 @@ These SHAs are the preparation snapshot. `WITCH_DEV_MAIN` advances when this han
 4. Verify the final branch-name inventory equals the 29 KEEP refs listed above, with the latest documented canonical Dev head. Report completion on #14 and source issues #58/#83.
 5. Mark this handoff complete, remove its temporary ACTIVE_CONTEXT routing note, and record the documentation-only closeout in CHANGELOG.md and PRE_FLIGHT_Check.md. No runtime/module/manifest/public behavior changes are authorized for that documentation step.
 
-## Paste-ready Work instruction
+## Archived Work instruction (already executed)
 
 Clean up the completed #58/#83 release branches in `Knight-Witch/KnightWitch.Heroforge`. The audit, classification, and exact branch inventory are complete. Do not repeat the audit unless live state contradicts the handoff. Read `WITCH_DEV_MAIN/docs/BRANCH_DELETION_HANDOFF_ISSUE_83_2026-09-26.md`. Delete exactly the 27 listed DELETE refs at their expected SHAs, preserve the 29 KEEP refs, verify the final inventory, report on issue #14, and perform only the narrow documentation closeout described above.

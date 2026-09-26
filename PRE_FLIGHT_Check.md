@@ -1,3 +1,12 @@
+## 2026-09-26 — #58/#83 branch cleanup closeout
+
+### PASS
+
+- Each of the 27 exact #58/#83 refs was deleted through GitHub UI; fresh live inventory has zero DELETE refs and exactly the 29 expected KEEP refs. Stable/Dev canonical heads and all unrelated branch refs preserved.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed.
+
+---
+
 ## 2026-09-26 — #58/#83 release janitorial gate
 
 ### PASS / exact branch deletion handoff pending

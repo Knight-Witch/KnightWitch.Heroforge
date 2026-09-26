@@ -11,9 +11,9 @@ Issues #58 (Polymorph/header/UI consistency) and #83 (reusable notification / up
 
 Live Stable smoke passed on installed wrapper v2.3.0 self-hosting v2.3.1: public head `327053785876bb8c7cd0a45876bc86c9b693c108` at test, loader 25/25 executed, zero failures/fallbacks, Release Notices v0.2.2. Documentation-only Stable head subsequently advanced to `303c56806d74b18338f866f601b904010356bf52`. Dev now mirrors the promoted shared runtime byte-for-byte and keeps #35 diagnostic capture/UI/service seam intentionally Dev-only; #19 owns channel routing. The prior acknowledgement/no-repeat gate was not replayed.
 
-## Remaining release janitorial step
+## Release closeout
 
-The GitHub connector cannot delete refs. `docs/BRANCH_DELETION_HANDOFF_ISSUE_83_2026-09-26.md` contains the exact mechanical deletion for 27 temporary #58/#83 branches, the complete KEEP inventory, reachability/classification evidence, and a paste-ready Work instruction. Issue #14 tracks its execution. Do not re-audit or delete unrelated branches unless live state contradicts the handoff. After deletion, verify inventory, mark the handoff complete, remove this temporary note, and record documentation-only closeout.
+#58/#83 temporary branches were deleted through the exact combined handoff; the final live inventory matched all 29 KEEP refs. The handoff is complete and archived in `docs/BRANCH_DELETION_HANDOFF_ISSUE_83_2026-09-26.md`.
 
 ## Other boundaries
 
