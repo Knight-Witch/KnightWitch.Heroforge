@@ -1,3 +1,15 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 launcher
+
+### PASS — source pin / live gate pending
+
+- Userscript @version, DEV_VERSION, manifest launcher registry, and DEV_BUILD are synchronized at v1.10.0 / `1.10.0-reusable-notifications`.
+- Launcher pins immutable payload `a6e38936f30673528e7284127ed8bed42e808f3d`.
+- Existing privileged grants/connects and core API expectations are unchanged; notification modules remain loader-isolated.
+- Public Stable remains v2.2.2.
+- Next: reload through Dev Auto Host and verify loader count, notification service state, Dev preview display, one-time acknowledgement, and no-repeat behavior.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 payload staging
 
 ### PASS — payload composition / live gate pending

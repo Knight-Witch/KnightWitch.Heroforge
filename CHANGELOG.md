@@ -1,3 +1,12 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 launcher
+
+- Dev launcher -> v1.10.0 / `1.10.0-reusable-notifications`.
+- Pins immutable payload `a6e38936f30673528e7284127ed8bed42e808f3d`.
+- Payload includes the release-ready #58 UI plus the loader-isolated notification service and v2.3.0 wrapper-update notice preview.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 payload staging
 
 - Dev launcher registry staged at v1.10.0 / `1.10.0-reusable-notifications`.
