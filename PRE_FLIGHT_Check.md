@@ -1,3 +1,18 @@
+## 2026-09-25 — Issue #83 Dev v1.10.0 notification live gate
+
+### PASS — human visual gate pending
+
+- Auto Host: exact canonical Dev head `30cbe4a98ef850986ade4254251314a6d7758137`; launcher v1.10.0 / payload `a6e38936f30673528e7284127ed8bed42e808f3d`.
+- Loader: 27/27 executed, 0 failed, 27 immutable, 0 fallback.
+- Generic notification service: configured=true, lastError=null.
+- Release notice: Dev preview registered correctly; action points to canonical `Witch_Scripts/Witch_Dock.user.js`.
+- One-time behavior: acknowledgement=true on first display; dismissal removed overlay; reload produced no repeat overlay while acknowledgement remained true.
+- Forced preview API successfully re-opened a non-persistent copy for human review without altering production Stable notice state.
+- #58 remains Dev-approved and bundled in the same payload.
+- Public Stable remains v2.2.2.
+
+---
+
 ## 2026-09-25 — Issue #83 Dev v1.10.0 launcher
 
 ### PASS — source pin / live gate pending
