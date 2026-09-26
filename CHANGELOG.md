@@ -1608,3 +1608,11 @@ Date: 2026-09-17
 - The preview uses a distinct v3 notice ID for Amanda's corrected copy. Public Stable remains v2.2.2; focused live copy/detail gate and human visual approval remain.
 
 ---
+## 2026-09-25 — Issue #83 corrected copy live gate
+
+- Dev Auto Host loaded v1.10.2 from immutable payload `f474c0fc057ed05e574348c87d4e11546786af70`; loader passed 27/27 with 0 failed and 0 fallback.
+- Dev preview v3 displayed Amanda's original update instructions, three release-overview bullets, all detailed section headings, nested notes, and coming-soon wording with only version/count placeholders filled.
+- Footer See details opened the expanded view; Back to overview restored the compact view. The preview was left visible on its overview for Amanda's visual review.
+- No new release claims were added. Public Stable remains v2.2.2; combined RC awaits the human gate.
+
+---

@@ -2312,3 +2312,15 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - Node syntax, manifest JSON, and diff checks pass. Next: Bridge reload and focused live copy/detail gate; prior no-repeat validation remains recorded.
 
 ---
+## 2026-09-25 — Issue #83 corrected copy live gate
+
+### PASS — human visual gate pending
+
+- Bridge reload observed the current HeroForge route; Dev launcher v1.10.2 / payload `f474c0fc057ed05e574348c87d4e11546786af70` running, error=null.
+- Loader complete 27/27, immutable=27, fallback=0, failed=0. Notifications v0.2.1 configured with active preview v3 and no error; Release Notices v0.2.1 reports dev-preview and no error.
+- Live DOM confirmed all overview copy and detailed headings/items/notes against Amanda's supplied wording; concrete placeholders v2.2.2, 2.3.0, and 2.
+- Details opened and returned by footer control; previous v1.10.1 gate covered both detail entry controls and centered X geometry, unchanged in this copy correction. Left v1.10.2 overview visible for Amanda.
+- A read request immediately after reload reached the page before Core registered; a later read confirmed v1.10.2 and 27/27 loaded. No mutation was replayed.
+- No-repeat validation was not repeated. Public Stable remains v2.2.2.
+
+---
