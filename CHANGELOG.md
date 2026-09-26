@@ -1584,3 +1584,21 @@ Date: 2026-09-17
 - Public Stable remains v2.2.2. Focused live detail-navigation and human visual gates precede the combined RC.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 focused live gate
+
+- Corrected the session access assumption: HF-Chat-Bridge v0.4.0 was active through its private GitHub mailbox. The prior statement that the Bridge was unavailable was wrong.
+- Dev Auto Host loaded launcher v1.10.1 from canonical Dev with immutable payload `f1fac5e680e37549812d73ef497a28f3edb2510b`; loader passed 27/27, failed=0, immutable=27, fallback=0.
+- Dev preview v2 rendered its overview, the 52px emblem, and centered 16px SVG inside a 30px close button.
+- Footer See details expanded the modal to 680px with scrollable detail content; Back to overview returned to the compact view; inline See details reopened the detailed view. The preview was left visible on its overview for Amanda's human visual gate.
+- Existing acknowledgement/no-repeat validation was not replayed. Public Stable remains v2.2.2; combined #58/#83 public RC awaits human visual approval.
+
+---
+## 2026-09-25 — Issue #83 restore Amanda's release copy candidate
+
+- Amanda corrected the v1.10.1 copy pass: her text was intended as the actual popup content, and the request for missing fixes did not authorize editorial rewriting.
+- Release Notices -> v0.2.1 / `0.2.1-amanda-release-copy`. Restored her overview and detailed wording, ordering, emphasis, and nested bullets. Only the placeholders are filled: older installed wrapper v2.2.2, target v2.3.0, and two High Res bugfixes.
+- Notifications -> v0.2.1 / `0.2.1-release-copy-formatting` for instruction bullets, heading-only category, exact per-item separators, and emphasized nested notes; Styles -> v0.8.1 / `0.8.1-release-heading-formatting`.
+- Manifest stages Dev launcher registry v1.10.2 and the matching module versions/cache keys. The previous v1.10.1 live structure gate remains evidence for the unchanged layout; the restored text and detail formatting need a focused live check.
+- No additional fixes or release claims were inserted into Amanda's copy. Public Stable remains v2.2.2.
+
+---

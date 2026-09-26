@@ -7,8 +7,8 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.10.1",
-      "build": "1.10.1-release-details-preview",
+      "version": "1.10.2",
+      "build": "1.10.2-user-release-copy",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
@@ -17,8 +17,8 @@
       "path": "features/core/Witch_Dock_Notifications.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.2.0",
-      "build": "0.2.0-expandable-release-details",
+      "version": "0.2.1",
+      "build": "0.2.1-release-copy-formatting",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
@@ -47,8 +47,8 @@
       "path": "features/core/Witch_Dock_Styles.css",
       "kind": "core-style",
       "load": "bootstrap-style",
-      "version": "0.8.0",
-      "build": "0.8.0-expandable-release-overlay",
+      "version": "0.8.1",
+      "build": "0.8.1-release-heading-formatting",
       "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
     },
     {
@@ -401,8 +401,8 @@
       "path": "features/core/Witch_Dock_Release_Notices.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.2.0",
-      "build": "0.2.0-v230-release-overview",
+      "version": "0.2.1",
+      "build": "0.2.1-amanda-release-copy",
       "versionOrigin": "issue-83-v230-wrapper-notice-2026-09-25"
     }
   ],
@@ -422,7 +422,7 @@
       "id": "witch-dock-notifications",
       "title": "Witch Dock Notifications",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Notifications.js?v=0.2.0-expandable-release-details",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Notifications.js?v=0.2.1-release-copy-formatting",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -431,7 +431,7 @@
       "id": "witch-dock-release-notices",
       "title": "Witch Dock Release Notices",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Release_Notices.js?v=0.2.0-v230-release-overview",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/core/Witch_Dock_Release_Notices.js?v=0.2.1-amanda-release-copy",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

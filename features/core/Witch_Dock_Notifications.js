@@ -4,8 +4,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockNotifications";
   const FEATURE_ID = "witch-dock-notifications";
-  const VERSION = "0.2.0";
-  const BUILD = "0.2.0-expandable-release-details";
+  const VERSION = "0.2.1";
+  const BUILD = "0.2.1-release-copy-formatting";
   const OVERLAY_ID = "kwWDNoticeOverlay";
   const DEFAULT_PRIORITY = 0;
 
@@ -84,6 +84,9 @@
       : [];
     if (!paragraphs.length && def.message) paragraphs.push(String(def.message).trim());
     if (!paragraphs.length) throw new Error(`Witch Dock notice ${id} requires message text.`);
+    const instructions = Array.isArray(def.instructions)
+      ? def.instructions.map((value) => String(value || "").trim()).filter(Boolean)
+      : [];
 
     const overview = def.overview && typeof def.overview === "object" ? {
       title: String(def.overview.title || "Release overview").trim(),
@@ -91,12 +94,19 @@
     } : null;
     const details = Array.isArray(def.details) ? def.details.filter((section) => section && typeof section === "object").map((section) => ({
       title: String(section.title || "").trim(),
+      headingOnly: section.headingOnly === true,
       items: Array.isArray(section.items) ? section.items.filter((item) => item && typeof item === "object").map((item) => ({
         label: String(item.label || "").trim(),
         text: String(item.text || "").trim(),
-        notes: Array.isArray(item.notes) ? item.notes.map((note) => String(note || "").trim()).filter(Boolean) : []
+        separator: String(item.separator == null ? " — " : item.separator),
+        italicText: item.italicText === true,
+        notes: Array.isArray(item.notes) ? item.notes.map((note) => note && typeof note === "object" ? {
+          label: String(note.label || "").trim(),
+          text: String(note.text || "").trim(),
+          italic: note.italic === true
+        } : { label: "", text: String(note || "").trim(), italic: false }).filter((note) => note.label || note.text) : []
       })).filter((item) => item.label || item.text) : []
-    })).filter((section) => section.title && section.items.length) : [];
+    })).filter((section) => section.title && (section.headingOnly || section.items.length)) : [];
 
     const action = def.action && typeof def.action === "object" ? {
       label: String(def.action.label || "").trim(),
@@ -116,6 +126,7 @@
       id,
       title,
       paragraphs,
+      instructions,
       overview,
       details,
       action,
@@ -208,6 +219,15 @@
       p.textContent = text;
       body.appendChild(p);
     }
+    if (notice.instructions.length) {
+      const list = document.createElement("ul");
+      for (const text of notice.instructions) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      }
+      body.appendChild(list);
+    }
 
     const hasDetails = notice.details.length > 0;
     const detailBody = document.createElement("div");
@@ -254,10 +274,14 @@
     if (hasDetails) {
       for (const section of notice.details) {
         const group = document.createElement("section");
-        group.className = "kwWDNoticeDetailSection";
-        const heading = document.createElement("h3");
+        group.className = `kwWDNoticeDetailSection${section.headingOnly ? " kwWDNoticeDetailHeadingOnly" : ""}`;
+        const heading = document.createElement(section.headingOnly ? "h2" : "h3");
         heading.textContent = section.title;
         group.appendChild(heading);
+        if (section.headingOnly) {
+          detailBody.appendChild(group);
+          continue;
+        }
         const list = document.createElement("ul");
         for (const item of section.items) {
           const li = document.createElement("li");
@@ -266,13 +290,28 @@
             label.textContent = item.label;
             li.appendChild(label);
           }
-          if (item.text) li.appendChild(document.createTextNode(`${item.label ? " — " : ""}${item.text}`));
+          if (item.text) {
+            if (item.label) li.appendChild(document.createTextNode(item.separator));
+            const textNode = item.italicText ? document.createElement("em") : document.createTextNode(item.text);
+            if (item.italicText) textNode.textContent = item.text;
+            li.appendChild(textNode);
+          }
           if (item.notes.length) {
             const notes = document.createElement("ul");
             notes.className = "kwWDNoticeNotes";
             for (const note of item.notes) {
               const sub = document.createElement("li");
-              sub.textContent = note;
+              if (note.label) {
+                const label = document.createElement("strong");
+                label.textContent = note.label;
+                sub.appendChild(label);
+              }
+              if (note.text) {
+                if (note.label) sub.appendChild(document.createTextNode(" "));
+                const textNode = note.italic ? document.createElement("em") : document.createTextNode(note.text);
+                if (note.italic) textNode.textContent = note.text;
+                sub.appendChild(textNode);
+              }
               notes.appendChild(sub);
             }
             li.appendChild(notes);

@@ -2281,3 +2281,25 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - Public Stable remains v2.2.2.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 focused live gate
+
+### PASS — human visual approval pending
+
+- Bridge `bridge.ping` confirmed live HeroForge, page context, DEV writes, and runtime v0.4.0; `runtime.navigate` reload receipt observed the refreshed route.
+- Launcher state: v1.10.1 / `1.10.1-release-details-preview`, exact payload `f1fac5e680e37549812d73ef497a28f3edb2510b`, status=running, error=null.
+- Loader: 27/27 executed, failed=0, immutable=27, fallback=0. Notifications configured, lastError=null; Release Notices registered the Dev preview v2 with error=null.
+- Overview popup visible at ~501×349; emblem 52×52; SVG 16×16 centered by 7px inside the 30×30 close button.
+- Footer See details opened the ~681×681 scrollable detailed modal; Back returned to the overview; inline See details reopened it; Back left the overview visible for Amanda.
+- Prior first-display acknowledgement/no-repeat gate is still the recorded validation; this run did not repeat it. Public Stable remains v2.2.2.
+
+---
+## 2026-09-25 — Issue #83 restore Amanda's release copy candidate
+
+### PASS static; v1.10.2 launcher/live gate pending
+
+- Restored Amanda's supplied paragraphs, overview bullets, and detailed sections without editorial paraphrase; concrete placeholders are v2.2.2, v2.3.0, and 2 High Res fixes.
+- Generic service retains notice ID/storage/priority/acknowledgement behavior. New rendering accepts instruction bullets, heading-only section, explicit separators, italic item bodies, and structured nested notes.
+- Notifications v0.2.1, Release Notices v0.2.1, Styles v0.8.1, and staged launcher registry v1.10.2 have matching manifest/cache metadata; syntax, JSON, and diff checks pass.
+- Next: immutable launcher pin, focused live copy/navigation check, then Amanda's human visual gate. Public Stable unchanged.
+
+---
