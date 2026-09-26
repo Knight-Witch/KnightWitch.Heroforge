@@ -2262,3 +2262,11 @@ Do not continue to bone HUD extraction if this gate fails; repair/rollback only 
 - Public Stable remains v2.2.2.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 payload staging
+
+### PASS static; launcher pin pending
+
+- Manifest launcher registry advances to v1.10.1 with the exact source candidate; JSON validation and diff checks pass.
+- No launcher/source/runtime behavior changes in this staging commit. Next: pin the exact immutable Dev payload and run the focused live layout/navigation gate.
+
+---

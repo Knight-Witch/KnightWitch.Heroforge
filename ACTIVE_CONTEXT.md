@@ -8,7 +8,7 @@
 **Completed tooling:** issue #35 — **High Res diagnostic capture**  
 **Public Stable:** v2.2.2 / `Witch_Scripts` @ `d2d2298e1949da71d64bb11e880f5af6868809f8`  
 **Public immutable payload:** `1a586ec3540138694b2342a5fd074b5ec4b1a8e5`  
-**Canonical Dev launcher:** v1.10.0 / payload `a6e38936f30673528e7284127ed8bed42e808f3d` (visual-feedback candidate staging)
+**Canonical Dev launcher:** v1.10.0 / payload `a6e38936f30673528e7284127ed8bed42e808f3d`; v1.10.1 payload staged for pin
 
 ## Current route
 

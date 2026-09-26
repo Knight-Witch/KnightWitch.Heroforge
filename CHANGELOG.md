@@ -1571,3 +1571,9 @@ Date: 2026-09-17
 - Dev-only payload candidate; Public Stable remains v2.2.2. Previous one-time notice validation remains applicable; the new detail navigation and visual layout require a focused Dev gate.
 
 ---
+## 2026-09-25 — Issue #83 Dev v1.10.1 payload staging
+
+- Staged the Dev launcher registry at v1.10.1 / `1.10.1-release-details-preview` so its next immutable payload contains the new notice service, expanded release copy, and Styles v0.8.0.
+- Public Stable remains v2.2.2; no live behavior changes until the launcher pin is advanced.
+
+---
