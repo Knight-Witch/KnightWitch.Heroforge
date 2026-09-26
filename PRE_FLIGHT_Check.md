@@ -1,3 +1,12 @@
+## 2026-09-26 — public launcher metadata correction
+
+### PASS / Stable live smoke pending
+
+- Public readback revealed @version 2.2.2 while runtime and name were v2.3.0; corrected to 2.3.0.
+- Header identity, runtime VERSION/BUILD, manifest launcher registry and payload SHA now agree; syntax and diff checks pass.
+
+---
+
 ## 2026-09-26 — Issues #58/#83 v2.3.0 RC launcher pin
 
 ### PASS / live RC gate pending

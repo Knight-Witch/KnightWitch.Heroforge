@@ -1,3 +1,9 @@
+## 2026-09-26 — v2.3.0 public launcher metadata correction
+
+- Corrects Tampermonkey `@version` to 2.3.0 to match the already-promoted runtime VERSION, @name, manifest registry, and immutable payload. No module behavior changes.
+
+---
+
 ## 2026-09-26 — Issues #58/#83 public v2.3.0 RC launcher pin
 
 - Pins the v2.3.0 Stable wrapper to immutable public candidate payload `08429de8fe1c3b43dbd223a686ce643b2f34320f`.
