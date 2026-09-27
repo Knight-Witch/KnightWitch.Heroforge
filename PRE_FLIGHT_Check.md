@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #88 canonical-baseline synchronization
+
+### PASS
+
+- #88 design branch now includes current canonical Dev head `a16e547f4eb9dc04dd804fc453c131f054bccae7` as a merge parent.
+- All runtime/module/manifest files come from canonical Dev; #88 adds documentation only.
+- Canonical Dev and public Stable were not changed.
+
+---
+
 ## 2026-09-26 — Issue #88 v1 design-freeze audit
 
 ### PASS
@@ -102,6 +112,26 @@
 - Added capture architecture, provider contract, provider inventory, and cross-repo ownership boundary.
 - Branch is isolated from active #83 runtime/release work.
 - No runtime/module/manifest/public behavior changed.
+
+---
+
+## 2026-09-26 — #58/#83 branch cleanup closeout
+
+### PASS
+
+- Each of the 27 exact #58/#83 refs was deleted through GitHub UI; fresh live inventory has zero DELETE refs and exactly the 29 expected KEEP refs. Stable/Dev canonical heads and all unrelated branch refs preserved.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed.
+
+---
+
+## 2026-09-26 — #58/#83 release janitorial gate
+
+### PASS / exact branch deletion handoff pending
+
+- Stable v2.3.1 Bridge smoke passed on public immutable payload `50405ca027e28227123f475c488538d214644b0d`: loader 25/25, 0 failed/fallback.
+- Nine promoted shared files, including both Polymorph fonts, match Dev byte-for-byte. Non-launcher registry differs only for intentional #35 diagnostic seam/service/UI; #19 Dev channel routing remains.
+- No temporary probes or adapters in promoted scope; #58/#83 divergence entries removed. Branch inventory: 27 exact DELETE refs, all remaining refs KEEP under the handoff.
+- Documentation-only record; no runtime, module, manifest, or public behavior changed in this commit.
 
 ---
 

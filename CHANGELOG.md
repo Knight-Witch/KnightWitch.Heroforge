@@ -1,3 +1,11 @@
+## 2026-09-26 — Issue #88 design branch synchronized to canonical Dev
+
+- Merged current `WITCH_DEV_MAIN` head `a16e547f4eb9dc04dd804fc453c131f054bccae7` into the #88 design branch after the v1 design freeze so future review cannot carry the pre-release runtime baseline.
+- Preserved only #88 diagnostic design docs/router/log records on top of canonical runtime state.
+- Canonical Dev and public Stable were not changed.
+
+---
+
 ## 2026-09-26 — Issue #88 v1 capture-design freeze / ownership audit
 
 - Completed cross-provider duplication/privacy/ownership audit.
@@ -86,6 +94,21 @@
 - Anchored future generic Bug Capture #59 to HF.Status's shared diagnostic-report contract rather than duplicating intake/storage ownership.
 - High Res Diagnostic Capture v0.1.3 remains the protected reference implementation.
 - No runtime/module/manifest/public behavior changed.
+
+---
+
+## 2026-09-26 — #58/#83 exact branch cleanup complete
+
+- Deleted all 27 temporary #58/#83 branches listed in the handoff; the live post-delete inventory exactly matches its 29 KEEP refs. The handoff is marked complete and ACTIVE_CONTEXT no longer routes mechanical cleanup.
+- Documentation-only closeout; no runtime, module, manifest, or public behavior changed.
+
+---
+
+## 2026-09-26 — #58/#83 Dev post-release reconciliation and branch handoff
+
+- Public Stable v2.3.1 live smoke passed: installed v2.3.0 wrapper self-hosted v2.3.1, loader 25/25, zero failures/fallback; Release Notices v0.2.2. Dev v1.10.3 mirrors all promoted shared files.
+- Removes resolved #58/#83 runtime divergences; retains #19 Dev channel and #35 diagnostics. ACTIVE_CONTEXT routes away from completed release work. Exact 27-ref branch deletion handoff is staged under docs and tracked by #14.
+- Documentation-only closeout; no runtime, module, manifest, or public behavior changed in this commit.
 
 ---
 

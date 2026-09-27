@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "devBranch": "WITCH_DEV_MAIN",
   "stableBranch": "Witch_Scripts",
-  "stableBaseline": "d2d2298e1949da71d64bb11e880f5af6868809f8",
+  "stableBaseline": "303c56806d74b18338f866f601b904010356bf52",
   "runtimeDivergences": [
     {
       "issue": 19,
@@ -39,55 +39,6 @@
         "Diagnostics UI is registered under Utilities and Booth remains untouched.",
         "Public Stable remains untouched."
       ]
-    },
-    {
-      "issue": 58,
-      "status": "dev-candidate",
-      "reason": "Witch Dock Dev stages Amanda's owned Polymorph Regular/Bold for the branded title plus a shared UI consistency pass: tighter title/emblem spacing, system-font control typography, exact tab centering, compact subtool headers, dark body-scrollbar track, purple checkbox accent, and shared purple hover treatment. High Res persistence is visually aligned with Utilities and labels its checkbox Enabled. Public Stable remains v2.2.2 until live and human visual gates pass.",
-      "paths": [
-        "manifest.json",
-        "features/core/Witch_Dock_Assets.js",
-        "features/core/Witch_Dock_Core.js",
-        "features/core/Witch_Dock_Shell.js",
-        "features/core/Witch_Dock_Styles.css",
-        "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
-        "features/core/assets/fonts/Polymorph-Regular.ttf",
-        "features/core/assets/fonts/Polymorph-Bold.ttf"
-      ],
-      "acceptance": [
-        "Polymorph Regular and Bold remain bundled from the immutable Witch Dock payload and the title uses the branded face only.",
-        "WITCH and DOCK sit materially closer to the large emblem than in the v1.9.4 candidate without shrinking the emblem.",
-        "Tool tabs are horizontally and vertically centered at a consistent fixed height.",
-        "Section/tool headers retain the readable system face, uniform uppercase, and reduced vertical padding.",
-        "Common text buttons use consistent 12px semibold typography and centered content; High Res, Utilities action buttons, and decal gizmo mode buttons align visually.",
-        "Checked Dock checkboxes use the shared purple accent.",
-        "Tabs and common tool buttons use the same purple hover treatment as High Res controls.",
-        "The main Dock body scrollbar uses a dark track consistent with the Dock shell.",
-        "High Res persistence row matches the Utilities persistence layout and its checkbox label reads Enabled.",
-        "Live Dev loader/module/font behavior remains clean and Amanda visually approves before Stable promotion."
-      ]
-    },
-    {
-      "issue": 83,
-      "title": "Reusable Witch Dock notification / update-alert system",
-      "reason": "Dev is staging a loader-isolated generic one-time notification service plus a v2.3.0 Stable wrapper-update notice. Neither module is required by Core, preserving optional-feature failure isolation. Public Stable remains v2.2.2 until the combined #58/#83 release passes Dev and human gates.",
-      "paths": [
-        "manifest.json",
-        "features/core/Witch_Dock_Core.js",
-        "features/core/Witch_Dock_Styles.css",
-        "features/core/Witch_Dock_Notifications.js",
-        "features/core/Witch_Dock_Release_Notices.js"
-      ],
-      "acceptance": [
-        "Generic notices are loader-isolated from Core and have stable IDs, one-time acknowledgement storage, queue/priority behavior, close/Escape handling, optional action links, and observable state.",
-        "Acknowledgement can occur on show, dismiss, or action; the v2.3.0 wrapper notice uses on-show acknowledgement so it never repeats after first display.",
-        "Release-specific notice copy is isolated from Core in a hidden module.",
-        "Stable trigger uses installed Tampermonkey wrapper evidence from KWWitchDockStableHost, not the self-hosted runtime version.",
-        "Stable users at v2.3.0 or newer do not see the wrapper-update notice.",
-        "Stable users on an older installed wrapper can see the notice even when the v2.3.0 runtime is self-hosted from current Stable.",
-        "Update action points to the canonical Witch_Scripts/Witch_Dock.user.js URL.",
-        "Dev preview and live loader regression pass; Amanda visually approves before the combined public release."
-      ]
     }
   ],
   "notes": [
@@ -98,6 +49,6 @@
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
     "Issue #35 is complete: High Res Diagnostic Capture v0.1.3 is canonical Dev-only tooling and #32 is routed to use it as standardized evidence collection.",
-    "Issues #37 and #41 are complete: public Stable v2.2.2 carries Dock size reset, resize-border double-click reset, visible runtime version, Disclaimer-in-About, and self-refreshing Stable delivery; canonical Dev v1.8.0 carries the same shared runtime plus intentional Dev-only diagnostics."
+    "Issues #58/#83 are released on public Stable v2.3.1: approved Polymorph/UI consistency and reusable one-time notifications with explicit old-script removal guidance. Shared runtime bytes are reconciled into Dev; only #19 channel routing and #35 diagnostic provider remain intentional divergences."
   ]
 }

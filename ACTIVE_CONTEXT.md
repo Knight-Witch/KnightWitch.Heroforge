@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-26 UTC  
 **Branch:** `wd/88-diagnostic-capture-architecture`  
-**Canonical Dev:** `WITCH_DEV_MAIN` v1.10.3 / immutable payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc`  
+**Canonical Dev:** `WITCH_DEV_MAIN` @ `a16e547f4eb9dc04dd804fc453c131f054bccae7` · v1.10.3 / immutable payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc`  
 **Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`  
 **This branch:** issue #88 — general diagnostic capture architecture + provider contract — **v1 design baseline complete / cross-repo review open**
 
@@ -67,6 +67,10 @@ Hold issue #88 open for feedback from the parallel triage and HF.Status backend/
 Do not begin runtime implementation on #88.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
+
+## Branch hygiene
+
+This design branch is synchronized to current canonical Dev head `a16e547f4eb9dc04dd804fc453c131f054bccae7`; its intentional delta is documentation only.
 
 ## Protected state
 
