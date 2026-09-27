@@ -7,9 +7,9 @@
 | `texture-quality` | v1 design drafted; existing reference runtime | figures/parts, paints, atlas, AAID/masks/resources, materials, color-bake, HR lifecycle | snapshot, comparison, failure | `providers/TEXTURE_QUALITY.md` |
 | `booth` | v1 design drafted | Booth state/readiness, native bootstrap, settings, presentation, media capture integration | snapshot, failure | `providers/BOOTH.md` |
 | `decals` | v1 design drafted | slot/order/model state, rendered bindings, Project/bound transforms, gizmo/preservation, expanded slots | snapshot, failure | `providers/DECALS.md` |
-| `body-editor` | next design target | active body controls/targets, source/derived body state, relevant update lifecycle | snapshot, failure | pending |
-| `pose` | planned | selected bones/joints, pose state, constraints/ownership, relevant update lifecycle | snapshot, failure | pending |
-| `json` | planned | JSON tool mode/import/export state and safe validation metadata; not raw character JSON by default | snapshot, failure | pending |
+| `body-editor` | v1 design drafted | arm sync, breast/butt mirror transform subsets, adjunct hand/slider state, undo/commit | snapshot, failure | `providers/BODY_EDITOR.md` |
+| `pose` | v1 design drafted; current scope is Main/Extra swap | figure-role structure, pinned Main invariants, undo/commit | snapshot, failure | `providers/POSE.md` |
+| `json` | v1 design drafted | bulk backup workflow/progress/failure classes/archive result with strict redaction | snapshot, failure | `providers/JSON.md` |
 | `rendering-performance` | later | frame timing, renderer stats, canvas/DPR, bounded long-task/performance context | snapshot, performance | pending |
 | `core-runtime` | evaluate after General v1 | module loader/startup/readiness failures beyond the common package | snapshot, failure | pending |
 

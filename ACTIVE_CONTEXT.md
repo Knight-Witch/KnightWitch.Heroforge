@@ -18,7 +18,10 @@ Current design sources:
 - `docs/diagnostics/providers/PROVIDER_TEMPLATE.md` — provider design template;
 - `docs/diagnostics/providers/TEXTURE_QUALITY.md` — Texture Quality provider v1 design;
 - `docs/diagnostics/providers/BOOTH.md` — Booth provider v1 design;
-- `docs/diagnostics/providers/DECALS.md` — Decals provider v1 design.
+- `docs/diagnostics/providers/DECALS.md` — Decals provider v1 design;
+- `docs/diagnostics/providers/BODY_EDITOR.md` — Body Editor provider v1 design;
+- `docs/diagnostics/providers/POSE.md` — current Pose/Main-Extra-swap provider v1 design;
+- `docs/diagnostics/providers/JSON.md` — JSON bulk-backup provider v1 design.
 
 Shared serialized/intake boundary remains HF.Status issue #15:
 `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`.
@@ -31,12 +34,15 @@ Shared serialized/intake boundary remains HF.Status issue #15:
 - Texture Quality is the reference provider and has a concrete v1 section design pressure-tested against #24/#32/#34.
 - Booth v1 is designed around separate state/bootstrap/settings/presentation/components/media boundaries; snapshot must not activate Booth or invoke settings save/apply.
 - Decals v1 traces UI selection -> ordered layer -> model mapping -> rendered material/projector and separately exposes bound-transform/gizmo/preservation state; snapshot must create no character mutation or undo history.
+- Body Editor v1 limits evidence to its transform/hand/slider subsets plus undo/commit state; no full undo entry or character JSON.
+- Pose v1 is intentionally scoped to the tool's current Main/Extra swap behavior and verifies pinned Main invariants rather than claiming generic bone-pose coverage.
+- JSON v1 reports backup workflow mechanics only and explicitly redacts config IDs, character/folder names, raw save JSON, ZIP paths/content, and authenticated endpoint URLs.
 - #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
 - No runtime implementation under #88.
 
 ## Next design work
 
-Inspect current Body Editor ownership and design whether it warrants its own provider versus a narrower body-editing section. Then inspect Pose. Continue by real diagnostic value rather than mechanically designing every tab.
+Design the remaining cross-cutting providers: rendering/performance and core-runtime/startup. Then perform a coverage/duplication pass across all provider specs and decide whether issue #88 design is ready to freeze.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
 

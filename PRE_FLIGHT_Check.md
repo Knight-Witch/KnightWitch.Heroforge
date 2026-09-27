@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #88 Body Editor / Pose / JSON provider designs
+
+### PASS
+
+- Body Editor diagnostics can distinguish source/target transform state from load/undo commit failures without serializing full character snapshots.
+- Pose diagnostics match the actual Main/Extra swap implementation and preserve privacy through domain hashes/key inventories.
+- JSON diagnostics are designed around redacted workflow state and cannot copy the tool's raw failure URL/config-ID structures.
+- No automatic mutation/comparison mode added.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Decals provider design
 
 ### PASS

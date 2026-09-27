@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #88 Body Editor, Pose, and JSON provider v1 designs
+
+- Added Body Editor provider limited to transform families the tool actually mutates, adjunct hand/arm-slider state, provider baselines, and UndoQueue/commit outcomes; full character/undo snapshots are excluded.
+- Added Pose provider honestly scoped to today's Main/Extra swap operation, with structural swap hashes and explicit pinned-Main invariants.
+- Added JSON provider for bulk-backup workflow/progress/archive/failure diagnostics with strict redaction of config IDs, character/folder names, raw JSON, ZIP paths/content, and authenticated URLs.
+- All three providers are snapshot/failure only; diagnostics never trigger their state-changing operations.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Decals diagnostic provider v1 design
 
 - Added `docs/diagnostics/providers/DECALS.md` covering slot/order/model state, UI selection binding, rendered material/projector binding, corrected/native gizmo state, bound-transform preservation, expanded slots, failures, and events.
