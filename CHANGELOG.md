@@ -1,3 +1,12 @@
+## 2026-09-26 — Issue #59 Dev v1.11.0 launcher pin
+
+- Dev launcher -> v1.11.0 / `1.11.0-generic-bug-capture`.
+- Pins immutable payload `a80c9b094824e0a9143cb46e87e20e11b4044fde` containing Diagnostics Core v0.1.0 and Bug Capture UI v0.1.0.
+- Static gate passed for both new JS modules, manifest/divergence JSON, registry uniqueness, and default-capture privacy guardrails.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — Issue #59 Generic Bug Capture payload staging
 
 - Added Diagnostics Core v0.1.0 / `0.1.0-general-capture-v1` with General Capture v1, provider registry, T0 state freeze, bounded errors/events, stable section addressing, deterministic SHA-256 section hashes where available, and local JSON export.

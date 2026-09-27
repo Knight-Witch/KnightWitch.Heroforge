@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #59 Dev v1.11.0 launcher pin
+
+### PASS / live Dev gate pending
+
+- Userscript @version, DEV_VERSION/BUILD, manifest launcher registry, and visible Dev identity are staged at v1.11.0.
+- Launcher pins immutable payload `a80c9b094824e0a9143cb46e87e20e11b4044fde`.
+- New module syntax and manifest/static checks pass.
+- Next: canonical Dev integration + live loader/capture/download regression.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — Issue #59 General Capture payload staging
 
 ### PENDING live Dev gate

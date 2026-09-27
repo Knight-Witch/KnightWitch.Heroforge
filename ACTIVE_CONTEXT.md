@@ -14,8 +14,8 @@ Implement the first #59 slice only:
 2. General Capture schema v1.
 3. Minimal Utilities → Bug Capture UI.
 4. Static/syntax checks.
-5. Stage Dev launcher v1.11.0 on an immutable payload.
-6. Live Dev validation through HF-Chat-Bridge.
+5. Dev launcher v1.11.0 pinned to immutable payload `a80c9b094824e0a9143cb46e87e20e11b4044fde`.
+6. Next: merge candidate into canonical Dev and run live validation through HF-Chat-Bridge.
 
 Do not adapt Texture Quality until General-only capture passes its gate.
 
