@@ -12,6 +12,7 @@
 | `json` | v1 design drafted | bulk backup workflow/progress/failure classes/archive result with strict redaction | snapshot, failure | `providers/JSON.md` |
 | `rendering-performance` | v1 design drafted | frame timing, long tasks, JS heap where exposed, renderer counters, bounded scene complexity, active work | snapshot, performance | `providers/RENDERING_PERFORMANCE.md` |
 | `core-runtime` | v1 design drafted; optional deep runtime provider | channel/bootstrap/module loader/registry timeline plus explicit bounded request/toast failure watch | snapshot, failure | `providers/CORE_RUNTIME.md` |
+| `bone-hud` | v1 design drafted | bone-selection source, detector lifecycle, candidate/baseline health, detection/failure context | snapshot, failure | `providers/BONE_HUD.md` |
 
 ## Provider Design Rule
 
@@ -66,6 +67,7 @@ General Capture is always present. Providers are additive and should be selected
 | Body Editor | `body-editor` |
 | Current Pose Main/Extra swap | `pose` |
 | JSON bulk backup | `json` |
+| Bone HUD / bone detection | `bone-hud` |
 | Lag / stutter / progressive slowdown | `rendering-performance` |
 | Startup / update / module load / repeated connection failure | `core-runtime` |
 
@@ -79,3 +81,18 @@ These are never automatic during an ordinary snapshot:
 - Core Runtime failure watch.
 
 The user/developer explicitly starts them because they either mutate provider state (comparison) or temporarily add instrumentation/sampling.
+
+
+## Deliberately no dedicated provider in v1
+
+The provider audit does **not** assign one provider per module/tab.
+
+These surfaces are adequately represented elsewhere until real bugs prove a reusable missing evidence boundary:
+
+- Witch Dock Notifications / Release Notices — General + `core-runtime` module/registry/errors are sufficient; UI-specific visual issues still use screenshots/human gate.
+- Developer Mode — module identity/state belongs to General/Core Runtime; no separate diagnostic state machine currently justifies a provider.
+- UI scroll guards / slot bridge plumbing — Core Runtime covers module load; feature-specific state is owned by the affected provider (for example Decals owns Expanded Decal Slots readiness).
+- Utilities — current actions are small independent utilities; use General/Core Runtime unless a specific utility develops a reusable diagnostic boundary.
+- Photo Booth TRUE-resolution / Spinny — operational state is grouped under `booth` because their current capability depends on Booth runtime; detailed timing pressure belongs to `rendering-performance`.
+
+A new provider should be added only when repeated investigation shows a coherent state owner that General/current providers cannot represent cleanly.

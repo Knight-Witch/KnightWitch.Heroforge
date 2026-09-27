@@ -23,7 +23,8 @@ Current design sources:
 - `docs/diagnostics/providers/POSE.md` — current Pose/Main-Extra-swap provider v1 design;
 - `docs/diagnostics/providers/JSON.md` — JSON bulk-backup provider v1 design;
 - `docs/diagnostics/providers/CORE_RUNTIME.md` — optional startup/module/network-failure provider v1 design;
-- `docs/diagnostics/providers/RENDERING_PERFORMANCE.md` — bounded rendering/performance provider v1 design.
+- `docs/diagnostics/providers/RENDERING_PERFORMANCE.md` — bounded rendering/performance provider v1 design;
+- `docs/diagnostics/providers/BONE_HUD.md` — Bone HUD detector/selection-seam provider v1 design.
 
 Shared serialized/intake boundary remains HF.Status issue #15:
 `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`.
@@ -41,12 +42,13 @@ Shared serialized/intake boundary remains HF.Status issue #15:
 - JSON v1 reports backup workflow mechanics only and explicitly redacts config IDs, character/folder names, raw save JSON, ZIP paths/content, and authenticated endpoint URLs.
 - Core Runtime v1 is optional beyond General: ordinary snapshot deepens bootstrap/module/registry state; issue #7-style network/toast correlation uses an explicitly armed bounded failure watch, never permanent traffic logging.
 - Rendering Performance v1 is snapshot + explicit short sample; it aggregates rAF timing/long tasks/memory/renderer/scene complexity without reloads, GC, renderer resets, or continuous profiling.
+- Bone HUD v1 exists because #26 proves module/UI health and detector functional health are different boundaries; the provider reports detector strategy/candidates/source state without cementing the legacy scene-index approach.
 - #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
 - No runtime implementation under #88.
 
 ## Next design work
 
-Perform the issue #88 coverage/duplication/privacy pass across General + all provider specs. Resolve only real overlap/gaps, define design freeze/implementation handoff criteria, then checkpoint #88 for review.
+Finish the issue #88 coverage/duplication/privacy pass across General + all provider specs. Verify ownership boundaries and implementation seams, define design-freeze/implementation-handoff criteria, then checkpoint #88 for review.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
 

@@ -1,3 +1,12 @@
+## 2026-09-26 — Issue #88 Bone HUD provider + provider-coverage audit
+
+- Added `bone-hud` provider because #26 proves Core/module health cannot establish detector functional health.
+- Provider captures detector strategy/source/candidate/baseline/listener/detection state while keeping the stale legacy summonCircle child-index paths out of the long-term contract.
+- Added explicit v1 "no dedicated provider" decisions for Notifications, Developer Mode, UI plumbing, Utilities, and separate media modules to prevent one-provider-per-module sprawl.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Core Runtime + Rendering Performance provider designs
 
 - Added optional Core Runtime v1 for channel/bootstrap/module-loader/registry diagnosis. Ordinary snapshots remain observational; issue #7-style request/toast correlation is an explicit bounded failure-watch session, not permanent network/DOM logging.
