@@ -16,7 +16,7 @@
 - Dev launcher v1.11.0 / `1.11.0-generic-bug-capture`;
 - immutable payload `a80c9b094824e0a9143cb46e87e20e11b4044fde`.
 
-Static/syntax/manifest/privacy checks passed.
+Static/syntax/manifest/privacy checks passed. Exact-byte execution harness also passed General-only envelope/hash/privacy behavior and provider-failure isolation.
 
 ## Exact next step
 

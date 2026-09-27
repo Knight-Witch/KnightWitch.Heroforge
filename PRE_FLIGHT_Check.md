@@ -1,3 +1,16 @@
+## 2026-09-26 — Issue #59 exact-byte Core execution harness
+
+### PASS / live HeroForge gate pending
+
+- General-only package: contract v1, General schema v1, 8 addressable General sections, providerCount=0.
+- Stable environment section hash repeated identically across captures.
+- Compact loader evidence preserved while raw `requestUrl`/test secret was absent from serialized capture.
+- Intentional provider exception did not fail the package; warning code + unavailable coverage were preserved.
+- Bridge read-only requests #3663/#3664 remained unconsumed and were closed; no mutation request was issued.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #59 canonical router correction
 
 ### PASS / live gate pending

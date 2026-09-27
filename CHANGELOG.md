@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #59 General Capture execution harness gate
+
+- Executed the exact canonical Diagnostics Core v0.1.0 bytes in a bounded mocked browser/HeroForge harness.
+- General-only capture passed contract/schema/manifest creation, config-ID extraction, compact loader evidence, deterministic environment hashing, and request-URL privacy checks.
+- Deliberately failing mock provider remained isolated: package succeeded with `DIAGNOSTIC_PROVIDER_CAPTURE_FAILED` and explicit unavailable coverage.
+- Live HeroForge gate remains pending because Bridge mailbox requests #3663/#3664 were not consumed; both stale read-only requests were closed to prevent later surprise execution.
+- Documentation-only validation record; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #59 canonical Dev routing
 
 - Canonical `WITCH_DEV_MAIN` now routes active work to #59 v1.11.0 after the General Bug Capture candidate fast-forward.
