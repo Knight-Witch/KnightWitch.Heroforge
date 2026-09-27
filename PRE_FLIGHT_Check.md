@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #88 Core Runtime / Rendering Performance designs
+
+### PASS
+
+- Core Runtime reuses named channel/Core/loader/registry seams and keeps request/toast instrumentation opt-in, bounded, reversible, and body/header/token-free.
+- Rendering Performance performs no GC/reset/reload/toggle, aggregates rather than logging frame-by-frame, and excludes bounded scene scan from the timing interval.
+- Issue #7 can be investigated without restoring the prior noisy all-DOM trace.
+- Provider selection matrix prevents automatic all-provider capture.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Body Editor / Pose / JSON provider designs
 
 ### PASS

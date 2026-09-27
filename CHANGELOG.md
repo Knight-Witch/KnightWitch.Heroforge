@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #88 Core Runtime + Rendering Performance provider designs
+
+- Added optional Core Runtime v1 for channel/bootstrap/module-loader/registry diagnosis. Ordinary snapshots remain observational; issue #7-style request/toast correlation is an explicit bounded failure-watch session, not permanent network/DOM logging.
+- Added Rendering Performance v1 with point-in-time snapshot plus explicit short rAF/long-task/memory/renderer sample. Scene complexity is bounded and measured outside the timing sample.
+- Added default provider-selection matrix and marked comparison/performance/failure-watch modes as explicit heavy/armed operations.
+- General Capture remains the always-on base; cross-cutting providers are not duplicated into every report.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Body Editor, Pose, and JSON provider v1 designs
 
 - Added Body Editor provider limited to transform families the tool actually mutates, adjunct hand/arm-slider state, provider baselines, and UndoQueue/commit outcomes; full character/undo snapshots are excluded.

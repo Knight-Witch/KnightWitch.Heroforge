@@ -10,8 +10,8 @@
 | `body-editor` | v1 design drafted | arm sync, breast/butt mirror transform subsets, adjunct hand/slider state, undo/commit | snapshot, failure | `providers/BODY_EDITOR.md` |
 | `pose` | v1 design drafted; current scope is Main/Extra swap | figure-role structure, pinned Main invariants, undo/commit | snapshot, failure | `providers/POSE.md` |
 | `json` | v1 design drafted | bulk backup workflow/progress/failure classes/archive result with strict redaction | snapshot, failure | `providers/JSON.md` |
-| `rendering-performance` | later | frame timing, renderer stats, canvas/DPR, bounded long-task/performance context | snapshot, performance | pending |
-| `core-runtime` | evaluate after General v1 | module loader/startup/readiness failures beyond the common package | snapshot, failure | pending |
+| `rendering-performance` | v1 design drafted | frame timing, long tasks, JS heap where exposed, renderer counters, bounded scene complexity, active work | snapshot, performance | `providers/RENDERING_PERFORMANCE.md` |
+| `core-runtime` | v1 design drafted; optional deep runtime provider | channel/bootstrap/module loader/registry timeline plus explicit bounded request/toast failure watch | snapshot, failure | `providers/CORE_RUNTIME.md` |
 
 ## Provider Design Rule
 
@@ -51,3 +51,31 @@ Provider/core design should be pressure-tested against prior resolved or well-bo
 | #34 — HR false restore warning | bounded pre-failure verifier inputs and transient state before cleanup destroys it |
 
 The goal is not to encode these bugs into the provider. The goal is to prove the provider surfaces are broad enough that future bugs in the same subsystem do not require rebuilding the same probes.
+
+
+## Default provider selection
+
+General Capture is always present. Providers are additive and should be selected from the report feature/symptom, not all executed blindly.
+
+| Report scope | Default provider(s) |
+|---|---|
+| Unknown / generic Witch Dock bug | General only; add `core-runtime` if General shows startup/module failure |
+| High Res / Texture Quality | `texture-quality` |
+| Booth / Black Canvas / Booth media readiness | `booth` |
+| Decals / projected or bound gizmo | `decals` |
+| Body Editor | `body-editor` |
+| Current Pose Main/Extra swap | `pose` |
+| JSON bulk backup | `json` |
+| Lag / stutter / progressive slowdown | `rendering-performance` |
+| Startup / update / module load / repeated connection failure | `core-runtime` |
+
+Cross-feature symptoms may include more than one provider, but triage should request extra providers because the evidence crosses boundaries—not because more data is automatically better.
+
+### Heavy/armed modes
+
+These are never automatic during an ordinary snapshot:
+- Texture Quality controlled comparison;
+- Rendering Performance timed sample;
+- Core Runtime failure watch.
+
+The user/developer explicitly starts them because they either mutate provider state (comparison) or temporarily add instrumentation/sampling.

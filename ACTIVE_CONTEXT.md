@@ -21,7 +21,9 @@ Current design sources:
 - `docs/diagnostics/providers/DECALS.md` — Decals provider v1 design;
 - `docs/diagnostics/providers/BODY_EDITOR.md` — Body Editor provider v1 design;
 - `docs/diagnostics/providers/POSE.md` — current Pose/Main-Extra-swap provider v1 design;
-- `docs/diagnostics/providers/JSON.md` — JSON bulk-backup provider v1 design.
+- `docs/diagnostics/providers/JSON.md` — JSON bulk-backup provider v1 design;
+- `docs/diagnostics/providers/CORE_RUNTIME.md` — optional startup/module/network-failure provider v1 design;
+- `docs/diagnostics/providers/RENDERING_PERFORMANCE.md` — bounded rendering/performance provider v1 design.
 
 Shared serialized/intake boundary remains HF.Status issue #15:
 `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`.
@@ -37,12 +39,14 @@ Shared serialized/intake boundary remains HF.Status issue #15:
 - Body Editor v1 limits evidence to its transform/hand/slider subsets plus undo/commit state; no full undo entry or character JSON.
 - Pose v1 is intentionally scoped to the tool's current Main/Extra swap behavior and verifies pinned Main invariants rather than claiming generic bone-pose coverage.
 - JSON v1 reports backup workflow mechanics only and explicitly redacts config IDs, character/folder names, raw save JSON, ZIP paths/content, and authenticated endpoint URLs.
+- Core Runtime v1 is optional beyond General: ordinary snapshot deepens bootstrap/module/registry state; issue #7-style network/toast correlation uses an explicitly armed bounded failure watch, never permanent traffic logging.
+- Rendering Performance v1 is snapshot + explicit short sample; it aggregates rAF timing/long tasks/memory/renderer/scene complexity without reloads, GC, renderer resets, or continuous profiling.
 - #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
 - No runtime implementation under #88.
 
 ## Next design work
 
-Design the remaining cross-cutting providers: rendering/performance and core-runtime/startup. Then perform a coverage/duplication pass across all provider specs and decide whether issue #88 design is ready to freeze.
+Perform the issue #88 coverage/duplication/privacy pass across General + all provider specs. Resolve only real overlap/gaps, define design freeze/implementation handoff criteria, then checkpoint #88 for review.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
 
