@@ -156,6 +156,16 @@ At minimum:
 
 Providers must not require triage to deserialize arbitrary live objects or load the entire capture merely to discover what evidence exists.
 
+## Cross-provider ownership
+
+Each detailed evidence family has one canonical owner.
+
+Providers may repeat a small factual scalar in their deterministic summary when it materially helps correlation, but they should not duplicate another provider's full section.
+
+A provider may reference another provider by ID/section address through the package manifest; it must not directly depend on another provider's private live object.
+
+If a report genuinely spans two subsystems, include both providers rather than copying one subsystem's diagnostics into the other.
+
 ## Summary
 
 Each provider returns a compact deterministic summary containing factual high-value state.

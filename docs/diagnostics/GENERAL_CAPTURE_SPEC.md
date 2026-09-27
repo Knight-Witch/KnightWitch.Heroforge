@@ -133,14 +133,13 @@ Capture from named public seams where available:
 - runtime/core version/build;
 - immutable payload/ref;
 - manifest/core source identity;
-- module-loader status/summary;
-- module rows:
+- compact module-loader status/summary counts;
+- compact module inventory rows:
   - id;
   - registry version/build;
   - enabled/disabled;
-  - fetch/execute status;
-  - source mode;
-  - bounded error;
+  - final status;
+- failed module IDs/status codes when present;
 - registry state:
   - tool IDs;
   - tab names/counts;
@@ -148,7 +147,9 @@ Capture from named public seams where available:
 - active Witch Dock tab/tool context where available;
 - Diagnostics Core version/schema/provider inventory.
 
-Module request URLs should be normalized/sanitized. Never preserve auth-like query parameters.
+Detailed module fetch/execute timing, request-source descriptors, and startup timeline belong to the optional `core-runtime` provider. General does not duplicate them.
+
+Any source descriptors retained by General must be normalized/sanitized. Never preserve auth-like query parameters.
 
 ### `hero-forge`
 

@@ -1,3 +1,14 @@
+## 2026-09-26 — Issue #88 v1 capture-design freeze / ownership audit
+
+- Completed cross-provider duplication/privacy/ownership audit.
+- Tightened General `witch-dock` to compact module identity/final status; deep fetch/execute timeline and request diagnostics now belong only to optional `core-runtime`.
+- Added canonical evidence-owner matrix to prevent Booth/Performance, Decals/Texture Quality, and General/Core Runtime duplication.
+- Marked v1 behavioral/privacy/section-addressing design baseline complete while leaving exact JS APIs, Bug Capture UI, failure-watch mechanism, sample duration UX, and HF.Status indexing as implementation-owned details.
+- Issue #88 stays open for cross-repo triage/backend feedback; runtime implementation remains #59.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Bone HUD provider + provider-coverage audit
 
 - Added `bone-hud` provider because #26 proves Core/module health cannot establish detector functional health.

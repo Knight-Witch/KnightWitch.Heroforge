@@ -96,3 +96,29 @@ These surfaces are adequately represented elsewhere until real bugs prove a reus
 - Photo Booth TRUE-resolution / Spinny — operational state is grouped under `booth` because their current capability depends on Booth runtime; detailed timing pressure belongs to `rendering-performance`.
 
 A new provider should be added only when repeated investigation shows a coherent state owner that General/current providers cannot represent cleanly.
+
+
+## Design-freeze coverage check
+
+Current v1 coverage is intentionally organized around **state ownership**, not one provider per visible tool.
+
+The inventory now covers:
+- generic runtime/environment;
+- startup/module/update/network-failure reproduction;
+- rendering performance;
+- High Res/Texture Quality;
+- Booth and Booth-dependent media;
+- Decals;
+- Body Editor;
+- current Pose/Main-Extra swap;
+- JSON bulk backup;
+- Bone HUD detection.
+
+Known current gaps are **implementation seams**, not missing provider architecture:
+- several tools need bounded read-only `getDiagnosticState()`-style seams;
+- retained pre-cleanup failure/action rings need to be added where current runtime discards context;
+- Core Runtime failure watch needs safe live validation before adoption;
+- performance sampling needs overhead validation;
+- provider schemas may gain additive fields from real triage capture-gap feedback.
+
+Do not add another v1 provider without evidence that a coherent state owner is not represented by General or the current provider set.

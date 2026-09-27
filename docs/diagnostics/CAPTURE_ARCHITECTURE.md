@@ -51,22 +51,23 @@ Common infrastructure, independent of any one tool:
 - local JSON export;
 - optional handoff metadata for HF.Status.
 
-The core does not know High Res AAIDs, Decal slot bindings, Booth capture targets, Pose bones, etc.
+The core does not know High Res AAIDs, Decal slot bindings, Booth capture targets, Body Editor transforms, Main/Extra swap rules, or Bone HUD detector internals.
 
 ### 2. Diagnostic Providers
 
 Each provider owns feature-specific evidence and any feature-specific controlled comparison.
 
-Initial provider family:
+v1 provider family:
 
 - `texture-quality` — existing High Res reference provider;
 - `booth`;
 - `decals`;
 - `body-editor`;
-- `pose`;
+- `pose` — current Main/Extra swap scope;
 - `json`;
-- `rendering-performance`;
-- optional startup/module-loader provider if general capture proves insufficient.
+- `bone-hud`;
+- `core-runtime` — optional deep startup/module/failure diagnostics beyond General;
+- `rendering-performance` — optional point-in-time + bounded timed sample.
 
 Provider rules live in `PROVIDER_CONTRACT.md`.
 
@@ -138,8 +139,10 @@ A report should not run every provider automatically.
 Typical packages:
 
 - High Res bug: general + `texture-quality`;
-- Booth bug: general + `booth` (+ rendering/performance only when relevant);
+- Booth bug: general + `booth` (+ `rendering-performance` only when the symptom is performance);
 - Decal bug: general + `decals`;
+- startup/module/update bug: general + `core-runtime`;
+- Bone HUD detection bug: general + `bone-hud`;
 - cross-feature interaction: general + explicitly selected providers.
 
 Provider selection may use the active tool/report category as a hint, but users/triage must be able to request additional providers when evidence crosses subsystem boundaries.
@@ -264,3 +267,60 @@ These are validation cases, not provider-specific requirements. A useful field s
 6. Integrate local export with HF.Status's existing `diagnostic-json` evidence flow.
 7. Add the next provider based on real bug value, not architecture completionism.
 8. Add performance capture after ordinary snapshot/provider flow is stable.
+
+
+## Evidence ownership / overlap rules
+
+General owns the small cross-tool baseline. Providers own feature-specific depth.
+
+| Evidence family | Canonical v1 owner |
+|---|---|
+| browser/viewport/basic device facts | General `environment` |
+| WebGL/GPU capabilities | General `graphics` |
+| compact Witch Dock identity/module inventory | General `witch-dock` |
+| detailed bootstrap/module fetch/execute timeline | `core-runtime` |
+| failed-request/transient-toast reproduction watch | `core-runtime` |
+| lightweight HeroForge/figure readiness | General `hero-forge` + `scene` |
+| frame/long-task/heap/renderer-counter sampling | `rendering-performance` |
+| HR paints/atlas/material/resource/color-bake state | `texture-quality` |
+| Booth state/settings/presentation/media operation state | `booth` |
+| decal slot/order/projector/gizmo/preservation state | `decals` |
+| Body Editor transform subsets/undo operation state | `body-editor` |
+| current Main/Extra swap and pinned invariants | `pose` |
+| bulk JSON-backup workflow state | `json` |
+| bone detector/selection-source state | `bone-hud` |
+
+A provider may repeat a **small scalar summary** from another owner when needed for correlation, but detailed evidence stays with the canonical owner. Cross-provider correlation must not turn into duplicated full sections.
+
+Examples:
+- Booth may say TRUE-resolution is busy; frame timing belongs to `rendering-performance`.
+- Decals may identify the selected material/projector; broad HR atlas/material evidence belongs to `texture-quality`.
+- General may say the loader has 1 failure; detailed module timing/request evidence belongs to `core-runtime`.
+
+## v1 design freeze
+
+Issue #88 v1 design is considered **baseline-complete** when the docs remain compatible with the HF.Status shared diagnostic contract and no cross-repo review identifies a missing envelope requirement.
+
+Frozen design decisions:
+- T0 read-only volatile-state freeze before enrichment;
+- General always present;
+- providers selected by symptom/feature rather than all run automatically;
+- stable manifest-first section addressing;
+- explicit coverage/limitations;
+- bounded event/error/failure retention;
+- local diagnostic JSON as complete private source evidence;
+- raw character/media/private account data excluded by default;
+- heavy/armed operations explicit;
+- provider failures isolated;
+- High Res v0.1.3 behavior protected during adaptation.
+
+Intentionally deferred to implementation:
+- exact JavaScript class/function naming for Diagnostics Core;
+- exact provider registration method shape beyond the documented capability contract;
+- Bug Capture UI/UX under #59;
+- exact failure-watch instrumentation implementation after live safety validation;
+- exact performance sample duration UX within bounded design limits;
+- exact D1/R2 indexing implementation owned by HF.Status;
+- provider rollout order after General + Texture Quality adaptation.
+
+A deferred implementation detail is not permission to violate the frozen behavioral/privacy/ownership rules.

@@ -4,7 +4,7 @@
 **Branch:** `wd/88-diagnostic-capture-architecture`  
 **Canonical Dev:** `WITCH_DEV_MAIN` v1.10.3 / immutable payload `a0fe5d89777877c90b2e5ffd7e17bb92f68d3abc`  
 **Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`  
-**This branch:** issue #88 — general diagnostic capture architecture + provider contract
+**This branch:** issue #88 — general diagnostic capture architecture + provider contract — **v1 design baseline complete / cross-repo review open**
 
 ## Current route
 
@@ -46,9 +46,25 @@ Shared serialized/intake boundary remains HF.Status issue #15:
 - #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
 - No runtime implementation under #88.
 
-## Next design work
+## Design status
 
-Finish the issue #88 coverage/duplication/privacy pass across General + all provider specs. Verify ownership boundaries and implementation seams, define design-freeze/implementation-handoff criteria, then checkpoint #88 for review.
+v1 design baseline is complete.
+
+Coverage/duplication/privacy audit result:
+- General is the always-present compact baseline.
+- `core-runtime` owns deep startup/module/network-failure evidence instead of duplicating it in General.
+- `rendering-performance` owns frame/long-task/memory/renderer sampling; tool providers expose only operational busy state.
+- tool providers own only their feature-specific evidence.
+- Bone HUD was added because #26 exposed a real uncovered functional boundary.
+- Notifications, Developer Mode, UI plumbing, Utilities, and separate media modules do not get redundant v1 providers.
+
+No shared HF.Status contract change is currently required.
+
+## Next step
+
+Hold issue #88 open for feedback from the parallel triage and HF.Status backend/intake work. If they reveal no missing envelope requirement, the next Witch Dock work moves to implementation planning under issue #59: Diagnostics Core + General first, then adapt Texture Quality without regressing v0.1.3.
+
+Do not begin runtime implementation on #88.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
 
