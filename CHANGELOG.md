@@ -1,3 +1,11 @@
+## 2026-09-26 — Issue #59 canonical Dev routing
+
+- Canonical `WITCH_DEV_MAIN` now routes active work to #59 v1.11.0 after the General Bug Capture candidate fast-forward.
+- Live Dev gate remains pending; Bridge read-only requests #3663/#3664 have not yet produced relay results.
+- Documentation-only router correction; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #59 Dev v1.11.0 launcher pin
 
 - Dev launcher -> v1.11.0 / `1.11.0-generic-bug-capture`.

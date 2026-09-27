@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #59 canonical router correction
+
+### PASS / live gate pending
+
+- ACTIVE_CONTEXT now identifies canonical Dev rather than the temporary task branch.
+- Runtime remains v1.11.0 on immutable payload `a80c9b094824e0a9143cb46e87e20e11b4044fde`.
+- Documentation-only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #59 Dev v1.11.0 launcher pin
 
 ### PASS / live Dev gate pending
