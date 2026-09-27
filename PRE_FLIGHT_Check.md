@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #88 Decals provider design
+
+### PASS
+
+- UI selection -> ordered layer -> model mapping -> rendered decal/material/projector is explicitly traceable.
+- Project/bound transform, corrected/native gizmo ownership, undo/finalization state, and transform-preservation state are separate evidence surfaces.
+- Expanded-slot readiness is bounded and does not dump CK.Options.
+- No comparison mode or character mutation is authorized in v1.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Booth provider design
 
 ### PASS

@@ -1,3 +1,14 @@
+## 2026-09-26 — Issue #88 Decals diagnostic provider v1 design
+
+- Added `docs/diagnostics/providers/DECALS.md` covering slot/order/model state, UI selection binding, rendered material/projector binding, corrected/native gizmo state, bound-transform preservation, expanded slots, failures, and events.
+- Decal snapshot is strictly read-only and cannot toggle Project, move a decal, or create an undo entry.
+- Provider prioritizes selected/affected evidence while retaining a bounded occupied-slot inventory and hashes for order/record comparisons.
+- Current fresh-bind normalization and transform-preservation internals require only a narrow read-only diagnostic seam plus bounded retained action/failure records.
+- Issue #22's future complete-state movement requirement is usable as a pressure test without baking reordering logic into diagnostics.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 Booth diagnostic provider v1 design
 
 - Added `docs/diagnostics/providers/BOOTH.md` with separate state, native bootstrap, settings, presentation, components, media, failure-context, and event surfaces.
