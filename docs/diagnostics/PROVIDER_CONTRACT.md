@@ -2,6 +2,7 @@
 
 **Status:** Draft design contract for issue #88  
 **Core architecture:** `CAPTURE_ARCHITECTURE.md`  
+**General capture:** `GENERAL_CAPTURE_SPEC.md`  
 **Shared serialized boundary:** `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`
 
 ## Purpose
@@ -18,20 +19,11 @@ Every provider declares:
 - supported capture modes;
 - optional capability/dependency metadata.
 
-Examples:
-- `texture-quality`;
-- `booth`;
-- `decals`;
-- `body-editor`;
-- `pose`;
-- `json`;
-- `rendering-performance`.
-
 Provider IDs must not change merely because UI names change.
 
 ## Conceptual Registration
 
-The exact JS API may evolve during issue #59, but the provider boundary should resemble:
+The exact JS API may evolve during issue #59, but the provider boundary should support:
 
 ```js
 registerProvider({
@@ -41,13 +33,35 @@ registerProvider({
   build,
   modes,
   capabilities,
-  capture(context),
+  freeze?(context),
+  capture(context, frozenSeed),
   compare?(context, comparisonMode),
   dispose?()
 })
 ```
 
 Diagnostics Core owns registry/lifecycle/package assembly. Providers own feature-specific reads and safe provider-specific transitions.
+
+### `freeze()`
+
+Optional synchronous/read-only volatile-state snapshot invoked at capture T0 before asynchronous enrichment.
+
+Rules:
+- bounded and serializable;
+- no waits;
+- no mutation;
+- no resource requests solely for enrichment;
+- failures degrade provider coverage rather than abort the package.
+
+Providers without volatile state may omit it.
+
+### Retained failure evidence
+
+A provider may keep a small bounded in-memory record of provider-owned failures **before its own cleanup destroys transient evidence**.
+
+This is not automatic upload or telemetry. It becomes report evidence only when the user explicitly captures/exports.
+
+Use it when post-error state cannot reconstruct the facts that produced the warning.
 
 ## Capture Result
 
@@ -121,7 +135,7 @@ Large optional evidence must be separately addressable.
 
 Section names are provider-owned but should be stable once published.
 
-Providers should expose meaningful surfaces rather than symptom-specific one-off fields.
+Provider section keys may use a stable namespaced form such as `snapshot.high-res-on.resources` when one logical capture contains multiple comparison snapshots.
 
 A field discovered during investigation should be promoted when it represents a reusable diagnostic surface, not merely because it helped one bug.
 
@@ -162,13 +176,6 @@ Bad:
 ## Coverage
 
 Every provider reports coverage using the core vocabulary.
-
-Coverage should distinguish:
-- unsupported;
-- unavailable at capture time;
-- deliberately not captured;
-- partially captured/truncated;
-- captured successfully.
 
 Missing evidence must never silently look healthy.
 
@@ -219,15 +226,16 @@ Consumers must ignore/preserve unknown additive fields.
 
 Breaking provider-section changes require a provider schema-version bump. They do not automatically require a shared report-contract bump.
 
+## Design source layout
+
+- common provider rules: this file;
+- repeatable provider template: `providers/PROVIDER_TEMPLATE.md`;
+- provider-specific designs: `providers/<PROVIDER>.md`.
+
+Do not duplicate provider-specific schemas into this common contract.
+
 ## High Res Migration Constraint
 
 `texture-quality` should be adapted from the validated High Res Diagnostic Capture v0.1.3 rather than rewritten from scratch.
 
-Its current behaviors are protected until regression testing proves a generalized implementation equivalent:
-- observational current capture;
-- Native OFF -> HR ON controlled comparison;
-- restoration;
-- deterministic summary/delta;
-- coverage;
-- sectional retrieval;
-- local export.
+Its detailed mapping is in `providers/TEXTURE_QUALITY.md`.

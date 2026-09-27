@@ -2,16 +2,16 @@
 
 **Status:** Planning inventory for issue #88. This is not an implementation checklist.
 
-| Provider ID | Status | Primary evidence surface | Modes |
-|---|---|---|---|
-| `texture-quality` | Existing reference implementation | figures/parts, paints, atlas, AAID/masks/resources, materials, color-bake, HR lifecycle | snapshot, comparison, failure |
-| `booth` | Planned | Booth state/readiness, camera/canvas/capture pipeline, display ownership, export state | snapshot, failure, performance later |
-| `decals` | Planned | active decal slots, bindings, projected hosts, gizmo/slot state, relevant material/decal resources | snapshot, failure |
-| `body-editor` | Planned | active body controls/targets, source/derived body state, relevant update lifecycle | snapshot, failure |
-| `pose` | Planned | selected bones/joints, pose state, constraints/ownership, relevant update lifecycle | snapshot, failure |
-| `json` | Planned | JSON tool mode/import/export state and safe validation metadata; not raw character JSON by default | snapshot, failure |
-| `rendering-performance` | Later | frame timing, renderer stats, canvas/DPR, bounded long-task/performance context | snapshot, performance |
-| `core-runtime` | Evaluate after general core | module loader/startup/readiness failures beyond the common package | snapshot, failure |
+| Provider ID | Design status | Primary evidence surface | Modes | Spec |
+|---|---|---|---|---|
+| `texture-quality` | v1 design drafted; existing reference runtime | figures/parts, paints, atlas, AAID/masks/resources, materials, color-bake, HR lifecycle | snapshot, comparison, failure | `providers/TEXTURE_QUALITY.md` |
+| `booth` | next design target | Booth state/readiness, camera/canvas/capture pipeline, display ownership, export state | snapshot, failure, performance later | pending |
+| `decals` | planned | active decal slots, bindings, projected hosts, gizmo/slot state, relevant material/decal resources | snapshot, failure | pending |
+| `body-editor` | planned | active body controls/targets, source/derived body state, relevant update lifecycle | snapshot, failure | pending |
+| `pose` | planned | selected bones/joints, pose state, constraints/ownership, relevant update lifecycle | snapshot, failure | pending |
+| `json` | planned | JSON tool mode/import/export state and safe validation metadata; not raw character JSON by default | snapshot, failure | pending |
+| `rendering-performance` | later | frame timing, renderer stats, canvas/DPR, bounded long-task/performance context | snapshot, performance | pending |
+| `core-runtime` | evaluate after General v1 | module loader/startup/readiness failures beyond the common package | snapshot, failure | pending |
 
 ## Provider Design Rule
 
@@ -20,11 +20,15 @@ Add providers because they reduce real diagnostic/reproduction cost, not to make
 Before implementing a provider:
 1. identify recurring failure surfaces;
 2. inspect current tool/runtime ownership;
-3. define bounded sections;
-4. define what is unavailable without mutation;
-5. define privacy exclusions;
-6. determine whether snapshot alone is sufficient;
-7. add comparison only when there is a real safe controlled transition.
+3. define immediate volatile-state freeze needs;
+4. define bounded sections;
+5. define retained pre-cleanup failure evidence if needed;
+6. define what is unavailable without mutation;
+7. define privacy exclusions;
+8. determine whether snapshot alone is sufficient;
+9. add comparison only when there is a real safe controlled transition.
+
+Use `providers/PROVIDER_TEMPLATE.md`.
 
 ## Cross-provider reports
 
@@ -35,7 +39,6 @@ Examples:
 - Booth rendering failure under load: general + `booth` + `rendering-performance`.
 
 Do not execute all providers for every report.
-
 
 ## Design validation cases
 

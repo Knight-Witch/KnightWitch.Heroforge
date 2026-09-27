@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #88 General/Texture Quality capture design
+
+### PASS
+
+- General Capture v1 has explicit section ownership, T0 freeze ordering, section addressing, hash/size/coverage/privacy rules, and failure isolation.
+- Texture Quality v1 preserves every validated v0.1.3 capability while filling the reusable #32/#34 evidence gaps.
+- Provider template prevents per-tool schema drift.
+- Shared HF.Status envelope remains unchanged; no cross-repo contract change required.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 design alignment / janitorial pass
 
 ### PASS

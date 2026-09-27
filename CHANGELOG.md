@@ -1,3 +1,14 @@
+## 2026-09-26 — Issue #88 General Capture v1 + Texture Quality provider design
+
+- Added exact General Capture v1 design: T0 volatile-state freeze, passive enrichment, common environment/graphics/Witch Dock/HeroForge/scene/errors/events/coverage sections, manifest rows, hashing, bounding, privacy, and failure behavior.
+- Added reusable provider design template.
+- Added Texture Quality provider v1 design mapped from validated High Res Diagnostics v0.1.3.
+- Provider contract now includes optional synchronous `freeze()` and bounded retained pre-cleanup failure evidence.
+- Promoted #32's AAID path/readiness/bound-fallback facts and #34's transient verifier inputs as reusable provider evidence surfaces rather than symptom-specific probes.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 capture design alignment / janitorial pass
 
 - Updated capture/provider design for triage's manifest-first, selective-evidence workflow with stable `captureId / providerId / sectionName` addressing.

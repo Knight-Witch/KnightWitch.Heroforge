@@ -8,33 +8,38 @@
 
 ## Current route
 
-Continue documentation/design for issue #88 only. The #58/#83 release is complete; do not preserve its former active-task routing here.
+Continue documentation/design for issue #88 only.
 
-Current capture design sources:
-- `docs/diagnostics/CAPTURE_ARCHITECTURE.md`;
-- `docs/diagnostics/PROVIDER_CONTRACT.md`;
-- `docs/diagnostics/PROVIDERS.md`.
+Current design sources:
+- `docs/diagnostics/CAPTURE_ARCHITECTURE.md` — overall ownership/architecture;
+- `docs/diagnostics/GENERAL_CAPTURE_SPEC.md` — exact General Capture v1 design;
+- `docs/diagnostics/PROVIDER_CONTRACT.md` — common provider rules;
+- `docs/diagnostics/PROVIDERS.md` — provider inventory/order;
+- `docs/diagnostics/providers/PROVIDER_TEMPLATE.md` — provider design template;
+- `docs/diagnostics/providers/TEXTURE_QUALITY.md` — Texture Quality provider v1 design.
 
-Shared serialized/intake boundary is owned by HF.Status issue #15:
+Shared serialized/intake boundary remains HF.Status issue #15:
 `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`.
 
-Triage is designed around manifest-first/selective retrieval. Capture must preserve stable `captureId / providerId / sectionName` addressing, explicit coverage, deterministic summaries, bounded evidence, warning/error codes, useful hashes, and truthful capture limitations.
+## Current design decisions
+
+- General Capture uses a fast T0 freeze before passive enrichment; it must not wait away the broken state.
+- Providers may expose optional synchronous `freeze()` state and bounded retained pre-cleanup failure records.
+- Triage remains manifest-first/selective: stable `captureId / owner-or-provider / sectionName` addressing, deterministic summaries/hashes, explicit coverage, and truthful limitations.
+- Texture Quality is the reference provider and now has a concrete v1 section design pressure-tested against #24/#32/#34.
+- #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
+- No runtime implementation under #88.
+
+## Next design work
+
+Inspect current Booth/runtime/media ownership and draft the `booth` provider spec. Then design Decals using the same template. Continue by real diagnostic value rather than mechanically designing every tab.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
-
-## Scope boundary
-
-Documentation/design only on this branch unless the router is explicitly advanced to implementation.
-
-Witch Dock owns capture/core/providers. HF.Status owns report identity, intake, private evidence storage, triage state, issue linkage, and the shared submission contract. Do not redesign HF.Status backend or GPT triage logic here.
-
-High Res Diagnostic Capture v0.1.3 remains the reference provider and must not be rewritten merely to fit the abstraction.
-
-Use #24, #32, and #34 as architecture pressure tests for reusable evidence surfaces, not as symptom-specific provider designs.
 
 ## Protected state
 
 - No runtime/module/manifest/public behavior changes under #88 design.
 - #34 remains a separate open product bug.
+- HF.Status owns intake/storage/triage/backend; do not redesign it here.
 - HF.Status must never become a Witch Dock runtime dependency.
 - HF-Chat-Bridge remains development infrastructure only.
