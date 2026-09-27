@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #88 Booth diagnostic provider v1 design
+
+- Added `docs/diagnostics/providers/BOOTH.md` with separate state, native bootstrap, settings, presentation, components, media, failure-context, and event surfaces.
+- Snapshot is explicitly non-mutating: it must not lazy-load/activate Booth, call settings save/apply, or invoke readiness sync merely to produce evidence.
+- Existing Booth/Bootstrap/TRUE-resolution/Spinny state is reused; future implementation needs only narrow additive read-only Booth/readiness/failure seams.
+- #20 settings round-trip and #10 cold-start/session/media-readiness failures are provider pressure tests.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 General Capture v1 + Texture Quality provider design
 
 - Added exact General Capture v1 design: T0 volatile-state freeze, passive enrichment, common environment/graphics/Witch Dock/HeroForge/scene/errors/events/coverage sections, manifest rows, hashing, bounding, privacy, and failure behavior.

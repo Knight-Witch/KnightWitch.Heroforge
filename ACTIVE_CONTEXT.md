@@ -16,7 +16,8 @@ Current design sources:
 - `docs/diagnostics/PROVIDER_CONTRACT.md` — common provider rules;
 - `docs/diagnostics/PROVIDERS.md` — provider inventory/order;
 - `docs/diagnostics/providers/PROVIDER_TEMPLATE.md` — provider design template;
-- `docs/diagnostics/providers/TEXTURE_QUALITY.md` — Texture Quality provider v1 design.
+- `docs/diagnostics/providers/TEXTURE_QUALITY.md` — Texture Quality provider v1 design;
+- `docs/diagnostics/providers/BOOTH.md` — Booth provider v1 design.
 
 Shared serialized/intake boundary remains HF.Status issue #15:
 `Knight-Witch/HF.Status/docs/contracts/DIAGNOSTIC_REPORT_CONTRACT.md`.
@@ -26,13 +27,14 @@ Shared serialized/intake boundary remains HF.Status issue #15:
 - General Capture uses a fast T0 freeze before passive enrichment; it must not wait away the broken state.
 - Providers may expose optional synchronous `freeze()` state and bounded retained pre-cleanup failure records.
 - Triage remains manifest-first/selective: stable `captureId / owner-or-provider / sectionName` addressing, deterministic summaries/hashes, explicit coverage, and truthful limitations.
-- Texture Quality is the reference provider and now has a concrete v1 section design pressure-tested against #24/#32/#34.
+- Texture Quality is the reference provider and has a concrete v1 section design pressure-tested against #24/#32/#34.
+- Booth v1 is designed around separate state/bootstrap/settings/presentation/components/media boundaries; snapshot must not activate Booth or invoke settings save/apply.
 - #32's missing AAID facts are promoted as reusable Texture Quality resource invariants; #34 motivates retained pre-cleanup verifier inputs.
 - No runtime implementation under #88.
 
 ## Next design work
 
-Inspect current Booth/runtime/media ownership and draft the `booth` provider spec. Then design Decals using the same template. Continue by real diagnostic value rather than mechanically designing every tab.
+Design Decals using the provider template, grounded in current slot bridge / corrected bound gizmo / expanded-slot ownership and real decal regressions. Continue by real diagnostic value rather than mechanically designing every tab.
 
 Issue #59 remains the eventual implementation owner for public-Stable Generic Bug Capture.
 

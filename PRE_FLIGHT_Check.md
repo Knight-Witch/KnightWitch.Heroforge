@@ -1,3 +1,15 @@
+## 2026-09-26 — Issue #88 Booth provider design
+
+### PASS
+
+- Booth v1 design is grounded in current Booth v27.1.0, Runtime Bootstrap v0.2.1, TRUE-resolution, and Spinny ownership.
+- Cold-start/bootstrap, settings file IO, presentation/Black Canvas, component persistence, and media readiness are independently addressable.
+- No generic Booth comparison is authorized in v1; ordinary capture preserves current state without mutation.
+- Privacy excludes character/model payloads, settings file contents, and media bytes.
+- No runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 General/Texture Quality capture design
 
 ### PASS

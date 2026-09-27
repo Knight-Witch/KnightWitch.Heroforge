@@ -5,8 +5,8 @@
 | Provider ID | Design status | Primary evidence surface | Modes | Spec |
 |---|---|---|---|---|
 | `texture-quality` | v1 design drafted; existing reference runtime | figures/parts, paints, atlas, AAID/masks/resources, materials, color-bake, HR lifecycle | snapshot, comparison, failure | `providers/TEXTURE_QUALITY.md` |
-| `booth` | next design target | Booth state/readiness, camera/canvas/capture pipeline, display ownership, export state | snapshot, failure, performance later | pending |
-| `decals` | planned | active decal slots, bindings, projected hosts, gizmo/slot state, relevant material/decal resources | snapshot, failure | pending |
+| `booth` | v1 design drafted | Booth state/readiness, native bootstrap, settings, presentation, media capture integration | snapshot, failure | `providers/BOOTH.md` |
+| `decals` | next design target | active decal slots, bindings, projected hosts, gizmo/slot state, relevant material/decal resources | snapshot, failure | pending |
 | `body-editor` | planned | active body controls/targets, source/derived body state, relevant update lifecycle | snapshot, failure | pending |
 | `pose` | planned | selected bones/joints, pose state, constraints/ownership, relevant update lifecycle | snapshot, failure | pending |
 | `json` | planned | JSON tool mode/import/export state and safe validation metadata; not raw character JSON by default | snapshot, failure | pending |
