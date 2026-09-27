@@ -1,3 +1,16 @@
+## 2026-09-26 — Issue #59 General Capture payload staging
+
+### PENDING live Dev gate
+
+- New Diagnostics Core and Bug Capture UI are isolated loader modules; existing Utilities and High Res runtime are unchanged.
+- General snapshot path contains no state-changing HeroForge/tool calls.
+- Provider capture failures are isolated by contract.
+- Default export excludes account/auth/session data, arbitrary storage, full character JSON, screenshots/media, and unbounded logs.
+- Manifest/registry versions staged; Dev launcher pin follows syntax/static validation.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — #58/#83 branch cleanup closeout
 
 ### PASS

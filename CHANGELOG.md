@@ -1,3 +1,13 @@
+## 2026-09-26 — Issue #59 Generic Bug Capture payload staging
+
+- Added Diagnostics Core v0.1.0 / `0.1.0-general-capture-v1` with General Capture v1, provider registry, T0 state freeze, bounded errors/events, stable section addressing, deterministic SHA-256 section hashes where available, and local JSON export.
+- Added Bug Capture UI v0.1.0 / `0.1.0-general-capture-ui` as an isolated tool registered into Utilities; capture/download is explicit and never uploads automatically.
+- Manifest registers the two new Dev-only modules and stages Dev launcher v1.11.0 / `1.11.0-generic-bug-capture`.
+- High Res diagnostics remain untouched pending the General-only live gate.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — #58/#83 exact branch cleanup complete
 
 - Deleted all 27 temporary #58/#83 branches listed in the handoff; the live post-delete inventory exactly matches its 29 KEEP refs. The handoff is marked complete and ACTIVE_CONTEXT no longer routes mechanical cleanup.
