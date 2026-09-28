@@ -1,48 +1,75 @@
-# Active Context — issue #59 Booth diagnostic provider branch
+# Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-27 UTC
-**Branch:** `wd/59-booth-diagnostic-provider`
-**Canonical Dev baseline:** v1.12.0 / immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`
-**Public Stable:** v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
+**Canonical Dev:** `WITCH_DEV_MAIN` v1.13.0 / immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`
+**Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
 **Active issue:** #59 — Generic Bug Capture utility + HF.Status reproduction handoff
+**Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
 
-## Confirmed baseline
+## Confirmed #59 runtime baseline
 
-- General Capture v1 live gate PASS.
-- Texture Quality provider schema v1 live gate PASS.
-- Dev loader baseline: 30/30, 0 failed/fallback.
-- Bug Capture UI v0.2.0 exposes feature providers as opt-in.
+### General Capture v1 — PASS
 
-## Current Booth slice
+- Diagnostics Core v0.1.0 / `0.1.0-general-capture-v1`.
+- Bug Capture UI v0.2.0 / `0.2.0-provider-selection`.
+- General-only capture is observational, locally downloadable, and has 8 addressable SHA-256 sections.
+- Provider failures are isolated; no automatic upload or HF.Status runtime dependency.
 
-- Booth -> v27.2.0 / `v27.2.0-diagnostic-state-seam`: adds bounded `getDiagnosticState()` only; old debug helper delegates to it.
-- Booth Runtime Bootstrap -> v0.2.2 / `0.2.2-readonly-diagnostic-state`: `getState()` no longer mutates stored script-path diagnostic fields on first read.
-- TRUE-resolution Readiness -> v1.1.0 / `1.1.0-diagnostic-readiness-state`: adds non-mutating `getState()`; existing `sync()` behavior preserved.
-- Booth Diagnostic Provider -> v0.1.0 / `0.1.0-booth-state-adapter`.
-- Provider sections: state, bootstrap, native-runtime, settings, presentation, components, media, failure-context, events.
-- Settings are allowlisted from `composeDisplayState()`; `model` is excluded.
-- Media evidence excludes output filenames and bytes.
-- Settings/presentation retained failure history is explicitly partial; stable normalized Booth events are explicitly not captured yet.
+### Texture Quality provider v1 — PASS
 
-Dev launcher v1.13.0 / `1.13.0-booth-diagnostic-provider` is pinned to immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`.
+- Provider `texture-quality` schema v1 / v0.1.0.
+- Generic snapshot produced 10 provider sections with healthy High Res verification.
+- Native Reconcile lifecycle state was invariant across capture.
+- Existing High Res Diagnostics v0.1.3 / Native Reconcile lifecycle behavior remains unchanged.
+- Retained pre-cleanup #34-style failure context is explicitly unavailable rather than fabricated.
+
+### Booth provider v1 — PASS (Booth OFF/native runtime unloaded)
+
+- Dev v1.13.0 / `1.13.0-booth-diagnostic-provider`, payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`.
+- Loader 31/31, failed=0, immutable=31, fallback=0.
+- Diagnostics Core providerCount=2: `booth` + `texture-quality`.
+- Booth v27.2.0 read-only diagnostic seam, Bootstrap v0.2.2 read-only state, and TRUE-resolution Readiness v1.1.0 loaded successfully.
+- Bug Capture UI visibly exposes Booth and High Res / Texture Quality provider choices.
+- Booth-only generic capture produced 17 total sections: 8 General + 9 Booth; errorCount=0.
+- Booth sections:
+  - state: captured;
+  - bootstrap: captured;
+  - native-runtime: captured;
+  - settings: unavailable because Booth runtime was not loaded (`compose-display-state-unavailable`);
+  - presentation/components/media: captured-bounded;
+  - failure-context: partial with explicit retained-history limitation;
+  - events: not-captured with explicit normalization limitation.
+- Snapshot did **not** activate or bootstrap Booth: before/after `sessionBoothView=false`, `runtimeReady=false`, bootstrap attempts=0, bootstrapCount=0, directSessionRequests=0, and global `BT` remained absent.
+- TRUE-resolution readiness stayed unchanged and no media capture ran.
+
+## Current route
+
+Continue #59 provider rollout from the frozen issue #88 architecture.
+
+Next provider: **Decals**.
+
+Implementation goals:
+1. preserve UI selection -> ordered layer -> model mapping -> rendered binding/projector trace;
+2. capture Project/bound-transform state;
+3. expose corrected/native gizmo ownership and transform-preservation state through narrow read-only seams;
+4. expose Expanded Decal Slots / Slot Bridge readiness;
+5. retain bounded recent preservation/failure context where current code would otherwise destroy it;
+6. snapshot must create no character mutation and no undo history;
+7. live gate must validate the current selected/available decal state without manufacturing a decal/Project toggle if none exists.
+
+After Decals, continue provider rollout based on actual diagnostic value. Keep HF.Status backend/storage/triage ownership separate.
 
 ## Protected behavior
 
-- Booth provider snapshot must not activate/load/toggle Booth or start media capture.
-- Do not call Booth settings save/apply operations during capture.
-- Do not call TRUE-resolution readiness `sync()` during capture.
-- Existing Booth/Black Canvas/persistence/media behavior must remain unchanged.
-- General and Texture Quality capture behavior must remain unchanged.
+- General remains usable with zero providers.
+- Feature providers remain opt-in.
+- Provider failure cannot block General export.
+- Heavy/armed operations remain explicit.
+- Booth snapshot must remain observational.
+- Texture Quality/High Res lifecycle remains untouched.
 - Public Stable remains untouched.
+- #34 remains separate.
 
-## Gate
+## Design source
 
-1. syntax/static/manifest/version checks — PASS;
-2. source delta limited to read-only seams + provider — PASS;
-3. immutable Dev v1.13.0 payload — pinned to `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`;
-4. reload once;
-5. loader 31/31, zero failed/fallback;
-6. providerCount=2 with `booth` present;
-7. snapshot with only Booth provider while preserving current Booth state;
-8. inspect state/bootstrap/settings/presentation/media coverage/privacy;
-9. if Booth is already active, verify active state invariance; otherwise do not activate it merely for the snapshot gate.
+Issue #88 / `wd/88-diagnostic-capture-architecture`, especially `docs/diagnostics/providers/DECALS.md`.

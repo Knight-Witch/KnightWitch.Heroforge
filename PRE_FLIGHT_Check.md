@@ -1,3 +1,19 @@
+## 2026-09-27 — Issue #59 Booth generic-provider live gate
+
+### PASS
+
+- Dev v1.13.0 / immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`.
+- Loader 31/31 executed, 0 failed, immutable=31, fallback=0.
+- Diagnostics Core providerCount=2; Booth provider registered schema v1.
+- Booth UI provider choice visible.
+- Booth-only capture: sectionCount=17, providerCount=1, errorCount=0.
+- OFF-state invariants before/after: `sessionBoothView=false`, `sessionBlackCanvas=false`, `runtimeReady=false`, bootstrap attempts=0, bootstrapCount=0, directSessionRequests=0, `BT` absent.
+- Settings unavailable coverage is truthful; bounded presentation/media evidence captured without activation.
+- No Booth/settings/media/readiness mutation occurred.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Dev v1.13.0 Booth provider pin
 
 ### PASS / live Booth provider gate pending

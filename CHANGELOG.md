@@ -1,3 +1,16 @@
+## 2026-09-27 — Issue #59 Booth generic-provider live gate
+
+- Dev v1.13.0 / `1.13.0-booth-diagnostic-provider` loaded from immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`; loader completed 31/31 with zero failures/fallback.
+- Booth Diagnostic Provider v0.1.0 registered alongside Texture Quality; Bug Capture UI exposed both providers as opt-in choices.
+- Booth-only generic capture produced 17 addressable SHA-256 sections: 8 General + 9 Booth, with diagnostic errorCount=0.
+- Current Booth state was OFF with native runtime absent. Snapshot preserved that state: session Booth remained OFF, bootstrap attempts/count/direct requests remained zero, and global `BT` remained absent.
+- Settings coverage correctly reported unavailable because `composeDisplayState()` was unavailable without loading Booth; presentation/components/media were captured bounded.
+- Retained settings/presentation failure history remains explicit partial coverage; normalized Booth events remain explicit not-captured.
+- TRUE-resolution/Spinny readiness/state was captured without starting media or invoking readiness sync.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Dev v1.13.0 Booth provider pin
 
 - Dev launcher -> v1.13.0 / `1.13.0-booth-diagnostic-provider`.
