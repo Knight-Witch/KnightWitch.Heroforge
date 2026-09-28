@@ -9,10 +9,11 @@
 | `decals` | v1 design drafted | slot/order/model state, rendered bindings, Project/bound transforms, gizmo/preservation, expanded slots | snapshot, failure | `providers/DECALS.md` |
 | `body-editor` | v1 design drafted | arm sync, breast/butt mirror transform subsets, adjunct hand/slider state, undo/commit | snapshot, failure | `providers/BODY_EDITOR.md` |
 | `pose` | v1 design drafted; current scope is Main/Extra swap | figure-role structure, pinned Main invariants, undo/commit | snapshot, failure | `providers/POSE.md` |
-| `json` | v1 design drafted | bulk backup workflow/progress/failure classes/archive result with strict redaction | snapshot, failure | `providers/JSON.md` |
+| `json` | v1 design expanded | bulk backup plus general/ReCK character-JSON workflow capability and passive operation evidence with strict redaction | snapshot, failure | `providers/JSON.md` |
 | `rendering-performance` | v1 design drafted | frame timing, long tasks, JS heap where exposed, renderer counters, bounded scene complexity, active work | snapshot, performance | `providers/RENDERING_PERFORMANCE.md` |
 | `core-runtime` | v1 design drafted; optional deep runtime provider | channel/bootstrap/module loader/registry timeline plus explicit bounded request/toast failure watch | snapshot, failure | `providers/CORE_RUNTIME.md` |
 | `bone-hud` | v1 design drafted | bone-selection source, detector lifecycle, candidate/baseline health, detection/failure context | snapshot, failure | `providers/BONE_HUD.md` |
+| `script-compat` | v1 design drafted from real external-script failures | read-only HeroForge seam/effect fingerprints for known third-party overrides such as 2000 Kitbash Parts and Extra Slots | snapshot | `providers/SCRIPT_COMPAT.md` |
 
 ## Provider Design Rule
 
@@ -67,6 +68,8 @@ General Capture is always present. Providers are additive and should be selected
 | Body Editor | `body-editor` |
 | Current Pose Main/Extra swap | `pose` |
 | JSON bulk backup | `json` |
+| ReCK / general character JSON reload/apply/local-JSON compatibility | `json` |
+| 2000 Kitbash Parts / Extra Slots / third-party HF limit override | `script-compat` |
 | Bone HUD / bone detection | `bone-hud` |
 | Lag / stutter / progressive slowdown | `rendering-performance` |
 | Startup / update / module load / repeated connection failure | `core-runtime` |
@@ -111,8 +114,9 @@ The inventory now covers:
 - Decals;
 - Body Editor;
 - current Pose/Main-Extra swap;
-- JSON bulk backup;
-- Bone HUD detection.
+- JSON bulk backup and general/ReCK character-JSON compatibility;
+- Bone HUD detection;
+- allowlisted third-party HeroForge limit/slot override compatibility via `script-compat`.
 
 Known current gaps are **implementation seams**, not missing provider architecture:
 - several tools need bounded read-only `getDiagnosticState()`-style seams;
@@ -120,5 +124,7 @@ Known current gaps are **implementation seams**, not missing provider architectu
 - Core Runtime failure watch needs safe live validation before adoption;
 - performance sampling needs overhead validation;
 - provider schemas may gain additive fields from real triage capture-gap feedback.
+
+`script-compat` is the exception added after real user reports exposed a state owner outside Witch Dock: third-party scripts can partially patch HeroForge runtime limits while Witch Dock itself remains healthy. It is deliberately allowlisted and read-only, not a generic arbitrary-userscript scanner.
 
 Do not add another v1 provider without evidence that a coherent state owner is not represented by General or the current provider set.

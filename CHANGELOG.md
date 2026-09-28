@@ -1,3 +1,14 @@
+## 2026-09-28 — Issue #88 JSON + external-script capture amendment
+
+- Expanded `json` provider design beyond bulk backup to cover ReCK/general character-JSON reload/apply capability and bounded passive operation evidence without capturing editor/file contents.
+- Promoted Booth settings JSON save/load operation evidence to an immediate requirement and added a dedicated `settings-io` section.
+- Added `script-compat` provider for allowlisted third-party HeroForge override health, initially 2000 Kitbash Parts and Extra Slots.
+- Script Compatibility records runtime effects/fingerprints, kit counts/heat/limits, slot-limit aggregates, and boolean patch signatures; it never scans arbitrary userscripts or exports script/function source.
+- New real cases are not yet assigned product bug issue IDs; #59 remains implementation owner.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 design branch synchronized to canonical Dev
 
 - Merged current `WITCH_DEV_MAIN` head `a16e547f4eb9dc04dd804fc453c131f054bccae7` into the #88 design branch after the v1 design freeze so future review cannot carry the pre-release runtime baseline.

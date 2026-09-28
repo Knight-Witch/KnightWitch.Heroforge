@@ -446,3 +446,47 @@ Booth provider v1 is capture-ready when:
 - ready-capability/stale-UI media mismatch is distinguishable;
 - current TRUE-resolution/Spinny failure/restoration state is preserved;
 - no character/model JSON or media bytes leak into the diagnostic bundle.
+
+
+## Booth settings JSON — operation evidence amendment
+
+New user reports of Booth JSON import failures make the previously planned settings-operation evidence a **current implementation requirement**, not a deferred nicety.
+
+### `settings-io` stable section
+
+Booth should retain the most recent bounded settings-file operations independently of generic current `settings` state.
+
+For each retained operation:
+- operation: `save` / `load`;
+- started/completed timestamp;
+- result: success / cancelled / failed;
+- input classification for loads: `witch-dock`, `legacy-effects`, `raw-config`, `invalid`, or unknown if parse failed before classification;
+- file-format version when present;
+- file-declared Booth mode, if present;
+- current native Booth mode at attempt;
+- capability presence for `savePortrait`, `loadPortrait`, `loadCameraSave`, `loadEffectsFromConfig`, and render refresh;
+- normalized settings shape/hash before operation when available;
+- normalized settings shape/hash after successful load when available;
+- whether camera/effects follow-up seams were requested;
+- whether render refresh was requested;
+- `legacyEffectsOnly`;
+- stable result/error code;
+- bounded sanitized message.
+
+Never retain filename, character name, raw selected JSON, raw Booth config/model, or arbitrary local-file metadata.
+
+### Required operation codes
+
+Use the existing Booth code family plus:
+- `BOOTH_SETTINGS_PARSE_FAILED`
+- `BOOTH_SETTINGS_RUNTIME_UNAVAILABLE`
+- `BOOTH_SETTINGS_SAVE_FAILED`
+- `BOOTH_SETTINGS_LOAD_FAILED`
+
+`BOOTH_SETTINGS_INVALID`, `BOOTH_SETTINGS_MODE_MISMATCH`, and `BOOTH_SETTINGS_APPLY_FAILED` remain valid for narrower failures.
+
+### Capture behavior
+
+A snapshot after a failed import must still expose the retained `settings-io` attempt even if the UI status text has since changed.
+
+Diagnostics must **not** retry the import or call `loadPortrait`/`savePortrait` merely to obtain evidence.

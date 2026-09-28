@@ -2,13 +2,20 @@
 
 **Provider ID:** `json`  
 **Provider schema version:** 1  
-**Owning runtime:** `tools/JSON_Tool.js` bulk HeroForge library backup  
+**Owning runtime:** `tools/JSON_Tool.js` bulk HeroForge library backup plus bounded compatibility observation of general character-JSON workflows (including ReCK when present)  
 **Modes:** snapshot, failure  
 **Comparison mode:** none
 
 ## Purpose
 
-Diagnose the bulk JSON backup workflow without capturing the private library it is backing up.
+Diagnose JSON workflows without capturing the private character/library data being moved.
+
+v1 has two independent evidence surfaces:
+
+1. Witch Dock bulk library backup;
+2. general character JSON reload/apply/import/export compatibility, including ReCK when present.
+
+The second surface is observational. Witch Dock does not own ReCK or HeroForge's local-file UI and must not become their runtime dependency.
 
 This provider has a stricter privacy boundary than most Witch Dock tools because runtime state may contain:
 - HeroForge config IDs;
@@ -214,3 +221,85 @@ JSON provider v1 is capture-ready when:
 - partial failure counts/categories are useful;
 - generated archive success/size is visible;
 - diagnostic JSON contains zero config IDs, character/folder names, raw save JSON, ZIP paths, or authenticated request URLs.
+
+
+## General character JSON / ReCK compatibility
+
+### Why this belongs here
+
+Current ReCK uses HeroForge's own runtime seams:
+- Reload reads `CK.UndoQueue.queue[CK.UndoQueue.currentIndex]` into its editor.
+- Apply parses the editor contents and calls `CK.tryLoadCharacter(...)`.
+
+Those operations can fail after a HeroForge update even when Witch Dock's bulk backup is completely healthy. The `json` provider therefore owns **workflow/capability evidence**, not just bulk-backup evidence.
+
+### Privacy boundary
+
+Never capture:
+- ReCK/CodeMirror editor text;
+- the current UndoQueue entry;
+- raw character JSON;
+- clipboard contents;
+- selected local file contents;
+- character/config identifiers merely to prove JSON loading;
+- a deterministic full-character hash that could become a cross-report identifier.
+
+It is safe/useful to capture **shape and operation metadata only**.
+
+### `character-json` stable section
+
+Capture:
+- ReCK detected yes/no;
+- ReCK version when exposed by its visible version tag;
+- Reload/Apply controls present;
+- `CK.UndoQueue` present;
+- queue length;
+- current index;
+- current entry present yes/no;
+- current entry top-level key count/key-name inventory only, bounded;
+- current entry serialized byte length when safely measurable without retaining contents;
+- `CK.tryLoadCharacter` capability present;
+- `CK.character._needsUpdating` / `_inUpdate`;
+- native/local JSON import/export UI capability presence when discoverable through stable named surfaces;
+- explicit limitations for any UI/runtime path that cannot be identified safely.
+
+### Passive operation evidence
+
+The provider may install **bounded passive observers** for known JSON controls when they exist. Observation must never intercept/replace ReCK or HeroForge functions.
+
+For ReCK:
+- observe known Reload/Apply button activation;
+- record operation type + timestamp;
+- freeze UndoQueue length/current index before;
+- read back length/current index/update flags after a short bounded settling window;
+- correlate a bounded provider-owned error record if the click causes a same-window exception/rejection;
+- never read editor contents.
+
+For native/local-file surfaces:
+- record only known control activation/result when a stable observable seam exists;
+- do not inspect chosen file content or path.
+
+Retain at most a small recent ring.
+
+### General JSON warning/error codes
+
+Add:
+- `JSON_EDITOR_RUNTIME_UNAVAILABLE`
+- `JSON_EDITOR_RELOAD_FAILED`
+- `JSON_EDITOR_PARSE_FAILED`
+- `JSON_EDITOR_APPLY_FAILED`
+- `JSON_TRY_LOAD_CHARACTER_UNAVAILABLE`
+- `JSON_UNDO_QUEUE_UNAVAILABLE`
+- `JSON_LOCAL_IO_SURFACE_CHANGED`
+
+Codes describe the boundary, not a specific third-party implementation.
+
+### Acceptance extension
+
+A JSON/ReCK failure report is capture-ready when triage can determine:
+- whether ReCK/general JSON UI was present;
+- whether HeroForge still exposed UndoQueue + `tryLoadCharacter`;
+- whether an Apply/Reload was attempted;
+- whether queue/update state changed afterward;
+- whether a bounded error occurred;
+- without receiving the user's JSON text.

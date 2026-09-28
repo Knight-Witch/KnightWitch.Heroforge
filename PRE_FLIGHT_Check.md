@@ -1,3 +1,16 @@
+## 2026-09-28 — Issue #88 JSON / script compatibility design amendment
+
+### PASS
+
+- ReCK source confirms Reload uses UndoQueue and Apply uses `CK.tryLoadCharacter`; design captures only capability/operation metadata, never editor JSON.
+- Current reference scripts confirm 2000 Kitbash Parts modifies kit caps/scales/`capKit` plus injected `extras.js`, while Extra Slots modifies `doesConfigFit` and `allowMonsters`.
+- Live runtime probe confirmed the relevant HeroForge seams are observable without model mutation, including the zero-argument kit-heat read on the current build.
+- Provider boundary is allowlisted and effect-based; no Tampermonkey/extension inventory or arbitrary script-source collection.
+- Shared HF.Status diagnostic envelope requires no change.
+- Documentation only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-26 — Issue #88 canonical-baseline synchronization
 
 ### PASS

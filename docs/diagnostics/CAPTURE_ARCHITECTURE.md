@@ -66,6 +66,7 @@ v1 provider family:
 - `pose` — current Main/Extra swap scope;
 - `json`;
 - `bone-hud`;
+- `script-compat` — allowlisted third-party HeroForge seam/effect compatibility;
 - `core-runtime` — optional deep startup/module/failure diagnostics beyond General;
 - `rendering-performance` — optional point-in-time + bounded timed sample.
 
@@ -143,6 +144,8 @@ Typical packages:
 - Decal bug: general + `decals`;
 - startup/module/update bug: general + `core-runtime`;
 - Bone HUD detection bug: general + `bone-hud`;
+- ReCK/general JSON load/apply bug: general + `json`;
+- high-kitbash/extra-slot compatibility bug: general + `script-compat`;
 - cross-feature interaction: general + explicitly selected providers.
 
 Provider selection may use the active tool/report category as a hint, but users/triage must be able to request additional providers when evidence crosses subsystem boundaries.
@@ -287,8 +290,9 @@ General owns the small cross-tool baseline. Providers own feature-specific depth
 | decal slot/order/projector/gizmo/preservation state | `decals` |
 | Body Editor transform subsets/undo operation state | `body-editor` |
 | current Main/Extra swap and pinned invariants | `pose` |
-| bulk JSON-backup workflow state | `json` |
+| bulk JSON-backup + general/ReCK character-JSON workflow state | `json` |
 | bone detector/selection-source state | `bone-hud` |
+| known third-party HeroForge limit/slot override health | `script-compat` |
 
 A provider may repeat a **small scalar summary** from another owner when needed for correlation, but detailed evidence stays with the canonical owner. Cross-provider correlation must not turn into duplicated full sections.
 
