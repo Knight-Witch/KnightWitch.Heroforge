@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.1.0-booth-json-file-io';
+  const BUILD_TAG = 'v27.2.0-diagnostic-state-seam';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -2706,7 +2706,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.1.0',
+      version: '27.2.0',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2726,6 +2726,66 @@
     };
   }
 
+  function boothDiagnosticState() {
+    const rt = resolveRuntime();
+    const env = UW.BT && UW.BT.display ? UW.BT.display.environment : null;
+    let blackCanvasApplied = null;
+    try {
+      blackCanvasApplied = state.bgOn && rt && rt.__kwBT
+        ? !!isBTCanvasApplied(state.capturedTokenBgSelected)
+        : null;
+    } catch {}
+
+    return {
+      featureId: 'booth.persistence',
+      version: '27.2.0',
+      build: BUILD_TAG,
+      runtime: rt ? (rt.__kwBT ? 'BT' : 'TN') : null,
+      mode: rt ? rt.currentMode : null,
+      makerEnabled: !!(rt && rt.tokenizer && rt.tokenizer.enabled),
+      makerEnabledFor: rt && rt.tokenizer ? rt.tokenizer._enabledFor : null,
+      tokenizerHooked: !!state.tokenizerHooked,
+      boothOn: !!state.boothOn,
+      userBoothOn: !!state.userBoothOn,
+      blackCanvasOn: !!state.bgOn,
+      blackCanvasApplied,
+      defaultBoothPersistence: !!state.consent,
+      defaultBlackCanvas: !!state.defaultBlackCanvas,
+      defaultSessionBooth: !!state.defaultSessionBooth,
+      savedBoothSetup: (() => {
+        try {
+          const saved = readSavedBoothConfig(rt);
+          return saved ? { mode: saved.mode, signals: saved.signals.slice() } : null;
+        } catch { return null; }
+      })(),
+      startupBlackKicks: state.startupBlackKicks,
+      components: {
+        lighting: !!state.persistLightingOn,
+        effects: !!state.persistEffectsOn,
+        overlays: !!state.persistOverlaysOn,
+        background: !!state.persistBackgroundOn
+      },
+      hasCapturedBackdrop: !!state.capturedMaterial,
+      hasCapturedTokenBg: !!state.capturedTokenBg,
+      capturedTokenBgSelected: state.capturedTokenBgSelected,
+      hasCapturedLighting: !!state.capturedLightingState,
+      hasCapturedEffects: !!state.capturedEffectState,
+      canvasLayoutKey: state.btCanvasLayoutKey,
+      hasEnvironmentMesh: !!(env && env.mesh),
+      boothFrameHidden: !!state.boothFrameHidden,
+      shaderFrameHidden: !!state.shaderFrameHidden,
+      boothPendingTeardown: !!state.boothPendingTeardown,
+      oneShotBackdropRearmArmed: !!state.oneShotBackdropRearmArmed,
+      silentCycleInProgress: !!state.silentCycleInProgress,
+      characterRootKey: state.characterRootKey,
+      characterChangedAt: state.characterChangedAt,
+      runtimeReady: !!rt,
+      runtimeEngineReady: !!(rt && rt.tokenizer),
+      loopActive: !!state.loopActive,
+      debugEventCount: Array.isArray(state.debugLog) ? state.debugLog.length : 0
+    };
+  }
+
   function reassertBlackCanvasPresentation() {
     try {
       if (!state.bgOn) return false;
@@ -2740,9 +2800,10 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.1.0',
+      version: '27.2.0',
       build: BUILD_TAG,
       getState: boothPublicState,
+      getDiagnosticState: boothDiagnosticState,
       setDefaultBoothPersistence,
       setDefaultBlackCanvas,
       setSessionBooth: onUserBoothToggle,
@@ -2774,51 +2835,8 @@
       try { return JSON.stringify(state.debugLog, null, 2); } catch { return '[]'; }
     };
     UW.KW_WD_BOOTH_DIAG = function () {
-      try {
-        const rt = resolveRuntime();
-        const env = UW.BT && UW.BT.display ? UW.BT.display.environment : null;
-        return JSON.stringify({
-          build: BUILD_TAG,
-          runtime: rt ? (rt.__kwBT ? 'BT' : 'TN') : null,
-          mode: rt ? rt.currentMode : null,
-          makerEnabled: !!(rt && rt.tokenizer && rt.tokenizer.enabled),
-          makerEnabledFor: rt && rt.tokenizer ? rt.tokenizer._enabledFor : null,
-          tokenizerHooked: !!state.tokenizerHooked,
-          boothOn: !!state.boothOn,
-          userBoothOn: !!state.userBoothOn,
-          blackCanvasOn: !!state.bgOn,
-          defaultBoothPersistence: !!state.consent,
-          defaultBlackCanvas: !!state.defaultBlackCanvas,
-          defaultSessionBooth: !!state.defaultSessionBooth,
-          savedBoothSetup: (() => {
-            try {
-              const s = readSavedBoothConfig(rt);
-              return s ? { mode: s.mode, signals: s.signals } : null;
-            } catch { return null; }
-          })(),
-          startupBlackKicks: state.startupBlackKicks,
-          components: {
-            lighting: !!state.persistLightingOn,
-            effects: !!state.persistEffectsOn,
-            overlays: !!state.persistOverlaysOn,
-            background: !!state.persistBackgroundOn
-          },
-          hasCapturedBackdrop: !!state.capturedMaterial,
-          hasCapturedTokenBg: !!state.capturedTokenBg,
-          capturedTokenBgSelected: state.capturedTokenBgSelected,
-          hasCapturedLighting: !!state.capturedLightingState,
-          hasCapturedEffects: !!state.capturedEffectState,
-          canvasLayoutKey: state.btCanvasLayoutKey,
-          hasEnvironmentMesh: !!(env && env.mesh),
-          characterRootKey: state.characterRootKey,
-          characterChangedAt: state.characterChangedAt,
-          runtimeReady: !!rt,
-          runtimeEngineReady: !!(rt && rt.tokenizer),
-          loopActive: !!state.loopActive
-        }, null, 2);
-      } catch (e) {
-        return JSON.stringify({ build: BUILD_TAG, error: String(e) }, null, 2);
-      }
+      try { return JSON.stringify(boothDiagnosticState(), null, 2); }
+      catch (e) { return JSON.stringify({ build: BUILD_TAG, error: String(e) }, null, 2); }
     };
     UW.KW_WD_BOOTH_BUILD = BUILD_TAG;
     try { console.log('[Booth] build', BUILD_TAG); } catch {}
