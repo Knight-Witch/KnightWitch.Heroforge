@@ -29,7 +29,7 @@ Add the first generic provider without modifying the validated High Res runtime:
 - marks retained pre-cleanup failure context explicitly unavailable for now;
 - Bug Capture UI v0.2.0 adds generic opt-in provider selection.
 
-Staged Dev launcher registry: v1.12.0 / `1.12.0-texture-quality-provider`.
+Dev launcher v1.12.0 / `1.12.0-texture-quality-provider` is pinned to immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`.
 
 ## Protected behavior
 
@@ -42,8 +42,8 @@ Staged Dev launcher registry: v1.12.0 / `1.12.0-texture-quality-provider`.
 ## Gate
 
 Before integration:
-1. adapter/UI syntax + manifest/static checks;
-2. stage immutable payload + Dev launcher v1.12.0;
+1. adapter/UI syntax + manifest/static checks — PASS;
+2. immutable payload + Dev launcher v1.12.0 — staged/pinned;
 3. reload once through Bridge;
 4. loader all modules, zero failed/fallback;
 5. providerCount=1 and `texture-quality` inventory present;
