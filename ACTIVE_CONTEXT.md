@@ -24,7 +24,7 @@
 - Media evidence excludes output filenames and bytes.
 - Settings/presentation retained failure history is explicitly partial; stable normalized Booth events are explicitly not captured yet.
 
-Staged Dev launcher registry: v1.13.0 / `1.13.0-booth-diagnostic-provider`.
+Dev launcher v1.13.0 / `1.13.0-booth-diagnostic-provider` is pinned to immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`.
 
 ## Protected behavior
 
@@ -37,9 +37,9 @@ Staged Dev launcher registry: v1.13.0 / `1.13.0-booth-diagnostic-provider`.
 
 ## Gate
 
-1. syntax/static/manifest/version checks;
-2. confirm source delta is limited to read-only seams + provider;
-3. pin immutable Dev v1.13.0 payload;
+1. syntax/static/manifest/version checks — PASS;
+2. source delta limited to read-only seams + provider — PASS;
+3. immutable Dev v1.13.0 payload — pinned to `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`;
 4. reload once;
 5. loader 31/31, zero failed/fallback;
 6. providerCount=2 with `booth` present;
