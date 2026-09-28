@@ -5,8 +5,8 @@
   const FEATURE_ID = "booth-diagnostic-provider";
   const PROVIDER_ID = "booth";
   const PROVIDER_SCHEMA_VERSION = 1;
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-booth-state-adapter";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-settings-io";
   const MAX_REGISTER_TRIES = 120;
 
   if (UW.KWBoothDiagnosticProvider && UW.KWBoothDiagnosticProvider.build === BUILD) return;
@@ -450,6 +450,7 @@
     const native = frozen.native || nativeRuntime();
     const presentation = frozen.presentation || presentationState(diag);
     const settings = settingsState();
+    const settingsIo = diag && Array.isArray(diag.settingsIo) ? cloneBounded(diag.settingsIo) : [];
     const components = componentsState(diag, settings);
     const media = frozen.media || mediaState();
 
@@ -480,6 +481,11 @@
     if (spinny && spinny.lastCapture && spinny.lastCapture.status === "failed") {
       warnings.push(warning("BOOTH_MEDIA_CAPTURE_FAILED", spinny.lastCapture.error || "Spinny capture failed.", "media", null, spinny.lastCapture.status));
     }
+    const lastSettingsIo = Array.isArray(settingsIo) && settingsIo.length ? settingsIo[settingsIo.length - 1] : null;
+    if (lastSettingsIo && lastSettingsIo.result === "failed") {
+      warnings.push(warning(lastSettingsIo.code || "BOOTH_SETTINGS_LOAD_FAILED", lastSettingsIo.message || "The latest Booth settings file operation failed.", "settings-io", "success", "failed"));
+    }
+
     if (spinny && spinny.lastCapture && spinny.lastCapture.status &&
         spinny.lastCapture.status !== "running" && spinny.lastCapture.rotationRestored === false &&
         spinny.lastCapture.framesRendered > 0) {
@@ -492,8 +498,10 @@
       spinny: spinny && (spinny.statusError || spinny.lastCapture && spinny.lastCapture.status === "failed")
         ? { statusText: spinny.statusText || null, lastCapture: spinny.lastCapture || null }
         : null,
-      retainedSettingsPresentationAvailable: false,
-      limitation: "settings-presentation-retained-failure-ring-not-yet-implemented"
+      settingsIo: lastSettingsIo && lastSettingsIo.result === "failed" ? lastSettingsIo : null,
+      retainedSettingsIoAvailable: !!lastSettingsIo,
+      retainedPresentationAvailable: false,
+      limitation: "presentation-retained-failure-ring-not-yet-implemented"
     };
 
     const sections = {
@@ -504,6 +512,7 @@
       bootstrap: bootstrap,
       "native-runtime": native,
       settings: settings,
+      "settings-io": settingsIo,
       presentation: presentation,
       components: components,
       media: media,
@@ -516,6 +525,7 @@
       { sectionName: "bootstrap", status: bootstrap ? "captured" : "unavailable", reason: bootstrap ? null : "booth-bootstrap-unavailable" },
       { sectionName: "native-runtime", status: "captured", reason: null },
       { sectionName: "settings", status: settings && settings.available ? "captured-bounded" : "unavailable", reason: settings && settings.available ? "allowlisted-display-state-domains" : settings && settings.reason || "settings-unavailable" },
+      { sectionName: "settings-io", status: "captured-bounded", reason: "bounded-user-settings-file-operations-no-file-content" },
       { sectionName: "presentation", status: "captured-bounded", reason: "bounded-presentation-descriptors" },
       { sectionName: "components", status: "captured-bounded", reason: "bounded-component-state" },
       { sectionName: "media", status: "captured-bounded", reason: "media-bytes-and-filenames-excluded" },
@@ -544,6 +554,10 @@
       boothScriptCount: bootstrap ? bootstrap.matchingBoothScriptCount : null,
       duplicateBoothScriptCount: bootstrap ? bootstrap.duplicateBoothScriptCount : null,
       settingsHash: settings && settings.hash || null,
+      settingsIoCount: Array.isArray(settingsIo) ? settingsIo.length : 0,
+      lastSettingsIoOperation: lastSettingsIo ? lastSettingsIo.operation : null,
+      lastSettingsIoResult: lastSettingsIo ? lastSettingsIo.result : null,
+      lastSettingsIoCode: lastSettingsIo ? lastSettingsIo.code : null,
       trueResolutionReady: tr && tr.readiness ? !!tr.readiness.ready : null,
       trueResolutionBusy: tr ? tr.busy : null,
       trueResolutionLastStatus: tr && tr.lastCapture ? tr.lastCapture.status : null,

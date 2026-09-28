@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.14.0",
-      "build": "1.14.0-hf-status-public-client",
-      "versionOrigin": "issue-90-hf-status-public-client"
+      "version": "1.15.0",
+      "build": "1.15.0-json-script-compat-capture",
+      "versionOrigin": "issue-59-json-script-compat"
     },
     {
       "id": "witch-dock-notifications",
@@ -242,9 +242,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.2.0",
-      "build": "v27.2.0-diagnostic-state-seam",
-      "versionOrigin": "issue-59-booth-diagnostic-seam"
+      "version": "27.3.0",
+      "build": "v27.3.0-settings-io-diagnostics",
+      "versionOrigin": "issue-59-settings-io"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -382,8 +382,9 @@
       "path": "tools/JSON_Tool.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.1.0",
+      "versionOrigin": "issue-59-json-provider",
+      "build": "1.1.0-diagnostic-state-seam"
     },
     {
       "id": "utilities",
@@ -441,9 +442,9 @@
       "path": "features/diagnostics/Booth_Diagnostic_Provider.js",
       "kind": "diagnostic-provider",
       "load": "module-loader",
-      "version": "0.1.0",
-      "build": "0.1.0-booth-state-adapter",
-      "versionOrigin": "issue-59-booth-provider"
+      "version": "0.2.0",
+      "build": "0.2.0-settings-io",
+      "versionOrigin": "issue-59-settings-io"
     },
     {
       "id": "hf-status-public-client",
@@ -464,6 +465,26 @@
       "version": "0.1.0",
       "build": "0.1.0-compact-status-panel",
       "versionOrigin": "issue-90-hf-status-public-client"
+    },
+    {
+      "id": "json-diagnostic-provider",
+      "title": "JSON Diagnostic Provider",
+      "path": "features/diagnostics/JSON_Diagnostic_Provider.js",
+      "kind": "diagnostic-provider",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-bulk-reck-compat",
+      "versionOrigin": "issue-59-json-provider"
+    },
+    {
+      "id": "script-compat-diagnostic-provider",
+      "title": "Script Compatibility Diagnostic Provider",
+      "path": "features/diagnostics/Script_Compat_Diagnostic_Provider.js",
+      "kind": "diagnostic-provider",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-kitbash-extra-slots",
+      "versionOrigin": "issue-59-script-compat"
     }
   ],
   "tools": [
@@ -575,7 +596,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.2.0-v27.2.0-diagnostic-state-seam",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.3.0-v27.3.0-settings-io-diagnostics",
       "enabledByDefault": true
     },
     {
@@ -699,7 +720,7 @@
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/JSON_Tool.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/JSON_Tool.js?v=1.1.0-diagnostic-state-seam",
       "enabledByDefault": true
     },
     {
@@ -724,7 +745,25 @@
       "id": "booth-diagnostic-provider",
       "title": "Booth Diagnostic Provider",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Booth_Diagnostic_Provider.js?v=0.1.0-booth-state-adapter",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Booth_Diagnostic_Provider.js?v=0.2.0-settings-io",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "json-diagnostic-provider",
+      "title": "JSON Diagnostic Provider",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/JSON_Diagnostic_Provider.js?v=0.1.0-bulk-reck-compat",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "script-compat-diagnostic-provider",
+      "title": "Script Compatibility Diagnostic Provider",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Script_Compat_Diagnostic_Provider.js?v=0.1.0-kitbash-extra-slots",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

@@ -58,9 +58,9 @@ Continue #59 provider rollout from the issue #88 architecture while #90 waits on
 **Priority changed by new real community failures:** pause Decals rollout at its existing isolated branch checkpoint and implement capture coverage for Booth JSON, general/ReCK JSON, and external kitbash/extra-slot compatibility first.
 
 Immediate implementation order:
-1. Booth: retain bounded settings JSON save/load operation evidence and expose it through the existing `booth` provider.
-2. JSON: implement provider coverage for Witch Dock bulk backup + ReCK/general character JSON capability/operation evidence without capturing editor/file contents.
-3. Script Compatibility: add allowlisted read-only `script-compat` provider for 2000 Kitbash Parts + Extra Slots runtime-effect health.
+1. **Staged on `wd/59-json-script-compat-capture`:** Booth settings-I/O retention, JSON/ReCK provider, and `script-compat` provider as one v1.15.0 diagnostic bundle.
+2. Run exact-source syntax/privacy/load-order gates.
+3. Pin immutable payload, integrate to canonical Dev, and live-gate all three capture paths through HF-Chat-Bridge.
 4. Resume the already-staged Decals provider branch after these live gates.
 
 Design amendment: `wd/88-diagnostic-capture-architecture` @ `7571d67590e75df58a0181c1e23c8f56a263fa16`.

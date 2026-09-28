@@ -2,6 +2,10 @@
   "use strict";
 
   const TOOL_ID = "json-tool";
+  const VERSION = "1.1.0";
+  const BUILD = "1.1.0-diagnostic-state-seam";
+  const DIAG_EVENT_LIMIT = 20;
+  const DIAG_FAILURE_LIMIT = 20;
 
   function safeName(s) {
     const x = String(s || "").trim() || "Unnamed";
@@ -202,6 +206,12 @@
       markNameById: new Map(),
       configsTotal: 0,
       configsDone: 0,
+      diagnostics: {
+        stage: "idle", operationStartedAt: 0, lastProgressAt: 0, pagesFetched: 0,
+        indexComplete: false, marksComplete: false, transferSuccess: 0, transferFailures: 0,
+        archiveStartedAt: 0, archiveCompletedAt: 0, archiveBytes: null,
+        downloadAttempted: false, downloadSucceeded: false, recentFailures: [], events: []
+      },
       ui: {
         downloadBtn: null,
         pauseBtn: null,
@@ -210,6 +220,44 @@
         log: null
       }
     };
+
+
+    function diagEvent(type, detail) {
+      const row = { at: Date.now(), type: String(type || "unknown"), detail: detail && typeof detail === "object" ? { ...detail } : (detail == null ? null : String(detail).slice(0, 300)) };
+      state.diagnostics.events.push(row);
+      while (state.diagnostics.events.length > DIAG_EVENT_LIMIT) state.diagnostics.events.shift();
+      state.diagnostics.lastProgressAt = row.at;
+    }
+    function diagFailure(stage, error, httpStatus) {
+      const message = String(error && error.message ? error.message : error || "unknown");
+      const safe = message.replace(/https?:\/\/[^\s]+/gi, "[url]").replace(/\b\d{5,}\b/g, "[id]").slice(0, 700);
+      const row = { at: Date.now(), stage: String(stage || "unknown"), httpStatus: Number.isFinite(Number(httpStatus)) ? Number(httpStatus) : null, message: safe };
+      state.diagnostics.recentFailures.push(row);
+      while (state.diagnostics.recentFailures.length > DIAG_FAILURE_LIMIT) state.diagnostics.recentFailures.shift();
+      diagEvent("failure", { stage: row.stage, httpStatus: row.httpStatus });
+    }
+    function setDiagStage(stage) {
+      state.diagnostics.stage = String(stage || "idle");
+      state.diagnostics.lastProgressAt = Date.now();
+    }
+    function diagnosticState() {
+      const d = state.diagnostics;
+      return {
+        featureId: "json-tool", version: VERSION, build: BUILD,
+        running: !!state.running, paused: !!state.paused, stage: d.stage,
+        configsTotal: Number(state.configsTotal) || 0, configsDone: Number(state.configsDone) || 0,
+        progress: state.configsTotal > 0 ? state.configsDone / state.configsTotal : 0,
+        pageSize: PAGE_SIZE, concurrency: CONCURRENCY, jsZipPresent: !!window.JSZip,
+        zipInitialized: !!state.zip, markCount: state.markNameById ? state.markNameById.size : 0,
+        failureCount: Array.isArray(state.failures) ? state.failures.length : 0,
+        operationStartedAt: d.operationStartedAt || 0, lastProgressAt: d.lastProgressAt || 0,
+        pagesFetched: d.pagesFetched || 0, indexComplete: !!d.indexComplete, marksComplete: !!d.marksComplete,
+        transferSuccess: d.transferSuccess || 0, transferFailures: d.transferFailures || 0,
+        archive: { startedAt: d.archiveStartedAt || 0, completedAt: d.archiveCompletedAt || 0, sizeBytes: d.archiveBytes, downloadAttempted: !!d.downloadAttempted, downloadSucceeded: !!d.downloadSucceeded },
+        recentFailures: d.recentFailures.map((row) => ({ ...row })),
+        events: d.events.map((row) => ({ ...row }))
+      };
+    }
 
     function setStatus(s) {
       state.ui.status.textContent = s;
@@ -242,6 +290,8 @@
         const chunk = Array.isArray(data?.configs) ? data.configs : [];
         if (!chunk.length) break;
         all.push(...chunk);
+        state.diagnostics.pagesFetched += 1;
+        diagEvent("index-page", { count: chunk.length, offset });
         offset += chunk.length;
         if (chunk.length < PAGE_SIZE) break;
         await sleep(50);
@@ -262,6 +312,8 @@
         if (id && name) m.set(String(id), String(name));
       }
       state.markNameById = m;
+      state.diagnostics.marksComplete = true;
+      diagEvent("marks-complete", { count: m.size });
       logLine(`Folder marks loaded: ${m.size}`);
     }
 
@@ -294,6 +346,13 @@
       if (state.running) return;
       state.running = true;
       state.failures = [];
+      state.diagnostics = {
+        stage: "starting", operationStartedAt: Date.now(), lastProgressAt: Date.now(), pagesFetched: 0,
+        indexComplete: false, marksComplete: false, transferSuccess: 0, transferFailures: 0,
+        archiveStartedAt: 0, archiveCompletedAt: 0, archiveBytes: null,
+        downloadAttempted: false, downloadSucceeded: false, recentFailures: [], events: []
+      };
+      diagEvent("backup-requested", null);
       setProgress(0, 0);
 
       state.ui.downloadBtn.disabled = true;
@@ -301,14 +360,26 @@
       try {
         await waitForHFReady();
 
+        setDiagStage("dependency");
         setStatus("Loading ZIP engine…");
-        if (!window.JSZip) await loadScript(JSZIP_URL);
+        diagEvent("jszip-load-start", { alreadyPresent: !!window.JSZip });
+        try { if (!window.JSZip) await loadScript(JSZIP_URL); }
+        catch (error) { diagFailure("dependency", error); throw error; }
         state.zip = new window.JSZip();
+        diagEvent("jszip-load-complete", null);
 
-        const configs = await getAllConfigMeta();
+        setDiagStage("index");
+        let configs;
+        try {
+          configs = await getAllConfigMeta();
+          state.diagnostics.indexComplete = true;
+          diagEvent("index-complete", { count: configs.length });
+        } catch (error) { diagFailure("index", error); throw error; }
         logLine(`Configs indexed: ${configs.length}`);
 
-        await loadMarks();
+        setDiagStage("marks");
+        try { await loadMarks(); }
+        catch (error) { diagFailure("marks", error); throw error; }
 
         state.zip.file("meta/all_user_config_meta.json", JSON.stringify({ configs }, null, 2));
         state.zip.file(
@@ -317,6 +388,7 @@
         );
 
         setProgress(0, configs.length);
+        setDiagStage("transfer");
         setStatus("Downloading configs…");
 
         let done = 0;
@@ -335,25 +407,44 @@
               const data = await fetchJson(url, { credentials: "include" });
               const payload = data?.config ?? data;
               state.zip.file(`configs/${file}`, JSON.stringify(payload, null, 2));
+              state.diagnostics.transferSuccess += 1;
             } catch (e) {
               const err = String(e.message || e);
               state.failures.push({ url, error: err, config_id: id });
               state.zip.file(`configs_failed/${file}`, JSON.stringify({ error: err, url }, null, 2));
+              state.diagnostics.transferFailures += 1;
+              diagFailure("config-fetch", e);
             }
 
             done++;
             setProgress(done, configs.length);
+            if (done === configs.length || done % 25 === 0) diagEvent("transfer-progress", { done, total: configs.length });
             if (done % 25 === 0) setStatus(`Downloading configs… ${done}/${configs.length}`);
           },
           CONCURRENCY
         );
 
+        setDiagStage("archive");
         setStatus("Building ZIP…");
-        const blob = await state.zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
+        state.diagnostics.archiveStartedAt = Date.now();
+        diagEvent("archive-start", { compression: "DEFLATE", level: 6 });
+        let blob;
+        try {
+          blob = await state.zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
+          state.diagnostics.archiveCompletedAt = Date.now();
+          state.diagnostics.archiveBytes = Number(blob && blob.size) || 0;
+          diagEvent("archive-complete", { sizeBytes: state.diagnostics.archiveBytes });
+        } catch (error) { diagFailure("archive-generate", error); throw error; }
 
         const stamp = new Date().toISOString().replace(/[:.]/g, "-");
         const filename = `heroforge-json-backup_${stamp}${state.failures.length ? "_WITH_FAILURES" : ""}.zip`;
-        downloadBlob(blob, filename);
+        setDiagStage("download");
+        state.diagnostics.downloadAttempted = true;
+        try {
+          downloadBlob(blob, filename);
+          state.diagnostics.downloadSucceeded = true;
+          diagEvent("download-complete", { sizeBytes: Number(blob && blob.size) || 0 });
+        } catch (error) { diagFailure("download", error); throw error; }
 
         if (state.failures.length) {
           logLine(`Failures: ${state.failures.length}`);
@@ -362,6 +453,7 @@
         } else {
           setStatus("Done. ZIP downloaded.");
         }
+        setDiagStage(state.failures.length ? "complete-with-failures" : "complete");
       } finally {
         state.running = false;
         state.ui.downloadBtn.disabled = false;
@@ -421,13 +513,16 @@
       });
     }
 
-    return { buildUI };
+    return { buildUI, getDiagnosticState: diagnosticState };
   }
 
   function register() {
     if (!window.WitchDock || typeof window.WitchDock.registerTool !== "function") return false;
 
     const tool = buildTool();
+    UW.KWJSONToolDiagnostics = Object.freeze({
+      featureId: "json-tool", version: VERSION, build: BUILD, getDiagnosticState: tool.getDiagnosticState
+    });
 
     window.WitchDock.registerTool({
       id: TOOL_ID,

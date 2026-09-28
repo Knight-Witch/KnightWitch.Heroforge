@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.2.0-diagnostic-state-seam';
+  const BUILD_TAG = 'v27.3.0-settings-io-diagnostics';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -98,6 +98,7 @@
     silentCycleInProgress: false,
 
     debugLog: [],
+    settingsIo: [],
 
     allowTokenizerDisableOnce: false,
     loopActive: false,
@@ -211,6 +212,135 @@
     } catch {
       return null;
     }
+  }
+
+
+  const SETTINGS_IO_LIMIT = 12;
+
+  function settingsIoHash(value) {
+    function normalize(v, depth) {
+      if (v == null || typeof v === 'boolean' || typeof v === 'number') return v;
+      if (typeof v === 'string') return v.length > 160 ? v.slice(0, 160) + '…' : v;
+      if (depth >= 5) return '[depth]';
+      if (Array.isArray(v)) return v.slice(0, 80).map(item => normalize(item, depth + 1));
+      if (typeof v === 'object') {
+        const out = {};
+        for (const key of Object.keys(v).sort().slice(0, 120)) {
+          if (key === 'model' || key === 'character' || key === 'characterName' || key === 'character_name') continue;
+          const next = normalize(v[key], depth + 1);
+          if (next !== undefined) out[key] = next;
+        }
+        return out;
+      }
+      return undefined;
+    }
+    let text = '';
+    try { text = JSON.stringify(normalize(value, 0)); } catch { return null; }
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i++) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, '0');
+  }
+
+  function settingsIoCurrentShape() {
+    const maker = boothFileMaker();
+    if (!maker || typeof maker.composeDisplayState !== 'function') {
+      return { available: false, reason: 'compose-display-state-unavailable' };
+    }
+    try {
+      const raw = maker.composeDisplayState();
+      if (!raw || typeof raw !== 'object') return { available: false, reason: 'compose-display-state-empty' };
+      const allowed = {};
+      for (const key of ['camera','cameraSave','filters','selected','lighting','effects','aspect','mode']) {
+        if (Object.prototype.hasOwnProperty.call(raw, key)) allowed[key] = raw[key];
+      }
+      return {
+        available: true,
+        keys: Object.keys(allowed).sort(),
+        hash: settingsIoHash(allowed),
+        modelExcluded: Object.prototype.hasOwnProperty.call(raw, 'model')
+      };
+    } catch (error) {
+      return {
+        available: false,
+        reason: 'compose-display-state-failed',
+        error: String(error && error.message ? error.message : error).slice(0, 600)
+      };
+    }
+  }
+
+  function settingsIoCapabilities() {
+    const maker = boothFileMaker();
+    return {
+      runtimePresent: !!maker,
+      savePortrait: !!(maker && typeof maker.savePortrait === 'function'),
+      loadPortrait: !!(maker && typeof maker.loadPortrait === 'function'),
+      loadCameraSave: !!(maker && maker.cameras && typeof maker.cameras.loadCameraSave === 'function'),
+      loadEffectsFromConfig: !!(maker && typeof maker.loadEffectsFromConfig === 'function'),
+      requestRenderRefresh: !!(UW.CK && UW.CK.GameLoop && typeof UW.CK.GameLoop.requestRenderRefresh === 'function')
+    };
+  }
+
+  function settingsIoInputMeta(value) {
+    const meta = { kind: 'unknown', version: null, declaredMode: null };
+    if (!isObjectRecord(value)) return meta;
+    meta.version = value.version != null && Number.isFinite(Number(value.version)) ? Number(value.version) : null;
+    meta.declaredMode = value.mode != null ? String(value.mode).slice(0, 120) : null;
+    if (value.format === BOOTH_FILE_FORMAT) meta.kind = 'witch-dock';
+    else if (isLegacyBoothEffectsFile(value)) meta.kind = 'legacy-effects';
+    else if (looksLikeBoothConfig(value)) meta.kind = 'raw-config';
+    else meta.kind = 'invalid';
+    return meta;
+  }
+
+  function settingsIoErrorCode(error, operation) {
+    const message = String(error && error.message ? error.message : error || '');
+    if (error && error.kwBoothSettingsPhase === 'parse') return 'BOOTH_SETTINGS_PARSE_FAILED';
+    if (/runtime is unavailable/i.test(message)) return 'BOOTH_SETTINGS_RUNTIME_UNAVAILABLE';
+    if (/saved for .*current Booth mode/i.test(message)) return 'BOOTH_SETTINGS_MODE_MISMATCH';
+    if (/not a recognized|missing its Booth settings payload|does not contain a Booth settings object|newer unsupported format/i.test(message)) return 'BOOTH_SETTINGS_INVALID';
+    return operation === 'save' ? 'BOOTH_SETTINGS_SAVE_FAILED' : 'BOOTH_SETTINGS_LOAD_FAILED';
+  }
+
+  function recordSettingsIo(record) {
+    const row = {
+      operation: record.operation,
+      startedAt: Number(record.startedAt) || Date.now(),
+      completedAt: Number(record.completedAt) || Date.now(),
+      result: record.result || 'failed',
+      inputKind: record.inputKind || null,
+      fileFormatVersion: record.fileFormatVersion == null ? null : record.fileFormatVersion,
+      declaredMode: record.declaredMode || null,
+      currentMode: record.currentMode || null,
+      capabilities: record.capabilities || null,
+      before: record.before || null,
+      after: record.after || null,
+      cameraFollowupRequested: !!record.cameraFollowupRequested,
+      effectsFollowupRequested: !!record.effectsFollowupRequested,
+      renderRefreshRequested: !!record.renderRefreshRequested,
+      legacyEffectsOnly: !!record.legacyEffectsOnly,
+      code: record.code || null,
+      message: record.message ? String(record.message).slice(0, 700) : null
+    };
+    state.settingsIo.push(row);
+    while (state.settingsIo.length > SETTINGS_IO_LIMIT) state.settingsIo.shift();
+    return row;
+  }
+
+  function settingsIoBase(operation, input) {
+    const inputMeta = input === undefined ? { kind: null, version: null, declaredMode: null } : settingsIoInputMeta(input);
+    return {
+      operation,
+      startedAt: Date.now(),
+      inputKind: inputMeta.kind,
+      fileFormatVersion: inputMeta.version,
+      declaredMode: inputMeta.declaredMode,
+      currentMode: UW.BT && UW.BT.currentMode ? String(UW.BT.currentMode) : null,
+      capabilities: settingsIoCapabilities(),
+      before: settingsIoCurrentShape()
+    };
   }
 
   function setBoothFileStatus(message, kind) {
@@ -373,6 +503,7 @@
           const parsed = JSON.parse(await file.text());
           finish(resolve, parsed);
         } catch (error) {
+          try { error.kwBoothSettingsPhase = 'parse'; } catch {}
           finish(reject, error);
         }
       }, { once: true });
@@ -390,27 +521,61 @@
   }
 
   function exportBoothSettingsToFile() {
+    const op = settingsIoBase('save');
     try {
       setBoothFileStatus('Reading Photo Booth settings…');
       const payload = captureBoothSettingsFileData();
       downloadBoothSettingsFile(payload);
+      recordSettingsIo({
+        ...op,
+        completedAt: Date.now(),
+        result: 'success',
+        inputKind: 'witch-dock',
+        fileFormatVersion: BOOTH_FILE_VERSION,
+        declaredMode: payload && payload.mode || null,
+        after: settingsIoCurrentShape()
+      });
       setBoothFileStatus('Booth settings saved.', 'success');
       return true;
     } catch (error) {
+      recordSettingsIo({
+        ...op,
+        completedAt: Date.now(),
+        result: 'failed',
+        code: settingsIoErrorCode(error, 'save'),
+        message: error && error.message ? error.message : error,
+        after: settingsIoCurrentShape()
+      });
       setBoothFileStatus(`Save failed: ${error && error.message ? error.message : error}`, 'error');
       return false;
     }
   }
 
   async function importBoothSettingsFromFile() {
+    let op = settingsIoBase('load');
     try {
       const data = await chooseBoothSettingsFile();
       if (!data) {
+        recordSettingsIo({ ...op, completedAt: Date.now(), result: 'cancelled', after: settingsIoCurrentShape() });
         setBoothFileStatus('Load cancelled.');
         return false;
       }
+      const classified = settingsIoBase('load', data);
+      op = { ...classified, startedAt: op.startedAt };
       setBoothFileStatus('Applying Photo Booth settings…');
       const result = applyBoothSettingsFileData(data);
+      const maker = boothFileMaker();
+      const config = op.inputKind === 'witch-dock' && data && data.booth ? data.booth : data;
+      recordSettingsIo({
+        ...op,
+        completedAt: Date.now(),
+        result: 'success',
+        after: settingsIoCurrentShape(),
+        cameraFollowupRequested: !!(config && config.camera && maker && maker.cameras && typeof maker.cameras.loadCameraSave === 'function'),
+        effectsFollowupRequested: !!(config && Object.prototype.hasOwnProperty.call(config, 'effects') && maker && typeof maker.loadEffectsFromConfig === 'function'),
+        renderRefreshRequested: !!(UW.CK && UW.CK.GameLoop && typeof UW.CK.GameLoop.requestRenderRefresh === 'function'),
+        legacyEffectsOnly: !!(result && result.legacyEffectsOnly)
+      });
       setBoothFileStatus(
         result.legacyEffectsOnly
           ? 'Legacy Lob effects file applied. Camera/background/lighting were not present in that file.'
@@ -419,6 +584,14 @@
       );
       return true;
     } catch (error) {
+      recordSettingsIo({
+        ...op,
+        completedAt: Date.now(),
+        result: 'failed',
+        code: settingsIoErrorCode(error, 'load'),
+        message: error && error.message ? error.message : error,
+        after: settingsIoCurrentShape()
+      });
       setBoothFileStatus(`Load failed: ${error && error.message ? error.message : error}`, 'error');
       return false;
     }
@@ -2706,7 +2879,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.2.0',
+      version: '27.3.0',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2738,7 +2911,7 @@
 
     return {
       featureId: 'booth.persistence',
-      version: '27.2.0',
+      version: '27.3.0',
       build: BUILD_TAG,
       runtime: rt ? (rt.__kwBT ? 'BT' : 'TN') : null,
       mode: rt ? rt.currentMode : null,
@@ -2782,6 +2955,7 @@
       runtimeReady: !!rt,
       runtimeEngineReady: !!(rt && rt.tokenizer),
       loopActive: !!state.loopActive,
+      settingsIo: state.settingsIo.map((row) => cloneJson(row)).filter(Boolean),
       debugEventCount: Array.isArray(state.debugLog) ? state.debugLog.length : 0
     };
   }
@@ -2800,7 +2974,7 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.2.0',
+      version: '27.3.0',
       build: BUILD_TAG,
       getState: boothPublicState,
       getDiagnosticState: boothDiagnosticState,

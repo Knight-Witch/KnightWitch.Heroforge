@@ -1,3 +1,16 @@
+## 2026-09-28 — #59 JSON / Script Compatibility staging
+
+### PENDING live Dev gate
+
+- Booth settings-I/O diagnostics retain metadata/hashes only; no imported/exported file contents or filename/character name.
+- JSON provider does not wrap/replace ReCK or `CK.tryLoadCharacter`; known ReCK controls are passively observed.
+- Script Compatibility contains no `capKit`/`doesConfigFit` calls, no limit writes, no character loads, and no arbitrary userscript/extension inventory.
+- New providers are opt-in and isolated behind Diagnostics Core.
+- Exact-source syntax/manifest/privacy gate runs before launcher pin.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 JSON/script-compat routing
 
 ### PASS

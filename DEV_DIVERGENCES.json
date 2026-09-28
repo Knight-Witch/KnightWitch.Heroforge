@@ -42,8 +42,8 @@
     },
     {
       "issue": 59,
-      "status": "dev-generic-diagnostics-booth-candidate",
-      "reason": "Issue #59 adds Generic Bug Capture with validated Texture Quality plus an additive Booth provider using bounded read-only Booth/bootstrap/media seams. HF.Status remains optional intake only and is not a Witch Dock runtime dependency.",
+      "status": "dev-generic-diagnostics-json-script-compat-candidate",
+      "reason": "Issue #59 Generic Bug Capture includes staged Booth settings-I/O retention, JSON/ReCK compatibility evidence, and allowlisted external-script effect health for high-kitbash and Extra Slots.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -53,17 +53,19 @@
         "features/diagnostics/Booth_Diagnostic_Provider.js",
         "tools/Booth.js",
         "features/booth/Booth_Runtime_Bootstrap.js",
-        "HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js"
+        "HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+        "features/diagnostics/JSON_Diagnostic_Provider.js",
+        "features/diagnostics/Script_Compat_Diagnostic_Provider.js",
+        "tools/JSON_Tool.js"
       ],
       "acceptance": [
-        "General-only and Texture Quality provider captures remain unchanged and opt-in.",
-        "Booth provider snapshot does not activate Booth, request native Booth runtime, save/apply settings, start media capture, or invoke readiness sync.",
-        "Booth v27.2.0 adds only a bounded read-only diagnostic state seam; existing user/session/Black Canvas behavior remains unchanged.",
-        "Booth Runtime Bootstrap v0.2.2 getState is observational and no longer writes script-path diagnostic fields on read.",
-        "TRUE-resolution Readiness v1.1.0 exposes a non-mutating getState while preserving existing sync/initialize behavior.",
-        "Provider excludes character/model payloads, imported settings contents, output filenames/media bytes, and raw debug-log export.",
-        "Provider captures state/bootstrap/native-runtime/settings/presentation/components/media with truthful partial/not-captured coverage for retained settings/presentation failures and normalized events.",
-        "Live Dev validation proves Booth state is invariant across provider capture."
+        "Previously validated General, Texture Quality, and Booth snapshot behavior remains observational and opt-in.",
+        "Booth retains only bounded sanitized settings save/load operation metadata; imported/exported JSON and filenames are excluded.",
+        "JSON provider captures bulk-backup workflow metadata plus ReCK/general character-JSON capability/operation evidence without editor text or raw character JSON.",
+        "ReCK observation is passive and does not replace or wrap CK.tryLoadCharacter.",
+        "Script Compatibility is allowlisted/read-only and reports actual HeroForge kit/slot override effects without enumerating Tampermonkey/extensions or exporting function/script source.",
+        "Kit heat uses only the currently validated zero-argument observational seam; no cap/slot/model mutation is permitted.",
+        "Public Stable remains untouched until explicit promotion."
       ]
     },
     {

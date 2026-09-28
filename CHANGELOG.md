@@ -1,3 +1,14 @@
+## 2026-09-28 — #59 JSON / Script Compatibility payload staging
+
+- Booth -> v27.3.0 and Booth Diagnostic Provider -> v0.2.0 add bounded sanitized settings JSON operation evidence; diagnostics never retry Save/Load.
+- JSON Tool -> v1.1.0 adds a redacted read-only bulk-backup seam.
+- Added JSON Diagnostic Provider v0.1.0 for bulk workflow + passive ReCK/general character-JSON evidence, excluding editor/file contents and raw character JSON.
+- Added Script Compatibility Diagnostic Provider v0.1.0 for allowlisted 2000 Kitbash Parts / Extra Slots runtime effects without owning or mutating those scripts.
+- Stages Dev launcher registry v1.15.0; launcher pin follows exact-source static validation.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 priority route: JSON + external-script compatibility
 
 - Reprioritized Generic Bug Capture rollout around new real community reports before resuming Decals.
