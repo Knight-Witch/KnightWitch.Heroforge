@@ -1,3 +1,15 @@
+## 2026-09-27 — Issue #59 Texture Quality provider payload staging
+
+### PENDING live provider gate
+
+- Adapter-only architecture preserves High Res Diagnostics v0.1.3 and Native Reconcile lifecycle ownership.
+- Feature provider is opt-in; General-only remains valid.
+- Failure-context coverage is explicit rather than fabricated.
+- Manifest/load order places existing High Res Diagnostics before Diagnostics Core, then Texture Quality provider, then Bug Capture UI.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — Issue #59 exact-byte Core execution harness
 
 ### PASS / live HeroForge gate pending
