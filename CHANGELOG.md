@@ -1,3 +1,13 @@
+## 2026-09-28 — #59 priority route: JSON + external-script compatibility
+
+- Reprioritized Generic Bug Capture rollout around new real community reports before resuming Decals.
+- Immediate targets: Booth settings JSON operation retention, ReCK/general character JSON evidence, and allowlisted 2000 Kitbash Parts / Extra Slots runtime-effect capture.
+- Issue #88 design amendment is durable at `7571d67590e75df58a0181c1e23c8f56a263fa16`.
+- Existing Decals work remains isolated on its task branch; no Decals/runtime behavior changed.
+- Documentation-only routing update; Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — Issue #90 merged to canonical Dev
 
 - PR #91 merged the HF.Status public-status client to `WITCH_DEV_MAIN` as `ef931517b0d4e26dc7540713bfc29ee6bca2ed67`.

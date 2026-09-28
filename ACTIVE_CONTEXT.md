@@ -53,20 +53,21 @@
 
 ## Current route
 
-Continue #59 provider rollout from the frozen issue #88 architecture while #90 waits on its live Dev/human gate.
+Continue #59 provider rollout from the issue #88 architecture while #90 waits on its live Dev/human gate.
 
-Next provider: **Decals**.
+**Priority changed by new real community failures:** pause Decals rollout at its existing isolated branch checkpoint and implement capture coverage for Booth JSON, general/ReCK JSON, and external kitbash/extra-slot compatibility first.
 
-Implementation goals:
-1. preserve UI selection -> ordered layer -> model mapping -> rendered binding/projector trace;
-2. capture Project/bound-transform state;
-3. expose corrected/native gizmo ownership and transform-preservation state through narrow read-only seams;
-4. expose Expanded Decal Slots / Slot Bridge readiness;
-5. retain bounded recent preservation/failure context where current code would otherwise destroy it;
-6. snapshot must create no character mutation and no undo history;
-7. live gate must validate the current selected/available decal state without manufacturing a decal/Project toggle if none exists.
+Immediate implementation order:
+1. Booth: retain bounded settings JSON save/load operation evidence and expose it through the existing `booth` provider.
+2. JSON: implement provider coverage for Witch Dock bulk backup + ReCK/general character JSON capability/operation evidence without capturing editor/file contents.
+3. Script Compatibility: add allowlisted read-only `script-compat` provider for 2000 Kitbash Parts + Extra Slots runtime-effect health.
+4. Resume the already-staged Decals provider branch after these live gates.
 
-After Decals, continue provider rollout based on actual diagnostic value. Keep HF.Status backend/storage/triage ownership separate.
+Design amendment: `wd/88-diagnostic-capture-architecture` @ `7571d67590e75df58a0181c1e23c8f56a263fa16`.
+
+The new community cases do not yet have formal product-bug issue IDs. Do not invent symptom-specific fixes under #59; capture the reusable evidence boundary first.
+
+Keep HF.Status backend/storage/triage ownership separate.
 
 ## Protected behavior
 
@@ -74,10 +75,12 @@ After Decals, continue provider rollout based on actual diagnostic value. Keep H
 - Feature providers remain opt-in.
 - Provider failure cannot block General export.
 - Heavy/armed operations remain explicit.
-- Booth snapshot must remain observational.
+- Booth snapshot must remain observational; settings diagnostics may observe/retain real user save/load attempts but must never retry them.
 - Texture Quality/High Res lifecycle remains untouched.
 - Public Stable remains untouched.
 - #90 HF.Status public client remains optional and must never block Dock startup/core behavior.
+- ReCK/general JSON diagnostics never capture editor text/raw character JSON.
+- `script-compat` never enumerates Tampermonkey/extensions or mutates external-script/HeroForge limits.
 - #34 remains separate.
 
 ## Design source

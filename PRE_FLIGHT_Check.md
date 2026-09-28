@@ -1,3 +1,14 @@
+## 2026-09-28 — #59 JSON/script-compat routing
+
+### PASS
+
+- Current router reflects new reported capture gaps.
+- Decals staged work remains isolated and is not overwritten.
+- New scope stays within #59 Generic Bug Capture and existing HF.Status provider envelope.
+- Documentation-only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-28 — Issue #90 canonical Dev merge record
 
 ### MERGED / live gate pending
