@@ -25,7 +25,7 @@
     source = replaceExactlyOnce(
       source,
       'const BUILD = "1.0.1-dev-native-transformer-visual";',
-      'const BUILD = "1.1.1-dev-fresh-slot-normalization";',
+      'const BUILD = "1.2.0-diagnostic-state-seam";',
       "build marker"
     );
     source = replaceExactlyOnce(
@@ -123,6 +123,55 @@
   const pendingBoundTransforms = new Map();
   const knownBoundTransforms = new Map();
   let boundTransformPreserverInstalled = false;
+  const DIAGNOSTIC_PRESERVATION_LIMIT = 12;
+  const diagnosticPreservationActions = [];
+  let diagnosticPreservationFailure = null;
+
+  function boundedDiagnosticRecord(record) {
+    if (!record || typeof record !== 'object') return null;
+    return {
+      id: record.id != null ? record.id : null,
+      forceProjectedScript: record.forceProjectedScript,
+      transform: finiteTransformSnapshot(record)
+    };
+  }
+
+  function boundedPendingDiagnostic(pending) {
+    if (!pending) return null;
+    return {
+      id: pending.id != null ? pending.id : null,
+      freshBind: !!pending.freshBind,
+      expiresInMs: Number.isFinite(Number(pending.expiresAt))
+        ? Math.max(0, Number(pending.expiresAt) - Date.now())
+        : null,
+      transform: pending.transform ? { ...pending.transform } : null
+    };
+  }
+
+  function recordPreservationAction(action, mapping, previous, patchRecord, effective, pending, extra = null) {
+    diagnosticPreservationActions.push({
+      at: Date.now(),
+      action: String(action || 'unknown'),
+      mapping: mapping != null ? String(mapping) : null,
+      previous: boundedDiagnosticRecord(previous),
+      incomingFields: patchRecord && typeof patchRecord === 'object' ? Object.keys(patchRecord).sort().slice(0, 40) : [],
+      effective: boundedDiagnosticRecord(effective),
+      pending: boundedPendingDiagnostic(pending),
+      extra
+    });
+    while (diagnosticPreservationActions.length > DIAGNOSTIC_PRESERVATION_LIMIT) {
+      diagnosticPreservationActions.shift();
+    }
+  }
+
+  function recordPreservationFailure(phase, error, mapping = null) {
+    diagnosticPreservationFailure = {
+      at: Date.now(),
+      phase: String(phase || 'unknown'),
+      mapping: mapping != null ? String(mapping) : null,
+      message: error && error.message ? String(error.message) : String(error || 'unknown')
+    };
+  }
 
   function finiteTransformSnapshot(record) {
     const out = {};
@@ -179,6 +228,7 @@
         let pending = pendingBoundTransforms.get(key);
 
         if (pending && pending.expiresAt < now) {
+          recordPreservationAction('expire-pending', key, previous, null, previous, pending);
           pendingBoundTransforms.delete(key);
           pending = null;
         }
@@ -215,6 +265,7 @@
             expiresAt: now + PENDING_BOUND_PRESERVE_MS
           };
           pendingBoundTransforms.set(key, pending);
+          recordPreservationAction('pending-bound-transition', key, previous, patchRecord, effective, pending);
         }
 
         if (changedArtworkWhileBound) {
@@ -224,6 +275,7 @@
             id: effective.id,
             transform: preserved
           });
+          recordPreservationAction('preserve-on-artwork-change', key, previous, patchRecord, { ...effective, ...patchRecord }, null);
           pendingBoundTransforms.delete(key);
           continue;
         }
@@ -261,6 +313,14 @@
             });
           }
 
+          recordPreservationAction(
+            pending.transform && Object.keys(pending.transform).length ? 'restore-known-bound' : 'normalize-fresh-bind',
+            key,
+            previous,
+            patchRecord,
+            { ...effective, ...patchRecord },
+            pending
+          );
           pendingBoundTransforms.delete(key);
           continue;
         }
@@ -275,6 +335,7 @@
         }
       }
     } catch (error) {
+      recordPreservationFailure('characterEnterChange', error);
       console.warn('[Witch Dock] Bound decal transform preservation skipped:', error);
     }
   }
@@ -342,6 +403,123 @@
       "transform preserver dispose"
     );
 
+    const diagnosticSeam = `  function diagnosticState() {
+    const CK = getCK();
+    let selected = null;
+    try { selected = selectedSplatterInfo(CK); }
+    catch (error) {
+      selected = { ok: false, reason: error && error.message ? error.message : String(error) };
+    }
+
+    const mapping = activeBinding && activeBinding.mapping != null
+      ? String(activeBinding.mapping)
+      : (selected && selected.ok && selected.mapping != null ? String(selected.mapping) : null);
+    const known = mapping != null ? knownBoundTransforms.get(mapping) : null;
+    const pending = mapping != null ? pendingBoundTransforms.get(mapping) : null;
+    const current = latest && latest.ok ? latest : null;
+    const scan = current && current.nativeScan ? current.nativeScan : null;
+    const projector = current && current.projector && current.projector.ok ? current.projector : null;
+    const rendered = current && current.rendered && Array.isArray(current.rendered.matches)
+      ? current.rendered.matches.slice(0, 16).map(match => ({
+          target: match.target,
+          materialIndex: match.index,
+          decalId: match.item && match.item.id != null
+            ? match.item.id
+            : (match.item && match.item.decal ? match.item.decal.id : null),
+          sourceLayer: match.item ? match.item.sourceLayer : null,
+          materialUuid: match.material && match.material.uuid ? String(match.material.uuid) : null,
+          projectMatrix: Array.isArray(match.matrix) ? match.matrix.slice(0, 16) : null
+        }))
+      : [];
+
+    return {
+      featureId: FEATURE_ID,
+      build: BUILD,
+      enabledByUser: featureEnabled,
+      active: enabled,
+      mode,
+      status: statusText,
+      error: statusError,
+      selected: selected && selected.ok ? {
+        label: selected.selectedLabel,
+        sourceLayer: selected.sourceLayer,
+        mapping: selected.mapping,
+        decalId: selected.record ? selected.record.id : null,
+        forceProjectedScript: selected.record ? selected.record.forceProjectedScript : null,
+        transform: selected.record ? finiteTransformSnapshot(selected.record) : null
+      } : {
+        available: false,
+        reason: selected && selected.reason ? String(selected.reason) : 'selection-unavailable'
+      },
+      activeBinding: activeBinding ? { ...activeBinding } : null,
+      native: {
+        transformerPresent: !!nativeTransformer,
+        locatorPresent: !!nativeLocator,
+        nativeVisibleBefore,
+        nativeSuppressed: Boolean(enabled && nativeTransformer && nativeTransformer.visible === false),
+        mode: readNativeMode(nativeTransformer),
+        scanCount: scan && Array.isArray(scan.matches) ? scan.matches.length : null,
+        scanVisited: scan ? scan.visited : null,
+        scanTruncated: scan ? !!scan.truncated : null,
+        locator: nativeLocator ? {
+          position: vec3Array(nativeLocator.position),
+          quaternion: quatArray(nativeLocator.quaternion),
+          scale: vec3Array(nativeLocator.scale),
+          parentName: nativeLocator.parent && nativeLocator.parent.name ? String(nativeLocator.parent.name) : null
+        } : null
+      },
+      projector: projector ? {
+        frameLabel: projector.frameLabel || null,
+        center: projector.center ? projector.center.slice(0, 3) : null,
+        maxSpread: Number.isFinite(Number(projector.maxSpread)) ? Number(projector.maxSpread) : null,
+        tolerance: PROJECTOR_SPREAD_TOLERANCE,
+        worldFrame: Array.isArray(projector.worldFrame) ? projector.worldFrame.slice(0, 16) : null
+      } : null,
+      renderedMatches: rendered,
+      drag: {
+        overlay: activeMoveDrag ? {
+          axisIndex: activeMoveDrag.axisIndex,
+          startRaw: activeMoveDrag.startRaw ? activeMoveDrag.startRaw.slice(0, 3) : null,
+          currentRaw: activeMoveDrag.currentRaw ? activeMoveDrag.currentRaw.slice(0, 3) : null
+        } : null,
+        native: nativeMoveDrag ? {
+          startRaw: nativeMoveDrag.startRaw ? nativeMoveDrag.startRaw.slice(0, 3) : null,
+          currentRaw: nativeMoveDrag.currentRaw ? nativeMoveDrag.currentRaw.slice(0, 3) : null,
+          finalized: !!nativeMoveDrag.finalized
+        } : null,
+        transformerDragging: !!(transformer && transformer.dragging)
+      },
+      preservation: {
+        installed: !!boundTransformPreserverInstalled,
+        mapping,
+        known: known ? {
+          id: known.id != null ? known.id : null,
+          transform: known.transform ? { ...known.transform } : null
+        } : null,
+        pending: boundedPendingDiagnostic(pending),
+        recentActions: diagnosticPreservationActions.map(row => ({ ...row })),
+        lastFailure: diagnosticPreservationFailure ? { ...diagnosticPreservationFailure } : null
+      },
+      lastForward: lastForward ? { ...lastForward } : null
+    };
+  }
+
+`;
+
+    source = replaceExactlyOnce(
+      source,
+      "  function installStyle() {",
+      diagnosticSeam + "  function installStyle() {",
+      "diagnostic state seam"
+    );
+
+    source = replaceExactlyOnce(
+      source,
+      "    getState: publicState\n  };",
+      "    getState: publicState,\n    getDiagnosticState: diagnosticState\n  };",
+      "diagnostic API seam"
+    );
+
     return source;
   }
 
@@ -355,9 +533,9 @@
 
       const source = applyAcceptedV042Rules(sources.join(""));
       new Function("unsafeWindow", `${source}\n//# sourceURL=${BASE}Corrected_Bound_Decal_Gizmo.js`)(UW);
-      console.info("[Witch Dock] Corrected bound decal gizmo DEV v1.1.1 loaded: undo transaction + bound-state preservation + fresh-slot sane defaults.");
+      console.info("[Witch Dock] Corrected bound decal gizmo DEV v1.2.0 loaded: diagnostic state + preservation evidence + existing transform behavior.");
     } catch (error) {
-      console.error("[Witch Dock] Corrected bound decal gizmo DEV v1.1.1 failed closed:", error);
+      console.error("[Witch Dock] Corrected bound decal gizmo DEV v1.2.0 failed closed:", error);
     }
   }
 
