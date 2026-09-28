@@ -1,3 +1,14 @@
+## 2026-09-28 — #59 Dev v1.15.0 JSON/script-compat pin
+
+- Dev launcher -> v1.15.0 / `1.15.0-json-script-compat-capture`.
+- Pins immutable payload `b8b07c2d799c8ca28c66e3e617b2f28740d9e0a2`.
+- Exact-source syntax/JSON/registry uniqueness/load-order gates pass.
+- Execution mock confirmed JSON diagnostics exclude planted raw character content and Script Compatibility excludes kit part IDs/function/script source while classifying reference Lob runtime effects.
+- Booth settings-I/O diagnostics remain bounded metadata only; no retry path added.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 JSON / Script Compatibility payload staging
 
 - Booth -> v27.3.0 and Booth Diagnostic Provider -> v0.2.0 add bounded sanitized settings JSON operation evidence; diagnostics never retry Save/Load.

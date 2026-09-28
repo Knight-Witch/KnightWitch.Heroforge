@@ -1,3 +1,17 @@
+## 2026-09-28 — #59 Dev v1.15.0 JSON/script-compat pin
+
+### PASS / live Dev gate pending
+
+- Launcher metadata/runtime version/build synchronized to v1.15.0.
+- Immutable payload: `b8b07c2d799c8ca28c66e3e617b2f28740d9e0a2`.
+- Candidate module count: 35; registry entries unique.
+- New providers load before Bug Capture UI and remain opt-in.
+- JSON execution mock leaked no planted raw character content.
+- Script Compatibility execution mock leaked no kit-part values/function/script source and performed no cap/slot/model mutation.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 JSON / Script Compatibility staging
 
 ### PENDING live Dev gate
