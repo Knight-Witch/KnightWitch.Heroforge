@@ -1,58 +1,48 @@
-# Active Context — WITCH_DEV_MAIN
+# Active Context — issue #59 Booth diagnostic provider branch
 
 **Updated:** 2026-09-27 UTC
-**Canonical Dev:** `WITCH_DEV_MAIN` v1.12.0 / immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`
-**Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
+**Branch:** `wd/59-booth-diagnostic-provider`
+**Canonical Dev baseline:** v1.12.0 / immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`
+**Public Stable:** v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
 **Active issue:** #59 — Generic Bug Capture utility + HF.Status reproduction handoff
-**Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
 
-## Confirmed #59 runtime baseline
+## Confirmed baseline
 
-### General Capture v1 — PASS
+- General Capture v1 live gate PASS.
+- Texture Quality provider schema v1 live gate PASS.
+- Dev loader baseline: 30/30, 0 failed/fallback.
+- Bug Capture UI v0.2.0 exposes feature providers as opt-in.
 
-- Diagnostics Core v0.1.0 / `0.1.0-general-capture-v1`.
-- Bug Capture UI v0.2.0 / `0.2.0-provider-selection` under Utilities.
-- General-only capture is observational and locally downloadable.
-- Eight General sections are independently addressable and SHA-256 hashed in the live browser.
-- Bounded errors/events and truthful coverage are present.
-- HeroForge `_needsUpdating` / `_inUpdate` remained unchanged during capture.
-- No automatic upload or HF.Status runtime dependency.
+## Current Booth slice
 
-### Texture Quality provider v1 — PASS
+- Booth -> v27.2.0 / `v27.2.0-diagnostic-state-seam`: adds bounded `getDiagnosticState()` only; old debug helper delegates to it.
+- Booth Runtime Bootstrap -> v0.2.2 / `0.2.2-readonly-diagnostic-state`: `getState()` no longer mutates stored script-path diagnostic fields on first read.
+- TRUE-resolution Readiness -> v1.1.0 / `1.1.0-diagnostic-readiness-state`: adds non-mutating `getState()`; existing `sync()` behavior preserved.
+- Booth Diagnostic Provider -> v0.1.0 / `0.1.0-booth-state-adapter`.
+- Provider sections: state, bootstrap, native-runtime, settings, presentation, components, media, failure-context, events.
+- Settings are allowlisted from `composeDisplayState()`; `model` is excluded.
+- Media evidence excludes output filenames and bytes.
+- Settings/presentation retained failure history is explicitly partial; stable normalized Booth events are explicitly not captured yet.
 
-- Texture Quality Diagnostic Provider v0.1.0 / `0.1.0-legacy-diagnostic-adapter`.
-- Provider registers as `texture-quality` schema v1.
-- Dev loader: 30/30 executed, failed=0, immutable=30, fallback=0.
-- Generic provider snapshot completed with 18 total sections: 8 General + 10 Texture Quality.
-- Provider summary: figureCount=1, HR enabled=true, busy=false, persistent=true, warningCodes=[], `aaidFallback1x1Count=0`.
-- Legacy High Res verification remained OK; body AAIDs were 1024×1024 and allocations remained 2048×2048.
-- Native Reconcile state before/after was unchanged: enabled=true, busy=false, persistent=true, sessionSuppressed=false, status `ON — 8192×4096`, error=null.
-- Retained pre-cleanup failure context is truthfully marked unavailable with reason `retained-pre-cleanup-failure-context-not-yet-implemented`.
-- Existing `Texture_Quality_Diagnostics.js` v0.1.3 and Native Reconcile v0.4.1 lifecycle code were not modified.
-
-## Current route
-
-The Generic Bug Capture foundation and first provider are live-validated in Dev.
-
-Next capture-side work should follow the v1 provider plan without blocking on HF.Status backend work:
-
-1. keep the shared diagnostic envelope unchanged unless backend/triage identifies a real missing contract requirement;
-2. implement the next highest-value provider through the same isolated adapter/provider boundary;
-3. prefer **Booth** next because it exercises a distinct runtime/bootstrap/settings/presentation/media boundary and does not overlap Texture Quality;
-4. keep provider capture opt-in and observational;
-5. do not begin public Stable promotion until the report/intake workflow and provider rollout scope are explicitly ready.
-
-HF.Status owns report identity, private evidence storage/indexing, triage state, and upload/API behavior. Witch Dock capture must not couple directly to those internals.
+Staged Dev launcher registry: v1.13.0 / `1.13.0-booth-diagnostic-provider`.
 
 ## Protected behavior
 
-- General Capture remains always available with zero providers.
-- Feature providers execute only when explicitly selected.
-- Provider failure cannot block General export.
-- Heavy/armed operations remain explicit: HR comparison, Core Runtime failure watch, Rendering Performance sample.
+- Booth provider snapshot must not activate/load/toggle Booth or start media capture.
+- Do not call Booth settings save/apply operations during capture.
+- Do not call TRUE-resolution readiness `sync()` during capture.
+- Existing Booth/Black Canvas/persistence/media behavior must remain unchanged.
+- General and Texture Quality capture behavior must remain unchanged.
 - Public Stable remains untouched.
-- #34 remains separate; do not use #59 provider work to silently repair the restore-warning bug.
 
-## Design source
+## Gate
 
-Issue #88 / `wd/88-diagnostic-capture-architecture` remains the v1 capture/provider design baseline. HF.Status issue #15 owns the shared diagnostic-report contract.
+1. syntax/static/manifest/version checks;
+2. confirm source delta is limited to read-only seams + provider;
+3. pin immutable Dev v1.13.0 payload;
+4. reload once;
+5. loader 31/31, zero failed/fallback;
+6. providerCount=2 with `booth` present;
+7. snapshot with only Booth provider while preserving current Booth state;
+8. inspect state/bootstrap/settings/presentation/media coverage/privacy;
+9. if Booth is already active, verify active state invariance; otherwise do not activate it merely for the snapshot gate.
