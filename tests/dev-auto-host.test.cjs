@@ -6,14 +6,14 @@ const hostSource = fs.readFileSync('devtools/Witch_Dock_DEV_Auto_Host.user.js', 
 const launcherSource = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
 
 assert.doesNotThrow(() => new Function(hostSource), 'auto host parses');
-assert.match(hostSource, /const HOST_VERSION = "0\.2\.0";/);
+assert.match(hostSource, /const HOST_VERSION = "0\.2\.1";/);
 assert.match(hostSource, /const TARGET_BRANCH = "WITCH_DEV_MAIN";/);
 
 const metadata = text => text.match(/^\/\/ ==UserScript==\s*\n([\s\S]*?)^\/\/ ==\/UserScript==\s*$/m)[1];
 const grants = text => [...metadata(text).matchAll(/^\/\/\s+@grant\s+(\S+)\s*$/gm)].map(match => match[1]);
 const hostGrants = new Set(grants(hostSource));
 for (const grant of grants(launcherSource)) assert.ok(hostGrants.has(grant), `host grants ${grant}`);
-const connects = text => [...metadata(text).matchAll(/^\\/\\/\\s+@connect\\s+(\\S+)\\s*$/gm)].map(match => match[1]);
+const connects = text => [...metadata(text).matchAll(/^\/\/\s+@connect\s+(\S+)\s*$/gm)].map(match => match[1]);
 const hostConnects = new Set(connects(hostSource));
 for (const host of ['raw.githubusercontent.com', 'api.github.com', 'hf-status-dev.amanda-d5f.workers.dev']) {
   assert.ok(hostConnects.has(host), `host metadata permits ${host}`);
@@ -25,6 +25,12 @@ let fixture = launcherSource
     /\(function \(\) \{[\s\S]*$/,
     '(function () { const DEV_VERSION = "1.5.1"; const DEV_BRANCH = "WITCH_DEV_MAIN"; unsafeWindow.__autoHostFixture = { version: GM_info.script.version, name: GM_info.script.name, declaredVersion: DEV_VERSION, branch: DEV_BRANCH }; })();\\n'
   );
+if (!connects(fixture).includes('hf-status-dev.amanda-d5f.workers.dev')) {
+  fixture = fixture.replace(
+    '// @connect      raw.githubusercontent.com',
+    '// @connect      raw.githubusercontent.com\n// @connect      hf-status-dev.amanda-d5f.workers.dev'
+  );
+}
 
 const nodes = new Map();
 const document = {

@@ -1,3 +1,14 @@
+## 2026-09-28 — Issue #41 v0.2.1 test-fixture correction
+
+### PASS pending exact-source rerun
+
+- Test now expects Host v0.2.1.
+- @connect metadata parser is syntactically valid.
+- Fixture injects the approved HF.Status Dev host when the historical branch launcher lacks it.
+- Runtime source unchanged.
+
+---
+
 ## 2026-09-28 — Issue #41 Dev Auto Host v0.2.1
 
 ### PASS / installed-host live smoke pending

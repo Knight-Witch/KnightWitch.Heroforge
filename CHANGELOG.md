@@ -1,3 +1,10 @@
+## 2026-09-28 — Issue #41 v0.2.1 test-fixture correction
+
+- Corrected the Auto Host v0.2.1 test regex and fixture so the simulated Dev launcher includes the newly allowed HF.Status Dev `@connect`.
+- Runtime Auto Host source unchanged by this correction.
+
+---
+
 ## 2026-09-28 — Issue #41 Dev Auto Host v0.2.1 HF.Status host permission
 
 - Auto Host now carries the exact HF.Status Dev `@connect` permission required by canonical Dev v1.14.0+.
