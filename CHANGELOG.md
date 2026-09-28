@@ -1,3 +1,16 @@
+## 2026-09-27 — Issue #59 Texture Quality generic-provider live gate
+
+- Dev v1.12.0 / `1.12.0-texture-quality-provider` loaded from immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`; loader completed 30/30 with zero failures/fallback.
+- Texture Quality Diagnostic Provider v0.1.0 registered successfully and Bug Capture UI v0.2.0 exposed the opt-in High Res / Texture Quality provider choice.
+- Generic capture with only `texture-quality` produced 18 addressable SHA-256 sections: 8 General + 10 provider sections.
+- Provider summary reported one figure, HR ON + Persistent, zero warnings, and `aaidFallback1x1Count=0`; verification remained OK.
+- Native Reconcile state was unchanged before/after capture: enabled, persistent, not busy/suppressed, status `ON — 8192×4096`, no error.
+- Pre-cleanup retained failure context remains explicitly unavailable pending later narrow implementation; no evidence is fabricated.
+- Existing High Res Diagnostics v0.1.3 / Native Reconcile v0.4.1 lifecycle sources remain unchanged.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Dev v1.12.0 Texture Quality provider pin
 
 - Dev launcher -> v1.12.0 / `1.12.0-texture-quality-provider`.

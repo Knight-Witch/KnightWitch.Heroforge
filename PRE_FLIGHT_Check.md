@@ -1,3 +1,20 @@
+## 2026-09-27 — Issue #59 Texture Quality generic-provider live gate
+
+### PASS
+
+- Dev launcher v1.12.0 / immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`.
+- Loader 30/30 executed, 0 failed, immutable=30, fallback=0.
+- Diagnostics Core providerCount=1; `texture-quality` provider registered with schema v1.
+- Provider UI visible and opt-in.
+- Generic provider capture: sectionCount=18, providerCount=1, errorCount=0.
+- All provider sections received SHA-256 manifest rows; failure-context correctly reports unavailable.
+- Provider summary: figureCount=1, warnings=0, `aaidFallback1x1Count=0`.
+- High Res state invariant across capture: enabled=true, busy=false, persistent=true, sessionSuppressed=false, status/error unchanged.
+- Legacy High Res capture/comparison and Native Reconcile lifecycle source were not modified.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Dev v1.12.0 Texture Quality provider pin
 
 ### PASS / live provider gate pending
