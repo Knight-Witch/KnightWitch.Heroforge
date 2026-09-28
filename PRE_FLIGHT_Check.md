@@ -1,3 +1,14 @@
+## 2026-09-27 — Issue #59 Dev v1.12.0 Texture Quality provider pin
+
+### PASS / live provider gate pending
+
+- Launcher @version/runtime version/build and manifest launcher registry are synchronized at v1.12.0.
+- Immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02` contains adapter/UI/manifest changes only in the new provider slice; legacy High Res lifecycle files are unchanged.
+- Load order: High Res Diagnostics -> Diagnostics Core -> Texture Quality provider -> Bug Capture UI.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Texture Quality provider payload staging
 
 ### PENDING live provider gate
