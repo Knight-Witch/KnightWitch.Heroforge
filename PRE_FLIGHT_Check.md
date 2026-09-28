@@ -1,3 +1,16 @@
+## 2026-09-28 — Issue #41 Dev Auto Host v0.2.1
+
+### PASS / installed-host live smoke pending
+
+- Host metadata/runtime version synchronized at v0.2.1.
+- Exact HF.Status Dev host added; no wildcard permission.
+- Launcher allowlist retains required raw GitHub host and rejects hosts outside the two approved launcher hosts.
+- Existing GitHub API permission remains host-only.
+- Test fixture updated to include/require the HF.Status launcher permission.
+- No Witch Dock runtime module or public Stable behavior changed.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev Auto Host v0.2.0
 
 ### PASS / one-time installed-host smoke pending

@@ -13,8 +13,13 @@ const metadata = text => text.match(/^\/\/ ==UserScript==\s*\n([\s\S]*?)^\/\/ ==
 const grants = text => [...metadata(text).matchAll(/^\/\/\s+@grant\s+(\S+)\s*$/gm)].map(match => match[1]);
 const hostGrants = new Set(grants(hostSource));
 for (const grant of grants(launcherSource)) assert.ok(hostGrants.has(grant), `host grants ${grant}`);
+const connects = text => [...metadata(text).matchAll(/^\\/\\/\\s+@connect\\s+(\\S+)\\s*$/gm)].map(match => match[1]);
+const hostConnects = new Set(connects(hostSource));
+for (const host of ['raw.githubusercontent.com', 'api.github.com', 'hf-status-dev.amanda-d5f.workers.dev']) {
+  assert.ok(hostConnects.has(host), `host metadata permits ${host}`);
+}
 
-const fixture = launcherSource
+let fixture = launcherSource
   .replace(/^\/\/ @version\s+\S+$/m, '// @version      1.5.1')
   .replace(
     /\(function \(\) \{[\s\S]*$/,
@@ -36,7 +41,7 @@ const sandbox = {
   window: unsafeWindow,
   setTimeout,
   clearTimeout,
-  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.2.0' } },
+  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.2.1' } },
   GM_addStyle() {},
   GM_setClipboard() {},
   GM_getValue() {},

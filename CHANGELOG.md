@@ -1,3 +1,13 @@
+## 2026-09-28 — Issue #41 Dev Auto Host v0.2.1 HF.Status host permission
+
+- Auto Host now carries the exact HF.Status Dev `@connect` permission required by canonical Dev v1.14.0+.
+- Launcher metadata validation permits only `raw.githubusercontent.com` plus `hf-status-dev.amanda-d5f.workers.dev`; arbitrary new launcher hosts still fail visibly.
+- `api.github.com` remains Auto-Host-only for immutable branch-head resolution.
+- Fixes the live failure: `Dev launcher requests an unsupported @connect host`.
+- Public Stable and Witch Dock runtime modules unchanged.
+
+---
+
 ## 2026-09-25 — Issue #41 Dev Auto Host v0.2.0 immutable-head delivery
 
 - Dev Auto Host now resolves `WITCH_DEV_MAIN` through GitHub's branch-ref API before fetching the launcher.

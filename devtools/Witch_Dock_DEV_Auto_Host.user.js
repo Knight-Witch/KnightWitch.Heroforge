@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV AUTO HOST
 // @namespace    KnightWitch
-// @version      0.2.0
+// @version      0.2.1
 // @description  Loads the current Witch Dock Dev launcher on every HeroForge page load.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,12 +18,13 @@
 // @grant        GM_download
 // @connect      raw.githubusercontent.com
 // @connect      api.github.com
+// @connect      hf-status-dev.amanda-d5f.workers.dev
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  const HOST_VERSION = "0.2.0";
+  const HOST_VERSION = "0.2.1";
   const TARGET_NAME = "WITCH DOCK - DEV";
   const TARGET_NAMESPACE = "KnightWitch";
   const TARGET_BRANCH = "WITCH_DEV_MAIN";
@@ -41,6 +42,11 @@
     "GM_download"
   ]);
   const ALLOWED_GRANTS = new Set([...REQUIRED_GRANTS, "GM_info"]);
+  const REQUIRED_LAUNCHER_CONNECTS = Object.freeze(["raw.githubusercontent.com"]);
+  const ALLOWED_LAUNCHER_CONNECTS = new Set([
+    "raw.githubusercontent.com",
+    "hf-status-dev.amanda-d5f.workers.dev"
+  ]);
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
   if (UW.__KW_WD_DEV_AUTO_HOST_ACTIVE__) return;
@@ -120,8 +126,12 @@
       if (!grants.includes(grant)) throw new Error(`Dev launcher is missing expected grant: ${grant}`);
     }
     if (values.has("require") || values.has("resource")) throw new Error("Dev launcher cannot add @require or @resource through the auto host");
-    if (!connects.includes("raw.githubusercontent.com")) throw new Error("Dev launcher is missing the expected @connect host");
-    if (connects.some(host => host !== "raw.githubusercontent.com")) throw new Error("Dev launcher requests an unsupported @connect host");
+    for (const host of REQUIRED_LAUNCHER_CONNECTS) {
+      if (!connects.includes(host)) throw new Error(`Dev launcher is missing expected @connect host: ${host}`);
+    }
+    for (const host of connects) {
+      if (!ALLOWED_LAUNCHER_CONNECTS.has(host)) throw new Error(`Dev launcher requests unsupported @connect host: ${host}`);
+    }
     const declaredVersion = source.match(/\bconst\s+DEV_VERSION\s*=\s*["']([^"']+)["']\s*;/);
     const declaredBranch = source.match(/\bconst\s+DEV_BRANCH\s*=\s*["']([^"']+)["']\s*;/);
     if (!declaredVersion || declaredVersion[1] !== one("version")) throw new Error("Dev launcher metadata/runtime version mismatch");
