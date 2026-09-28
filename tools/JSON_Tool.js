@@ -1,9 +1,11 @@
 (function () {
   "use strict";
 
+  const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+
   const TOOL_ID = "json-tool";
-  const VERSION = "1.1.0";
-  const BUILD = "1.1.0-diagnostic-state-seam";
+  const VERSION = "1.1.1";
+  const BUILD = "1.1.1-diagnostic-uw-init";
   const DIAG_EVENT_LIMIT = 20;
   const DIAG_FAILURE_LIMIT = 20;
 

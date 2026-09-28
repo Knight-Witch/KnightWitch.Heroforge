@@ -1,3 +1,13 @@
+## 2026-09-28 — #59 JSON Tool v1.1.1 diagnostic initialization fix
+
+- Live v1.15.0 loader gate found JSON Tool as the sole failed module: `UW is not defined`.
+- Root cause: v1.1.0's new diagnostic export referenced `UW` without defining the standard page-window alias.
+- JSON Tool -> v1.1.1 / `1.1.1-diagnostic-uw-init`; adds only the missing `unsafeWindow || window` alias.
+- No backup workflow, privacy boundary, ReCK observation, or other tool behavior changed.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 Dev v1.15.0 JSON/script-compat pin
 
 - Dev launcher -> v1.15.0 / `1.15.0-json-script-compat-capture`.

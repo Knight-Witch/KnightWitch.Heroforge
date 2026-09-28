@@ -60,7 +60,7 @@ Continue #59 provider rollout from the issue #88 architecture while #90 waits on
 Immediate implementation order:
 1. **Staged on `wd/59-json-script-compat-capture`:** Booth settings-I/O retention, JSON/ReCK provider, and `script-compat` provider as one v1.15.0 diagnostic bundle.
 2. Exact-source syntax/privacy/load-order + execution-mock gates PASS.
-3. Dev v1.15.0 pins immutable payload `b8b07c2d799c8ca28c66e3e617b2f28740d9e0a2`; next integrate to canonical Dev and live-gate all three capture paths through HF-Chat-Bridge.
+3. Live v1.15.0 gate found one narrow JSON Tool regression: `UW is not defined`; JSON Tool v1.1.1 adds the missing page-window alias before repinning Dev.
 4. Resume the already-staged Decals provider branch after these live gates.
 
 Design amendment: `wd/88-diagnostic-capture-architecture` @ `7571d67590e75df58a0181c1e23c8f56a263fa16`.

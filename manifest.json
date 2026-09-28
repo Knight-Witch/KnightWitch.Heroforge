@@ -382,9 +382,9 @@
       "path": "tools/JSON_Tool.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.1.0",
-      "versionOrigin": "issue-59-json-provider",
-      "build": "1.1.0-diagnostic-state-seam"
+      "version": "1.1.1",
+      "versionOrigin": "issue-59-json-diagnostic-uw-init",
+      "build": "1.1.1-diagnostic-uw-init"
     },
     {
       "id": "utilities",
@@ -720,7 +720,7 @@
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/JSON_Tool.js?v=1.1.0-diagnostic-state-seam",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/JSON_Tool.js?v=1.1.1-diagnostic-uw-init",
       "enabledByDefault": true
     },
     {

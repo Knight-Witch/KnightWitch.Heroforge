@@ -1,3 +1,15 @@
+## 2026-09-28 — #59 JSON Tool v1.1.1 initialization repair
+
+### STATIC PASS / live repin pending
+
+- Confirmed live failure boundary: JSON Tool only, `UW is not defined`.
+- Added standard page-window alias before any diagnostic export.
+- JSON Tool source version/build + manifest registry/cache key synchronized at v1.1.1.
+- No JSON import/export operation is invoked by the fix.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 Dev v1.15.0 JSON/script-compat pin
 
 ### PASS / live Dev gate pending
