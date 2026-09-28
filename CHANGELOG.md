@@ -1,3 +1,14 @@
+## 2026-09-27 — Issue #59 Texture Quality provider payload staging
+
+- Added Texture Quality Diagnostic Provider v0.1.0 as a thin adapter around validated High Res Diagnostics v0.1.3; legacy High Res capture/comparison source remains unchanged.
+- Generic provider maps state, figures, paint-state, atlas, materials, resources, color-bake, verification, failure-context, and events into stable provider sections.
+- Provider freezes Native Reconcile diagnostic state before legacy snapshot capture and truthfully marks retained pre-cleanup failure context unavailable pending later narrow #34-aligned work.
+- Bug Capture UI -> v0.2.0 with generic opt-in provider checkboxes; General-only remains the default.
+- Stages Dev launcher registry v1.12.0 / `1.12.0-texture-quality-provider`.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-26 — Issue #59 General Capture execution harness gate
 
 - Executed the exact canonical Diagnostics Core v0.1.0 bytes in a bounded mocked browser/HeroForge harness.
