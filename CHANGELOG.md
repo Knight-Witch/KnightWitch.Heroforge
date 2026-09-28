@@ -1,3 +1,13 @@
+## 2026-09-27 — Issue #59 Dev v1.13.0 Booth provider pin
+
+- Dev launcher -> v1.13.0 / `1.13.0-booth-diagnostic-provider`.
+- Pins immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999` with Booth Diagnostic Provider v0.1.0 and read-only Booth/Bootstrap/Readiness seams.
+- Syntax, manifest/divergence JSON, registry uniqueness, dependency order, and forbidden-mutation static checks pass.
+- Provider contains no Booth session/toggle/settings save/apply/media-capture/readiness-sync calls.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Booth diagnostic provider staging
 
 - Added Booth Diagnostic Provider v0.1.0 with bounded state/bootstrap/native/settings/presentation/components/media evidence.
