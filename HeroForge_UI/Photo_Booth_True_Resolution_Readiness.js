@@ -8,7 +8,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const GLOBAL = 'KWPhotoBoothTrueResolutionReadiness';
-  const BUILD = '1.0.0-public-readiness';
+  const VERSION = '1.1.0';
+  const BUILD = '1.1.0-diagnostic-readiness-state';
   const BUTTON_SELECTOR = '.kwPBResBtn';
   const SOURCE_SIZE = 4096;
   let timer = null;
@@ -58,6 +59,33 @@
     }
   }
 
+  function getState() {
+    const service = UW.KWPhotoBoothTrueResolution || null;
+    const BT = UW.BT || null;
+    const maker = BT && (BT.liveEngine || BT.maker) || null;
+    const CK = UW.CK || null;
+    const rendererReady = rendererSupportsSource();
+    return {
+      featureId: 'photo-booth.true-resolution-readiness',
+      version: VERSION,
+      build: BUILD,
+      ready: isReady(),
+      rendererSupportsSource: rendererReady,
+      servicePresent: !!service,
+      enabled: service ? !!service.enabled : null,
+      providerInstalled: service ? !!service.providerInstalled : null,
+      providerLost: service ? !!service.providerLost : null,
+      busy: service ? !!service.busy : null,
+      serviceStatus: service ? service.status || null : null,
+      serviceError: service ? service.lastError || null : null,
+      btPresent: !!BT,
+      makerPresent: !!maker,
+      makerEnabled: !!(maker && maker.enabled === true),
+      takeScreenshotAvailable: !!(maker && typeof maker.takeScreenshot === 'function'),
+      renderToCanvasAvailable: !!(CK && CK.Effects && typeof CK.Effects.renderToCanvas === 'function')
+    };
+  }
+
   function sync() {
     const disabled = !isReady();
     const buttons = document.querySelectorAll(BUTTON_SELECTOR);
@@ -81,6 +109,6 @@
     return true;
   }
 
-  UW[GLOBAL] = { build: BUILD, sync, initialize, dispose };
+  UW[GLOBAL] = { version: VERSION, build: BUILD, getState, sync, initialize, dispose };
   initialize();
 })();
