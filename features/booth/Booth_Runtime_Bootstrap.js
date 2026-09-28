@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.runtime-bootstrap';
-  const VERSION = '0.2.1';
-  const BUILD = '0.2.1-media-readiness-handoff';
+  const VERSION = '0.2.2';
+  const BUILD = '0.2.2-readonly-diagnostic-state';
   const API_KEY = 'KW_WD_BOOTH_BOOTSTRAP';
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const POLL_MS = 200;
@@ -205,6 +205,11 @@
       } catch {}
     }
     return null;
+  }
+
+  function diagnosticScriptPath() {
+    const version = deriveHeroForgeVersion();
+    return '/gated/booth.js' + (version ? '?version=' + encodeURIComponent(version) : '');
   }
 
   function boothScriptPath() {
@@ -459,7 +464,8 @@
   }
 
   function getState() {
-    const topology = scriptDiagnostics(state.lastScriptPath || undefined);
+    const diagnosticPath = state.lastScriptPath || diagnosticScriptPath();
+    const topology = scriptDiagnostics(diagnosticPath);
     return {
       featureId: FEATURE_ID,
       version: VERSION,
