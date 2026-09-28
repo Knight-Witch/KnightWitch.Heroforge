@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-27 UTC
-**Canonical Dev:** `WITCH_DEV_MAIN` v1.14.0 / immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7`
+**Canonical Dev:** `WITCH_DEV_MAIN` v1.15.1 candidate / immutable payload `132e0c47ecc89fd4bb2c8c9913eff78d656b325a`
 **Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
 **Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
 **Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
@@ -60,7 +60,7 @@ Continue #59 provider rollout from the issue #88 architecture while #90 waits on
 Immediate implementation order:
 1. **Staged on `wd/59-json-script-compat-capture`:** Booth settings-I/O retention, JSON/ReCK provider, and `script-compat` provider as one v1.15.0 diagnostic bundle.
 2. Exact-source syntax/privacy/load-order + execution-mock gates PASS.
-3. Live v1.15.0 gate found one narrow JSON Tool regression: `UW is not defined`; JSON Tool v1.1.1 adds the missing page-window alias before repinning Dev.
+3. Dev v1.15.1 repins payload `132e0c47ecc89fd4bb2c8c9913eff78d656b325a` with JSON Tool v1.1.1; rerun live loader + JSON/script-compat gates.
 4. Resume the already-staged Decals provider branch after these live gates.
 
 Design amendment: `wd/88-diagnostic-capture-architecture` @ `7571d67590e75df58a0181c1e23c8f56a263fa16`.

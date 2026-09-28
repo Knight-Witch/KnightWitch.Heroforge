@@ -1,3 +1,14 @@
+## 2026-09-28 — #59 Dev v1.15.1 JSON Tool repair pin
+
+### PASS / live loader gate pending
+
+- Launcher metadata/runtime version/build + manifest launcher registry synchronized at v1.15.1.
+- Immutable payload: `132e0c47ecc89fd4bb2c8c9913eff78d656b325a`.
+- JSON Tool v1.1.1 syntax PASS and defines the page-window alias before diagnostic export.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 JSON Tool v1.1.1 initialization repair
 
 ### STATIC PASS / live repin pending

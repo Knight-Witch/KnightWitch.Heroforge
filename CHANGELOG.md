@@ -1,3 +1,12 @@
+## 2026-09-28 — #59 Dev v1.15.1 JSON Tool repair pin
+
+- Dev launcher -> v1.15.1 / `1.15.1-json-tool-uw-fix`.
+- Pins immutable payload `132e0c47ecc89fd4bb2c8c9913eff78d656b325a` containing JSON Tool v1.1.1.
+- This repin exists solely to replace the live-failing v1.15.0 JSON Tool payload.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — #59 JSON Tool v1.1.1 diagnostic initialization fix
 
 - Live v1.15.0 loader gate found JSON Tool as the sole failed module: `UW is not defined`.
