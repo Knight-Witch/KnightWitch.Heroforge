@@ -65,6 +65,26 @@
         "Provider captures state/bootstrap/native-runtime/settings/presentation/components/media with truthful partial/not-captured coverage for retained settings/presentation failures and normalized events.",
         "Live Dev validation proves Booth state is invariant across provider capture."
       ]
+    },
+    {
+      "issue": 90,
+      "status": "dev-hf-status-public-client-candidate",
+      "reason": "Issue #90 adds an optional, non-blocking HF.Status public-status consumer and native Utilities panel. Dev uses an explicit hf-status-dev transport seam; public Stable must not inherit the temporary Dev endpoint.",
+      "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json",
+        "features/status/HF_Status_Public_Client.js",
+        "features/status/HF_Status_Public_UI.js"
+      ],
+      "acceptance": [
+        "Cached last-known reviewed state renders before any network refresh.",
+        "Refresh uses the bounded launcher transport with ETag / If-None-Match and accepts 304 without replacing the cached payload.",
+        "Network, timeout, malformed JSON, and unsupported schema failures preserve last-known state and never block Dock startup/core behavior.",
+        "Public status client carries no HFBR reporter token/private report state.",
+        "Utilities UI renders Critical Alerts, Open / Investigating, Latest Release, and status/report/track links from reviewed HF.Status state.",
+        "Dev endpoint is explicit channel configuration only; Stable promotion requires a non-temporary public endpoint.",
+        "Live Dev loader/network/cache gate and Amanda visual/interaction gate pass before Stable promotion."
+      ]
     }
   ],
   "notes": [
