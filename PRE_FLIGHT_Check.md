@@ -1,3 +1,16 @@
+## 2026-09-28 — Issue #90 canonical Dev integration candidate
+
+### STATIC PASS / live Dev gate pending
+
+- Reconciliation base: canonical `WITCH_DEV_MAIN` `6bdda4e2c13c250621137fb43faddfa4f5d921af`.
+- Canonical movement since the #90 branch point changed only `ACTIVE_CONTEXT.md`, `CHANGELOG.md`, and `PRE_FLIGHT_Check.md` for the #59 Booth-provider live gate; launcher/manifest/runtime source remained unchanged.
+- #90 runtime payload remains immutable at `d338d7ace39245ce7a845d237bf7273a80bf2fc7`.
+- Prior exact-source static/mock gate passed syntax, manifest uniqueness/order, cache-first render, 304 validation, offline cache preservation, 200 replacement/cache write, Utilities registration, and public/private separation.
+- Merge must be followed by canonical Dev reload/live loader/network/cache validation and Amanda visual/interaction review before any Stable consideration.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Booth generic-provider live gate
 
 ### PASS

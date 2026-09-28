@@ -1,3 +1,13 @@
+## 2026-09-28 — Issue #90 canonical Dev integration candidate
+
+- Rebases the already static-gated #90 HF.Status public client onto the latest canonical `WITCH_DEV_MAIN` after the #59 Booth-provider live-gate documentation update.
+- Dev launcher -> v1.14.0 / `1.14.0-hf-status-public-client`, immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7`.
+- Adds HF.Status Public Status Client/UI v0.1.0, bounded exact-endpoint anonymous transport, fixed namespaced GM cache, ETag/304 refresh, offline last-known preservation, and native Utilities `Script Status`.
+- Preserves #59 runtime source; latest canonical change since the #90 branch point was documentation-only.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Booth generic-provider live gate
 
 - Dev v1.13.0 / `1.13.0-booth-diagnostic-provider` loaded from immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`; loader completed 31/31 with zero failures/fallback.
