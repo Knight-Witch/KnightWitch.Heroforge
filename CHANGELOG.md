@@ -1,3 +1,13 @@
+## 2026-09-27 — Issue #59 Dev v1.12.0 Texture Quality provider pin
+
+- Dev launcher -> v1.12.0 / `1.12.0-texture-quality-provider`.
+- Pins immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02` containing Texture Quality Diagnostic Provider v0.1.0 and Bug Capture UI v0.2.0.
+- Adapter/UI syntax, manifest/divergence JSON, registry uniqueness, load order, and version checks pass.
+- Legacy High Res Diagnostics v0.1.3 and Native Reconcile v0.4.1 remain byte-identical to canonical Dev baseline.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Texture Quality provider payload staging
 
 - Added Texture Quality Diagnostic Provider v0.1.0 as a thin adapter around validated High Res Diagnostics v0.1.3; legacy High Res capture/comparison source remains unchanged.
