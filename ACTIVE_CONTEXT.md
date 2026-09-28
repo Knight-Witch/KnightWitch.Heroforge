@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-27 UTC
-**Canonical Dev candidate:** `WITCH_DEV_MAIN` -> v1.14.0 / immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7` after #90 merge
+**Canonical Dev:** `WITCH_DEV_MAIN` v1.14.0 / immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7`
 **Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
 **Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
 **Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
@@ -45,11 +45,11 @@
 ## Parallel #90 integration state
 
 - HF.Status public API v1 is live-validated on HF.Status Dev.
-- Public Status Client v0.1.0 / `0.1.0-etag-cache` and Public Status UI v0.1.0 / `0.1.0-compact-status-panel` are staged for canonical Dev.
+- Public Status Client v0.1.0 / `0.1.0-etag-cache` and Public Status UI v0.1.0 / `0.1.0-compact-status-panel` are merged to canonical Dev via PR #91 / `ef931517b0d4e26dc7540713bfc29ee6bca2ed67`.
 - Dev launcher v1.14.0 pins immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7` and exposes only the exact Dev public-status endpoint through a bounded anonymous transport.
 - Static/mock gates passed: syntax, unique/load-ordered manifest entries, synchronous cache restore, ETag 304 validation, offline preservation of last-known data, 200 replacement/cache write, native Utilities registration, and no HFBR reporter-token/private triage behavior.
 - Public Stable is untouched.
-- Remaining #90 gate after merge: reload canonical Dev, verify loader/network/cache behavior, then Amanda visual/interaction review of Utilities -> Script Status.
+- Remaining #90 gate: reload canonical Dev, verify loader/network/cache behavior, then Amanda visual/interaction review of Utilities -> Script Status.
 
 ## Current route
 

@@ -1,3 +1,13 @@
+## 2026-09-28 — Issue #90 merged to canonical Dev
+
+- PR #91 merged the HF.Status public-status client to `WITCH_DEV_MAIN` as `ef931517b0d4e26dc7540713bfc29ee6bca2ed67`.
+- Canonical Dev now identifies as v1.14.0 / `1.14.0-hf-status-public-client` and pins immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7`.
+- Manifest includes the hidden public client + UI modules before Utilities; #59 runtime source remains preserved.
+- Static/mock behavior already passed. Remaining acceptance is live Dev loader/network/cache validation plus Amanda's visual/interaction gate.
+- Documentation-only merge-state record; no runtime/module/public behavior changed in this commit.
+
+---
+
 ## 2026-09-28 — Issue #90 canonical Dev integration candidate
 
 - Rebases the already static-gated #90 HF.Status public client onto the latest canonical `WITCH_DEV_MAIN` after the #59 Booth-provider live-gate documentation update.

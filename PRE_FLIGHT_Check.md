@@ -1,3 +1,17 @@
+## 2026-09-28 — Issue #90 canonical Dev merge record
+
+### MERGED / live gate pending
+
+- PR #91 merge commit: `ef931517b0d4e26dc7540713bfc29ee6bca2ed67`.
+- Canonical launcher/manifest agree on v1.14.0 / `1.14.0-hf-status-public-client`.
+- Canonical launcher pins immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7`.
+- Manifest contains `hf-status-public-client` followed by `hf-status-public-ui`, both before `utilities`.
+- No GitHub Actions checks are configured for this repository; exact-source syntax/static/mock gates were completed before merge.
+- Next gate requires live canonical Dev reload + network/cache evidence and Amanda visual/interaction review.
+- Documentation-only merge-state record; Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — Issue #90 canonical Dev integration candidate
 
 ### STATIC PASS / live Dev gate pending
