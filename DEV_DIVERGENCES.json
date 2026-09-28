@@ -42,21 +42,23 @@
     },
     {
       "issue": 59,
-      "status": "dev-generic-diagnostics-candidate",
-      "reason": "Issue #59 adds the Generic Bug Capture Diagnostics Core and Utilities UI in Dev before any public Stable promotion. HF.Status remains optional intake only and is not a Witch Dock runtime dependency.",
+      "status": "dev-generic-diagnostics-texture-quality-candidate",
+      "reason": "Issue #59 adds Generic Bug Capture plus an additive Texture Quality provider adapter around validated High Res Diagnostics v0.1.3. HF.Status remains optional intake only and is not a Witch Dock runtime dependency.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
         "features/diagnostics/Witch_Dock_Diagnostics_Core.js",
-        "features/diagnostics/Witch_Dock_Bug_Capture_UI.js"
+        "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
+        "features/diagnostics/Texture_Quality_Diagnostic_Provider.js"
       ],
       "acceptance": [
-        "General-only capture is explicit and read-only.",
-        "Capture exports bounded environment/graphics/Witch Dock/HeroForge/scene/error/event/coverage evidence with stable section addressing and hashes.",
+        "General-only capture remains explicit, read-only, and independently usable.",
+        "Texture Quality provider registers through the generic provider contract without changing High Res Diagnostics v0.1.3 or Native Reconcile lifecycle behavior.",
+        "Provider snapshot exposes stable state/figures/paint-state/atlas/materials/resources/color-bake/verification/failure-context/events sections with truthful coverage.",
+        "Retained pre-cleanup Texture Quality failure context remains explicitly unavailable until a later narrow implementation adds it.",
+        "Bug Capture UI lists registered providers and includes only explicitly selected feature providers.",
         "No account/auth/session data, arbitrary storage, full character JSON, screenshots, or unbounded logs are exported by default.",
-        "Provider failure remains isolated and provider registration is optional.",
-        "Utilities Bug Capture downloads locally and never uploads automatically.",
-        "Live Dev validation passes before Texture Quality provider adaptation or Stable promotion."
+        "Live Dev provider capture preserves High Res enabled/persistent/session state."
       ]
     }
   ],
