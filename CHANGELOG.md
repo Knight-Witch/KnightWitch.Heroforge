@@ -1,3 +1,16 @@
+## 2026-09-27 — Issue #59 Booth diagnostic provider staging
+
+- Added Booth Diagnostic Provider v0.1.0 with bounded state/bootstrap/native/settings/presentation/components/media evidence.
+- Booth -> v27.2.0 adds a bounded read-only `getDiagnosticState()`; the legacy debug JSON helper now delegates to the same seam.
+- Booth Runtime Bootstrap -> v0.2.2 makes diagnostic `getState()` script inspection side-effect free.
+- TRUE-resolution Readiness -> v1.1.0 adds non-mutating diagnostic `getState()` without changing its existing UI sync loop.
+- Provider excludes character/model data, imported file contents, media output filenames/bytes, and raw Booth debug logs.
+- Retained settings/presentation failure history and normalized Booth events remain explicitly partial/not-captured rather than fabricated.
+- Stages Dev launcher registry v1.13.0 / `1.13.0-booth-diagnostic-provider`.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Texture Quality generic-provider live gate
 
 - Dev v1.12.0 / `1.12.0-texture-quality-provider` loaded from immutable payload `504f5267a83a528ecbc4a6b2d797736575a74b02`; loader completed 30/30 with zero failures/fallback.
