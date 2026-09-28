@@ -1,3 +1,15 @@
+## 2026-09-27 — Issue #59 Dev v1.13.0 Booth provider pin
+
+### PASS / live Booth provider gate pending
+
+- Launcher metadata/runtime version/build and manifest registry are synchronized at v1.13.0.
+- Immutable payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999` contains the exact Booth provider candidate.
+- Provider dependencies load before Booth provider; module total is 31.
+- Branch is ahead of canonical Dev and not behind.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Booth provider staging
 
 ### PENDING live Booth provider gate
