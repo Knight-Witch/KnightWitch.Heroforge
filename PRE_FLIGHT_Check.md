@@ -1,3 +1,15 @@
+## 2026-09-27 — Issue #59 Booth provider staging
+
+### PENDING live Booth provider gate
+
+- Booth provider capture path contains no Booth enable/disable/session-setting/save/apply/media-capture/readiness-sync call.
+- New Booth/Bootstrap/Readiness seams are bounded read-only APIs.
+- Existing General and Texture Quality providers are unchanged.
+- Manifest places Booth provider after Diagnostics Core and after its Booth/media dependencies.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-27 — Issue #59 Texture Quality generic-provider live gate
 
 ### PASS
