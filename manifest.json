@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.12.0",
-      "build": "1.12.0-texture-quality-provider",
-      "versionOrigin": "issue-59-texture-quality-provider"
+      "version": "1.13.0",
+      "build": "1.13.0-booth-diagnostic-provider",
+      "versionOrigin": "issue-59-booth-provider"
     },
     {
       "id": "witch-dock-notifications",
@@ -232,9 +232,9 @@
       "path": "features/booth/Booth_Runtime_Bootstrap.js",
       "kind": "compatibility-feature",
       "load": "manifest",
-      "version": "0.2.1",
-      "build": "0.2.1-media-readiness-handoff",
-      "versionOrigin": "issue-10-media-readiness-handoff-2026-09-17"
+      "version": "0.2.2",
+      "build": "0.2.2-readonly-diagnostic-state",
+      "versionOrigin": "issue-59-booth-provider"
     },
     {
       "id": "booth-tool",
@@ -242,9 +242,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.1.0",
-      "build": "v27.1.0-booth-json-file-io",
-      "versionOrigin": "issue-20-booth-json-file-io-2026-09-21"
+      "version": "27.2.0",
+      "build": "v27.2.0-diagnostic-state-seam",
+      "versionOrigin": "issue-59-booth-diagnostic-seam"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -272,9 +272,9 @@
       "path": "HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
       "kind": "heroForgeUI",
       "load": "manifest",
-      "version": "1.0.0",
-      "build": "1.0.0-public-readiness",
-      "versionOrigin": "existing"
+      "version": "1.1.0",
+      "build": "1.1.0-diagnostic-readiness-state",
+      "versionOrigin": "issue-59-booth-provider"
     },
     {
       "id": "photo-booth-true-resolution-ui",
@@ -434,6 +434,16 @@
       "version": "0.1.0",
       "build": "0.1.0-legacy-diagnostic-adapter",
       "versionOrigin": "issue-59-texture-quality-provider"
+    },
+    {
+      "id": "booth-diagnostic-provider",
+      "title": "Booth Diagnostic Provider",
+      "path": "features/diagnostics/Booth_Diagnostic_Provider.js",
+      "kind": "diagnostic-provider",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-booth-state-adapter",
+      "versionOrigin": "issue-59-booth-provider"
     }
   ],
   "tools": [
@@ -536,7 +546,7 @@
       "id": "booth-runtime-bootstrap",
       "title": "Booth Runtime Bootstrap",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/booth/Booth_Runtime_Bootstrap.js?v=0.2.1-media-readiness-handoff",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/booth/Booth_Runtime_Bootstrap.js?v=0.2.2-readonly-diagnostic-state",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -545,7 +555,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.1.0-v27.1.0-booth-json-file-io",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.2.0-v27.2.0-diagnostic-state-seam",
       "enabledByDefault": true
     },
     {
@@ -570,7 +580,7 @@
       "id": "photo-booth-true-resolution-readiness",
       "title": "Photo Booth True Resolution Readiness",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js?v=1.1.0-diagnostic-readiness-state",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -686,6 +696,15 @@
       "title": "Texture Quality Diagnostic Provider",
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Texture_Quality_Diagnostic_Provider.js?v=0.1.0-legacy-diagnostic-adapter",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "booth-diagnostic-provider",
+      "title": "Booth Diagnostic Provider",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Booth_Diagnostic_Provider.js?v=0.1.0-booth-state-adapter",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
