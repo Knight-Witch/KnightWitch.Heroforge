@@ -1,3 +1,18 @@
+## 2026-09-29 — #94 public v2.3.2 live Stable smoke
+
+### PASS
+
+- Live payload: `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
+- Live Booth build: `v27.1.1-json-subtool-section`.
+- DOM: one `booth` section and one sibling `booth-json` section.
+- DOM: `.kwWDSection[data-section-id="booth"] .kwBoothFileButtons` count = 0.
+- DOM: `.kwWDSection[data-section-id="booth-json"] .kwBoothFileButtons` count = 1.
+- DOM: Booth JSON status present as `Ready.`; Directions remains under Persistent Booth.
+- Amanda visual review: PASS.
+- Runtime/module/manifest/public behavior unchanged by this documentation-only record.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 launcher pin
 
 ### STATIC PASS / Stable merge pending

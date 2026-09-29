@@ -1,3 +1,13 @@
+## 2026-09-29 — #94 public v2.3.2 live Stable smoke
+
+- Live HF-Chat-Bridge readback confirms public immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82` and Booth `v27.1.1-json-subtool-section`.
+- Stable DOM confirms `Persistent Booth` and `Booth JSON Import / Export` are sibling native sections; JSON Save/Load controls exist only under the dedicated Booth JSON section.
+- Directions remain under Persistent Booth.
+- Amanda visual gate passed on public Stable.
+- Documentation-only smoke record; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 launcher pin
 
 - Public launcher -> v2.3.2 / `2.3.2-booth-json-subtool`.
