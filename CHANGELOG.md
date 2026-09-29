@@ -1,3 +1,13 @@
+## 2026-09-29 — #94 Dev v1.15.2 Booth JSON subtool pin
+
+- Dev launcher -> v1.15.2 / `1.15.2-booth-json-subtool`.
+- Pins immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`, which contains Booth v27.3.1 and the dedicated `Booth JSON Import / Export` section.
+- The payload also preserves the already-staged #59/#90 Dev runtime state unchanged.
+- Public Stable unchanged.
+- Next gate: reload canonical Dev through HF-Chat-Bridge and verify separate Booth section DOM + button/status wiring.
+
+---
+
 ## 2026-09-29 — #94 Dev v1.15.2 payload staging
 
 - Staged canonical Dev launcher registry metadata at v1.15.2 / `1.15.2-booth-json-subtool` for the #94 payload.

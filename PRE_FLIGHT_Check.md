@@ -1,3 +1,15 @@
+## 2026-09-29 — #94 Dev v1.15.2 Booth JSON subtool pin
+
+### STATIC PASS / live Dev gate pending
+
+- Dev userscript parse/syntax gate PASS.
+- `@version`, runtime `DEV_VERSION`, `DEV_BUILD`, and immutable `PAYLOAD_REF` synchronized to v1.15.2 / `1.15.2-booth-json-subtool`.
+- Payload ref `3c05f22a019278e2976d3c6ba8c847b333eff808` contains manifest launcher registry v1.15.2 and Booth v27.3.1.
+- No Stable files changed.
+- Next gate: Bridge reload, loader health, Booth DOM separation, and bounded interaction/readback.
+
+---
+
 ## 2026-09-29 — #94 Dev v1.15.2 payload staging
 
 ### STATIC PASS / launcher pin pending

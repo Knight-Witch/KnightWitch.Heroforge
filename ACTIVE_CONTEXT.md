@@ -1,17 +1,17 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-29 UTC
-**Canonical Dev:** `WITCH_DEV_MAIN` v1.15.1 candidate / immutable payload `132e0c47ecc89fd4bb2c8c9913eff78d656b325a`
+**Canonical Dev:** `WITCH_DEV_MAIN` v1.15.2 candidate / immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`
 **Public Stable:** `Witch_Scripts` v2.3.1 / immutable payload `50405ca027e28227123f475c488538d214644b0d`
 **Active engineering tracks:** #94 — Booth JSON subtool container; #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
 **Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
 
 ## #94 Booth JSON subtool container
 
-- Issue #94 / branch `wd/94-booth-json-subtool`.
+- Issue #94 merged via PR #95; canonical Dev payload is pinned for live validation.
 - Confirmed defect: Booth JSON Save/Load was structurally mounted inside the `Persistent Booth` section.
 - Booth v27.3.1 candidate gives Booth JSON its own native `Booth JSON Import / Export` section while preserving all JSON handlers/diagnostics and Persistent Booth behavior.
-- Static source/manifest/structure gate PASS; live Dev UI regression pending.
+- Static source/manifest/structure gate PASS; Dev launcher v1.15.2 now pins the #94 payload; live Dev UI regression pending.
 - HF.Status registry impact: none; preserve stable feature ID `booth-json`.
 - Public Stable untouched.
 
