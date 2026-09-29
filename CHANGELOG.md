@@ -1,3 +1,13 @@
+## 2026-09-29 — #94 rollout complete; branch deletion handoff staged
+
+- Public Stable v2.3.2 live smoke passed: payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`, Booth `v27.1.1-json-subtool-section`, sibling Booth sections, zero JSON controls under Persistent Booth.
+- Amanda public Stable visual gate passed.
+- Removed resolved #94 runtime divergence; Dev Booth remains ahead only under open #59 diagnostics.
+- Current GitHub connector cannot delete refs, so exact mechanical cleanup is staged in `docs/BRANCH_DELETION_HANDOFF_ISSUE_94_2026-09-29.md` for the two temporary #94 branches.
+- Documentation/divergence-state only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 Stable v2.3.2 merged; smoke pending
 
 - PR #96 merged public Stable v2.3.2 / Booth v27.1.1 with immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`.

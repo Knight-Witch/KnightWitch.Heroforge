@@ -3,19 +3,16 @@
 **Updated:** 2026-09-29 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN` v1.15.2 candidate / immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`
 **Public Stable:** `Witch_Scripts` v2.3.2 / immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`
-**Active engineering tracks:** #94 — Booth JSON subtool container; #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
+**Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
 **Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
 
-## #94 Booth JSON subtool container
+## Janitorial note — completed #94 rollout
 
-- Issue #94 merged via PR #95; canonical Dev payload is pinned for live validation.
-- Confirmed defect: Booth JSON Save/Load was structurally mounted inside the `Persistent Booth` section.
-- Booth v27.3.1 candidate gives Booth JSON its own native `Booth JSON Import / Export` section while preserving all JSON handlers/diagnostics and Persistent Booth behavior.
-- Static source/manifest/structure gate PASS; Dev launcher v1.15.2 pins the #94 payload; live Bridge/DOM regression PASS.
-- Live readback confirms payload `3c05f22a019278e2976d3c6ba8c847b333eff808` / Booth `v27.3.1-json-subtool-section`.
-- Live DOM confirms `Persistent Booth` and `Booth JSON Import / Export` are separate sibling sections; JSON controls no longer exist under Persistent Booth.
-- HF.Status registry impact: none; preserve stable feature ID `booth-json`.
-- Public Stable v2.3.2 is merged via PR #96 with Stable Booth v27.1.1; live Stable smoke is still pending because the connected HeroForge session is running Dev.
+- Public Stable v2.3.2 / Booth v27.1.1 passed live Bridge/DOM smoke and Amanda visual review.
+- Runtime divergence for #94 is resolved; Dev keeps the same UI relocation inside Booth v27.3.1 because #59 independently requires its additional diagnostics.
+- Two temporary refs remain only because the current GitHub tool surface cannot delete branch refs: `wd/94-booth-json-subtool` and `release/94-booth-json-subtool`.
+- Mechanical deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_94_2026-09-29.md`. Do not re-audit unless live branch state contradicts the recorded SHAs.
+- After those two refs are deleted and inventory verified, remove this temporary note and close #94.
 
 ## Confirmed #59 runtime baseline
 

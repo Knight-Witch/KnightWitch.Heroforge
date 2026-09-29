@@ -1,3 +1,18 @@
+## 2026-09-29 — #94 rollout closeout / branch janitorial handoff
+
+### PASS / two ref deletions pending
+
+- Stable live smoke + Amanda visual review PASS.
+- #94 removed from `DEV_DIVERGENCES.json`; #59 now explicitly owns the remaining Dev Booth diagnostic delta.
+- DELETE refs recorded with exact SHAs and proven reachable from canonical history:
+  - `wd/94-booth-json-subtool` @ `00361606de4ebfd21674e5a5424854ec51de79f9`
+  - `release/94-booth-json-subtool` @ `e9225747a96ef47231e905270b5177f137a9662d`
+- Current branch count 39; expected post-delete count 37.
+- Connector has no delete-ref action; mechanical Work/GitHub cleanup handoff created.
+- Documentation/divergence-state only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 Stable merge state
 
 ### PROMOTED / live Stable smoke pending

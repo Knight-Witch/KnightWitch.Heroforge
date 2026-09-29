@@ -43,7 +43,7 @@
     {
       "issue": 59,
       "status": "dev-generic-diagnostics-json-script-compat-candidate",
-      "reason": "Issue #59 Generic Bug Capture includes staged Booth settings-I/O retention, JSON/ReCK compatibility evidence, and allowlisted external-script effect health for high-kitbash and Extra Slots.",
+      "reason": "Issue #59 Generic Bug Capture includes staged Booth settings-I/O retention, JSON/ReCK compatibility evidence, and allowlisted external-script effect health for high-kitbash and Extra Slots. Dev Booth v27.3.1 intentionally remains ahead of Stable Booth v27.1.1 only for these #59 diagnostics; the #94 Booth JSON section relocation itself is now shared/promoted.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -66,22 +66,6 @@
         "Script Compatibility is allowlisted/read-only and reports actual HeroForge kit/slot override effects without enumerating Tampermonkey/extensions or exporting function/script source.",
         "Kit heat uses only the currently validated zero-argument observational seam; no cap/slot/model mutation is permitted.",
         "Public Stable remains untouched until explicit promotion."
-      ]
-    },
-    {
-      "issue": 94,
-      "status": "stable-promoted-pending-smoke",
-      "reason": "Issue #94 is promoted to public Stable v2.3.2 with Stable Booth v27.1.1. Canonical Dev retains its v27.3.1 equivalent while the live Stable smoke is pending.",
-      "paths": [
-        "Witch_Dock_DEV.user.js",
-        "manifest.json",
-        "tools/Booth.js"
-      ],
-      "acceptance": [
-        "Dev v1.15.2 live DOM and Amanda visual gate passed.",
-        "Public Stable v2.3.2 / Booth v27.1.1 contains only the approved subtool-container relocation.",
-        "HF.Status stable feature ID booth-json remains mapped to wd-booth-tool with no registry rewrite.",
-        "Live Stable loader/DOM smoke passes before issue closeout and divergence removal."
       ]
     },
     {
