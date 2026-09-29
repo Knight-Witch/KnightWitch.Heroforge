@@ -1,3 +1,23 @@
+## 2026-09-29 — #94 public v2.3.2 launcher pin
+
+- Public launcher -> v2.3.2 / `2.3.2-booth-json-subtool`.
+- Pins immutable public payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`, which is Stable v2.3.1 plus only Booth v27.1.1's approved subtool-container relocation and release metadata.
+- Public promotion branch is now ready for merge to `Witch_Scripts` and live Stable smoke.
+
+---
+
+## 2026-09-29 — #94 public v2.3.2 Booth JSON subtool payload
+
+- Promotes only the human-approved Booth UI relocation onto public Stable v2.3.1.
+- Booth -> v27.1.1 / `v27.1.1-json-subtool-section`; Booth JSON Save/Load now renders in its own native `Booth JSON Import / Export` section instead of inside `Persistent Booth`.
+- Existing Stable Booth JSON file I/O, persistence behavior, Directions, timing, and runtime APIs are otherwise unchanged.
+- Dev-only #59 Booth diagnostics and other Dev-only modules are not included.
+- Stable launcher registry stages v2.3.2 / `2.3.2-booth-json-subtool`; immutable payload pin follows.
+- **HF.Status registry impact:** no mapping change; existing stable feature ID `booth-json` remains authoritative.
+- Public candidate only until Stable branch promotion + smoke.
+
+---
+
 ## 2026-09-26 — #58/#83 public v2.3.1 live Stable smoke
 
 - Bridge live smoke passed: installed v2.3.0 wrapper self-hosted v2.3.1 from public head `327053785876bb8c7cd0a45876bc86c9b693c108`, immutable payload `50405ca027e28227123f475c488538d214644b0d`; loader 25/25, zero failures and zero fallback. Release Notices v0.2.2 registered.
