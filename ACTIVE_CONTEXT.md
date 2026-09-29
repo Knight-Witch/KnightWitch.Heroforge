@@ -11,9 +11,11 @@
 - Issue #94 merged via PR #95; canonical Dev payload is pinned for live validation.
 - Confirmed defect: Booth JSON Save/Load was structurally mounted inside the `Persistent Booth` section.
 - Booth v27.3.1 candidate gives Booth JSON its own native `Booth JSON Import / Export` section while preserving all JSON handlers/diagnostics and Persistent Booth behavior.
-- Static source/manifest/structure gate PASS; Dev launcher v1.15.2 now pins the #94 payload; live Dev UI regression pending.
+- Static source/manifest/structure gate PASS; Dev launcher v1.15.2 pins the #94 payload; live Bridge/DOM regression PASS.
+- Live readback confirms payload `3c05f22a019278e2976d3c6ba8c847b333eff808` / Booth `v27.3.1-json-subtool-section`.
+- Live DOM confirms `Persistent Booth` and `Booth JSON Import / Export` are separate sibling sections; JSON controls no longer exist under Persistent Booth.
 - HF.Status registry impact: none; preserve stable feature ID `booth-json`.
-- Public Stable untouched.
+- Public Stable untouched; explicit Stable promotion remains gated.
 
 ## Confirmed #59 runtime baseline
 

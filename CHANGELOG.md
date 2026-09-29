@@ -1,3 +1,14 @@
+## 2026-09-29 — #94 live Dev UI validation
+
+- Dev v1.15.2 / payload `3c05f22a019278e2976d3c6ba8c847b333eff808` reloaded successfully through HF-Chat-Bridge.
+- Live runtime reports Booth v27.3.1 / `v27.3.1-json-subtool-section`.
+- DOM verification confirms `Persistent Booth` and `Booth JSON Import / Export` are separate sibling Witch Dock sections.
+- `.kwBoothFileButtons` has zero matches under the Persistent Booth section and one match under the Booth JSON section; both Save Settings / Load Settings buttons and the Ready status are present in the JSON section.
+- Persistent Booth Directions remains in the Persistent Booth section.
+- Documentation-only validation record; no additional runtime/module/manifest/public Stable behavior changed.
+
+---
+
 ## 2026-09-29 — #94 Dev v1.15.2 Booth JSON subtool pin
 
 - Dev launcher -> v1.15.2 / `1.15.2-booth-json-subtool`.

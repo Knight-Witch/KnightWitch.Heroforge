@@ -1,3 +1,25 @@
+## 2026-09-29 — #94 live Dev UI validation
+
+### PASS
+
+- HF-Chat-Bridge v0.4.0 healthy; page context available; post-reload receipt = `route_observed_after_reload`.
+- Loaded immutable payload readback: `3c05f22a019278e2976d3c6ba8c847b333eff808`.
+- Booth build readback: `v27.3.1-json-subtool-section`.
+- Live DOM:
+  - `[data-section-id="booth"]`: 1 section, title Persistent Booth.
+  - `[data-section-id="booth-json"]`: 1 section, title Booth JSON Import / Export.
+  - Persistent Booth -> `.kwBoothFileButtons`: 0.
+  - Booth JSON -> `.kwBoothFileButtons`: 1.
+  - Booth JSON -> Save Settings / Load Settings buttons: 2, both visible.
+  - Booth JSON -> file status: 1, visible, `Ready.`.
+  - Persistent Booth -> Directions header: retained.
+- This proves the reported nesting defect is removed in canonical Dev without changing the existing JSON handlers.
+- **Registry impact:** none; `booth-json` identity remains unchanged.
+- Public Stable unchanged.
+- Human visual gate remains available before any explicit Stable promotion.
+
+---
+
 ## 2026-09-29 — #94 Dev v1.15.2 Booth JSON subtool pin
 
 ### STATIC PASS / live Dev gate pending
