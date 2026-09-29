@@ -1,3 +1,13 @@
+## 2026-09-29 — #94 Dev v1.15.2 payload staging
+
+- Staged canonical Dev launcher registry metadata at v1.15.2 / `1.15.2-booth-json-subtool` for the #94 payload.
+- Payload includes Booth v27.3.1 / `v27.3.1-json-subtool-section` from merged PR #95.
+- Added #94 to `DEV_DIVERGENCES.json` as a Dev-only UI relocation pending live validation/promotion.
+- Launcher source still points to the prior immutable payload until the follow-up pin commit.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-29 — #94 Booth JSON subtool container
 
 - Booth -> v27.3.1 / `v27.3.1-json-subtool-section`.

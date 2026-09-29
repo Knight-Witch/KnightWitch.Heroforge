@@ -1,3 +1,16 @@
+## 2026-09-29 — #94 Dev v1.15.2 payload staging
+
+### STATIC PASS / launcher pin pending
+
+- Manifest JSON parse PASS.
+- Dev launcher registry metadata staged at v1.15.2 / `1.15.2-booth-json-subtool`.
+- Payload contains Booth v27.3.1 and its synchronized manifest cache key.
+- `DEV_DIVERGENCES.json` parses and records issue #94.
+- No launcher source/payload ref changed in this staging commit; installed Dev remains on the prior immutable payload until the next pin.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-29 — #94 Booth JSON subtool container
 
 ### STATIC PASS / live Dev UI gate pending
