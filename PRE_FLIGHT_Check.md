@@ -1,3 +1,16 @@
+## 2026-09-29 — #94 Stable merge state
+
+### PROMOTED / live Stable smoke pending
+
+- Public PR #96 merged successfully to `Witch_Scripts`.
+- Stable release: v2.3.2 / Booth v27.1.1 / payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
+- Public branch readback confirms synchronized launcher, manifest, Booth build/version, dedicated `booth-json` section, and absence of the old nested mount.
+- Connected HeroForge session is currently Dev v1.15.2, so it cannot honestly serve as a live Stable wrapper smoke.
+- #94 remains in `DEV_DIVERGENCES.json` only until a real Stable session smoke passes.
+- Documentation-only Dev update; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 live Dev UI validation
 
 ### PASS

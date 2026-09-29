@@ -70,19 +70,18 @@
     },
     {
       "issue": 94,
-      "status": "dev-booth-json-subtool-candidate",
-      "reason": "Issue #94 moves the existing Booth JSON Save/Load surface out of Persistent Booth into its own native Witch Dock subtool section. The reporter feature identity remains booth-json; behavior and ownership are unchanged.",
+      "status": "stable-promoted-pending-smoke",
+      "reason": "Issue #94 is promoted to public Stable v2.3.2 with Stable Booth v27.1.1. Canonical Dev retains its v27.3.1 equivalent while the live Stable smoke is pending.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
         "tools/Booth.js"
       ],
       "acceptance": [
-        "Booth tab renders Persistent Booth and Booth JSON Import / Export as separate native Witch Dock sections.",
-        "Save Settings and Load Settings handlers/status wiring remain unchanged.",
-        "Persistent Booth toggles, Directions, timing, persistence state, and runtime APIs remain unchanged.",
+        "Dev v1.15.2 live DOM and Amanda visual gate passed.",
+        "Public Stable v2.3.2 / Booth v27.1.1 contains only the approved subtool-container relocation.",
         "HF.Status stable feature ID booth-json remains mapped to wd-booth-tool with no registry rewrite.",
-        "Public Stable remains untouched until explicit promotion."
+        "Live Stable loader/DOM smoke passes before issue closeout and divergence removal."
       ]
     },
     {

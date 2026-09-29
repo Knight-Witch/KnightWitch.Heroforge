@@ -1,3 +1,12 @@
+## 2026-09-29 — #94 Stable v2.3.2 merged; smoke pending
+
+- PR #96 merged public Stable v2.3.2 / Booth v27.1.1 with immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
+- Promotion diff was limited to the Stable launcher/pin, Booth subtool relocation/version, manifest metadata/cache key, and release logs; Dev-only diagnostics were excluded.
+- Canonical Dev routing now records Stable v2.3.2 and keeps #94 open only for the required live Stable smoke/janitorial closeout.
+- Documentation/divergence-state update only; no Dev runtime/module/manifest behavior changed.
+
+---
+
 ## 2026-09-29 — #94 live Dev UI validation
 
 - Dev v1.15.2 / payload `3c05f22a019278e2976d3c6ba8c847b333eff808` reloaded successfully through HF-Chat-Bridge.
