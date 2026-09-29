@@ -1,3 +1,15 @@
+## 2026-09-28 — HF.Status feature-registry impact gate
+
+### PASS — documentation only
+
+- Added the canonical HF.Status feature-registry impact rule to PROJECT_CONTRACT.md and DEV_WORKFLOW.md.
+- The rule is limited to reporter-facing feature identity/routing and does not make HF.Status a Witch Dock runtime dependency.
+- Existing #59/#90 runtime work, manifest, Dev launcher, and public Stable are unchanged.
+- **Registry impact:** no registry data change from this documentation-only Witch Dock commit; HF.Status issue #49 owns the canonical registry foundation.
+- No JavaScript/runtime/module/manifest/public Witch Dock behavior changed.
+
+---
+
 ## 2026-09-28 — #59 Dev v1.15.1 JSON Tool repair pin
 
 ### PASS / live loader gate pending
