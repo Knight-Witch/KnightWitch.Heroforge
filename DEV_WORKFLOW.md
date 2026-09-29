@@ -36,7 +36,24 @@ When Stable receives an independent hotfix/change, mirror that new Stable state 
 
 Dev channel routing itself is an intentional infrastructure divergence: the installed launcher updates from `WITCH_DEV_MAIN`, while each validated launcher revision may pin an immutable payload commit containing its manifest/core/module snapshot. Any fallback URLs in that payload must point to `WITCH_DEV_MAIN`. Unaffected module bytes should still match Stable until an issue changes them.
 
-## 3. Validation
+## 3. Feature-registry impact gate
+
+Before validating a change that affects a user-facing Witch Dock feature, check the canonical HF.Status registry at `Knight-Witch/HF.Status:data/feature-registry.json`.
+
+This gate applies when work:
+
+- creates or removes a user-facing tool/function;
+- renames a tool/function or tab/group;
+- changes its Witch Dock module/path;
+- moves implementation into or out of Compatibility/Foundation;
+- changes maintenance/engineering ownership;
+- retires, replaces, splits, or merges reporter-facing functionality.
+
+Record in preflight either **registry updated** (with stable feature IDs), **no registry impact** (with reason), or **registry follow-up required** (with the linked HF.Status task). A reporter-facing migration with known stale routing is not release-ready.
+
+Moving code alone does not create a new reporter feature ID.
+
+## 4. Validation
 
 Use the narrowest meaningful gates:
 
@@ -49,13 +66,13 @@ Use the narrowest meaningful gates:
 
 A parse success is not runtime proof. For Dev startup specifically, verify the visible title says `WITCH DOCK - DEV v<version>`, the Tampermonkey entry is the fixed `WITCH DOCK - DEV` identity with matching `@version`, channel state reports `WITCH_DEV_MAIN`, `KWWitchDockManifestURL` points to the launcher's pinned immutable payload commit, loader requests resolve through that same immutable payload, fallback count is zero in the normal path, and no route silently resolves to Stable.
 
-## 4. Promotion to public
+## 5. Promotion to public
 
 Promotion is always explicit and narrow. Do not merge all of Dev merely because one feature is ready.
 
 Identify the exact validated files/commits, promote only that scope to `Witch_Scripts`, then run the Stable smoke.
 
-## 5. Post-promotion cleanup — automatic and required
+## 6. Post-promotion cleanup — automatic and required
 
 A passing Stable smoke automatically enters this phase. The original promotion approval already authorizes this janitorial closeout; do not pause to ask Amanda for separate cleanup permission.
 
@@ -92,7 +109,7 @@ If temporary refs exist:
 
 If the issue created no temporary refs, say so explicitly in the final closeout. No completed issue should silently accumulate task/payload/RC/helper branches.
 
-## 6. Legacy branch retirement
+## 7. Legacy branch retirement
 
 Legacy Dev/candidate/helper branches are audited under #12/#13 before deletion. Useful unique work is referenced by exact commit/path in an issue or migrated narrowly. Promoted, superseded, or abandoned experiments are not carried into New Dev.
 

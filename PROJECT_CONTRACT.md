@@ -65,6 +65,14 @@ The long-term userscript architecture should keep only the privileged userscript
 
 Expose bounded privileged operations rather than raw Tampermonkey capabilities into page context. Preserve current behavior while migrating incrementally.
 
+## HF.Status feature registry
+
+HF.Status `data/feature-registry.json` is the canonical cross-repository bug-report taxonomy and routing registry. Witch Dock source/manifest remains authoritative for Witch Dock runtime implementation; the HF.Status registry maps stable reporter feature IDs to the current Witch Dock tab/module/repository/ownership context.
+
+Any task that adds, removes, renames, moves, splits, merges, retires, or changes ownership of a user-facing Witch Dock tool/function must perform a registry-impact check before merge. If implementation moves but the user-facing function remains the same, preserve the stable reporter feature ID and update the mapping rather than inventing a new identity.
+
+When HF.Status registry access is temporarily unavailable, record a blocking/follow-up link rather than silently promoting known-stale routing.
+
 ## Versioning and manifests
 
 `manifest.json.moduleRegistry` is canonical for active module versions. Follow `MODULE_VERSIONING.md` for version/build changes. Runtime changes require syntax/static validation and the narrowest meaningful live regression.

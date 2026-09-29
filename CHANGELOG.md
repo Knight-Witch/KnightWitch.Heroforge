@@ -1,3 +1,12 @@
+## 2026-09-28 — HF.Status feature-registry impact gate
+
+- Added a durable cross-repo development rule requiring Witch Dock user-facing feature creation/rename/migration/retirement/ownership changes to check the canonical HF.Status feature registry.
+- Stable reporter feature IDs must survive implementation/repository moves; mapping metadata changes instead of creating a new identity solely because code moved.
+- Preflight must explicitly record registry updated / no registry impact / registry follow-up required.
+- Documentation-only governance change; no JavaScript/runtime/module/manifest/public Witch Dock behavior changed.
+
+---
+
 ## 2026-09-28 — #59 Dev v1.15.1 JSON Tool repair pin
 
 - Dev launcher -> v1.15.1 / `1.15.1-json-tool-uw-fix`.
