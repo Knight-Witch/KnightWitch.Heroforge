@@ -1,3 +1,20 @@
+## 2026-09-29 — #94 public v2.3.2 Booth JSON subtool payload
+
+### STATIC PASS / Stable pin pending
+
+- Based exactly on public Stable v2.3.1 commit `303c56806d74b18338f866f601b904010356bf52`.
+- Stable Booth source parse/syntax PASS.
+- Manifest JSON parse PASS.
+- Booth -> v27.1.1 / `v27.1.1-json-subtool-section`; Stable launcher registry staged at v2.3.2.
+- Structural assertion PASS: Booth JSON `fileBox` mounts under dedicated `booth-json` section root; no JSON controls remain under Persistent Booth.
+- Dev-only Booth v27.3.x settings-I/O diagnostic code was not copied into Stable.
+- Existing Stable Save Settings / Load Settings handlers and file-status wiring remain unchanged.
+- **Registry impact:** no HF.Status registry rewrite required; `booth-json` ID/ownership/path remain unchanged.
+- Next gate: immutable payload pin, merge to `Witch_Scripts`, then live Stable smoke.
+- No unrelated Stable module changes.
+
+---
+
 ## 2026-09-26 — #58/#83 public v2.3.1 Stable smoke
 
 ### PASS
