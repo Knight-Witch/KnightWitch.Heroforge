@@ -242,9 +242,9 @@
       "path": "tools/Booth.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "27.3.0",
-      "build": "v27.3.0-settings-io-diagnostics",
-      "versionOrigin": "issue-59-settings-io"
+      "version": "27.3.1",
+      "build": "v27.3.1-json-subtool-section",
+      "versionOrigin": "issue-94-booth-json-subtool"
     },
     {
       "id": "booth-black-canvas-display-replay",
@@ -596,7 +596,7 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.3.0-v27.3.0-settings-io-diagnostics",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Booth.js?v=27.3.1-v27.3.1-json-subtool-section",
       "enabledByDefault": true
     },
     {

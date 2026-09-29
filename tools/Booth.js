@@ -4,7 +4,7 @@
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 
   const TOOL_ID = 'booth-tool';
-  const BUILD_TAG = 'v27.3.0-settings-io-diagnostics';
+  const BUILD_TAG = 'v27.3.1-json-subtool-section';
 
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const STORE_DIR_HIDDEN = 'kw.witchDock.booth.directionsHidden.v1';
@@ -935,11 +935,17 @@
     ensureStyles();
 
     const sec = api.ui.createSection({ id: 'booth', title: 'Persistent Booth' });
+    const fileSec = api.ui.createSection({ id: 'booth-json', title: 'Booth JSON Import / Export' });
     container.appendChild(sec.root);
+    container.appendChild(fileSec.root);
 
     const root = document.createElement('div');
     root.className = 'kwBoothTool';
     sec.body.appendChild(root);
+
+    const fileRoot = document.createElement('div');
+    fileRoot.className = 'kwBoothTool';
+    fileSec.body.appendChild(fileRoot);
 
     const persistenceNote = document.createElement('div');
     persistenceNote.className = 'kwBoothPersistNote';
@@ -1017,7 +1023,7 @@
 
     const fileBox = document.createElement('div');
     fileBox.className = 'kwBoothBox';
-    root.appendChild(fileBox);
+    fileRoot.appendChild(fileBox);
 
     const fileHeader = document.createElement('div');
     fileHeader.className = 'kwBoothFileHeader';
@@ -2879,7 +2885,7 @@
     const saved = readSavedBoothConfig(rt);
     return {
       featureId: 'booth.persistence',
-      version: '27.3.0',
+      version: '27.3.1',
       build: BUILD_TAG,
       defaultBoothPersistence: !!state.consent,
       defaultBlackCanvas: !!state.defaultBlackCanvas,
@@ -2911,7 +2917,7 @@
 
     return {
       featureId: 'booth.persistence',
-      version: '27.3.0',
+      version: '27.3.1',
       build: BUILD_TAG,
       runtime: rt ? (rt.__kwBT ? 'BT' : 'TN') : null,
       mode: rt ? rt.currentMode : null,
@@ -2974,7 +2980,7 @@
   function installBoothApi() {
     UW[BOOTH_API_KEY] = {
       featureId: 'booth.persistence',
-      version: '27.3.0',
+      version: '27.3.1',
       build: BUILD_TAG,
       getState: boothPublicState,
       getDiagnosticState: boothDiagnosticState,
