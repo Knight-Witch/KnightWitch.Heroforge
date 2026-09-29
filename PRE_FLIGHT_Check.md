@@ -1,3 +1,19 @@
+## 2026-09-29 — #94 Booth JSON subtool container
+
+### STATIC PASS / live Dev UI gate pending
+
+- Booth source parse/syntax gate PASS.
+- Manifest JSON parse PASS.
+- Booth registry/cache key synchronized at v27.3.1 / `v27.3.1-json-subtool-section`.
+- Structural assertion PASS: `fileBox` no longer mounts under the Persistent Booth root; it mounts under a dedicated `booth-json` section root.
+- Existing Save Settings / Load Settings handlers and `state.ui.fileStatus` wiring are preserved unchanged.
+- Persistent Booth toggles, Directions, status, timing, persistence state, and runtime APIs are untouched.
+- **Registry impact:** no HF.Status registry update required; stable reporter feature ID `booth-json` already exists and remains mapped to `wd-booth-tool`.
+- Public Stable unchanged.
+- Next gate: live Dev visual/interaction verification through HF-Chat-Bridge.
+
+---
+
 ## 2026-09-28 — HF.Status feature-registry impact gate
 
 ### PASS — documentation only

@@ -1,3 +1,13 @@
+## 2026-09-29 — #94 Booth JSON subtool container
+
+- Booth -> v27.3.1 / `v27.3.1-json-subtool-section`.
+- Moved Booth Settings JSON Save/Load out of the `Persistent Booth` section into its own native Witch Dock subtool section: `Booth JSON Import / Export`.
+- Save/load handlers, settings-I/O diagnostics, file status handling, persistence toggles, Directions, and Booth runtime behavior are unchanged.
+- **HF.Status registry impact:** no registry data change; existing stable feature ID `booth-json` already maps this surface to `wd-booth-tool`.
+- Public Stable unchanged.
+
+---
+
 ## 2026-09-28 — HF.Status feature-registry impact gate
 
 - Added a durable cross-repo development rule requiring Witch Dock user-facing feature creation/rename/migration/retirement/ownership changes to check the canonical HF.Status feature registry.
