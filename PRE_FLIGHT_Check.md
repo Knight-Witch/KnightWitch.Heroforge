@@ -1,3 +1,15 @@
+## 2026-09-29 — #94 public v2.3.2 launcher pin
+
+### STATIC PASS / Stable merge pending
+
+- Public userscript parse/syntax PASS.
+- `@name`, `@version`, runtime `VERSION`, `BUILD`, `SCRIPT_NAME`, and immutable `PAYLOAD_REF` synchronized to v2.3.2.
+- Immutable payload: `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
+- Payload manifest stages launcher v2.3.2 and Booth v27.1.1; no Dev-only #59/#90 modules were introduced.
+- Next gate: merge release branch to `Witch_Scripts`, then live Stable loader/DOM smoke.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 Booth JSON subtool payload
 
 ### STATIC PASS / Stable pin pending

@@ -1,3 +1,11 @@
+## 2026-09-29 — #94 public v2.3.2 launcher pin
+
+- Public launcher -> v2.3.2 / `2.3.2-booth-json-subtool`.
+- Pins immutable public payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`, which is Stable v2.3.1 plus only Booth v27.1.1's approved subtool-container relocation and release metadata.
+- Public promotion branch is now ready for merge to `Witch_Scripts` and live Stable smoke.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 Booth JSON subtool payload
 
 - Promotes only the human-approved Booth UI relocation onto public Stable v2.3.1.
