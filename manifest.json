@@ -432,8 +432,8 @@
       "path": "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
       "kind": "feature-ui",
       "load": "module-loader",
-      "version": "0.4.0",
-      "build": "0.4.0-refined-shared-intake",
+      "version": "0.4.1",
+      "build": "0.4.1-refined-shared-intake",
       "versionOrigin": "issue-97-reporter-refinements"
     },
     {
@@ -791,7 +791,7 @@
       "id": "witch-dock-bug-capture-ui",
       "title": "Witch Dock Bug Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.0-refined-shared-intake",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.1-refined-shared-intake",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

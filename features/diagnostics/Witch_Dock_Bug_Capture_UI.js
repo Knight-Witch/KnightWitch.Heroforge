@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.0";
-  const BUILD = "0.4.0-refined-shared-intake";
+  const VERSION = "0.4.1";
+  const BUILD = "0.4.1-refined-shared-intake";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -1499,6 +1499,39 @@
     contextualObserver.observe(document.documentElement, { childList: true, subtree: true });
   }
 
+  function compareVersions(left, right) {
+    const leftParts = String(left || "0").split(".").map(function (part) { return Number.parseInt(part, 10) || 0; });
+    const rightParts = String(right || "0").split(".").map(function (part) { return Number.parseInt(part, 10) || 0; });
+    const length = Math.max(leftParts.length, rightParts.length);
+    for (let index = 0; index < length; index += 1) {
+      const delta = (leftParts[index] || 0) - (rightParts[index] || 0);
+      if (delta) return delta;
+    }
+    return 0;
+  }
+
+  function publishApi(api) {
+    const descriptor = Object.getOwnPropertyDescriptor(UW, GLOBAL);
+    if (descriptor && typeof descriptor.set === "function") {
+      UW[GLOBAL] = api;
+      return;
+    }
+    if (descriptor && descriptor.configurable === false) {
+      UW[GLOBAL] = api;
+      return;
+    }
+    let current = api;
+    Object.defineProperty(UW, GLOBAL, {
+      configurable: true,
+      enumerable: true,
+      get: function () { return current; },
+      set: function (candidate) {
+        if (!candidate || compareVersions(candidate.version, current && current.version) < 0) return;
+        current = candidate;
+      }
+    });
+  }
+
   function renderSection(container, api) {
     injectStyle();
     const section = api.ui.createSection({ id: "bug-capture", title: "Bug Capture", defaultCollapsed: false });
@@ -1519,7 +1552,7 @@
     container.appendChild(section.root);
   }
 
-  UW[GLOBAL] = Object.freeze({
+  publishApi(Object.freeze({
     featureId: FEATURE_ID,
     version: VERSION,
     build: BUILD,
@@ -1529,7 +1562,7 @@
     getSourceContext: function () { return state ? clone(state.sourceContext) : null; },
     getState: function () { return state ? { open: !!(overlay && overlay.style.display !== "none"), minimized: !!state.minimized, sourceContext: clone(state.sourceContext), classification: clone(state.classification), evidenceCount: state.evidence.length, diagnosticCaptureCount: state.diagnosticCaptures.length, receipt: clone(state.receipt) } : { open: false }; },
     attachContextualActions: attachContextualActions
-  });
+  }));
 
   startContextualObserver();
 })();
