@@ -12,10 +12,8 @@ A chat that cannot delete branches must still update this queue. “Safe to dele
 
 | Branch | Expected head SHA | Reason | Source | Status |
 |---|---|---|---|---|
-| `wd/41-dev-auto-host-head-resolve` | `55596c5e9b47fa93b1820d84d640111b19ef3581` | Exact branch head was merged by PR #47 into canonical `wd/dev-auto-host`; no post-merge commits remain on the task branch. | #41 / PR #47 | READY |
-| `wd/payload-1.5.1` | `6603911658b426c6b95367697bedcc4c7acf67eb` | Superseded immutable payload-preparation ref; current Dev launcher/manifest do not reference this branch or tip. | modular payload migration / #28 lineage | READY |
-| `wd/payload-1.5.4` | `6aee7fd8716d986e39b7415cf8927fa7043e776b` | Closed #24 payload-preparation ref; current Dev launcher/manifest do not reference this branch or tip. | #24 | READY |
-| `wd/28-public-payload-2.0.0` | `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a` | Completed #28 public payload ref; superseded and not referenced by current runtime routing. | #28 | READY |
+
+_No pending entries._
 
 ## Queue rules
 
