@@ -4,14 +4,13 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Canonical Dev launcher v1.15.7 pins immutable payload `a262fde0f88847f0021621a8c285fbee38cce2db` with Bug Capture UI v0.4.4 / `0.4.4-native-2k-typography`.
-- Exact-source Bridge request `wd97-20260930-dev1157-smoke-001` passed: 36/36 immutable modules loaded with zero fallback/failure.
-- Evidence 2K succeeded outside Photo Booth and attached `HeroForge_2K_2026-09-30T21-50-14-183Z.png` as a 3,159,448-byte evidence item; reporter state confirmed one attached evidence file.
-- Computed reporter typography now uses the Witch Dock system stack: buttons 12px/600, labels 600, and strong/review values 650.
-- Amanda's narrow visual confirmation of the 2K action and typography remains. Public Stable is untouched.
+- Amanda confirmed the final #97 visual/interaction gate on canonical Dev v1.15.7: Evidence 2K attaches correctly and the reporter typography now matches Witch Dock.
+- All scoped Dev gates are complete for Bug Capture UI v0.4.4 / `0.4.4-native-2k-typography`, immutable payload `a262fde0f88847f0021621a8c285fbee38cce2db`.
+- Earlier exact-source and backend evidence remains passed: 36/36 immutable modules with zero fallback/failure and real HF.Status E2E at `HFBR-20260930-V4M8M2EA`.
+- The next gate is explicit narrow Stable promotion approval. Public Stable is untouched.
 - Feature-registry impact: **no registry impact**. Existing feature/group IDs and ownership remain unchanged.
-- `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED`.
-- This documentation closeout changes no runtime, module, manifest, or public behavior.
+- `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED`; deletion queue remains empty.
+- This documentation-only confirmation changes no runtime, module, manifest, or public behavior.
 
 ## Latest Stable release — v2.3.2
 
