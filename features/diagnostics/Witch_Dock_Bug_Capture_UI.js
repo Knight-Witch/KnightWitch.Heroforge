@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.2";
-  const BUILD = "0.4.2-refined-shared-intake";
+  const VERSION = "0.4.3";
+  const BUILD = "0.4.3-contextual-action-corrections";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -21,6 +21,10 @@
     "json-tool:json-bulk-backup": { productId: "witch-dock", groupId: "wd-json", featureId: "json-tool" },
     "booth-tool:booth-json": { productId: "witch-dock", groupId: "wd-booth", featureId: "booth-json" },
     "booth-tool:booth": { productId: "witch-dock", groupId: "wd-booth" },
+    "photo-booth-true-resolution:high-resolution-capture": { productId: "witch-dock", groupId: "wd-booth" },
+    "spinny-mini-webp:spinny-mini-webp": { productId: "witch-dock", groupId: "wd-booth", featureId: "spinny-mini-webp" },
+    "texture-quality-native-reconcile:texture-quality-native-reconcile": { productId: "witch-dock", groupId: "wd-utilities", featureId: "texture-quality" },
+    "utilities:bug-capture": { productId: "witch-dock", groupId: "wd-utilities", featureId: "bug-capture" },
     "utilities:witch-dock": { productId: "witch-dock", groupId: "wd-utilities", featureId: "dock-reset-size" },
     "utilities:script-status": { productId: "witch-dock", groupId: "wd-utilities", featureId: "script-status" },
     "utilities:booth-features": { productId: "witch-dock", groupId: "wd-booth" },
@@ -120,7 +124,7 @@
 .kwbr-known{display:flex;flex-direction:column;gap:5px}.kwbr-known-item{padding:7px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.kwbr-known-item strong{display:block}.kwbr-known-actions{display:flex;gap:6px;margin-top:5px}.kwbr-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.08);padding:3px 7px;font-size:9px}.kwbr-save,.kwbr-target{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid rgba(255,255,255,.10);border-radius:7px;background:rgba(255,255,255,.025)}.kwbr-target{background:rgba(0,0,0,.12)}.kwbr-save-head,.kwbr-target-head{display:flex;align-items:center;gap:8px}.kwbr-save-head strong,.kwbr-target-head strong{flex:1;font-weight:600}.kwbr-evidence{display:flex;flex-direction:column;gap:5px}.kwbr-evidence-row{display:flex;gap:8px;align-items:flex-start;padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-evidence-main{min-width:0;flex:1}.kwbr-evidence-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-evidence-meta{font-size:9px;opacity:.55}.kwbr-remove{border:0;background:transparent;color:#ffb2b2;cursor:pointer}.kwbr-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.kwbr-review-cell{padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-review-cell span{display:block;font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.04em}.kwbr-review-cell strong{display:block;margin-top:2px;word-break:break-word}
 .kwbr-footer{position:sticky;bottom:0;display:flex;gap:7px;padding-top:8px;background:linear-gradient(transparent,#121216 16%)}
 #${RESTORE_ID}{position:fixed;z-index:2147483001;right:18px;bottom:18px;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);background:#17171d;color:#f1f1f5;border-radius:999px;padding:0;box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}#${RESTORE_ID} svg{width:21px;height:21px;pointer-events:none}
-.kwbr-report-icon{border:0;background:transparent;color:rgba(255,255,255,.72);width:22px;height:22px;padding:2px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}.kwbr-report-icon svg{width:16px;height:16px;pointer-events:none}.kwbr-report-icon:hover{color:#fff;background:rgba(255,255,255,.08);border-radius:4px}.kwWDSectionHeader .kwbr-report-icon{margin-left:auto}.kwWDSectionHeader .kwbr-report-icon+.kwWDDragHandle{margin-left:0}.kwbr-tool-icon{position:absolute;right:30px;top:4px;z-index:2}.kwbr-tool-host{position:relative}
+.kwbr-report-icon{border:0!important;background:transparent!important;box-shadow:none!important;color:rgba(255,255,255,.78);width:28px!important;height:28px!important;min-width:28px!important;padding:4px!important;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;border-radius:0!important;line-height:1!important}.kwbr-report-icon svg{width:18px;height:18px;pointer-events:none}.kwbr-report-icon:hover{color:#fff;background:transparent!important;border-radius:0!important}.kwWDSectionHeader>.kwbr-report-icon{margin:0 0 0 auto!important}.kwWDSectionHeader>.kwbr-report-icon+.kwWDDragHandle{margin-left:0!important}.kwbr-tool-icon{position:absolute;right:30px;top:4px;z-index:2}.kwbr-tool-host{position:relative}
 @media(max-width:650px){#${OVERLAY_ID}{top:10px;right:10px;left:10px;width:auto;max-height:92vh}.kwbr-grid,.kwbr-review{grid-template-columns:1fr}.kwbr-step-summary{display:none}}
 `;
     document.head.appendChild(style);
@@ -238,7 +242,16 @@
   }
 
   function currentHeroForgeSaveUrl() {
-    return validHeroForgeSaveUrl(location.href);
+    const openUrl = validHeroForgeSaveUrl(location.href);
+    if (openUrl) return openUrl;
+    try {
+      const activeConfig = UW.CK && UW.CK.saves && UW.CK.saves.activeConfig;
+      const configId = activeConfig && activeConfig.config_id;
+      if (/^\d{4,}$/.test(String(configId == null ? "" : configId))) {
+        return "https://www.heroforge.com/load_config%3D" + String(configId) + "/";
+      }
+    } catch (_) {}
+    return "";
   }
 
   function providerIdsFor(classification) {
@@ -484,6 +497,16 @@
   }
 
   function openReporter(context) {
+    if (state && overlay && overlay.style.display !== "none") {
+      state.message = "A report is already open. Its original source context was preserved; close it before starting a different report.";
+      if (state.minimized) {
+        state.minimized = false;
+        overlay.dataset.minimized = "0";
+      }
+      overlay.style.display = "flex";
+      render();
+      return clone(state.sourceContext);
+    }
     const sourceContext = makeSourceContext(context || {});
     state = makeEmptyState(sourceContext);
     overlay = createOverlay();
@@ -849,7 +872,7 @@
       el("strong", { text: "Affected save " + (saveIndex + 1) }),
       button("Remove", function () { state.report.affectedSaves.splice(saveIndex, 1); render(); }, "danger", state.report.affectedSaves.length <= 1)
     ]));
-    const urlInput = textInput(save.heroForgeUrl, function (value) { save.heroForgeUrl = value; if (clean(value)) save.jsonAttachmentId = ""; }, { maxlength: 2000, placeholder: "https://www.heroforge.com/load_config=…" });
+    const urlInput = textInput(save.heroForgeUrl, function (value) { save.heroForgeUrl = value; if (clean(value)) save.jsonAttachmentId = ""; }, { maxlength: 2000, placeholder: "Paste Share > Share Link or a library load_config URL" });
     root.appendChild(field("Share Link or library save URL", urlInput));
     const jsonInput = el("input", { type: "file", accept: ".json,application/json" });
     jsonInput.style.display = "none";
@@ -859,10 +882,10 @@
       jsonInput.value = "";
     });
     root.appendChild(el("div", { class: "kwbr-actions" }, [
-      button("Use Open Save Link", function () {
+      button("Use Current Save Link", function () {
         const current = currentHeroForgeSaveUrl();
-        if (current) { save.heroForgeUrl = current; save.jsonAttachmentId = ""; state.message = "Open save link attached."; }
-        else state.message = "This page is not a shareable save link. In HeroForge use Share > Share Link, then paste that link here.";
+        if (current) { save.heroForgeUrl = current; save.jsonAttachmentId = ""; state.message = "Current save link attached."; }
+        else state.message = "The current figure has no safe save link available. In HeroForge use Share > Share Link, then paste that link here.";
         render();
       }),
       button(save.jsonAttachmentId ? "Replace Figure JSON" : "Attach Figure JSON", function () { jsonInput.click(); }),
