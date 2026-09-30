@@ -2,8 +2,8 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "1.3.1";
-  const BUILD = "1.3.1-dock-size-reset-version-meta";
+  const VERSION = "1.4.0";
+  const BUILD = "1.4.0-status-reporter-sections";
   const RESET_DOCK_SIZE_VERSION = "1.0.0";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
@@ -468,6 +468,12 @@
     container.appendChild(root);
 
     renderDockSection(root, api);
+    for (const globalName of ["KWWitchDockPublicStatusUI", "KWWitchDockBugReporter"]) {
+      try {
+        const extension = UW[globalName];
+        if (extension && typeof extension.renderSection === "function") extension.renderSection(root, api);
+      } catch (_) {}
+    }
     renderBoothSection(root, api);
     renderGizmoSection(root, api);
 

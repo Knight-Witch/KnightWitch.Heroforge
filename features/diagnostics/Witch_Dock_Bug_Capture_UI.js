@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.3.0";
-  const BUILD = "0.3.0-integrated-hf-status-reporter";
+  const VERSION = "0.4.0";
+  const BUILD = "0.4.0-refined-shared-intake";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -22,6 +22,7 @@
     "booth-tool:booth-json": { productId: "witch-dock", groupId: "wd-booth", featureId: "booth-json" },
     "booth-tool:booth": { productId: "witch-dock", groupId: "wd-booth" },
     "utilities:witch-dock": { productId: "witch-dock", groupId: "wd-utilities", featureId: "dock-reset-size" },
+    "utilities:script-status": { productId: "witch-dock", groupId: "wd-utilities", featureId: "script-status" },
     "utilities:booth-features": { productId: "witch-dock", groupId: "wd-booth" },
     "utilities:bound-decal-gizmo": { productId: "witch-dock", groupId: "wd-decals", featureId: "bound-decal-gizmo" },
     "utilities:heroforge-ui": { productId: "witch-dock", groupId: "wd-utilities" }
@@ -49,7 +50,7 @@
   let state = null;
   let overlay = null;
   let contextualObserver = null;
-  let dockWasHidden = false;
+  let dockHideState = null;
 
   function client() { return UW.KWWitchDockReporterClient || null; }
   function diagnostics() { return UW.KWWitchDockDiagnostics || null; }
@@ -79,24 +80,47 @@
     return "unknown";
   }
 
+  function iconSvg(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const paths = name === "bug"
+      ? ["M8 2l1.4 2.1M16 2l-1.4 2.1M4 9H2M22 9h-2M4 15H2M22 15h-2M7 19l-2 2M17 19l2 2", "M8 7a4 4 0 0 1 8 0v1H8V7zM6 10h12v5a6 6 0 0 1-12 0v-5zM12 10v10"]
+      : name === "eye-off"
+        ? ["M3 3l18 18", "M10.6 10.7a2 2 0 0 0 2.7 2.7", "M9.9 4.2A10.6 10.6 0 0 1 21 12a12.8 12.8 0 0 1-3.2 4.1M6.2 6.2A12.7 12.7 0 0 0 3 12s3.4 6 9 6c1 0 1.9-.2 2.8-.5"]
+        : ["M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z", "M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"];
+    for (const data of paths) {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", data);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "currentColor");
+      path.setAttribute("stroke-width", "1.8");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+    }
+    return svg;
+  }
+
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
-#${OVERLAY_ID}{position:fixed;z-index:2147483000;top:7vh;right:22px;width:min(560px,calc(100vw - 32px));max-height:86vh;background:rgba(18,18,22,.985);border:1px solid rgba(255,255,255,.18);border-radius:12px;box-shadow:0 18px 65px rgba(0,0,0,.55);color:#ececf1;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column}
+#${OVERLAY_ID}{position:fixed;z-index:2147483000;top:7vh;right:22px;width:min(560px,calc(100vw - 32px));max-height:86vh;background:rgba(18,18,22,.985);border:1px solid rgba(255,255,255,.18);border-radius:12px;box-shadow:0 18px 65px rgba(0,0,0,.55);color:#ececf1;font:12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;overflow:hidden;display:flex;flex-direction:column}
 #${OVERLAY_ID}[data-minimized="1"]{width:330px;max-height:none}
 #${OVERLAY_ID}[data-minimized="1"] .kwbr-body{display:none}
-.kwbr-head{display:flex;gap:10px;align-items:center;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035)}
-.kwbr-head-main{min-width:0;flex:1}.kwbr-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.09em;opacity:.52;font-weight:800}.kwbr-title{font-size:14px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-head-actions{display:flex;gap:5px}.kwbr-iconbtn,.kwbr-report-icon{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);color:#eee;border-radius:7px;cursor:pointer;font-weight:800}.kwbr-iconbtn{width:30px;height:28px}.kwbr-iconbtn:hover,.kwbr-report-icon:hover{background:rgba(255,255,255,.14)}
+.kwbr-head{display:flex;gap:10px;align-items:center;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);cursor:grab;user-select:none;touch-action:none}.kwbr-head:active{cursor:grabbing}
+.kwbr-head-main{min-width:0;flex:1}.kwbr-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.09em;opacity:.52;font-weight:600}.kwbr-title{font-size:14px;font-weight:600;letter-spacing:.65px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-head-actions{display:flex;gap:5px}.kwbr-iconbtn{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);color:#eee;border-radius:7px;cursor:pointer;font-weight:600;width:30px;height:28px;display:inline-flex;align-items:center;justify-content:center}.kwbr-iconbtn svg{width:16px;height:16px;pointer-events:none}.kwbr-iconbtn:hover{background:rgba(255,255,255,.14)}
 .kwbr-body{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}.kwbr-service{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:7px;background:rgba(255,255,255,.04);font-size:10px;opacity:.82}.kwbr-dot{width:7px;height:7px;border-radius:50%;background:#777}.kwbr-dot[data-state="ready"]{background:#78d49a}.kwbr-dot[data-state="warn"]{background:#e4bc6c}.kwbr-dot[data-state="busy"]{background:#8db8e8}
-.kwbr-steps{display:flex;flex-direction:column;gap:6px}.kwbr-step{border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.025);overflow:hidden}.kwbr-step-head{display:flex;align-items:center;gap:8px;padding:8px 9px;cursor:pointer;user-select:none}.kwbr-num{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:10px;font-weight:900}.kwbr-step-title{font-weight:800;flex:1}.kwbr-step-summary{max-width:48%;font-size:10px;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-chevron{opacity:.5}.kwbr-step[data-open="0"] .kwbr-step-body{display:none}.kwbr-step[data-open="0"] .kwbr-chevron{transform:rotate(-90deg)}.kwbr-step-body{padding:0 9px 10px;display:flex;flex-direction:column;gap:8px}
+.kwbr-steps{display:flex;flex-direction:column;gap:6px}.kwbr-step{border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.025);overflow:hidden}.kwbr-step-head{display:flex;align-items:center;gap:8px;padding:8px 9px;cursor:pointer;user-select:none}.kwbr-num{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:10px;font-weight:700}.kwbr-step-title{font-weight:600;letter-spacing:.65px;text-transform:uppercase;flex:1}.kwbr-step-summary{max-width:48%;font-size:10px;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-chevron{opacity:.5}.kwbr-step[data-open="0"] .kwbr-step-body{display:none}.kwbr-step[data-open="0"] .kwbr-chevron{transform:rotate(-90deg)}.kwbr-step-body{padding:0 9px 10px;display:flex;flex-direction:column;gap:8px}
 .kwbr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kwbr-field{display:flex;flex-direction:column;gap:4px}.kwbr-field>span,.kwbr-label{font-size:10px;font-weight:800;opacity:.68}.kwbr-field input,.kwbr-field textarea,.kwbr-field select{width:100%;box-sizing:border-box;background:#111217;color:#ececf1;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 8px;font:inherit}.kwbr-field textarea{resize:vertical;min-height:66px}.kwbr-field select:disabled,.kwbr-field input:disabled{opacity:.55}.kwbr-help{font-size:10px;opacity:.58;line-height:1.35}.kwbr-warning{padding:7px 8px;border:1px solid rgba(236,184,94,.33);background:rgba(236,184,94,.08);border-radius:7px;font-size:10px}.kwbr-error{padding:7px 8px;border:1px solid rgba(255,115,115,.38);background:rgba(255,90,90,.08);border-radius:7px;font-size:10px}.kwbr-ok{padding:7px 8px;border:1px solid rgba(116,210,151,.28);background:rgba(116,210,151,.07);border-radius:7px;font-size:10px}
 .kwbr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.kwbr-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);color:#eee;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:800;font-size:11px}.kwbr-btn:hover{background:rgba(255,255,255,.15)}.kwbr-btn.primary{background:rgba(127,95,190,.42);border-color:rgba(174,137,239,.55)}.kwbr-btn.danger{background:rgba(170,65,65,.20)}.kwbr-btn:disabled{opacity:.45;cursor:not-allowed}.kwbr-spacer{flex:1}
-.kwbr-known{display:flex;flex-direction:column;gap:5px}.kwbr-known-item{padding:7px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.kwbr-known-item strong{display:block}.kwbr-known-actions{display:flex;gap:6px;margin-top:5px}.kwbr-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.08);padding:3px 7px;font-size:9px}.kwbr-evidence{display:flex;flex-direction:column;gap:5px}.kwbr-evidence-row{display:flex;gap:8px;align-items:flex-start;padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-evidence-main{min-width:0;flex:1}.kwbr-evidence-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-evidence-meta{font-size:9px;opacity:.55}.kwbr-remove{border:0;background:transparent;color:#ffb2b2;cursor:pointer}.kwbr-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.kwbr-review-cell{padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-review-cell span{display:block;font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.04em}.kwbr-review-cell strong{display:block;margin-top:2px;word-break:break-word}
+.kwbr-known{display:flex;flex-direction:column;gap:5px}.kwbr-known-item{padding:7px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.kwbr-known-item strong{display:block}.kwbr-known-actions{display:flex;gap:6px;margin-top:5px}.kwbr-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.08);padding:3px 7px;font-size:9px}.kwbr-save,.kwbr-target{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid rgba(255,255,255,.10);border-radius:7px;background:rgba(255,255,255,.025)}.kwbr-target{background:rgba(0,0,0,.12)}.kwbr-save-head,.kwbr-target-head{display:flex;align-items:center;gap:8px}.kwbr-save-head strong,.kwbr-target-head strong{flex:1;font-weight:600}.kwbr-evidence{display:flex;flex-direction:column;gap:5px}.kwbr-evidence-row{display:flex;gap:8px;align-items:flex-start;padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-evidence-main{min-width:0;flex:1}.kwbr-evidence-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-evidence-meta{font-size:9px;opacity:.55}.kwbr-remove{border:0;background:transparent;color:#ffb2b2;cursor:pointer}.kwbr-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.kwbr-review-cell{padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-review-cell span{display:block;font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.04em}.kwbr-review-cell strong{display:block;margin-top:2px;word-break:break-word}
 .kwbr-footer{position:sticky;bottom:0;display:flex;gap:7px;padding-top:8px;background:linear-gradient(transparent,#121216 16%)}
-#${RESTORE_ID}{position:fixed;z-index:2147483001;right:18px;bottom:18px;border:1px solid rgba(255,255,255,.2);background:#17171d;color:#f1f1f5;border-radius:999px;padding:9px 12px;box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer;font:800 11px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-.kwbr-report-icon{margin-left:auto;width:24px;height:22px;padding:0;font-size:12px;line-height:1}.kwWDSectionHeader .kwbr-report-icon{flex:0 0 auto;margin-right:5px}.kwbr-tool-icon{position:absolute;right:4px;top:4px;z-index:2}.kwbr-tool-host{position:relative}
+#${RESTORE_ID}{position:fixed;z-index:2147483001;right:18px;bottom:18px;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);background:#17171d;color:#f1f1f5;border-radius:999px;padding:0;box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}#${RESTORE_ID} svg{width:21px;height:21px;pointer-events:none}
+.kwbr-report-icon{border:0;background:transparent;color:rgba(255,255,255,.72);width:22px;height:22px;padding:2px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}.kwbr-report-icon svg{width:16px;height:16px;pointer-events:none}.kwbr-report-icon:hover{color:#fff;background:rgba(255,255,255,.08);border-radius:4px}.kwWDSectionHeader .kwbr-report-icon{margin-left:auto}.kwWDSectionHeader .kwbr-report-icon+.kwWDDragHandle{margin-left:0}.kwbr-tool-icon{position:absolute;right:30px;top:4px;z-index:2}.kwbr-tool-host{position:relative}
 @media(max-width:650px){#${OVERLAY_ID}{top:10px;right:10px;left:10px;width:auto;max-height:92vh}.kwbr-grid,.kwbr-review{grid-template-columns:1fr}.kwbr-step-summary{display:none}}
 `;
     document.head.appendChild(style);
@@ -135,7 +159,14 @@
         firstNoticed: "",
         workaround: "",
         additionalNotes: "",
-        heroForgeUrl: ""
+        affectedSaves: [makeAffectedSave(true)]
+      },
+      contact: {
+        allowContact: false,
+        discordUsername: "",
+        email: "",
+        contactNote: "",
+        notifyOnResolved: false
       },
       preflight: null,
       knownIssueReview: {},
@@ -151,8 +182,63 @@
       submitError: "",
       receipt: null,
       message: "",
-      resumed: false
+      resumed: false,
+      overlayPosition: null
     };
+  }
+
+  function makeAffectedTarget(hint) {
+    const safeHint = hint && typeof hint === "object" ? hint : null;
+    return {
+      targetId: uuid(),
+      kind: safeHint && safeHint.kind || "unknown",
+      ...(safeHint && safeHint.figure ? { figure: clone(safeHint.figure) } : {}),
+      ...(safeHint && safeHint.object ? { object: clone(safeHint.object) } : {}),
+      note: ""
+    };
+  }
+
+  function currentFigureTargetHint() {
+    try {
+      const character = UW.CK && UW.CK.character;
+      const meta = character && character.data && character.data.meta;
+      if (!character || !meta || typeof meta !== "object") return null;
+      const rawType = clean(meta.character_type || meta.characterType || meta.figure_type || meta.figureType).toLowerCase();
+      const typeMap = {
+        humanoid: "humanoid",
+        human: "humanoid",
+        anthro: "anthro-beastfolk",
+        beastfolk: "anthro-beastfolk",
+        animal: "animal",
+        familiar: "familiar"
+      };
+      const figureType = typeMap[rawType] || "unknown";
+      const slot = meta.is_familiar === true || rawType === "familiar" ? "familiar" : (meta.is_extra === false || meta.figure_slot === "main" ? "main" : "");
+      if (!slot) return null;
+      return { kind: "figure", figure: { slot: slot, figureType: slot === "familiar" ? "familiar" : figureType } };
+    } catch (_) { return null; }
+  }
+
+  function makeAffectedSave(useCurrentHint) {
+    return {
+      saveId: uuid(),
+      heroForgeUrl: useCurrentHint ? currentHeroForgeSaveUrl() : "",
+      jsonAttachmentId: "",
+      note: "",
+      targets: [makeAffectedTarget(useCurrentHint ? currentFigureTargetHint() : null)]
+    };
+  }
+
+  function validHeroForgeSaveUrl(value) {
+    try {
+      const url = new URL(clean(value));
+      if (!/^https:\/\/(www\.)?heroforge\.com$/i.test(url.origin)) return "";
+      return /(?:^|\/)load_config(?:=|%3d|\/)/i.test(url.pathname + url.search) ? url.href : "";
+    } catch (_) { return ""; }
+  }
+
+  function currentHeroForgeSaveUrl() {
+    return validHeroForgeSaveUrl(location.href);
   }
 
   function providerIdsFor(classification) {
@@ -425,19 +511,23 @@
 
   function hideReporterAndDock() {
     if (!overlay) return;
+    const interactions = UW.KWWitchDockInteractions;
     const dock = document.getElementById("kwWitchDock");
-    overlay.style.display = "none";
-    if (dock && dock.style.display !== "none") {
-      dock.dataset.kwBugReporterHidden = "1";
-      dock.style.display = "none";
-      dockWasHidden = true;
+    dockHideState = { minimizedByReporter: false, compactBefore: !!document.getElementById("kwWDCompact") && dock && dock.style.display === "none" };
+    if (dockHideState.compactBefore && interactions && typeof interactions.expandFromCompact === "function") interactions.expandFromCompact();
+    if (interactions && typeof interactions.toggleMinimize === "function" && dock && !dock.classList.contains("kwWDMinimized")) {
+      interactions.toggleMinimize();
+      dockHideState.minimizedByReporter = true;
     }
+    overlay.style.display = "none";
     let restore = document.getElementById(RESTORE_ID);
     if (!restore) {
       restore = document.createElement("button");
       restore.id = RESTORE_ID;
       restore.type = "button";
-      restore.textContent = "Restore Bug Report";
+      restore.title = "Restore Bug Report & Witch Dock";
+      restore.setAttribute("aria-label", "Restore Bug Report & Witch Dock");
+      restore.appendChild(iconSvg("eye"));
       restore.addEventListener("click", function () {
         showDockIfReporterHidIt();
         if (overlay) overlay.style.display = "flex";
@@ -448,15 +538,40 @@
   }
 
   function showDockIfReporterHidIt() {
-    if (!dockWasHidden) return;
+    if (!dockHideState) return;
+    const interactions = UW.KWWitchDockInteractions;
     const dock = document.getElementById("kwWitchDock");
-    if (dock && dock.dataset.kwBugReporterHidden === "1") {
-      dock.style.display = "";
-      delete dock.dataset.kwBugReporterHidden;
-    }
-    dockWasHidden = false;
+    if (dock && dock.style.display === "none" && interactions && typeof interactions.expandFromCompact === "function") interactions.expandFromCompact();
+    if (dock && dock.classList.contains("kwWDMinimized") && interactions && typeof interactions.toggleMinimize === "function") interactions.toggleMinimize();
+    dockHideState = null;
   }
   function removeRestore() { const el = document.getElementById(RESTORE_ID); if (el) el.remove(); }
+
+  function startOverlayDrag(event) {
+    if (!overlay || event.button !== 0 || event.target.closest(".kwbr-head-actions")) return;
+    const rect = overlay.getBoundingClientRect();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const originLeft = rect.left;
+    const originTop = rect.top;
+    const move = function (next) {
+      const left = Math.max(8, Math.min(window.innerWidth - overlay.offsetWidth - 8, originLeft + next.clientX - startX));
+      const top = Math.max(8, Math.min(window.innerHeight - 44, originTop + next.clientY - startY));
+      overlay.style.left = left + "px";
+      overlay.style.top = top + "px";
+      overlay.style.right = "auto";
+      state.overlayPosition = { left: left, top: top };
+    };
+    const up = function () {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+    event.preventDefault();
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  }
 
   function el(tag, attrs, children) {
     const node = document.createElement(tag);
@@ -650,37 +765,148 @@
     ];
   }
 
-  function currentHeroForgeUrl() {
-    try {
-      const u = new URL(location.href);
-      if (!/^https:\/\/(www\.)?heroforge\.com$/i.test(u.origin)) return "";
-      return u.href;
-    } catch (_) { return ""; }
+  function figureReferenceFields(reference, onChange, labelPrefix) {
+    const ref = reference || { slot: "main", figureType: "unknown" };
+    const rows = [el("div", { class: "kwbr-grid" }, [
+      field((labelPrefix || "Figure") + " slot", selectInput([
+        { id: "main", label: "Main figure" }, { id: "extra", label: "Extra figure" }, { id: "familiar", label: "Familiar" }
+      ], ref.slot, function (value) {
+        ref.slot = value || "main";
+        if (ref.slot !== "extra") delete ref.extraIndex;
+        if (ref.slot === "familiar") ref.figureType = "familiar";
+        else { delete ref.familiarPlacement; delete ref.holder; }
+        onChange(ref); render();
+      })),
+      field("Figure type", selectInput([
+        { id: "humanoid", label: "Humanoid" }, { id: "anthro-beastfolk", label: "Anthro / beastfolk" }, { id: "animal", label: "Animal" },
+        { id: "familiar", label: "Familiar" }, { id: "other", label: "Other" }, { id: "unknown", label: "Not sure" }
+      ], ref.slot === "familiar" ? "familiar" : (ref.figureType || "unknown"), function (value) { ref.figureType = ref.slot === "familiar" ? "familiar" : (value || "unknown"); onChange(ref); }, ref.slot === "familiar" ? "Familiar" : "Not sure"))
+    ])];
+    if (ref.slot === "extra") rows.push(field("Extra figure number", textInput(String(ref.extraIndex || 1), function (value) { ref.extraIndex = Math.max(1, Math.min(64, Number(value) || 1)); onChange(ref); }, { type: "number", min: 1, max: 64 })));
+    if (ref.slot === "familiar") {
+      rows.push(field("Familiar placement", selectInput([
+        { id: "on-build", label: "On build" }, { id: "handheld", label: "Handheld" }, { id: "unknown", label: "Not sure" }
+      ], ref.familiarPlacement || "unknown", function (value) {
+        ref.familiarPlacement = value || "unknown";
+        if (ref.familiarPlacement !== "handheld") delete ref.holder;
+        else if (!ref.holder) ref.holder = { slot: "main", hand: "unknown", armSet: 1 };
+        onChange(ref); render();
+      })));
+      if (ref.familiarPlacement === "handheld") {
+        const holder = ref.holder || (ref.holder = { slot: "main", hand: "unknown", armSet: 1 });
+        rows.push(el("div", { class: "kwbr-grid" }, [
+          field("Holder", selectInput([{ id: "main", label: "Main figure" }, { id: "extra", label: "Extra figure" }], holder.slot, function (value) { holder.slot = value || "main"; if (holder.slot !== "extra") delete holder.extraIndex; onChange(ref); render(); })),
+          field("Hand", selectInput([{ id: "left", label: "Left" }, { id: "right", label: "Right" }, { id: "unknown", label: "Not sure" }], holder.hand || "unknown", function (value) { holder.hand = value || "unknown"; onChange(ref); }))
+        ]));
+        rows.push(el("div", { class: "kwbr-grid" }, [
+          holder.slot === "extra" ? field("Holder extra number", textInput(String(holder.extraIndex || 1), function (value) { holder.extraIndex = Math.max(1, Math.min(64, Number(value) || 1)); onChange(ref); }, { type: "number", min: 1, max: 64 })) : el("div"),
+          field("Arm set", textInput(String(holder.armSet || 1), function (value) { holder.armSet = Math.max(1, Math.min(6, Number(value) || 1)); onChange(ref); }, { type: "number", min: 1, max: 6 }))
+        ]));
+      }
+    }
+    return rows;
+  }
+
+  function renderAffectedTarget(save, target, targetIndex) {
+    const root = el("div", { class: "kwbr-target" });
+    root.appendChild(el("div", { class: "kwbr-target-head" }, [
+      el("strong", { text: "Target " + (targetIndex + 1) }),
+      button("Remove", function () { save.targets.splice(targetIndex, 1); if (!save.targets.length) save.targets.push(makeAffectedTarget()); render(); }, "danger")
+    ]));
+    root.appendChild(field("Affected target", selectInput([
+      { id: "all-figures", label: "All figures" }, { id: "figure", label: "A figure" }, { id: "object", label: "An object / item" }, { id: "unknown", label: "Not sure" }
+    ], target.kind, function (value) {
+      target.kind = value || "unknown";
+      delete target.figure; delete target.object;
+      if (target.kind === "figure") target.figure = { slot: "main", figureType: "unknown" };
+      if (target.kind === "object") target.object = { objectType: "unknown" };
+      render();
+    })));
+    if (target.kind === "figure") {
+      figureReferenceFields(target.figure, function (value) { target.figure = value; }, "Figure").forEach(function (row) { root.appendChild(row); });
+    }
+    if (target.kind === "object") {
+      const object = target.object || (target.object = { objectType: "unknown" });
+      root.appendChild(field("Object type", selectInput([
+        { id: "kitbash-object", label: "Kitbash object" }, { id: "equipped-item-clothing", label: "Equipped item / clothing" }, { id: "other", label: "Other" }, { id: "unknown", label: "Not sure" }
+      ], object.objectType, function (value) {
+        object.objectType = value || "unknown";
+        if (object.objectType !== "equipped-item-clothing") delete object.wearer;
+        else if (!object.wearer) object.wearer = { slot: "main", figureType: "unknown" };
+        render();
+      })));
+      if (object.objectType === "equipped-item-clothing") {
+        figureReferenceFields(object.wearer, function (value) { object.wearer = value; }, "Wearer").forEach(function (row) { root.appendChild(row); });
+      }
+    }
+    root.appendChild(field("Target notes (optional)", textarea(target.note, function (value) { target.note = value; }, { maxlength: 1000, rows: 2 })));
+    return root;
+  }
+
+  function renderAffectedSaveCard(save, saveIndex) {
+    const root = el("div", { class: "kwbr-save" });
+    root.appendChild(el("div", { class: "kwbr-save-head" }, [
+      el("strong", { text: "Affected save " + (saveIndex + 1) }),
+      button("Remove", function () { state.report.affectedSaves.splice(saveIndex, 1); render(); }, "danger", state.report.affectedSaves.length <= 1)
+    ]));
+    const urlInput = textInput(save.heroForgeUrl, function (value) { save.heroForgeUrl = value; if (clean(value)) save.jsonAttachmentId = ""; }, { maxlength: 2000, placeholder: "https://www.heroforge.com/load_config=…" });
+    root.appendChild(field("Share Link or library save URL", urlInput));
+    const jsonInput = el("input", { type: "file", accept: ".json,application/json" });
+    jsonInput.style.display = "none";
+    jsonInput.addEventListener("change", function () {
+      const file = jsonInput.files && jsonInput.files[0];
+      if (file) addFile(file, { forceKind: "figure-json", onAdded: function (item) { save.jsonAttachmentId = item.clientAttachmentId; save.heroForgeUrl = ""; render(); } });
+      jsonInput.value = "";
+    });
+    root.appendChild(el("div", { class: "kwbr-actions" }, [
+      button("Use Open Save Link", function () {
+        const current = currentHeroForgeSaveUrl();
+        if (current) { save.heroForgeUrl = current; save.jsonAttachmentId = ""; state.message = "Open save link attached."; }
+        else state.message = "This page is not a shareable save link. In HeroForge use Share > Share Link, then paste that link here.";
+        render();
+      }),
+      button(save.jsonAttachmentId ? "Replace Figure JSON" : "Attach Figure JSON", function () { jsonInput.click(); }),
+      save.jsonAttachmentId ? button("Remove Figure JSON", function () { const id = save.jsonAttachmentId; save.jsonAttachmentId = ""; state.evidence = state.evidence.filter(function (item) { return item.clientAttachmentId !== id; }); render(); }, "danger") : null,
+      jsonInput
+    ]));
+    if (save.jsonAttachmentId) root.appendChild(el("div", { class: "kwbr-ok", text: "Figure JSON attached for this save." }));
+    root.appendChild(el("div", { class: "kwbr-help", text: "Use either a HeroForge library/load_config URL or figure JSON. The Editor root page is never attached. Generate a safe link with Share > Share Link." }));
+    root.appendChild(field("Save notes (optional)", textarea(save.note, function (value) { save.note = value; }, { maxlength: 1500, rows: 2 })));
+    save.targets.forEach(function (target, index) { root.appendChild(renderAffectedTarget(save, target, index)); });
+    root.appendChild(button("Add Target", function () { save.targets.push(makeAffectedTarget()); render(); }, "", save.targets.length >= 30));
+    return root;
   }
 
   function renderAffectedSave() {
-    return [
-      field("HeroForge save URL (optional)", textInput(state.report.heroForgeUrl, function (v) { state.report.heroForgeUrl = v; }, { maxlength: 2000, placeholder: "https://www.heroforge.com/load_config=…" })),
-      el("div", { class: "kwbr-actions" }, [button("Use Current URL", function () { state.report.heroForgeUrl = currentHeroForgeUrl(); render(); })]),
-      el("div", { class: "kwbr-help", text: "Only include a save URL if it is relevant to reproducing the bug. Witch Dock does not silently attach your full character JSON." })
-    ];
+    const rows = [];
+    state.report.affectedSaves.forEach(function (save, index) { rows.push(renderAffectedSaveCard(save, index)); });
+    rows.push(el("div", { class: "kwbr-actions" }, [button("Add Another Save", function () { state.report.affectedSaves.push(makeAffectedSave(false)); render(); }, "primary", state.report.affectedSaves.length >= 10)]));
+    if (state.message) rows.push(el("div", { class: state.message.includes("not a shareable") ? "kwbr-warning" : "kwbr-help", text: state.message }));
+    return rows;
   }
 
   function evidenceLabel(item) {
     return item.evidencePurpose + " · " + item.evidenceSession + (item.evidenceRole ? " · " + item.evidenceRole : "");
   }
 
-  function renderEvidenceList() {
+  function renderEvidenceList(kindFilter) {
     const box = el("div", { class: "kwbr-evidence" });
-    if (!state.evidence.length) box.appendChild(el("div", { class: "kwbr-help", text: "No files attached yet." }));
-    state.evidence.forEach(function (item, index) {
+    const shown = state.evidence.map(function (item, index) { return { item: item, index: index }; }).filter(function (row) { return kindFilter === "diagnostic" ? row.item.kind === "diagnostic-json" : row.item.kind !== "diagnostic-json"; });
+    if (!shown.length) box.appendChild(el("div", { class: "kwbr-help", text: kindFilter === "diagnostic" ? "No diagnostic captures attached yet." : "No evidence files attached yet." }));
+    shown.forEach(function (entry) {
+      const item = entry.item;
       const row = el("div", { class: "kwbr-evidence-row" });
       row.appendChild(el("div", { class: "kwbr-evidence-main" }, [
         el("div", { class: "kwbr-evidence-name", text: item.fileName }),
         el("div", { class: "kwbr-evidence-meta", text: item.kind + " · " + Number(item.sizeBytes || 0).toLocaleString() + " bytes · " + evidenceLabel(item) + (item.needsReattach ? " · reattach required" : "") })
       ]));
       row.appendChild(el("button", { type: "button", class: "kwbr-remove", text: "Remove", on: { click: function () {
-        state.evidence.splice(index, 1);
+        state.evidence.splice(entry.index, 1);
+        if (item.kind === "figure-json") state.report.affectedSaves.forEach(function (save) { if (save.jsonAttachmentId === item.clientAttachmentId) save.jsonAttachmentId = ""; });
+        if (item.kind === "diagnostic-json" && item.diagnosticPayload) {
+          const captureId = item.diagnosticPayload.captureId;
+          state.diagnosticCaptures = state.diagnosticCaptures.filter(function (capture) { return !(capture.payload && capture.payload.captureId === captureId); });
+        }
         render();
       } } }));
       box.appendChild(row);
@@ -688,12 +914,14 @@
     return box;
   }
 
-  function addFile(file) {
+  function addFile(file, options) {
     if (!file) return;
+    const opts = options && typeof options === "object" ? options : {};
     let kind = "other";
     const type = String(file.type || "").split(";", 1)[0];
-    if (/^image\//.test(type)) kind = "screenshot";
-    else if (/^video\//.test(type)) kind = "video";
+    if (opts.forceKind) kind = opts.forceKind;
+    else if (/^image\/(jpeg|png|webp)$/.test(type)) kind = "screenshot";
+    else if (type === "video/mp4") kind = "video";
     else if (/json/i.test(type) || /\.json$/i.test(file.name)) kind = "figure-json";
     const base = {
       clientAttachmentId: uuid(), kind: kind, fileName: file.name || "evidence", mediaType: type || (kind === "figure-json" ? "application/json" : "application/octet-stream"), sizeBytes: file.size,
@@ -711,23 +939,45 @@
           }
         } catch (_) {}
         state.evidence.push(base);
+        if (typeof opts.onAdded === "function") opts.onAdded(base);
         render();
-      }).catch(function () { state.evidence.push(base); render(); });
+      }).catch(function () { state.evidence.push(base); if (typeof opts.onAdded === "function") opts.onAdded(base); render(); });
       return;
     }
     state.evidence.push(base);
+    if (typeof opts.onAdded === "function") opts.onAdded(base);
     render();
   }
 
+  async function captureHeroForge2K() {
+    try {
+      const maker = UW.BT && UW.BT.maker;
+      if (!maker || maker.enabled !== true || typeof maker.takeScreenshot !== "function") throw new Error("HeroForge's native screenshot capture is not available right now.");
+      state.message = "Capturing native HeroForge 2K screenshot…";
+      render();
+      const canvas = maker.takeScreenshot(2048, 2048);
+      if (!canvas || typeof canvas.toBlob !== "function") throw new Error("HeroForge did not return a screenshot canvas.");
+      const blob = await new Promise(function (resolve, reject) { canvas.toBlob(function (value) { value ? resolve(value) : reject(new Error("HeroForge returned an empty screenshot.")); }, "image/png"); });
+      const file = new File([blob], "HeroForge_2K_" + nowIso().replace(/[:.]/g, "-") + ".png", { type: "image/png" });
+      addFile(file, { forceKind: "screenshot" });
+      state.message = "Native HeroForge 2K screenshot attached.";
+      render();
+    } catch (error) {
+      state.message = error && error.message ? error.message : String(error);
+      render();
+    }
+  }
+
   function renderEvidence() {
-    const input = el("input", { type: "file", multiple: "multiple", accept: ".json,image/png,image/jpeg,image/webp,video/mp4" });
+    const input = el("input", { type: "file", multiple: "multiple", accept: "image/png,image/jpeg,image/webp,video/mp4" });
     input.style.display = "none";
     input.addEventListener("change", function () { Array.from(input.files || []).forEach(addFile); input.value = ""; });
-    const actions = el("div", { class: "kwbr-actions" }, [button("Upload Existing", function () { input.click(); }), input]);
+    const actions = el("div", { class: "kwbr-actions" }, [button("Upload Existing", function () { input.click(); }), button("Capture HeroForge 2K", captureHeroForge2K, "primary"), input]);
     return [
       actions,
-      el("div", { class: "kwbr-help", text: "Existing diagnostic JSON, screenshots, MP4 video, or explicitly supplied figure JSON can be attached. File limits are checked against live HF.Status capabilities before submission." }),
-      renderEvidenceList()
+      el("div", { class: "kwbr-help", text: "Evidence accepts JPEG, PNG, WEBP, and MP4. Normal screenshots use HeroForge's native 2K capture. Use the dedicated 4K, 8K, or Spinny tools when those special outputs are needed; this action does not imitate or replace them." }),
+      state.message ? el("div", { class: "kwbr-help", text: state.message }) : null,
+      renderEvidenceList("evidence")
     ];
   }
 
@@ -754,24 +1004,45 @@
   function renderDiagnostics() {
     const providers = providerIdsFor(state.classification);
     const original = state.originalCaptureState;
+    const input = el("input", { type: "file", multiple: "multiple", accept: ".json,application/json" });
+    input.style.display = "none";
+    input.addEventListener("change", function () { Array.from(input.files || []).forEach(addFile); input.value = ""; });
     const rows = [
       el("div", { class: "kwbr-help", text: providers.length ? ("Selected feature will capture General + " + providers.join(", ") + ".") : "General diagnostics are available for this classification; no feature-specific provider is currently mapped." }),
       el("div", { class: original === "failed" ? "kwbr-warning" : "kwbr-help", text: "Original context capture: " + original + (state.originalCaptureError ? " — " + state.originalCaptureError : "") }),
-      el("div", { class: "kwbr-actions" }, [button("Capture Now", captureDiagnosticsNow, "primary")])
+      el("div", { class: "kwbr-actions" }, [button("Capture Now", captureDiagnosticsNow, "primary"), button("Attach Diagnostic JSON", function () { input.click(); }), input])
     ];
     if (state.message) rows.push(el("div", { class: "kwbr-help", text: state.message }));
     rows.push(el("div", { class: "kwbr-help", text: "Opening from a contextual bug icon freezes the original source context and starts its T0 diagnostic capture immediately. Later captures are kept as fresh/current evidence rather than replacing the original." }));
+    rows.push(renderEvidenceList("diagnostic"));
     return rows;
   }
 
   function renderFollowup() {
-    return [
-      el("div", { class: "kwbr-ok", text: "This report uses a random local reporter key so a later Witch Dock update can securely show HFBR follow-up/status for reports created by this installation. The key is not put in public URLs and no email or Discord identity is collected here." }),
-      el("label", { class: "kwbr-actions" }, [
-        (() => { const cb = el("input", { type: "checkbox" }); cb.checked = !!state.diagnosticsConsent; cb.addEventListener("change", function () { state.diagnosticsConsent = cb.checked; }); return cb; })(),
-        el("span", { text: "Include attached Witch Dock diagnostics as private report evidence" })
-      ])
+    const diagnosticsBox = el("input", { type: "checkbox" });
+    diagnosticsBox.checked = !!state.diagnosticsConsent;
+    diagnosticsBox.addEventListener("change", function () { state.diagnosticsConsent = diagnosticsBox.checked; render(); });
+    const contactBox = el("input", { type: "checkbox" });
+    contactBox.checked = !!state.contact.allowContact;
+    contactBox.addEventListener("change", function () { state.contact.allowContact = contactBox.checked; render(); });
+    const notifyBox = el("input", { type: "checkbox" });
+    notifyBox.checked = !!state.contact.notifyOnResolved;
+    notifyBox.addEventListener("change", function () { state.contact.notifyOnResolved = notifyBox.checked; });
+    const rows = [
+      el("div", { class: "kwbr-ok", text: "A random private reporter key is included so a later Witch Dock follow-up client can securely match this HFBR without exposing identity in public URLs." }),
+      el("label", { class: "kwbr-actions" }, [diagnosticsBox, el("span", { text: "Include attached Witch Dock diagnostics as private report evidence" })]),
+      el("label", { class: "kwbr-actions" }, [contactBox, el("span", { text: "Allow HF.Status maintainers to contact me directly about this report" })])
     ];
+    if (state.contact.allowContact) {
+      rows.push(el("div", { class: "kwbr-grid" }, [
+        field("Discord username", textInput(state.contact.discordUsername, function (value) { state.contact.discordUsername = value; }, { maxlength: 80, placeholder: "Optional if email is supplied" })),
+        field("Email", textInput(state.contact.email, function (value) { state.contact.email = value; }, { type: "email", maxlength: 254, placeholder: "Optional if Discord is supplied" }))
+      ]));
+      rows.push(field("Private contact note (optional)", textarea(state.contact.contactNote, function (value) { state.contact.contactNote = value; }, { maxlength: 300, rows: 2 })));
+      rows.push(el("label", { class: "kwbr-actions" }, [notifyBox, el("span", { text: "Notify me when this report is resolved" })]));
+      rows.push(el("div", { class: "kwbr-help", text: "Discord, email, and the note are private reporter contact fields. They are not published with the report." }));
+    }
+    return rows;
   }
 
   function labelFor(id, lookup) { const value = lookup(id); return value ? value.label : (id || "Not selected"); }
@@ -783,7 +1054,8 @@
       reviewCell("Area", labelFor(state.classification.groupId, groupById)),
       reviewCell("Feature", featureById(state.classification.featureId) ? featureById(state.classification.featureId).label : (state.classification.reportedFeatureText || "Not selected")),
       reviewCell("Script", labelFor(state.classification.scriptId, scriptById)),
-      reviewCell("Evidence", String(state.evidence.length) + " attachment(s)")
+      reviewCell("Evidence", String(state.evidence.filter(function (item) { return item.kind !== "diagnostic-json"; }).length) + " attachment(s)"),
+      reviewCell("Diagnostics", String(state.evidence.filter(function (item) { return item.kind === "diagnostic-json"; }).length) + " capture(s)")
     ]);
     const rows = [grid, field("Anything else?", textarea(state.report.additionalNotes, function (v) { state.report.additionalNotes = v; }, { maxlength: 3000, rows: 3 }))];
     if (state.submitError) rows.push(el("div", { class: "kwbr-error", text: state.submitError }));
@@ -797,14 +1069,16 @@
   function reviewCell(label, value) { return el("div", { class: "kwbr-review-cell" }, [el("span", { text: label }), el("strong", { text: value || "Not selected" })]); }
 
   function stepsForReport() {
+    const affectedCount = state.report.affectedSaves.filter(function (save) { return clean(save.heroForgeUrl) || clean(save.jsonAttachmentId); }).length;
+    const evidenceCount = state.evidence.filter(function (item) { return item.kind !== "diagnostic-json"; }).length;
     return [
       step(1, "Quick Check", classificationSummary(), renderQuickCheck()),
       step(2, "What Happened", state.report.summary || "Describe the problem", renderWhatHappened()),
       step(3, "Reproduction", state.report.frequency || "unknown", renderReproduction()),
-      step(4, "Affected Save", state.report.heroForgeUrl ? "Save URL added" : "Optional", renderAffectedSave()),
-      step(5, "Evidence", state.evidence.length + " attachment(s)", renderEvidence()),
+      step(4, "Affected Saves", affectedCount ? affectedCount + " save(s)" : "Optional", renderAffectedSave()),
+      step(5, "Evidence", evidenceCount + " attachment(s)", renderEvidence()),
       step(6, "Diagnostics", state.diagnosticCaptures.length + " capture(s)", renderDiagnostics()),
-      step(7, "Follow-up & Privacy", state.diagnosticsConsent ? "Diagnostics allowed" : "Diagnostics excluded", renderFollowup()),
+      step(7, "Follow-up & Privacy", state.contact.allowContact ? "Private follow-up allowed" : (state.diagnosticsConsent ? "Diagnostics allowed" : "Diagnostics excluded"), renderFollowup()),
       step(8, "Review & Submit", "Ready when required fields are complete", renderReview())
     ];
   }
@@ -815,13 +1089,71 @@
     if (clean(state.report.expectedBehavior).length < 3) return "Describe what you expected to happen.";
     if (!state.report.frequency) return "Choose how often the problem occurs.";
     if (!state.report.workedBefore) return "Choose whether this worked before.";
-    if (state.report.heroForgeUrl) {
-      try {
-        const u = new URL(state.report.heroForgeUrl);
-        if (!/^https:\/\/(www\.)?heroforge\.com$/i.test(u.origin)) return "The affected save URL must be a HeroForge URL.";
-      } catch (_) { return "The affected save URL is invalid."; }
+    for (let saveIndex = 0; saveIndex < state.report.affectedSaves.length; saveIndex += 1) {
+      const save = state.report.affectedSaves[saveIndex];
+      const rawUrl = clean(save.heroForgeUrl);
+      if (rawUrl && !validHeroForgeSaveUrl(rawUrl)) return "Affected save " + (saveIndex + 1) + " needs a HeroForge library/load_config URL or Share > Share Link; the Editor root is not valid.";
+      if (rawUrl && clean(save.jsonAttachmentId)) return "Affected save " + (saveIndex + 1) + " must use either a save link or figure JSON, not both.";
+      if (clean(save.jsonAttachmentId)) {
+        const figureJson = state.evidence.find(function (item) { return item.clientAttachmentId === save.jsonAttachmentId && item.kind === "figure-json"; });
+        if (!figureJson || figureJson.needsReattach || !(figureJson.blob instanceof Blob)) return "Reattach the figure JSON for affected save " + (saveIndex + 1) + ".";
+      }
+      if (!rawUrl && !clean(save.jsonAttachmentId) && (clean(save.note) || save.targets.some(function (target) { return target.kind !== "unknown" || clean(target.note); }))) return "Affected save " + (saveIndex + 1) + " needs a save link or attached figure JSON.";
+      for (let targetIndex = 0; targetIndex < save.targets.length; targetIndex += 1) {
+        const target = save.targets[targetIndex];
+        if (target.kind === "figure" && (!target.figure || !target.figure.slot)) return "Choose the figure slot for affected save " + (saveIndex + 1) + ".";
+        if (target.kind === "object" && (!target.object || !target.object.objectType)) return "Choose the object type for affected save " + (saveIndex + 1) + ".";
+      }
     }
+    if (state.contact.allowContact && !clean(state.contact.discordUsername) && !clean(state.contact.email)) return "Add a Discord username or email, or turn off direct follow-up.";
+    if (clean(state.contact.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(state.contact.email))) return "Enter a valid email address for follow-up.";
     return "";
+  }
+
+  function cleanFigureReference(reference) {
+    const source = reference && typeof reference === "object" ? reference : {};
+    const slot = ["main", "extra", "familiar"].includes(source.slot) ? source.slot : "main";
+    const result = { slot: slot };
+    if (slot === "extra") result.extraIndex = Math.max(1, Math.min(64, Number(source.extraIndex) || 1));
+    result.figureType = slot === "familiar" ? "familiar" : (["humanoid", "anthro-beastfolk", "animal", "other", "unknown"].includes(source.figureType) ? source.figureType : "unknown");
+    if (slot === "familiar") {
+      result.familiarPlacement = ["on-build", "handheld", "unknown"].includes(source.familiarPlacement) ? source.familiarPlacement : "unknown";
+      if (result.familiarPlacement === "handheld") {
+        const holder = source.holder && typeof source.holder === "object" ? source.holder : {};
+        result.holder = {
+          slot: holder.slot === "extra" ? "extra" : "main",
+          ...(holder.slot === "extra" ? { extraIndex: Math.max(1, Math.min(64, Number(holder.extraIndex) || 1)) } : {}),
+          hand: ["left", "right", "unknown"].includes(holder.hand) ? holder.hand : "unknown",
+          armSet: Math.max(1, Math.min(6, Number(holder.armSet) || 1))
+        };
+      }
+    }
+    return result;
+  }
+
+  function cleanAffectedTarget(target) {
+    const kind = ["all-figures", "figure", "object", "unknown"].includes(target.kind) ? target.kind : "unknown";
+    const result = { targetId: target.targetId || uuid(), kind: kind };
+    if (kind === "figure") result.figure = cleanFigureReference(target.figure);
+    if (kind === "object") {
+      const source = target.object && typeof target.object === "object" ? target.object : {};
+      const objectType = ["kitbash-object", "equipped-item-clothing", "other", "unknown"].includes(source.objectType) ? source.objectType : "unknown";
+      result.object = { objectType: objectType };
+      if (objectType === "equipped-item-clothing") result.object.wearer = cleanFigureReference(source.wearer);
+    }
+    if (clean(target.note)) result.note = clean(target.note);
+    return result;
+  }
+
+  function cleanAffectedSaves() {
+    return state.report.affectedSaves.filter(function (save) { return validHeroForgeSaveUrl(save.heroForgeUrl) || clean(save.jsonAttachmentId); }).map(function (save) {
+      return {
+        saveId: save.saveId || uuid(),
+        ...(validHeroForgeSaveUrl(save.heroForgeUrl) ? { heroForgeUrl: validHeroForgeSaveUrl(save.heroForgeUrl) } : { jsonAttachmentId: clean(save.jsonAttachmentId) }),
+        ...(clean(save.note) ? { note: clean(save.note) } : {}),
+        targets: (save.targets.length ? save.targets : [makeAffectedTarget()]).map(cleanAffectedTarget)
+      };
+    });
   }
 
   function attachmentPayload(item) {
@@ -845,6 +1177,14 @@
     const steps = state.report.reproductionSteps.split("\n").map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 30);
     const attached = state.evidence.filter(function (item) { return !item.needsReattach && item.blob instanceof Blob && (state.diagnosticsConsent || item.kind !== "diagnostic-json"); });
     const reporterToken = client() && client().getOrCreateReporterToken ? client().getOrCreateReporterToken() : null;
+    const affectedSaves = cleanAffectedSaves();
+    const reporter = {
+      ...(reporterToken ? { opaqueReporterToken: reporterToken } : {}),
+      ...(state.contact.allowContact && clean(state.contact.discordUsername) ? { discordUsername: clean(state.contact.discordUsername) } : {}),
+      ...(state.contact.allowContact && clean(state.contact.email) ? { email: clean(state.contact.email) } : {}),
+      ...(state.contact.allowContact && clean(state.contact.contactNote) ? { contactNote: clean(state.contact.contactNote) } : {}),
+      ...(state.contact.allowContact ? { notifyOnResolved: !!state.contact.notifyOnResolved } : {})
+    };
     const report = {
       schemaVersion: "1.3",
       clientSubmissionId: state.clientSubmissionId,
@@ -869,10 +1209,10 @@
       ...(steps.length ? { reproductionSteps: steps } : {}),
       ...(clean(state.report.workaround) ? { workaround: clean(state.report.workaround) } : {}),
       ...(clean(state.report.additionalNotes) ? { additionalNotes: clean(state.report.additionalNotes) } : {}),
-      ...(clean(state.report.heroForgeUrl) ? { affectedSaves: [{ saveId: uuid(), heroForgeUrl: clean(state.report.heroForgeUrl), targets: [{ targetId: uuid(), kind: "all-figures" }] }] } : {}),
+      ...(affectedSaves.length ? { affectedSaves: affectedSaves } : {}),
       ...(attached.length ? { attachments: attached.map(attachmentPayload) } : {}),
-      ...(reporterToken ? { reporter: { opaqueReporterToken: reporterToken } } : {}),
-      privacy: { diagnosticsConsent: !!state.diagnosticsConsent, contactConsent: false, policyVersion: "1.0" }
+      ...(Object.keys(reporter).length ? { reporter: reporter } : {}),
+      privacy: { diagnosticsConsent: !!state.diagnosticsConsent, contactConsent: !!state.contact.allowContact, policyVersion: "1.0" }
     };
     return { report: report, evidence: attached };
   }
@@ -902,6 +1242,7 @@
   }
 
   function draftEvidenceMetadata(item) {
+    const generatedDiagnostic = item.kind === "diagnostic-json" && (item.origin === "witch-dock-auto-capture" || item.origin === "witch-dock-user-capture");
     return {
       clientAttachmentId: item.clientAttachmentId,
       kind: item.kind,
@@ -913,9 +1254,9 @@
       ...(item.evidenceRole ? { evidenceRole: item.evidenceRole } : {}),
       evidencePurpose: item.evidencePurpose || "user-supplied",
       evidenceSession: item.evidenceSession || "user-supplied",
-      persistence: item.diagnosticPayload ? "inline" : "metadata-only",
-      needsReattach: item.diagnosticPayload ? false : true,
-      ...(item.diagnosticPayload ? { note: "Generated diagnostic bytes can be reconstructed from the retained diagnostic capture." } : { note: "Reattach this local file after resuming the draft." })
+      persistence: generatedDiagnostic ? "inline" : "metadata-only",
+      needsReattach: !generatedDiagnostic,
+      ...(generatedDiagnostic ? { note: "Generated diagnostic bytes can be reconstructed from the retained diagnostic capture." } : { note: "Reattach this local file after resuming the draft." })
     };
   }
 
@@ -951,7 +1292,7 @@
         firstNoticed: state.report.firstNoticed,
         workaround: state.report.workaround,
         additionalNotes: state.report.additionalNotes,
-        ...(clean(state.report.heroForgeUrl) ? { affectedSaves: [{ id: uuid(), heroForgeUrl: clean(state.report.heroForgeUrl), note: "", targets: [] }] } : {})
+        affectedSaves: clone(state.report.affectedSaves) || []
       },
       preflight: clone(state.preflight),
       evidence: state.evidence.map(draftEvidenceMetadata),
@@ -960,7 +1301,13 @@
         selectedProviderIds: providerIdsFor(state.classification),
         captures: clone(state.diagnosticCaptures) || []
       },
-      contact: { allowContact: false, notifyOnResolved: false },
+      contact: {
+        allowContact: !!state.contact.allowContact,
+        ...(clean(state.contact.discordUsername) ? { discordUsername: clean(state.contact.discordUsername) } : {}),
+        ...(clean(state.contact.email) ? { email: clean(state.contact.email) } : {}),
+        ...(clean(state.contact.contactNote) ? { contactNote: clean(state.contact.contactNote) } : {}),
+        notifyOnResolved: !!state.contact.notifyOnResolved
+      },
       ui: { activeStep: state.activeStep, maxReached: 8 }
     };
     try {
@@ -991,8 +1338,9 @@
       reproductionSteps: Array.isArray(rep.reproductionSteps) ? rep.reproductionSteps.join("\n") : "",
       frequency: rep.frequency || "unknown", affectedScope: rep.affectedScope || "unknown", workedBefore: rep.workedBefore || "unknown",
       lastKnownWorking: rep.lastKnownWorking || "", firstNoticed: rep.firstNoticed || "", workaround: rep.workaround || "", additionalNotes: rep.additionalNotes || "",
-      heroForgeUrl: rep.affectedSaves && rep.affectedSaves[0] && rep.affectedSaves[0].heroForgeUrl || ""
+      affectedSaves: Array.isArray(rep.affectedSaves) && rep.affectedSaves.length ? clone(rep.affectedSaves) : [makeAffectedSave(false)]
     });
+    Object.assign(state.contact, draft.contact || {});
     state.preflight = clone(draft.preflight);
     state.diagnosticsConsent = !!(draft.diagnostics && draft.diagnostics.includeDiagnostics);
     const captures = draft.diagnostics && Array.isArray(draft.diagnostics.captures) ? draft.diagnostics.captures : [];
@@ -1003,6 +1351,7 @@
     const knownIds = new Set(state.evidence.map(function (e) { return e.clientAttachmentId; }));
     for (const meta of (draft.evidence || [])) {
       if (!meta || knownIds.has(meta.clientAttachmentId)) continue;
+      if (meta.kind === "diagnostic-json" && (meta.origin === "witch-dock-auto-capture" || meta.origin === "witch-dock-user-capture")) continue;
       state.evidence.push(Object.assign({}, clone(meta), { blob: null, needsReattach: true }));
     }
     state.activeStep = draft.ui && Number(draft.ui.activeStep) || 1;
@@ -1054,15 +1403,25 @@
     overlay = createOverlay();
     overlay.dataset.minimized = state.minimized ? "1" : "0";
     overlay.replaceChildren();
+    if (state.overlayPosition) {
+      overlay.style.left = state.overlayPosition.left + "px";
+      overlay.style.top = state.overlayPosition.top + "px";
+      overlay.style.right = "auto";
+    } else {
+      overlay.style.left = "";
+      overlay.style.top = "";
+      overlay.style.right = "";
+    }
 
     const head = el("div", { class: "kwbr-head" }, [
       el("div", { class: "kwbr-head-main" }, [el("div", { class: "kwbr-kicker", text: "Witch Dock · HF.Status" }), el("div", { class: "kwbr-title", text: state.receipt ? "Bug Report Submitted" : "Report a Bug" })]),
       el("div", { class: "kwbr-head-actions" }, [
         el("button", { class: "kwbr-iconbtn", type: "button", title: "Minimize", text: state.minimized ? "▢" : "—", on: { click: minimizeReporter } }),
-        el("button", { class: "kwbr-iconbtn", type: "button", title: "Hide reporter and Witch Dock for clean reproduction", text: "◌", on: { click: hideReporterAndDock } }),
+        el("button", { class: "kwbr-iconbtn", type: "button", title: "Hide Bug Report & Witch Dock temporarily so you can take an image snapshot/capture or screenshot for your report.", "aria-label": "Hide Bug Report & Witch Dock temporarily so you can take an image snapshot/capture or screenshot for your report.", on: { click: hideReporterAndDock } }, [iconSvg("eye-off")]),
         el("button", { class: "kwbr-iconbtn", type: "button", title: "Close", text: "×", on: { click: closeReporter } })
       ])
     ]);
+    head.addEventListener("pointerdown", startOverlayDrag);
     overlay.appendChild(head);
 
     const body = el("div", { class: "kwbr-body" });
@@ -1085,7 +1444,7 @@
   }
 
   function reportIcon(context, title) {
-    const btn = el("button", { type: "button", class: "kwbr-report-icon", title: title || "Report a bug in this feature", "aria-label": title || "Report a bug in this feature", text: "⚑" });
+    const btn = el("button", { type: "button", class: "kwbr-report-icon", title: title || "Report a bug in this feature", "aria-label": title || "Report a bug in this feature" }, [iconSvg("bug")]);
     btn.addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -1100,17 +1459,25 @@
     for (const container of containers) {
       const toolId = container.getAttribute("data-tool-id") || "";
       if (toolId === TOOL_ID) continue;
-      const sections = Array.from(container.querySelectorAll(":scope > .kwWDSection, .kwWDSection"));
+      const sections = Array.from(new Set(Array.from(container.querySelectorAll(":scope > .kwWDSection, .kwWDSection"))));
       let exactCount = 0;
       for (const section of sections) {
         const sectionId = section.getAttribute("data-section-id") || "";
         const mapping = SECTION_CONTEXT[toolId + ":" + sectionId];
         if (!mapping) continue;
-        const header = section.querySelector(":scope > .kwWDSectionHeader");
-        if (!header || header.querySelector(":scope > .kwbr-report-icon")) continue;
-        header.appendChild(reportIcon(Object.assign({ toolId: toolId }, mapping)));
         exactCount += 1;
+        const header = section.querySelector(":scope > .kwWDSectionHeader");
+        if (!header) continue;
+        const existing = Array.from(header.querySelectorAll(":scope > .kwbr-report-icon"));
+        existing.slice(1).forEach(function (node) { node.remove(); });
+        if (existing[0]) continue;
+        const icon = reportIcon(Object.assign({ toolId: toolId }, mapping));
+        const handle = header.querySelector(":scope > .kwWDDragHandle");
+        header.insertBefore(icon, handle || null);
       }
+      const fallback = container.querySelector(":scope > .kwbr-tool-icon");
+      if (exactCount && fallback) fallback.remove();
+      if (exactCount) container.classList.remove("kwbr-tool-host");
       if (!exactCount && TOOL_CONTEXT[toolId] && !container.querySelector(":scope > .kwbr-tool-icon")) {
         container.classList.add("kwbr-tool-host");
         const btn = reportIcon(Object.assign({ toolId: toolId }, TOOL_CONTEXT[toolId]), "Report a bug in this tool");
@@ -1123,11 +1490,16 @@
   function startContextualObserver() {
     if (contextualObserver) return;
     attachContextualActions();
-    contextualObserver = new MutationObserver(function () { attachContextualActions(); });
+    let scheduled = false;
+    contextualObserver = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () { scheduled = false; attachContextualActions(); });
+    });
     contextualObserver.observe(document.documentElement, { childList: true, subtree: true });
   }
 
-  function renderTool(container, api) {
+  function renderSection(container, api) {
     injectStyle();
     const section = api.ui.createSection({ id: "bug-capture", title: "Bug Capture", defaultCollapsed: false });
     const card = el("div", { class: "kwbr-step", "data-open": "1" });
@@ -1147,17 +1519,11 @@
     container.appendChild(section.root);
   }
 
-  function registerTool() {
-    const WD = UW.WitchDock;
-    if (!WD || typeof WD.registerTool !== "function") return false;
-    WD.registerTool({ id: TOOL_ID, tab: "Utilities", title: "Bug Capture", version: VERSION, build: BUILD, render: renderTool });
-    return true;
-  }
-
   UW[GLOBAL] = Object.freeze({
     featureId: FEATURE_ID,
     version: VERSION,
     build: BUILD,
+    renderSection: renderSection,
     open: openReporter,
     close: closeReporter,
     getSourceContext: function () { return state ? clone(state.sourceContext) : null; },
@@ -1166,6 +1532,4 @@
   });
 
   startContextualObserver();
-  let tries = 0;
-  const timer = setInterval(function () { tries += 1; if (registerTool() || tries >= 120) clearInterval(timer); }, 100);
 })();
