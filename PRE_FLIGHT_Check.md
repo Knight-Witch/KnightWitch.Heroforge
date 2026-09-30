@@ -1,3 +1,19 @@
+## 2026-09-29 — Branch governance registry baseline
+
+### PASS — live inventory fully accounted
+
+- Live branch inventory at audit: 10 refs.
+- PERMANENT / NEVER DELETE: 3 refs — `WITCH_DEV_MAIN`, `Witch_Scripts`, `wd/dev-auto-host`.
+- ACTIVE PROTECTED: 3 refs — `wd/59-decals-diagnostic-provider`, `wd/88-diagnostic-capture-architecture`, `wd/97-integrated-bug-reporter`.
+- READY DELETE QUEUE: 4 refs with exact live SHAs — `wd/41-dev-auto-host-head-resolve`, `wd/payload-1.5.1`, `wd/payload-1.5.4`, `wd/28-public-payload-2.0.0`.
+- Zero live refs are unaccounted for by registry + queue.
+- Auto Host canonicality verified: installed v0.2.1 raw install/update/download URLs resolve to exact ref `wd/dev-auto-host`.
+- #41 head-resolve cleanup proof verified: PR #47 merged exact task head `55596c5e9b47fa93b1820d84d640111b19ef3581` into `wd/dev-auto-host`; no post-merge task commits.
+- Permanent replacement archival contract requires verified immutable tag before old permanent ref can enter deletion queue.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 rollout closeout / branch janitorial handoff
 
 ### PASS / two ref deletions pending

@@ -13,6 +13,8 @@ Before material Witch Dock architecture/runtime work:
 3. Read only files routed by `ACTIVE_CONTEXT.md` or directly required by the task.
 4. Use GitHub source/runtime evidence before guessing.
 
+For any task that creates, deletes, renames, merges, promotes, archives, or closes work on a branch, also read `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md`. Read `BRANCH_ARCHIVE.md` when permanent-branch replacement or archival is involved.
+
 Do not preload full history, old changelogs/preflight logs, session logs, or legacy branch history. Legacy `WITCH_DEV_UI` and `WITCH_DEV` branch refs were retired after migration audit #12; never route active work to them. If a task genuinely needs legacy evidence, use Git history or the specific harvested reference/history file.
 
 ## Task/mode checkpoint
@@ -30,6 +32,24 @@ Do not re-evaluate model/mode on ordinary messages or routine implementation ste
 - Every intentional Dev runtime divergence must map to an open issue/task and be recorded in `DEV_DIVERGENCES.json`.
 - Large, risky, or parallel work should use a short-lived issue-scoped branch from `WITCH_DEV_MAIN`; merge only after validation, then delete the temporary branch when no longer needed.
 - Never bulk-merge legacy Dev history into New Dev. Harvest only specific validated fragments that remain relevant.
+
+## Branch lifecycle registry
+
+`BRANCH_REGISTRY.md` is the authoritative live branch classification. `BRANCH_DELETION_QUEUE.md` is the authoritative pending mechanical deletion queue. `BRANCH_ARCHIVE.md` is the immutable-snapshot ledger for retired permanent/critical branches.
+
+Rules:
+
+- Every live branch must be accounted for as PERMANENT, ACTIVE PROTECTED, PENDING ARCHIVE, or DELETE QUEUE.
+- Every newly created branch must be added to ACTIVE PROTECTED immediately after creation and before material work begins. This includes task, fix, payload, RC, release, staging, helper, experiment, docs, and any additional branch created from another task branch.
+- A branch does not inherit protection because its parent is protected.
+- When non-permanent branch work is completed, merged, abandoned, or otherwise no longer needs a live ref, validate preservation, remove it from ACTIVE PROTECTED, and add its exact live head SHA to the deletion queue in the same bounded closeout. The finishing summary must say this happened.
+- Inability to delete refs is not a reason to leave completed branches unqueued.
+- Permanent additions or replacements require Amanda's explicit approval. Candidates remain ACTIVE PROTECTED and are also listed under PENDING PERMANENT PROMOTION APPROVAL until approved.
+- Replacing a permanent branch moves the old branch to PENDING ARCHIVE after approval. Preserve its exact final head as a verified immutable Git tag and record it in `BRANCH_ARCHIVE.md` before the old branch may enter the deletion queue.
+- Do not use long-lived `archive/*` branches as storage.
+- A standard audit is a set reconciliation against the registry + deletion queue. Do not re-derive already-current classifications from branch history unless live state contradicts the records.
+
+An unregistered live branch is a governance defect. Stop branch proliferation and correct the registry before continuing material work.
 
 ## Dev parity rule
 
@@ -101,15 +121,16 @@ Promotion includes cleaning the workspace.
 
 ### Completed-issue branch deletion handoff
 
-At the close of any issue, inspect whether that issue created temporary task, payload, RC, helper, staging, or candidate branch refs.
+At every issue/workstream closeout, inspect all refs created or retained for that work.
 
-- If no temporary refs remain, record that fact in the closeout and continue.
-- If temporary refs remain and the current executor can safely delete them, prove useful history is reachable from canonical refs, delete them, and verify the final inventory.
-- If the current executor cannot delete branch refs, create `docs/BRANCH_DELETION_HANDOFF_ISSUE_<N>_<YYYY-MM-DD>.md` before leaving the issue. The handoff must contain the exact DELETE refs and expected SHAs, protected KEEP refs, reachability evidence, expected post-delete inventory, no-re-audit instruction, and the narrow post-delete documentation steps.
-- Link that handoff from issue #14 and the temporary janitorial note in `ACTIVE_CONTEXT.md`. Work/GitHub UI may then execute the mechanical deletion without repeating the audit.
-- After deletion, verify the live inventory, mark the handoff complete, remove the temporary router note, and record the documentation-only closeout in `CHANGELOG.md` / `PRE_FLIGHT_Check.md`.
+- If an ACTIVE PROTECTED ref is no longer needed, validate preservation, remove it from `BRANCH_REGISTRY.md`, and add it to `BRANCH_DELETION_QUEUE.md` with its exact current SHA.
+- If the current executor can delete refs safely, it may execute the queue entry after the exact-SHA precondition passes.
+- If the current executor cannot delete refs, leave the READY queue entry in place. Work/GitHub UI can execute it later without reclassification unless the live SHA contradicts the queue.
+- Per-issue deletion handoffs remain valid for complicated releases, but they must be generated from and reconciled with the canonical registry/queue; they are not a substitute for them.
+- After deletion, verify the live inventory, remove the completed queue row, clean stale `ACTIVE_CONTEXT.md` routing, and add concise closeout records.
+- A completed issue must not leave an unregistered or silently-retained temporary branch.
 
-A completed issue must not leave untracked temporary branch refs. Git history/issues are the archive; branch names are not.
+Git history/issues/tags are the archive; active branch refs are not filing cabinets.
 
 ## Documentation discipline
 
@@ -117,6 +138,9 @@ A completed issue must not leave untracked temporary branch refs. Git history/is
 - GitHub issues hold standing backlog, migration records, and acceptance state.
 - `DEV_WORKFLOW.md` defines the durable Dev operating model.
 - `DEV_DIVERGENCES.json` records only intentional current runtime differences from Stable.
+- `BRANCH_REGISTRY.md` records permanent, active-protected, pending-promotion, and pending-archive branch state.
+- `BRANCH_DELETION_QUEUE.md` records exact-SHA refs awaiting mechanical deletion.
+- `BRANCH_ARCHIVE.md` records verified immutable archives of retired permanent/critical refs.
 - `CHANGELOG.md` and `PRE_FLIGHT_Check.md` remain rolling compact logs; old detail belongs in Git history.
 
 Every committed repository update must update `CHANGELOG.md` and add a concise `PRE_FLIGHT_Check.md` record. Documentation-only changes must explicitly state that no runtime/module/manifest/public behavior changed.

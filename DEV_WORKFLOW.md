@@ -7,6 +7,8 @@
 - **Issues** explain every intentional difference.
 - **Short-lived task branches** isolate risky or parallel experiments.
 - **Git history** is the archive; old branches are not filing cabinets.
+- **`BRANCH_REGISTRY.md`** is the live source of truth for permanent/protected branch intent.
+- **`BRANCH_DELETION_QUEUE.md`** is the live source of truth for refs already approved for mechanical deletion.
 
 The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and update from `WITCH_DEV_MAIN`. The completed modular architecture may load a pinned immutable payload commit for manifest/core/module bytes; that payload is the compatibility-safe runtime snapshot for the launcher revision, while fallback routing remains canonical `WITCH_DEV_MAIN`. Tampermonkey script identity stays fixed as `WITCH DOCK - DEV`; the changing version belongs in `@version` and the visible Dock title, not in `@name`, so updates replace the existing Dev install instead of creating duplicates.
 
@@ -18,7 +20,7 @@ Before editing, compare the affected Dev file/module to Stable and determine whe
 
 For a small isolated change with no competing work, `WITCH_DEV_MAIN` may be used directly. For risky architecture work, parallel work, or experiments, branch from `WITCH_DEV_MAIN` using an issue-scoped name such as `wd/10-modular-bootstrap`.
 
-Do not create permanent `candidate`, `helper`, `stage`, `final2`, or similar branches as storage. If tooling temporarily requires one, record its purpose and delete it after the result is safely reachable from a canonical branch.
+Do not create permanent `candidate`, `helper`, `stage`, `final2`, or similar branches as storage. If tooling temporarily requires one, add it to `BRANCH_REGISTRY.md` ACTIVE PROTECTED immediately after creation and before material work begins. Every additional branch needs its own entry. When the branch is no longer needed, transition it to `BRANCH_DELETION_QUEUE.md`; do not leave the decision only in chat.
 
 ## 2. Keeping Dev accurate
 
@@ -82,10 +84,10 @@ After Stable passes:
 2. remove the resolved entry from `DEV_DIVERGENCES.json`;
 3. remove temporary diagnostics/probes/flags/shims unless intentionally retained;
 4. update or close the source issue;
-5. delete short-lived task/promotion branches no longer needed once their useful history is safely reachable;
-   - if the current tool surface cannot delete branch refs, create an exact handoff under `docs/` using `docs/templates/RELEASE_BRANCH_DELETION_HANDOFF_TEMPLATE.md`;
-   - the handoff must be generated from the live branch inventory and contain exact DELETE refs + SHAs, the complete KEEP inventory, at-most-once retry rules, final verification, and a paste-ready Work instruction;
-   - Work/GitHub UI then performs only the mechanical deletes and verifies the final inventory; do not leave disposable release refs indefinitely because chat tooling lacked deletion support;
+5. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
+   - delete directly only when the tool surface supports safe exact-ref deletion;
+   - otherwise leave the READY queue entry for Work/GitHub UI;
+   - per-issue deletion handoffs may be generated for complex releases, but must mirror the canonical registry/queue rather than replace them;
 6. trim `ACTIVE_CONTEXT.md` to current work;
 7. compare untouched runtime/module paths for accidental drift;
 8. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
@@ -94,22 +96,46 @@ Do not call the rollout complete before those steps are done. This cleanup autho
 
 ### Branch deletion handoff standard
 
-At every issue closeout—not only large releases—inventory refs created for that issue.
+At every issue closeout—not only large releases—inventory refs created or retained for that work.
 
-If temporary refs exist:
+1. read `BRANCH_REGISTRY.md` and the live branch inventory;
+2. for each completed non-permanent ref, prove useful work is merged/preserved or explicitly abandoned;
+3. remove that ref from ACTIVE PROTECTED and add it to `BRANCH_DELETION_QUEUE.md` with the exact current head SHA;
+4. if deletion is available, execute only the exact matching queue entries;
+5. if deletion is unavailable, leave the queue entries READY and optionally create a per-issue handoff from the canonical queue for Work;
+6. after deletion, verify protected refs, remove completed queue rows, and update issue #14 / compact logs.
 
-1. prove each disposable ref's useful commits are reachable from a canonical/protected branch or otherwise durably preserved;
-2. define an exact DELETE set with branch names and expected head SHAs;
-3. define an exact KEEP/protected set and expected post-delete inventory;
-4. delete directly when the available tool surface supports safe ref deletion;
-5. when the current executor cannot delete refs, create `docs/BRANCH_DELETION_HANDOFF_ISSUE_<N>_<YYYY-MM-DD>.md` containing the evidence and a ready-to-run Work prompt;
-6. link the handoff from issue #14 and temporarily from `ACTIVE_CONTEXT.md`;
-7. Work/GitHub UI deletes exactly the named refs without re-auditing unless live state contradicts the handoff;
-8. after deletion, verify the live inventory, mark the handoff complete, remove the router note, and add concise documentation-only changelog/preflight records.
+Never leave a completed branch merely because Chat cannot delete it.
 
-If the issue created no temporary refs, say so explicitly in the final closeout. No completed issue should silently accumulate task/payload/RC/helper branches.
+## Branch lifecycle registry — authoritative
 
-## 7. Legacy branch retirement
+For any branch-affecting task, read `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md` before mutation.
+
+### Creating branches
+
+- Decide the branch's issue/workstream and purpose before creation.
+- Immediately after creating it, add it to ACTIVE PROTECTED.
+- Do not begin material work until that registry update is durable.
+- Additional helper/payload/release/staging branches each require separate entries.
+- If creation succeeds but registration fails, stop instead of creating more refs.
+
+### Closing branches
+
+A completed non-permanent branch moves from ACTIVE PROTECTED -> DELETE QUEUE. This transition is part of issue/workstream closeout and must appear in the finishing summary.
+
+### Permanent branch promotion
+
+A proposed permanent branch stays ACTIVE PROTECTED and is also listed in PENDING PERMANENT PROMOTION APPROVAL. Amanda's explicit approval is required to move it into PERMANENT — NEVER DELETE.
+
+When replacing an existing permanent branch, approval must identify the replacement. The old permanent ref moves to PENDING ARCHIVE, is preserved under a verified immutable tag recorded in `BRANCH_ARCHIVE.md`, and only then moves to DELETE QUEUE.
+
+### Standard audit
+
+A routine audit performs a set comparison between live refs and the registry/queue. Deep history/reachability work is required only for unregistered refs, stale active entries, SHA mismatches, or permanent/archive transitions.
+
+This keeps normal audits cheap and prevents branch intent from living only in conversation history.
+
+## 8. Legacy branch retirement
 
 Legacy Dev/candidate/helper branches are audited under #12/#13 before deletion. Useful unique work is referenced by exact commit/path in an issue or migrated narrowly. Promoted, superseded, or abandoned experiments are not carried into New Dev.
 

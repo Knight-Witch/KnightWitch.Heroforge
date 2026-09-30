@@ -1,3 +1,15 @@
+## 2026-09-29 — Canonical branch registry / deletion queue governance
+
+- Added binding `BRANCH_REGISTRY.md`, `BRANCH_DELETION_QUEUE.md`, and `BRANCH_ARCHIVE.md`.
+- Permanent NEVER DELETE refs are now explicit: `WITCH_DEV_MAIN`, `Witch_Scripts`, and canonical Auto Host distribution ref `wd/dev-auto-host`.
+- Active-protected refs are explicit: `wd/59-decals-diagnostic-provider`, `wd/88-diagnostic-capture-architecture`, and `wd/97-integrated-bug-reporter`.
+- Seeded the exact-SHA deletion queue with four validated stale refs: `wd/41-dev-auto-host-head-resolve`, `wd/payload-1.5.1`, `wd/payload-1.5.4`, and `wd/28-public-payload-2.0.0`.
+- Defined mandatory registration for every newly created branch, active->delete transitions at closeout, explicit approval for permanent promotion/replacement, immutable tag + ledger archival before retiring a replaced permanent ref, and a cheap set-reconciliation audit.
+- Updated project contract, development workflow, deletion-handoff template, and stale branch routing in `ACTIVE_CONTEXT.md`.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — #94 rollout complete; branch deletion handoff staged
 
 - Public Stable v2.3.2 live smoke passed: payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`, Booth `v27.1.1-json-subtool-section`, sibling Booth sections, zero JSON controls under Persistent Booth.

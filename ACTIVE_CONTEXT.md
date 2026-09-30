@@ -3,16 +3,8 @@
 **Updated:** 2026-09-29 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN` v1.15.2 candidate / immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`
 **Public Stable:** `Witch_Scripts` v2.3.2 / immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`
-**Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client
+**Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client; #97 — integrated HF.Status bug reporter
 **Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
-
-## Janitorial note — completed #94 rollout
-
-- Public Stable v2.3.2 / Booth v27.1.1 passed live Bridge/DOM smoke and Amanda visual review.
-- Runtime divergence for #94 is resolved; Dev keeps the same UI relocation inside Booth v27.3.1 because #59 independently requires its additional diagnostics.
-- Two temporary refs remain only because the current GitHub tool surface cannot delete branch refs: `wd/94-booth-json-subtool` and `release/94-booth-json-subtool`.
-- Mechanical deletion handoff: `docs/BRANCH_DELETION_HANDOFF_ISSUE_94_2026-09-29.md`. Do not re-audit unless live branch state contradicts the recorded SHAs.
-- After those two refs are deleted and inventory verified, remove this temporary note and close #94.
 
 ## Confirmed #59 runtime baseline
 
@@ -61,19 +53,11 @@
 
 ## Current route
 
-Continue #59 provider rollout from the issue #88 architecture while #90 waits on its live Dev/human gate.
-
-**Priority changed by new real community failures:** pause Decals rollout at its existing isolated branch checkpoint and implement capture coverage for Booth JSON, general/ReCK JSON, and external kitbash/extra-slot compatibility first.
-
-Immediate implementation order:
-1. **Staged on `wd/59-json-script-compat-capture`:** Booth settings-I/O retention, JSON/ReCK provider, and `script-compat` provider as one v1.15.0 diagnostic bundle.
-2. Exact-source syntax/privacy/load-order + execution-mock gates PASS.
-3. Dev v1.15.1 repins payload `132e0c47ecc89fd4bb2c8c9913eff78d656b325a` with JSON Tool v1.1.1; rerun live loader + JSON/script-compat gates.
-4. Resume the already-staged Decals provider branch after these live gates.
-
-Design amendment: `wd/88-diagnostic-capture-architecture` @ `7571d67590e75df58a0181c1e23c8f56a263fa16`.
-
-The new community cases do not yet have formal product-bug issue IDs. Do not invent symptom-specific fixes under #59; capture the reusable evidence boundary first.
+- #59 JSON/script-compat capture work is absorbed into canonical Dev; its former task branch is deleted. The remaining provider checkpoint is `wd/59-decals-diagnostic-provider`.
+- #90 remains merged in Dev and still requires its live Dev/human gate before any Stable promotion.
+- #97 is active on `wd/97-integrated-bug-reporter`; keep it isolated from Stable until its own integration and human gates pass.
+- #88 / `wd/88-diagnostic-capture-architecture` remains the active design source for the diagnostic provider architecture.
+- For branch lifecycle state, use `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md`; `ACTIVE_CONTEXT.md` is not a branch inventory.
 
 Keep HF.Status backend/storage/triage ownership separate.
 
