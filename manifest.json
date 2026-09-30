@@ -432,9 +432,9 @@
       "path": "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
       "kind": "feature-ui",
       "load": "module-loader",
-      "version": "0.4.3",
-      "build": "0.4.3-contextual-action-corrections",
-      "versionOrigin": "issue-97-context-action-corrections"
+      "version": "0.4.4",
+      "build": "0.4.4-native-2k-typography",
+      "versionOrigin": "issue-97-native-2k-typography"
     },
     {
       "id": "texture-quality-diagnostic-provider",
@@ -791,7 +791,7 @@
       "id": "witch-dock-bug-capture-ui",
       "title": "Witch Dock Bug Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.3-contextual-action-corrections",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.4-native-2k-typography",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.3";
-  const BUILD = "0.4.3-contextual-action-corrections";
+  const VERSION = "0.4.4";
+  const BUILD = "0.4.4-native-2k-typography";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -113,14 +113,15 @@
     style.id = STYLE_ID;
     style.textContent = `
 #${OVERLAY_ID}{position:fixed;z-index:2147483000;top:7vh;right:22px;width:min(560px,calc(100vw - 32px));max-height:86vh;background:rgba(18,18,22,.985);border:1px solid rgba(255,255,255,.18);border-radius:12px;box-shadow:0 18px 65px rgba(0,0,0,.55);color:#ececf1;font:12px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;overflow:hidden;display:flex;flex-direction:column}
+#${OVERLAY_ID} button,#${OVERLAY_ID} input,#${OVERLAY_ID} textarea,#${OVERLAY_ID} select{font-family:inherit}#${OVERLAY_ID} strong{font-family:inherit;font-weight:650}
 #${OVERLAY_ID}[data-minimized="1"]{width:330px;max-height:none}
 #${OVERLAY_ID}[data-minimized="1"] .kwbr-body{display:none}
 .kwbr-head{display:flex;gap:10px;align-items:center;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);cursor:grab;user-select:none;touch-action:none}.kwbr-head:active{cursor:grabbing}
 .kwbr-head-main{min-width:0;flex:1}.kwbr-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.09em;opacity:.52;font-weight:600}.kwbr-title{font-size:14px;font-weight:600;letter-spacing:.65px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-head-actions{display:flex;gap:5px}.kwbr-iconbtn{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);color:#eee;border-radius:7px;cursor:pointer;font-weight:600;width:30px;height:28px;display:inline-flex;align-items:center;justify-content:center}.kwbr-iconbtn svg{width:16px;height:16px;pointer-events:none}.kwbr-iconbtn:hover{background:rgba(255,255,255,.14)}
 .kwbr-body{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}.kwbr-service{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:7px;background:rgba(255,255,255,.04);font-size:10px;opacity:.82}.kwbr-dot{width:7px;height:7px;border-radius:50%;background:#777}.kwbr-dot[data-state="ready"]{background:#78d49a}.kwbr-dot[data-state="warn"]{background:#e4bc6c}.kwbr-dot[data-state="busy"]{background:#8db8e8}
 .kwbr-steps{display:flex;flex-direction:column;gap:6px}.kwbr-step{border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.025);overflow:hidden}.kwbr-step-head{display:flex;align-items:center;gap:8px;padding:8px 9px;cursor:pointer;user-select:none}.kwbr-num{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:10px;font-weight:700}.kwbr-step-title{font-weight:600;letter-spacing:.65px;text-transform:uppercase;flex:1}.kwbr-step-summary{max-width:48%;font-size:10px;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-chevron{opacity:.5}.kwbr-step[data-open="0"] .kwbr-step-body{display:none}.kwbr-step[data-open="0"] .kwbr-chevron{transform:rotate(-90deg)}.kwbr-step-body{padding:0 9px 10px;display:flex;flex-direction:column;gap:8px}
-.kwbr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kwbr-field{display:flex;flex-direction:column;gap:4px}.kwbr-field>span,.kwbr-label{font-size:10px;font-weight:800;opacity:.68}.kwbr-field input,.kwbr-field textarea,.kwbr-field select{width:100%;box-sizing:border-box;background:#111217;color:#ececf1;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 8px;font:inherit}.kwbr-field textarea{resize:vertical;min-height:66px}.kwbr-field select:disabled,.kwbr-field input:disabled{opacity:.55}.kwbr-help{font-size:10px;opacity:.58;line-height:1.35}.kwbr-warning{padding:7px 8px;border:1px solid rgba(236,184,94,.33);background:rgba(236,184,94,.08);border-radius:7px;font-size:10px}.kwbr-error{padding:7px 8px;border:1px solid rgba(255,115,115,.38);background:rgba(255,90,90,.08);border-radius:7px;font-size:10px}.kwbr-ok{padding:7px 8px;border:1px solid rgba(116,210,151,.28);background:rgba(116,210,151,.07);border-radius:7px;font-size:10px}
-.kwbr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.kwbr-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);color:#eee;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:800;font-size:11px}.kwbr-btn:hover{background:rgba(255,255,255,.15)}.kwbr-btn.primary{background:rgba(127,95,190,.42);border-color:rgba(174,137,239,.55)}.kwbr-btn.danger{background:rgba(170,65,65,.20)}.kwbr-btn:disabled{opacity:.45;cursor:not-allowed}.kwbr-spacer{flex:1}
+.kwbr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kwbr-field{display:flex;flex-direction:column;gap:4px}.kwbr-field>span,.kwbr-label{font-size:10px;font-weight:600;opacity:.68}.kwbr-field input,.kwbr-field textarea,.kwbr-field select{width:100%;box-sizing:border-box;background:#111217;color:#ececf1;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 8px;font:inherit}.kwbr-field textarea{resize:vertical;min-height:66px}.kwbr-field select:disabled,.kwbr-field input:disabled{opacity:.55}.kwbr-help{font-size:10px;opacity:.58;line-height:1.35}.kwbr-warning{padding:7px 8px;border:1px solid rgba(236,184,94,.33);background:rgba(236,184,94,.08);border-radius:7px;font-size:10px}.kwbr-error{padding:7px 8px;border:1px solid rgba(255,115,115,.38);background:rgba(255,90,90,.08);border-radius:7px;font-size:10px}.kwbr-ok{padding:7px 8px;border:1px solid rgba(116,210,151,.28);background:rgba(116,210,151,.07);border-radius:7px;font-size:10px}
+.kwbr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.kwbr-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);color:#eee;border-radius:7px;padding:7px 10px;cursor:pointer;font-family:inherit;font-weight:600;font-size:12px}.kwbr-btn:hover{background:rgba(255,255,255,.15)}.kwbr-btn.primary{background:rgba(127,95,190,.42);border-color:rgba(174,137,239,.55)}.kwbr-btn.danger{background:rgba(170,65,65,.20)}.kwbr-btn:disabled{opacity:.45;cursor:not-allowed}.kwbr-spacer{flex:1}
 .kwbr-known{display:flex;flex-direction:column;gap:5px}.kwbr-known-item{padding:7px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.kwbr-known-item strong{display:block}.kwbr-known-actions{display:flex;gap:6px;margin-top:5px}.kwbr-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.08);padding:3px 7px;font-size:9px}.kwbr-save,.kwbr-target{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid rgba(255,255,255,.10);border-radius:7px;background:rgba(255,255,255,.025)}.kwbr-target{background:rgba(0,0,0,.12)}.kwbr-save-head,.kwbr-target-head{display:flex;align-items:center;gap:8px}.kwbr-save-head strong,.kwbr-target-head strong{flex:1;font-weight:600}.kwbr-evidence{display:flex;flex-direction:column;gap:5px}.kwbr-evidence-row{display:flex;gap:8px;align-items:flex-start;padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-evidence-main{min-width:0;flex:1}.kwbr-evidence-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kwbr-evidence-meta{font-size:9px;opacity:.55}.kwbr-remove{border:0;background:transparent;color:#ffb2b2;cursor:pointer}.kwbr-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.kwbr-review-cell{padding:7px;border:1px solid rgba(255,255,255,.09);border-radius:7px}.kwbr-review-cell span{display:block;font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.04em}.kwbr-review-cell strong{display:block;margin-top:2px;word-break:break-word}
 .kwbr-footer{position:sticky;bottom:0;display:flex;gap:7px;padding-top:8px;background:linear-gradient(transparent,#121216 16%)}
 #${RESTORE_ID}{position:fixed;z-index:2147483001;right:18px;bottom:18px;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);background:#17171d;color:#f1f1f5;border-radius:999px;padding:0;box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}#${RESTORE_ID} svg{width:21px;height:21px;pointer-events:none}
@@ -974,11 +975,22 @@
 
   async function captureHeroForge2K() {
     try {
+      const CK = UW.CK;
       const maker = UW.BT && UW.BT.maker;
-      if (!maker || maker.enabled !== true || typeof maker.takeScreenshot !== "function") throw new Error("HeroForge's native screenshot capture is not available right now.");
+      const capture = CK && CK.Capture;
+      const camera = CK && ((CK.renderManager && CK.renderManager.camera) || (CK.orbitCamera && CK.orbitCamera.camera));
       state.message = "Capturing native HeroForge 2K screenshot…";
       render();
-      const canvas = maker.takeScreenshot(2048, 2048);
+
+      let canvas = null;
+      if (maker && maker.enabled === true && typeof maker.takeScreenshot === "function") {
+        canvas = await Promise.resolve(maker.takeScreenshot(2048, 2048));
+      } else if (capture && typeof capture.renderToImage === "function" && camera) {
+        canvas = capture.renderToImage(2048, 2048, camera, 1, true);
+      } else {
+        throw new Error("HeroForge's native screenshot capture is not available right now.");
+      }
+
       if (!canvas || typeof canvas.toBlob !== "function") throw new Error("HeroForge did not return a screenshot canvas.");
       const blob = await new Promise(function (resolve, reject) { canvas.toBlob(function (value) { value ? resolve(value) : reject(new Error("HeroForge returned an empty screenshot.")); }, "image/png"); });
       const file = new File([blob], "HeroForge_2K_" + nowIso().replace(/[:.]/g, "-") + ".png", { type: "image/png" });
