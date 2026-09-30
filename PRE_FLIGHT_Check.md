@@ -1,3 +1,14 @@
+## 2026-09-29 — Branch governance edge-case audit
+
+### PASS
+
+- Covered out-of-band deletion: absent queued refs are verified, dequeued, and closed out rather than recreated.
+- Covered permanent-ref migration dependencies: default branch, raw/update URLs, workflows, protection/rulesets, docs, and external consumers must be migrated/verified.
+- Covered archive integrity: archive tags are immutable recovery records.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Historical handoff supersession gate
 
 ### PASS

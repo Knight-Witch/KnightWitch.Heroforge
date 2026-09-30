@@ -1,3 +1,12 @@
+## 2026-09-29 — Harden branch replacement/audit edge cases
+
+- Permanent replacement now explicitly audits default-branch settings, raw install/update/download URLs, workflows, rulesets/protection, docs, and external ref consumers before approval/promotion.
+- Standard branch audit now treats already-absent queued refs as completed deletions requiring queue cleanup rather than branch reconstruction.
+- Archive tags are explicitly immutable recovery records and cannot be retargeted/deleted without approval.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Supersede pre-registry branch handoffs
 
 - Binding contract/registry now explicitly mark every branch cleanup/deletion handoff created before the 2026-09-29 registry baseline as historical and non-executable.

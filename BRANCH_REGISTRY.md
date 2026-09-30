@@ -77,7 +77,7 @@ For a **replacement of an existing permanent branch**:
 
 1. keep the proposed replacement ACTIVE PROTECTED and list it here;
 2. identify the exact permanent branch being replaced;
-3. validate migration/update-path consequences;
+3. validate migration/update-path consequences. Default branch, raw install/update/download URLs, workflows, rulesets/protection, docs, and any external consumers that name the old ref must be identified and migrated/verified as applicable;
 4. obtain explicit approval naming the replacement;
 5. promote the new branch to PERMANENT — NEVER DELETE;
 6. remove the old branch from PERMANENT and place it under PENDING ARCHIVE;
@@ -100,6 +100,8 @@ Branches in this section are still protected from deletion. Archive means:
 
 Do **not** create long-lived `archive/*` branches as storage. Git tags + the archive ledger are the retrieval mechanism.
 
+Archive tags are immutable recovery records: never retarget or delete one without explicit approval for that archival record.
+
 If the active tool cannot create/verify the archive tag, leave the branch here and hand archival off to Work/GitHub tooling. Never delete first and “archive later.”
 
 ## Standard branch audit
@@ -113,14 +115,15 @@ A normal branch audit is a set reconciliation, not a forensic restart.
    - ACTIVE PROTECTED;
    - PENDING ARCHIVE;
    - DELETE QUEUE.
-4. Report only:
+4. If a DELETE QUEUE ref is already absent, verify the ref is genuinely gone, treat the deletion as completed, remove its queue row, and record the closeout instead of re-creating or re-auditing the branch.
+5. Report only:
    - unregistered live branches;
    - registered/protected branches missing from live GitHub;
    - ACTIVE PROTECTED branches whose issue/workstream is now complete and therefore need transition to DELETE QUEUE;
    - DELETE QUEUE entries whose live SHA no longer matches;
    - pending permanent promotions or archives requiring action.
-5. Do not re-audit branch history for entries whose classification is current and internally consistent.
-6. Perform deeper reachability/history inspection only for an unregistered branch, a stale ACTIVE PROTECTED entry, a SHA mismatch, or a proposed permanent/archive transition.
+6. Do not re-audit branch history for entries whose classification is current and internally consistent.
+7. Perform deeper reachability/history inspection only for an unregistered branch, a stale ACTIVE PROTECTED entry, a SHA mismatch, or a proposed permanent/archive transition.
 
 The desired steady state is: **every live branch is accounted for, with zero branch intent held only in chat memory.**
 
