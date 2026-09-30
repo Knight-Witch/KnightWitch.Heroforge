@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-09-30 UTC
-**Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.15.2 candidate, immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`; v1.15.3 payload metadata is staged but not live until its paired launcher commit
+**Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.15.3 candidate, immutable payload `b69e21d700423fb2ce0588cc854d6c96c7b6ebf2`
 **Public Stable:** `Witch_Scripts`, launcher v2.3.2, immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`
 
 These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).

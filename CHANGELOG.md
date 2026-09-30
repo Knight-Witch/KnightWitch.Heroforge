@@ -4,8 +4,8 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Merged PR #98 into canonical Dev and staged synchronized launcher/manifest metadata for the #97 v1.15.3 immutable payload; the paired launcher pin follows in the next commit before the canonical ref moves.
-- The staged payload pairs Bug Capture UI v0.4.0, HF.Status Public UI v0.2.0, Utilities v1.4.0, and Reporter Client v0.1.0; fixed Dev identity/update URLs and HF.Status Dev transport boundaries are unchanged.
+- Merged PR #98 into canonical Dev and paired launcher v1.15.3 with immutable payload `b69e21d700423fb2ce0588cc854d6c96c7b6ebf2` for the #97 reporter refinements.
+- The payload pairs Bug Capture UI v0.4.0, HF.Status Public UI v0.2.0, Utilities v1.4.0, and Reporter Client v0.1.0; fixed Dev identity/update URLs and HF.Status Dev transport boundaries are unchanged.
 - Registered #97's intentional Dev-only runtime divergence through its real capture/upload/report/HFBR/triage and final Amanda visual gates.
 - The rejected preview layer remains unused and its loader-sized transport remains untouched. #59 stays capture-only, #89 stays follow-up-only, and Public Stable remains untouched.
 - HF.Status feature-registry impact remains none: stable `bug-capture` and `script-status` IDs, paths, ownership, and placements are unchanged.
