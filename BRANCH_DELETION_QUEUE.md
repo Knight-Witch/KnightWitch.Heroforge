@@ -13,7 +13,7 @@ A chat that cannot delete branches must still update this queue. “Safe to dele
 | Branch | Expected head SHA | Reason | Source | Status |
 |---|---|---|---|---|
 
-_No pending entries._
+| `docs/repository-operating-standard` | `c19e720ce551c912e2aa08dbe6e40d5b8e0dfab5` | Validated documentation migration merged and reachable from canonical Dev. | [PR #100](https://github.com/Knight-Witch/KnightWitch.Heroforge/pull/100) | READY |
 
 ## Queue rules
 

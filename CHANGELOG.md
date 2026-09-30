@@ -1,3 +1,11 @@
+## 2026-09-30 — Standardization merged; task ref queued
+
+- PR #100 merged to canonical Dev as `52ce0cb02129fbe9223570d60f958e54a07e10da`; merged tree exactly matches the validated publication tree.
+- Moved only `docs/repository-operating-standard` from ACTIVE PROTECTED to READY deletion queue at exact final SHA `c19e720ce551c912e2aa08dbe6e40d5b8e0dfab5`. Other classifications remain unchanged.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed. Stable and unrelated issues untouched.
+
+---
+
 ## 2026-09-30 — Repository operating-standard reconciliation
 
 - Consolidated the compact constitution/current router/map, workflow, and focused documentation, delivery, and investigation authorities. Preserved existing decisions/specs, module versioning, branch policy, and issue-based roadmap.
