@@ -4,11 +4,12 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Reconciled `wd/97-integrated-bug-reporter` onto the current canonical `WITCH_DEV_MAIN` documentation/governance baseline without changing the already-gated #97 runtime bytes.
-- Preserved the #97 first implementation slice: HF.Status Reporter Client v0.1.0 / `0.1.0-shared-intake-contract` and Bug Capture UI v0.3.0 / `0.3.0-integrated-hf-status-reporter` with the matching manifest entries.
-- Human preview gate confirmed the overlay/accordion, contextual classification prefill, automatic original diagnostic capture, and additive fresh diagnostic capture. Required UI/intake refinements are recorded on issue #97 before promotion.
-- HF.Status registry impact: no taxonomy change; the reporter continues consuming the existing canonical stable IDs/contracts.
-- Public Stable remains untouched; no Stable launcher, payload, update path, or runtime behavior changed.
+- Recorded the rejected #97 preview v0.2.0 architecture after human testing showed HeroForge tab memory/CPU runaway from a second document-wide refinement observer layered over the reporter's own DOM lifecycle.
+- Routed continuation back to the real #97 reporter/status modules; the prior ~150-line preview remains transport-only and must not become a second reporter implementation.
+- Issue #97 now carries the full human refinement list, rejected-preview diagnosis, Bridge expectations, and autonomous Work handoff boundary.
+- `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED`; deletion queue remains empty and no branch lifecycle transition occurred.
+- HF.Status registry impact: none; existing canonical v1.3 contracts and stable IDs remain authoritative.
+- Documentation/routing only; **no runtime/module/manifest/public behavior changed**. Public Stable remains untouched.
 
 ## Latest Stable release — v2.3.2
 
