@@ -4,10 +4,10 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Bug Capture UI v0.4.4 fixes the Evidence 2K action outside Photo Booth by using HeroForge's native editor capture path when the Photo Booth maker is not mounted; the existing Photo Booth-native path remains preferred when available.
-- Reporter controls now explicitly inherit the Witch Dock system type stack. Buttons use the Dock's 12px/600 control typography, reporter labels no longer use the heavier 800 weight, and strong/receipt values use the same inherited family with the Dock-aligned 650 emphasis.
-- The native editor fallback was live-proved to return an exact 2048×2048 canvas from `CK.Capture.renderToImage` with the active HeroForge camera.
-- This is an isolated #97 Dev correction. #59 remains capture-only, #89 remains follow-up-only, and Public Stable is untouched.
+- Canonical Dev launcher v1.15.7 pins immutable payload `a262fde0f88847f0021621a8c285fbee38cce2db` with Bug Capture UI v0.4.4 / `0.4.4-native-2k-typography`.
+- Evidence 2K now preserves the existing Photo Booth native path when mounted and falls back to HeroForge's native editor renderer when Photo Booth is not open. The fallback was independently proved to return an exact 2048×2048 canvas.
+- Reporter buttons and form controls explicitly inherit the Witch Dock system font stack; buttons align to 12px/600, labels to 600, and strong/receipt values to 650.
+- Exact-source v1.15.7 Bridge regression and Amanda's narrow 2K/typography confirmation remain. Public Stable is untouched.
 - Feature-registry impact: **no registry impact**. Existing feature/group IDs and ownership remain unchanged.
 - `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED`.
 
