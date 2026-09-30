@@ -85,17 +85,21 @@ After Stable passes:
 1. reconcile the shipped scope in Dev to the final Stable state;
 2. remove the resolved entry from `DEV_DIVERGENCES.json`;
 3. remove temporary diagnostics/probes/flags/shims, migration adapters, and test assets unless intentionally retained and documented;
-4. update or close the source issue;
-5. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
+4. produce the factual HF.Status publication handoff using [the canonical template](docs/templates/HF_STATUS_PUBLICATION_HANDOFF_TEMPLATE.md) and post it durably to the owning release/source issue before that issue is closed;
+   - this handoff is mandatory after every Stable smoke, including `version truth only`, `internal / silent`, and no-publication outcomes;
+   - verify the actual Stable version, launcher/source commit, immutable payload, release type, user-visible changes, user action requirements, status impact, install/update-path impact, internal-only changes, registry impact, and validation evidence before posting it;
+   - Witch Dock reports verified engineering/product facts only; do not author HF.Status headlines, public copy, grouping/prominence, notification class, or reviewed publication state from this repo;
+   - HF.Status availability is not a runtime/release dependency: if cross-repo processing is unavailable, the completed factual handoff remains in the Witch Dock source issue as an explicit pending publication follow-up rather than being skipped;
+5. update or close the source issue only after the publication handoff is durable;
+6. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
    - delete directly only when the tool surface supports safe exact-ref deletion;
    - otherwise leave the READY queue entry for Work/GitHub UI;
    - per-issue deletion handoffs may be generated for complex releases, but must mirror the canonical registry/queue rather than replace them;
-6. trim `ACTIVE_CONTEXT.md` to current work;
-7. compare untouched runtime/module paths for accidental drift;
-8. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
+7. trim `ACTIVE_CONTEXT.md` to current work;
+8. compare untouched runtime/module paths for accidental drift;
+9. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
 
 Do not call the rollout complete before those steps are done. This cleanup authorization does not permit unrelated Stable edits or scope expansion.
-
 
 ## 7. Every workstream closeout
 
@@ -106,10 +110,11 @@ Update current routing, durable evidence, and concise changelog/preflight for ev
 ## Cross-repository ownership
 
 - Witch Dock owns its runtime/module implementation, UI, evidence providers, and optional client integration. Source/manifest owns runtime truth; HF.Status taxonomy does not replace it.
+- Stable release facts cross the repository boundary through [the HF.Status publication handoff](docs/templates/HF_STATUS_PUBLICATION_HANDOFF_TEMPLATE.md). The handoff is structured editorial input, not a duplicate status/version database and not publication authorization.
 - HF-Chat-Bridge is development infrastructure only. Its GitHub mailbox transport and at-most-once behavior are routed by the [investigation guide](docs/investigations/README.md); no runtime dependency.
 - `Knight-Witch/HeroForge.Compatibility` owns upstream engine investigation/reconstruction. Consult only for a specific unresolved seam or validated compatibility implementation; never preload it for ordinary Dock work. Do not couple Stable to an unstable upstream head.
 - Foundation ownership must remain separate; moving tools into/out of Foundation requires explicit ownership and registry-impact handling, not an implicit migration during refactoring.
-- HF.Status owns `data/feature-registry.json`, reporter taxonomy, shared intake/draft/evidence schemas, storage, validation, triage, report IDs, and reviewed public projections. Preserve stable feature IDs when implementation moves; the feature-registry impact gate above is mandatory. If access is unavailable, record the blocking/follow-up link, not a silently stale promotion.
+- HF.Status owns `data/feature-registry.json`, reporter taxonomy, shared intake/draft/evidence schemas, storage, validation, triage, report IDs, reviewed public wording/grouping/notification decisions, and reviewed public projections. Preserve stable feature IDs when implementation moves; the feature-registry impact gate above is mandatory. If access is unavailable, record the blocking/follow-up link, not a silently stale promotion.
 - #59 owns Generic Bug Capture implementation; #88 owns provider design contracts. Keep these optional, locally usable, opt-in, and failure-isolated. No private/session/account data in default capture; raw character JSON requires separate explicit staging.
 - #90 owns public-status UI/client, with cached reviewed data and bounded anonymous ETag refresh; no reporter tokens/private state and no temporary Dev hostname in Stable. #89 is separate post-submission reporter sync.
 - #97 owns integrated reporter UI/client and evidence binding, consuming the HF.Status contracts linked from that issue. HF.Status owns backend semantics; no duplicate taxonomy. Submission retries preserve idempotency, uploads obey live capabilities, and failures cannot block Dock core. Keep #59 independently usable and follow the issue's real end-to-end/human gates.
