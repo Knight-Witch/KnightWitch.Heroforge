@@ -1,3 +1,11 @@
+## 2026-09-30 — Register repository-standardization task
+
+- Registered `docs/repository-operating-standard` as ACTIVE PROTECTED before material edits, from canonical Dev `8ee1dff85eeeeb8691ff955e049ad0ebc2ffe0b8`.
+- Existing branch classifications and deletion queue are unchanged.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-30 — Canonical branch deletion sweep complete
 
 - Deleted four exact-SHA READY refs: `wd/41-dev-auto-host-head-resolve`, `wd/payload-1.5.1`, `wd/payload-1.5.4`, and `wd/28-public-payload-2.0.0`.

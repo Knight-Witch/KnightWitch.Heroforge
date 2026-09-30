@@ -45,6 +45,8 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 | `wd/88-diagnostic-capture-architecture` | #88 | Authoritative diagnostic capture/provider design source still referenced by active work. | When #88/design ownership is fully absorbed or retired, validate preservation, remove this row, and queue the exact head for deletion. |
 | `wd/97-integrated-bug-reporter` | #97 | Active integrated HF.Status reporter implementation branch. | On merge/closeout/abandonment, validate preservation, remove this row, and queue the exact head for deletion. |
 
+| `docs/repository-operating-standard` | Amanda-approved repository-standardization migration | Documentation/governance reconciliation from the completed audit; no runtime or Stable changes. | After validated merge, preserve the exact task head, remove this row, queue that SHA, delete only after verification, and close out the queue. |
+
 ### Active-protected creation rule
 
 Every newly created non-permanent branch — including task, fix, payload, RC, release, staging, helper, experiment, docs, or temporary branches — must be added here **immediately after creation and before material work begins**.

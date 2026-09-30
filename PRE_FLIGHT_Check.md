@@ -1,3 +1,11 @@
+## 2026-09-30 — Repository-standardization registration
+
+- Re-read the canonical operating standard and Witch Dock bootstrap/governance; live heads match the completed audit.
+- Verified six existing live refs match the registry, with no pending deletion/archive entries; registered the single authorized docs branch.
+- Scope: documentation/governance only; no runtime/module/manifest/public behavior changed. No feature-registry impact.
+
+---
+
 ## 2026-09-30 — Canonical branch deletion sweep
 
 ### PASS — queue empty / inventory reconciled
