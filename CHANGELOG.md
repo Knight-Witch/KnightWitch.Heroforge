@@ -4,12 +4,12 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Staged Dev launcher v1.15.6 metadata with Bug Capture UI v0.4.3; the paired launcher pin is still required before this payload is canonical.
+- Paired canonical Dev launcher v1.15.6 with immutable payload `acb517b4848e47f9acf842c34fac4b6d737bf016` and Bug Capture UI v0.4.3.
 - The affected-save action now resolves the exact active HeroForge `config_id` when the editor has rewritten the browser URL to `/`, produces the canonical encoded `load_config%3D<ID>/` link, and no longer displays a placeholder that resembles attached data.
 - Added contextual bug actions for High Res Image Capture, Spinny Mini WebP Capture, Texture Quality, and Utilities → Bug Capture. High Res Diagnostics remains intentionally action-free because it is an internal Dev diagnostic surface rather than a distinct reportable registry feature.
 - Contextual bug glyph styling now overrides generic section-button chrome, uses a larger standard glyph, and remains immediately left of the section drag handle.
 - Reopening the reporter while a report is already visible now preserves its original immutable source context and draft state instead of silently replacing them.
-- Canonical v1.15.5 already passed exact-source Bridge regression and real HF.Status E2E submission/triage for `HFBR-20260930-V4M8M2EA`. Corrective v1.15.6 live regression and Amanda's final visual smoke remain.
+- Canonical v1.15.5 passed exact-source Bridge regression and real HF.Status E2E submission/triage for `HFBR-20260930-V4M8M2EA`. Corrective v1.15.6 live regression and Amanda's final visual smoke remain.
 - The obsolete local preview loader must be disabled/removed before the final smoke. The rejected preview v0.2.0 layer remains unused, #59 remains capture-only, #89 remains follow-up-only, and Public Stable is untouched.
 - `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED`.
 
