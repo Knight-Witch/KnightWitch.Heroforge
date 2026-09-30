@@ -1,3 +1,12 @@
+## 2026-09-29 — Supersede pre-registry branch handoffs
+
+- Binding contract/registry now explicitly mark every branch cleanup/deletion handoff created before the 2026-09-29 registry baseline as historical and non-executable.
+- Stale READY wording in old handoffs cannot override the canonical registry or exact-SHA deletion queue.
+- Future executable handoffs must be regenerated from the current registry/queue.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Canonical branch registry / deletion queue governance
 
 - Added binding `BRANCH_REGISTRY.md`, `BRANCH_DELETION_QUEUE.md`, and `BRANCH_ARCHIVE.md`.

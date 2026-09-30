@@ -1,3 +1,14 @@
+## 2026-09-29 — Historical handoff supersession gate
+
+### PASS
+
+- Legacy handoff audit found stale READY wording in old records whose inventories no longer match live GitHub.
+- Contract precedence now explicitly makes all pre-registry handoffs historical/non-executable.
+- Current branch execution authority is limited to `BRANCH_REGISTRY.md` + `BRANCH_DELETION_QUEUE.md`.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Branch governance registry baseline
 
 ### PASS — live inventory fully accounted

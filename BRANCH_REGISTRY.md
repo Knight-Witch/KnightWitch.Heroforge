@@ -127,3 +127,7 @@ The desired steady state is: **every live branch is accounted for, with zero bra
 ## Summary contract
 
 Any task that creates, reclassifies, queues, promotes, archives, or deletes a branch must say so in its final summary, including the exact branch name and new lifecycle state.
+
+## Historical handoff authority
+
+Branch cleanup/deletion handoffs created before the 2026-09-29 registry baseline are non-executable historical records, regardless of stale READY wording inside them. Only the current registry + deletion queue authorize present branch actions. A future per-issue handoff must be generated from those canonical files to become executable.

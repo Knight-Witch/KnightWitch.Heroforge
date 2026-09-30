@@ -119,6 +119,16 @@ Before closing the rollout:
 
 Promotion includes cleaning the workspace.
 
+### Historical handoff supersession
+
+All branch cleanup/deletion handoff documents created before the 2026-09-29 canonical registry baseline are historical evidence only, even if their original text says READY FOR WORK. They must not be executed as current authority.
+
+Current execution authority is only:
+- `BRANCH_REGISTRY.md` for protected/permanent/archive state; and
+- `BRANCH_DELETION_QUEUE.md` for exact-SHA deletion work.
+
+A per-issue handoff is executable only when it is newly generated from the current registry/queue and explicitly linked from current issue/router state. If an old handoff conflicts with the registry/queue, the registry/queue wins.
+
 ### Completed-issue branch deletion handoff
 
 At every issue/workstream closeout, inspect all refs created or retained for that work.
