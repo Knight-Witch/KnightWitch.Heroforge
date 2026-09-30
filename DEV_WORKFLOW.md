@@ -111,6 +111,8 @@ Never leave a completed branch merely because Chat cannot delete it.
 
 For any branch-affecting task, read `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md` before mutation.
 
+Native GitHub protection is defense-in-depth only. Registry classifications remain binding even when GitHub reports `protected: false` or no ruleset exists. Never use native protection state to infer deletion permission; only the deletion queue grants it.
+
 ### Creating branches
 
 - Decide the branch's issue/workstream and purpose before creation.

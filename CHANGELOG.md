@@ -1,3 +1,13 @@
+## 2026-09-29 — Clarify procedural vs native GitHub branch protection
+
+- Branch lifecycle protection is now explicitly a project-governance classification independent of GitHub's native `protected` flag/ruleset availability.
+- A branch may report `protected: false` and still be PERMANENT / ACTIVE PROTECTED / PENDING ARCHIVE under binding project policy.
+- Native GitHub protection is defense-in-depth only; deletion authority comes exclusively from exact-SHA READY entries in `BRANCH_DELETION_QUEUE.md`.
+- Updated contract, registry, deletion queue, workflow, and deletion-handoff template accordingly.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Harden branch replacement/audit edge cases
 
 - Permanent replacement now explicitly audits default-branch settings, raw install/update/download URLs, workflows, rulesets/protection, docs, and external ref consumers before approval/promotion.

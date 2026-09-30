@@ -1,3 +1,15 @@
+## 2026-09-29 — Native-protection semantics audit
+
+### PASS
+
+- Confirmed the governance model does not depend on GitHub-native branch protection.
+- Explicitly prohibited inferring deletion permission from `protected: false`, missing rulesets, or API/UI deletability.
+- Exact-SHA deletion queue remains the sole deletion authority.
+- Native rules/protection may be used as defense-in-depth where available, but absence is not itself a branch-registry defect.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Branch governance edge-case audit
 
 ### PASS

@@ -19,6 +19,7 @@ A chat that cannot delete branches must still update this queue. “Safe to dele
 
 ## Queue rules
 
+- GitHub's native `protected` flag/ruleset state is not deletion authority. A branch reporting `protected: false` is still undeletable under project policy unless it appears here as an exact-SHA READY entry.
 - Queue entries are exact-SHA deletion authorizations for mechanical cleanup, not suggestions to reclassify.
 - Before deletion, confirm the live branch still exists at the expected SHA.
 - If the SHA differs, **do not delete that ref**. Leave it queued, mark/report the mismatch, and re-audit only that branch.

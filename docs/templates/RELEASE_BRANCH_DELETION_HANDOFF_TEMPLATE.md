@@ -33,11 +33,13 @@ Copy the current PERMANENT, ACTIVE PROTECTED, and PENDING ARCHIVE refs from `BRA
 
 Do not delete, rename, rebase, retarget, archive, or repurpose them.
 
+Registry protection is procedural/project policy and remains binding even if GitHub reports `protected: false` or no branch ruleset exists. Native protection is defense-in-depth only; deletion permission comes only from the exact-SHA queue.
+
 ## Execution rules
 
 - Delete only listed queue entries whose live SHA exactly matches the recorded SHA.
 - If a queued branch head changed, skip that ref and report the mismatch.
-- Never delete an unlisted branch merely because it appears stale.
+- Never delete an unlisted branch merely because it appears stale or GitHub reports `protected: false`.
 - If execution is uncertain, read back before retrying; never blindly replay.
 - Do not modify runtime code during the deletion sweep.
 
@@ -58,6 +60,6 @@ Clean up queued branches in `Knight-Witch/KnightWitch.Heroforge`.
 
 Read `PROJECT_CONTRACT.md`, `BRANCH_REGISTRY.md`, and `BRANCH_DELETION_QUEUE.md` on `WITCH_DEV_MAIN`.
 
-The branch classification is already complete. Delete only READY queue entries whose live head SHA exactly matches the queue. Preserve every PERMANENT / ACTIVE PROTECTED / PENDING ARCHIVE ref. Skip and report any SHA mismatch rather than reclassifying it.
+The branch classification is already complete. Delete only READY queue entries whose live head SHA exactly matches the queue. Preserve every PERMANENT / ACTIVE PROTECTED / PENDING ARCHIVE ref regardless of GitHub's native `protected` flag or ruleset state. Skip and report any SHA mismatch rather than reclassifying it.
 
 After deletion, verify the live inventory, remove successfully deleted queue rows, and record the result on issue #14. Do not make unrelated runtime changes.

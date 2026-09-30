@@ -17,6 +17,16 @@ A live branch must be accounted for by exactly one lifecycle disposition:
 
 An unregistered live branch is a governance defect. Do not create additional branches or perform material work on an unregistered branch until the registry is corrected.
 
+### Protection semantics
+
+`PERMANENT — NEVER DELETE`, `ACTIVE PROTECTED`, `PENDING PERMANENT PROMOTION APPROVAL`, and `PENDING ARCHIVE` are **project-governance classifications**. They do not depend on GitHub's native branch-protection/ruleset state.
+
+A branch may report `protected: false` through GitHub and still be protected by this contract. Native GitHub branch protection/rulesets, when available, are defense-in-depth only.
+
+**Deletion authority comes exclusively from `BRANCH_DELETION_QUEUE.md`.** Never infer that a branch may be deleted because GitHub reports `protected: false`, lacks a ruleset, or is technically deletable through the API/UI.
+
+During audits, record native protection/ruleset state only when relevant. Lack of native enforcement is not itself a registry defect unless this repository separately requires such enforcement.
+
 ## PERMANENT — NEVER DELETE
 
 | Branch | Role / dependency | Change control |

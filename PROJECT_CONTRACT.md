@@ -51,6 +51,8 @@ Rules:
 
 An unregistered live branch is a governance defect. Stop branch proliferation and correct the registry before continuing material work.
 
+Protection labels in the registry are project-governance classifications and do not depend on GitHub's native `protected` flag or ruleset availability. A branch may report `protected: false` and still be protected by this contract. Native branch protection is defense-in-depth only; deletion authority comes exclusively from `BRANCH_DELETION_QUEUE.md`.
+
 ## Dev parity rule
 
 An unaffected module should be byte-for-byte equivalent to Stable whenever practical. If Stable changes independently, reconcile that scope into Dev promptly unless an open issue explicitly requires Dev to stay different.
