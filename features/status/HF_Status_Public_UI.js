@@ -1,9 +1,9 @@
 (function () {
   "use strict";
 
-  const TOOL_ID = "hf-status-public-ui";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-compact-status-panel";
+  const GLOBAL = "KWWitchDockPublicStatusUI";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-utilities-section";
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
   function service() {
@@ -95,7 +95,7 @@
     container.appendChild(wrap);
   }
 
-  function renderTool(container) {
+  function renderStatusContent(container) {
     addStyles();
     clear(container);
 
@@ -194,6 +194,11 @@
       if (base) openExternal(base + "/status");
     });
     reportAction.addEventListener("click", function () {
+      const reporter = UW.KWWitchDockBugReporter;
+      if (reporter && typeof reporter.open === "function") {
+        reporter.open({ launchMethod: "direct", productId: "witch-dock", groupId: "wd-utilities", toolId: "utilities" });
+        return;
+      }
       const base = siteBase();
       if (base) openExternal(base + "/report?scope=witch-scripts");
     });
@@ -207,25 +212,17 @@
     apply(svc && typeof svc.getState === "function" ? svc.getState() : null);
   }
 
-  function register() {
-    const WD = UW.WitchDock;
-    const svc = service();
-    if (!WD || typeof WD.registerTool !== "function" || !svc) return false;
-
-    WD.registerTool({
-      id: TOOL_ID,
-      tab: "Utilities",
-      title: "Script Status",
-      version: VERSION,
-      build: BUILD,
-      render: renderTool
-    });
+  function renderSection(root, api) {
+    if (!root || !api || !api.ui || typeof api.ui.createSection !== "function") return false;
+    const section = api.ui.createSection({ id: "script-status", title: "Script Status", defaultCollapsed: false });
+    renderStatusContent(section.body);
+    root.appendChild(section.root);
     return true;
   }
 
-  let tries = 0;
-  const timer = setInterval(function () {
-    tries += 1;
-    if (register() || tries >= 120) clearInterval(timer);
-  }, 100);
+  UW[GLOBAL] = Object.freeze({
+    version: VERSION,
+    build: BUILD,
+    renderSection: renderSection
+  });
 })();
