@@ -87,6 +87,27 @@
         "Dev endpoint is explicit channel configuration only; Stable promotion requires a non-temporary public endpoint.",
         "Live Dev loader/network/cache gate and Amanda visual/interaction gate pass before Stable promotion."
       ]
+    },
+    {
+      "issue": 97,
+      "status": "dev-integrated-hf-status-reporter-candidate",
+      "reason": "Issue #97 adds the optional integrated Witch Dock reporter and HF.Status v1.3 submission client, including contextual actions, affected-save targeting, private evidence upload, receipt handling, and Utilities integration. Public Stable intentionally does not include this candidate.",
+      "paths": [
+        "Witch_Dock_DEV.user.js",
+        "manifest.json",
+        "features/status/HF_Status_Reporter_Client.js",
+        "features/status/HF_Status_Public_UI.js",
+        "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
+        "tools/Utilities.js"
+      ],
+      "acceptance": [
+        "Bug Capture and Script Status render as normal collapsible/reorderable Utilities sections.",
+        "Contextual bug actions are deduplicated, use the standard glyph immediately before each section drag handle, and freeze immutable source context at open.",
+        "Reporter intake and drafts use canonical HF.Status v1.3 field names for classification, affected saves/targets, evidence, diagnostics, private contact consent, and opaque reporter identity.",
+        "A real Witch Dev diagnostic capture uploads through the HF.Status Dev submission session, returns an HFBR receipt, and exact-report triage verification passes.",
+        "Reporter/status failures remain optional and cannot block Witch Dock startup or Generic Bug Capture.",
+        "Amanda's final Dev visual/interaction smoke passes before any Stable promotion."
+      ]
     }
   ],
   "notes": [
@@ -97,7 +118,7 @@
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
     "stableBaseline is the historical v2.3.1 reconciliation anchor (303c56806d74b18338f866f601b904010356bf52), not the current Stable head. Compare live Witch_Scripts for new work; advance this anchor only with a scoped evidenced reconciliation.",
-    "Issues #58/#83 shipped in Stable v2.3.1; #94 subsequently shipped in v2.3.2. These are historical release checkpoints. Current intentional divergences are enumerated in runtimeDivergences (#19/#35/#59/#90); #35 remains open as a standing owner.",
+    "Issues #58/#83 shipped in Stable v2.3.1; #94 subsequently shipped in v2.3.2. These are historical release checkpoints. Current intentional divergences are enumerated in runtimeDivergences (#19/#35/#59/#90/#97); #35 remains open as a standing owner.",
     "Current Dev/Stable source identities are routed by ACTIVE_CONTEXT.md. Dated acceptance results are evidence, not instructions to rerun completed work."
   ]
 }
