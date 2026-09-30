@@ -33,25 +33,17 @@ Prefer **evidence first, reasoning escalation second**. Max does not replace mis
 
 After the difficult phase is resolved, downgrade back to Chat / Sol High or Work / High rather than carrying expensive reasoning through mechanical implementation.
 
-## Current task recommendations
+## Task categories (not active-task routing)
 
-| Task / issue | Default | Escalate when |
-| --- | --- | --- |
-| #10 modular userscript/core refactor | **COMPLETE** | No further implementation routing. |
-| #28 modular public promotion | **Chat / Sol High** for reconciliation, RC construction, and smoke | **Extra High/Max** only for a genuinely ambiguous final release-risk review after evidence collection. |
-| #7 intermittent connection-error toast | **Chat / Sol High** for targeted capture | **Extra High** if captured request/toast/runtime evidence still supports multiple causes. |
-| #20 Booth JSON import/export | **Chat / Sol High** | **Extra High** only if legacy serialization depends on undocumented HeroForge internals. |
-| #21 Kickstarter splash suppression | **Chat / Sol High** | Normally no escalation; inspect and suppress the specific promo lifecycle only. |
-| #22 decal slot drag/reorder | **Chat / Sol High** | **Extra High** for the state-ownership design if paint/projected/persistence/undo/JSON interactions prove coupled. |
-| #23 additional Photo Booth lights | **Chat / Sol High** | **Extra High** if native light/render lifecycle requires undocumented-engine investigation. |
-| #24 submitted High Res regressions | **Work / High** | **Extra High** for conflicting fixture evidence / ownership classification; **Max** only for unresolved renderer reconstruction. |
-| #25 objects / KB / tails / hair High Res expansion | **Work / High** | **Extra High** for generalized host/atlas architecture; **Max** for unresolved HeroForge renderer/texture-host reconstruction or final generalized design review. |
-| Long-session Witch Dock module slowdown | **Chat / Sol High** for initial instrumentation | Move to **Work / Extra High** if first evidence passes do not isolate cause; **Max** if it remains a nondeterministic Chrome + Tampermonkey + HeroForge + Dock problem after evidence collection. |
-| Extra Characters revamp | **Work / High** for inventory/reproduction | **Extra High/Max** if safe extension requires reconstruction of changed native multi-figure ownership. |
-| Spin/WebP quality/FPS/resolution | **Chat / Sol High** | Extra High only if renderer limits/lifecycle are unclear after measurement. |
-| In-app bug-report workflow | **Chat / Sol High** | No routine escalation. |
-| #12 legacy harvest / #13 branch cleanup / #14 janitorial work | **Chat / Sol High** or **Work / High** for volume | Extra High only for an ambiguous legacy fragment with real runtime consequences. |
-| Discord/backlog triage | **Chat / Sol High** | Work only if doing a large autonomous batch; no Extra High/Max. |
+Current tasks and completion state belong exclusively in [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md) and scoped issues.
+
+| Work | Default | Escalate when |
+|---|---|---|
+| Scoped implementation, UI, ordinary review, versioning | Chat / Sol High | Evidence leaves a real ownership/architecture ambiguity. |
+| Multi-fixture diagnostics or large repetitive workflows | Work / High | Conflicting causal evidence warrants Extra High; unresolved engine reconstruction may warrant Max. |
+| Release reconciliation, branch governance, backlog triage | Chat / Sol High; Work / High for volume | High-risk release review or an ambiguous preserved fragment has real runtime consequences. |
+| HeroForge/minified renderer reconstruction | Evidence first | Extra High/Max only after bounded source/runtime inspection leaves the seam unresolved. |
+| Nondeterministic cross-layer slowdown | Chat / Sol High for instrumentation | Work / Extra High after initial passes fail; Max only after substantive evidence. |
 
 ## Updating this router
 

@@ -1,5 +1,7 @@
 # Branch Deletion Handoff — Issue #41 — 2026-09-25
 
+> **HISTORICAL — NON-EXECUTABLE.** This handoff is superseded by the canonical [branch registry](../BRANCH_REGISTRY.md) and [exact-SHA deletion queue](../BRANCH_DELETION_QUEUE.md). Its original READY/KEEP/DELETE/next-step text below is dated evidence only and grants no current authority. Use [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) for current work; do not recreate deleted refs or execute this old list.
+
 **Scope:** mechanical deletion only. Do not re-audit or reinterpret unless live GitHub state contradicts this handoff.
 
 Issue #41 — Update delivery hardening / header version visibility — is fully released. Dev v1.8.0 and Stable v2.2.1 have passed live smoke. The following temporary refs are disposable.

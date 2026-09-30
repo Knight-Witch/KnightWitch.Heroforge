@@ -1,5 +1,7 @@
 # Issue #24 — Texture Quality Regression Investigation Plan
 
+> **HISTORICAL — NON-EXECUTABLE.** [Issue #24](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/24) is closed and its scoped visual restore fix shipped. The original ACTIVE/OPEN/READY, fixture matrix, “do not close,” and next-step instructions below are preserved as dated evidence only. [Issue #32](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/32) is the separate shipped paint-zone fix; [issue #34](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) owns the remaining warning investigation. Follow [current routing](../../ACTIVE_CONTEXT.md) and the [investigation guide](README.md), never this historical execution plan.
+
 **Status:** ACTIVE / ready for Work execution  
 **Repository:** `Knight-Witch/KnightWitch.Heroforge`  
 **Canonical Dev:** `WITCH_DEV_MAIN`  

@@ -6,7 +6,7 @@ Shared visual references for Witch Dock UI and future tool panels.
 
 - Dark translucent dock surface.
 - Compact utility-first controls.
-- System font stack.
+- Preserve the accepted typography in the current core CSS/assets; historical system-font notes below do not override the shipped branded header.
 - Rounded panels and buttons.
 - Soft translucent borders.
 - Minimal visual noise.
@@ -16,8 +16,8 @@ Shared visual references for Witch Dock UI and future tool panels.
 
 | Element | Current Direction | Notes |
 |---|---|---|
-| Dock shell | Dark translucent panel | Defined in `Witch_Dock.user.js` under `#kwWitchDock`. |
-| Font | System UI stack | Keep readable and compact. Current stack uses `system-ui`, `Segoe UI`, `Roboto`, `Ubuntu`, `Cantarell`, `Noto Sans`, and sans-serif fallbacks. |
+| Dock shell | Dark translucent panel | Defined by `features/core/Witch_Dock_Styles.css` and the modular shell under `#kwWitchDock`. |
+| Font | Shipped core CSS/assets | Preserve existing branded display typography and readable compact control text; do not normalize a working header to historical system-only guidance. |
 | Borders | Low-opacity white | Used for dock, buttons, panels, separators, and modal UI. |
 | Buttons | Compact rounded controls | Avoid expanding UI without explicit request. |
 | Tool sections | Collapsible dock sections | Match existing Witch Dock tool style. |

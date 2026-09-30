@@ -1,5 +1,7 @@
 # Issue #24 Reopen Handoff — HR ON/OFF body visual paint tint change
 
+> **HISTORICAL — NON-EXECUTABLE.** [Issue #24](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/24) is closed and its scoped visual restore fix shipped. The original ACTIVE/OPEN/READY, fixture matrix, “do not close,” and next-step instructions below are preserved as dated evidence only. [Issue #32](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/32) is the separate shipped paint-zone fix; [issue #34](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) owns the remaining warning investigation. Follow [current routing](../../ACTIVE_CONTEXT.md) and the [investigation guide](README.md), never this historical execution plan.
+
 **Date:** 2026-09-24  
 **Status:** OPEN — public v2.0.2 promotion merged, Stable smoke FAILED  
 **Canonical Dev:** `WITCH_DEV_MAIN` @ `49206661f6a7c9b155368d937ccb59a2754f3857`  

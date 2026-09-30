@@ -23,7 +23,9 @@ Use this file for high-level rules and links. Put detailed notes in `HISTORY/BUL
 - Do not load archived external userscripts through `manifest.json` or place them beside live `/tools/` or `/HeroForge_UI/` modules.
 - Preserve source filenames and hashes for large external archives even when only distilled findings are committed.
 
-## High-Risk Current Topics
+## Topic evidence and constraints
+
+Dated status/probe snapshots below do not set the current task or authorize implementation. [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) and scoped issues do; accepted technical constraints remain protected. Detailed investigation/checkpoint procedure lives in the [investigation guide](../docs/investigations/README.md).
 
 ### Decals Scroll / Three UI Layouts
 
@@ -56,7 +58,7 @@ Detailed notes live in:
 - `BULLSHIT/LIGHTING_SHADOW_REFRESH_DIAGNOSTICS.md`
 - `BULLSHIT/TIMING_AND_STATE.md`
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
-- `../STANDALONE_REFERENCES.md`
+- `STANDALONE_REFERENCES.md`
 
 Current status:
 - A second custom DirectionalLight is confirmed working for visible illumination, position, and intensity.
@@ -90,7 +92,7 @@ Detailed notes live in:
 - `BULLSHIT/KITBASHING_AND_BONES.md`
 - `BULLSHIT/DECALS_AND_TEXTURES.md`
 - `BULLSHIT/BOOTH_RENDERS_EXPORTS.md`
-- `../REFERENCES/README.md`
+- `REFERENCES/README.md`
 
 Current rules:
 - The archived `DebugLive` bundle is a version-bound HeroForge internal QA interface, not a stable public API.
@@ -107,7 +109,7 @@ Detailed notes live in:
 - `BULLSHIT/SLOTS_JOINTS_AND_ATTACHMENTS.md`
 - `BULLSHIT/KITBASHING_AND_BONES.md`
 - `BULLSHIT/DECAL_SLOT_SWAPPER.md`
-- `../REFERENCES/README.md`
+- `REFERENCES/README.md`
 
 Current rules:
 - `Sourced_Slots`, `Free_Slots`, and `Numbered_Joint_IDs` are historical snapshots only.
@@ -120,8 +122,8 @@ Current rules:
 ### Standalone / External References
 
 Detailed notes live in:
-- `../STANDALONE_REFERENCES.md`
-- `../REFERENCES/README.md`
+- `STANDALONE_REFERENCES.md`
+- `REFERENCES/README.md`
 
 Current rule:
 - Working external/probe scripts must be inventoried and compared before migration or replacement.

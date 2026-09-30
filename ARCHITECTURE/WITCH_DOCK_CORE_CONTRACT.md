@@ -1,17 +1,17 @@
 # Witch Dock Core Contract — Issue #10
 
-**Status:** Stage A baseline inventory  
-**Task branch:** `wd/10-modular-bootstrap`  
-**Canonical Dev:** `WITCH_DEV_MAIN`  
+**Status:** Accepted core invariants; issue #10 extraction completed
+**Historical task branch:** `wd/10-modular-bootstrap` (retired; not an execution route)
+**Canonical Dev:** `WITCH_DEV_MAIN`
 **Public Stable:** `Witch_Scripts`
 
 ## Purpose
 
-Freeze the current Stable-derived Dock contracts before extracting the monolithic core. This document is a regression map, not a redesign specification.
+Preserve accepted storage/global/loader/interaction and bounded-host invariants. Current delivery procedure and immutable pairing live in [Runtime Delivery](../docs/policies/RUNTIME_DELIVERY.md); active work lives in [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md). The original extraction inventory/stages below are historical evidence, not pending work.
 
-## Confirmed current responsibilities in `Witch_Dock.user.js`
+## Historical pre-extraction responsibilities in `Witch_Dock.user.js`
 
-The current core owns multiple unrelated responsibilities that will be separated incrementally:
+The original monolith owned the following responsibilities before the completed extraction:
 
 1. **Tampermonkey privilege boundary**
    - `GM_xmlhttpRequest`
@@ -103,9 +103,9 @@ Preserve:
 
 ## True privileged boundary
 
-The long-term Tampermonkey entrypoint should retain only capabilities that require the userscript sandbox plus startup/error handling.
+The Tampermonkey entrypoint retains only capabilities that require the userscript sandbox plus startup/error handling.
 
-Planned bounded host capabilities:
+Bounded host capability categories:
 
 - repository text request/fetch;
 - namespaced userscript storage read/write;
@@ -117,7 +117,9 @@ Planned bounded host capabilities:
 
 The raw `GM_*` APIs should not become a general page-global API. GitHub-owned core code should receive a bounded host object from the bootstrap.
 
-## Extraction stages
+## Historical extraction stages — non-executable
+
+Issue #10 is closed/completed. The original Stage A–E text and stage acceptance model below are preserved verbatim as dated evidence; no pending gate or next action below overrides current routing.
 
 ### Stage A — contract freeze
 
@@ -170,18 +172,10 @@ For every stage:
 
 Any unexplained behavior difference from Stable is treated as a regression, not an acceptable refactor side effect.
 
-## Stage E final bootstrap contract
+## Accepted modular composition
 
-Issue #10 Stage E removes the temporary Dev path that fetched `Witch_Dock.user.js`, performed guarded runtime source-text transforms, and evaluated the transformed monolith.
+`features/core/Witch_Dock_Core.js` owns composition/startup and wires Preferences, Registry, Application, Shell, Interactions, History, Modals, Bone HUD, Assets, bounded host capabilities, and public WitchDock seams. The completed Dev architecture no longer requests/evaluates the legacy `Witch_Dock.user.js` monolith.
 
-Final delivery contract:
+The primary detailed immutable delivery contract is [Runtime Delivery](../docs/policies/RUNTIME_DELIVERY.md#immutable-payload-pairing). It preserves one pinned manifest/core/module snapshot and strict component checks; loader invariants remain in this document. Bridge remains development infrastructure only.
 
-- `Witch_Dock_DEV.user.js` is a small channel/privilege/bootstrap host.
-- Each launcher revision pins an immutable payload commit SHA. Human-readable payload refs may point to that commit for inspection, but runtime compatibility depends on the SHA.
-- The payload contains the manifest, modular Core orchestrator, extracted core modules/assets, module loader, and feature-module sources.
-- `KWWitchDockPayloadRoot` points at the immutable raw commit root. Module Loader resolves manifest modules from `moduleRegistry.path` under that root; legacy `modules[].url` remains fallback-only.
-- Strict component version/build validation remains. Compatibility is achieved by immutable pairing, never by weakening checks.
-- `features/core/Witch_Dock_Core.js` owns composition/startup only and wires Preferences, Registry, Application, Shell, Interactions, History, Modals, Bone HUD, Assets, bounded host capabilities, and public `WitchDock` seams.
-- Module Loader retains concurrent fetch, deterministic manifest-order execution, cache-key behavior, and per-module failure isolation.
-- `Witch_Dock.user.js` remains available for Stable/history during migration but is not requested or executed by Stage E Dev.
-- HF-Chat-Bridge remains development infrastructure only and is never a Witch Dock runtime dependency.
+The prior full Stage E delivery text remains retrievable at [bfd8c9f core contract](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/bfd8c9fc3a25d6589d1d51f3f9b4f95f11c16574/ARCHITECTURE/WITCH_DOCK_CORE_CONTRACT.md).

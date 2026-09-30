@@ -1,5 +1,7 @@
 # Branch Deletion Handoff — Issues #58/#83 combined public v2.3.1
 
+> **HISTORICAL — NON-EXECUTABLE.** This handoff is superseded by the canonical [branch registry](../BRANCH_REGISTRY.md) and [exact-SHA deletion queue](../BRANCH_DELETION_QUEUE.md). Its original READY/KEEP/DELETE/next-step text below is dated evidence only and grants no current authority. Use [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) for current work; do not recreate deleted refs or execute this old list.
+
 **Status:** COMPLETE — 27 exact branch refs deleted, 29 KEEP refs verified
 **Repository:** `Knight-Witch/KnightWitch.Heroforge`
 **Prepared:** 2026-09-26 UTC

@@ -1,3 +1,13 @@
+## 2026-09-30 — Repository operating-standard reconciliation
+
+- Consolidated the compact constitution/current router/map, workflow, and focused documentation, delivery, and investigation authorities. Preserved existing decisions/specs, module versioning, branch policy, and issue-based roadmap.
+- Corrected obsolete MASTER release state, historical execution authority, fixed-header wording, divergence notes, pre-modular delivery guidance, and stale style/source routing. Clarified Auto Host v0.2.1 source versus dated v0.2.0 gate without inventing runtime validation.
+- Preserved exact original evidence through local historical notices and immutable Git links. Existing log history remains intact; provenance-preserving compaction is a bounded follow-up.
+- Additional rules retained: Bridge mailbox/at-most-once/background handling, standalone-reference parity, native capture/lighting boundaries, tolerant layouts, backup retention, and separate Stable self-host behavior.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed. No Stable promotion or unrelated issue updates.
+
+---
+
 ## 2026-09-30 — Register repository-standardization task
 
 - Registered `docs/repository-operating-standard` as ACTIVE PROTECTED before material edits, from canonical Dev `8ee1dff85eeeeb8691ff955e049ad0ebc2ffe0b8`.
