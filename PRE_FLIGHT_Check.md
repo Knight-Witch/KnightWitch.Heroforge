@@ -1,3 +1,18 @@
+## 2026-09-30 — Canonical branch deletion sweep
+
+### PASS — queue empty / inventory reconciled
+
+- Exact-SHA preconditions passed for all four READY refs before deletion.
+- Deleted: `wd/41-dev-auto-host-head-resolve` @ `55596c5e9b47fa93b1820d84d640111b19ef3581`.
+- Deleted: `wd/payload-1.5.1` @ `6603911658b426c6b95367697bedcc4c7acf67eb`.
+- Deleted: `wd/payload-1.5.4` @ `6aee7fd8716d986e39b7415cf8927fa7043e776b`.
+- Deleted: `wd/28-public-payload-2.0.0` @ `aa54a3cdb6785c5bf78a7b04b5ddccf09cc37b2a`.
+- Final live inventory: `WITCH_DEV_MAIN`, `Witch_Scripts`, `wd/dev-auto-host`, `wd/59-decals-diagnostic-provider`, `wd/88-diagnostic-capture-architecture`, `wd/97-integrated-bug-reporter`.
+- All PERMANENT and ACTIVE PROTECTED refs remain; zero unregistered live refs; deletion queue empty.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Native-protection semantics audit
 
 ### PASS
