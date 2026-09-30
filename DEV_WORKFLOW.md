@@ -1,6 +1,6 @@
 # Witch Dock Development Workflow
 
-## The simple model
+## Roles
 
 - **Stable (`Witch_Scripts`)** is the public product.
 - **Dev (`WITCH_DEV_MAIN`)** is the integration sandbox.
@@ -10,9 +10,11 @@
 - **`BRANCH_REGISTRY.md`** is the live source of truth for permanent/protected branch intent.
 - **`BRANCH_DELETION_QUEUE.md`** is the live source of truth for refs already approved for mechanical deletion.
 
-The canonical installed Dev userscript is `Witch_Dock_DEV.user.js`. It must visibly identify itself as Dev and update from `WITCH_DEV_MAIN`. The completed modular architecture may load a pinned immutable payload commit for manifest/core/module bytes; that payload is the compatibility-safe runtime snapshot for the launcher revision, while fallback routing remains canonical `WITCH_DEV_MAIN`. Tampermonkey script identity stays fixed as `WITCH DOCK - DEV`; the changing version belongs in `@version` and the visible Dock title, not in `@name`, so updates replace the existing Dev install instead of creating duplicates.
+Detailed channel identity and immutable delivery are owned by [Runtime Delivery](docs/policies/RUNTIME_DELIVERY.md); numeric/build synchronization is owned by [MODULE_VERSIONING.md](MODULE_VERSIONING.md).
 
 ## 1. Starting work
+
+Read the two-file bootstrap in [PROJECT_CONTRACT.md](PROJECT_CONTRACT.md), then only task-specific sources. Diagnose from source/runtime evidence before editing; use the [Investigation guide](docs/investigations/README.md) for non-trivial debugging. Preserve named/capability seams and native ownership where possible.
 
 Every non-trivial runtime change starts with an issue/task describing the problem, intended scope, and acceptance gate.
 
@@ -20,7 +22,7 @@ Before editing, compare the affected Dev file/module to Stable and determine whe
 
 For a small isolated change with no competing work, `WITCH_DEV_MAIN` may be used directly. For risky architecture work, parallel work, or experiments, branch from `WITCH_DEV_MAIN` using an issue-scoped name such as `wd/10-modular-bootstrap`.
 
-Do not create permanent `candidate`, `helper`, `stage`, `final2`, or similar branches as storage. If tooling temporarily requires one, add it to `BRANCH_REGISTRY.md` ACTIVE PROTECTED immediately after creation and before material work begins. Every additional branch needs its own entry. When the branch is no longer needed, transition it to `BRANCH_DELETION_QUEUE.md`; do not leave the decision only in chat.
+Every additional branch must be registered before material work, including helper/payload/RC/release/docs refs. [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) owns creation and permanent/archive transitions; follow it rather than creating branches as storage.
 
 ## 2. Keeping Dev accurate
 
@@ -30,7 +32,7 @@ Do not create permanent `candidate`, `helper`, `stage`, `final2`, or similar bra
 
 Nothing else.
 
-`DEV_DIVERGENCES.json` records current runtime/module differences that are expected. Each entry must include an issue, affected paths, and reason.
+`DEV_DIVERGENCES.json` records current runtime/module differences that are expected. Each entry must include an open issue/task owner, affected paths, and reason. Implementation completion does not close a standing divergence owner (#19/#35). `stableBaseline` is a historical reconciliation anchor, not the moving Stable head: compare current live Stable for new work. Retain its exact SHA until a scoped reconciliation intentionally advances it with evidence; annotate dated acceptance snapshots rather than treating them as current runtime identity.
 
 If a runtime file differs from Stable but is not represented by an open divergence, investigate it. Do not normalize blindly when the cause is unclear, but do not let unexplained drift become normal.
 
@@ -66,7 +68,7 @@ Use the narrowest meaningful gates:
 - targeted regression checks;
 - Amanda's visual confirmation when appearance/interaction is part of acceptance.
 
-A parse success is not runtime proof. For Dev startup specifically, verify the visible title says `WITCH DOCK - DEV v<version>`, the Tampermonkey entry is the fixed `WITCH DOCK - DEV` identity with matching `@version`, channel state reports `WITCH_DEV_MAIN`, `KWWitchDockManifestURL` points to the launcher's pinned immutable payload commit, loader requests resolve through that same immutable payload, fallback count is zero in the normal path, and no route silently resolves to Stable.
+A parse success is not runtime proof. For startup/delivery changes use the exact [delivery checks](docs/policies/RUNTIME_DELIVERY.md#release-and-delivery-checks). The visible header may separate the brand from Dev/version metadata; do not require one obsolete literal layout string. Documentation-only changes with unchanged runtime need reference/scope checks, not a forced HeroForge reload or version bump.
 
 ## 5. Promotion to public
 
@@ -82,7 +84,7 @@ After Stable passes:
 
 1. reconcile the shipped scope in Dev to the final Stable state;
 2. remove the resolved entry from `DEV_DIVERGENCES.json`;
-3. remove temporary diagnostics/probes/flags/shims unless intentionally retained;
+3. remove temporary diagnostics/probes/flags/shims, migration adapters, and test assets unless intentionally retained and documented;
 4. update or close the source issue;
 5. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
    - delete directly only when the tool surface supports safe exact-ref deletion;
@@ -94,51 +96,22 @@ After Stable passes:
 
 Do not call the rollout complete before those steps are done. This cleanup authorization does not permit unrelated Stable edits or scope expansion.
 
-### Branch deletion handoff standard
 
-At every issue closeout—not only large releases—inventory refs created or retained for that work.
+## 7. Every workstream closeout
 
-1. read `BRANCH_REGISTRY.md` and the live branch inventory;
-2. for each completed non-permanent ref, prove useful work is merged/preserved or explicitly abandoned;
-3. remove that ref from ACTIVE PROTECTED and add it to `BRANCH_DELETION_QUEUE.md` with the exact current head SHA;
-4. if deletion is available, execute only the exact matching queue entries;
-5. if deletion is unavailable, leave the queue entries READY and optionally create a per-issue handoff from the canonical queue for Work;
-6. after deletion, verify protected refs, remove completed queue rows, and update issue #14 / compact logs.
+Inventory refs retained/created for the completed scope, prove preservation, then follow [registry closeout](BRANCH_REGISTRY.md#active-protected-closeout-rule) and the [exact-SHA queue](BRANCH_DELETION_QUEUE.md). Delete only matching READY refs, verify absence/protected inventory, clear completed rows, and record bounded closeout. Tool limitations do not excuse leaving a completed branch unqueued. Complex handoffs use the [canonical template](docs/templates/RELEASE_BRANCH_DELETION_HANDOFF_TEMPLATE.md), not independent classifications. Existing legacy cleanup handoffs are historical, not executable.
 
-Never leave a completed branch merely because Chat cannot delete it.
+Update current routing, durable evidence, and concise changelog/preflight for every committed change. Use [context/retention policy](docs/policies/DOCUMENTATION_AND_CONTEXT.md) for handoffs and log compaction.
 
-## Branch lifecycle registry — authoritative
+## Cross-repository ownership
 
-For any branch-affecting task, read `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md` before mutation.
+- Witch Dock owns its runtime/module implementation, UI, evidence providers, and optional client integration. Source/manifest owns runtime truth; HF.Status taxonomy does not replace it.
+- HF-Chat-Bridge is development infrastructure only. Its GitHub mailbox transport and at-most-once behavior are routed by the [investigation guide](docs/investigations/README.md); no runtime dependency.
+- `Knight-Witch/HeroForge.Compatibility` owns upstream engine investigation/reconstruction. Consult only for a specific unresolved seam or validated compatibility implementation; never preload it for ordinary Dock work. Do not couple Stable to an unstable upstream head.
+- Foundation ownership must remain separate; moving tools into/out of Foundation requires explicit ownership and registry-impact handling, not an implicit migration during refactoring.
+- HF.Status owns `data/feature-registry.json`, reporter taxonomy, shared intake/draft/evidence schemas, storage, validation, triage, report IDs, and reviewed public projections. Preserve stable feature IDs when implementation moves; the feature-registry impact gate above is mandatory. If access is unavailable, record the blocking/follow-up link, not a silently stale promotion.
+- #59 owns Generic Bug Capture implementation; #88 owns provider design contracts. Keep these optional, locally usable, opt-in, and failure-isolated. No private/session/account data in default capture; raw character JSON requires separate explicit staging.
+- #90 owns public-status UI/client, with cached reviewed data and bounded anonymous ETag refresh; no reporter tokens/private state and no temporary Dev hostname in Stable. #89 is separate post-submission reporter sync.
+- #97 owns integrated reporter UI/client and evidence binding, consuming the HF.Status contracts linked from that issue. HF.Status owns backend semantics; no duplicate taxonomy. Submission retries preserve idempotency, uploads obey live capabilities, and failures cannot block Dock core. Keep #59 independently usable and follow the issue's real end-to-end/human gates.
 
-Native GitHub protection is defense-in-depth only. Registry classifications remain binding even when GitHub reports `protected: false` or no ruleset exists. Never use native protection state to infer deletion permission; only the deletion queue grants it.
-
-### Creating branches
-
-- Decide the branch's issue/workstream and purpose before creation.
-- Immediately after creating it, add it to ACTIVE PROTECTED.
-- Do not begin material work until that registry update is durable.
-- Additional helper/payload/release/staging branches each require separate entries.
-- If creation succeeds but registration fails, stop instead of creating more refs.
-
-### Closing branches
-
-A completed non-permanent branch moves from ACTIVE PROTECTED -> DELETE QUEUE. This transition is part of issue/workstream closeout and must appear in the finishing summary.
-
-### Permanent branch promotion
-
-A proposed permanent branch stays ACTIVE PROTECTED and is also listed in PENDING PERMANENT PROMOTION APPROVAL. Amanda's explicit approval is required to move it into PERMANENT — NEVER DELETE.
-
-When replacing an existing permanent branch, approval must identify the replacement. The old permanent ref moves to PENDING ARCHIVE, is preserved under a verified immutable tag recorded in `BRANCH_ARCHIVE.md`, and only then moves to DELETE QUEUE.
-
-### Standard audit
-
-A routine audit performs a set comparison between live refs and the registry/queue. Deep history/reachability work is required only for unregistered refs, stale active entries, SHA mismatches, or permanent/archive transitions.
-
-This keeps normal audits cheap and prevents branch intent from living only in conversation history.
-
-## 8. Legacy branch retirement
-
-Legacy Dev/candidate/helper branches are audited under #12/#13 before deletion. Useful unique work is referenced by exact commit/path in an issue or migrated narrowly. Promoted, superseded, or abandoned experiments are not carried into New Dev.
-
-Once useful history is reachable/referenced durably, delete obsolete branches. Git commits/issues are the archive.
+For accepted feature-specific constraints (lighting versus Persistent Booth, native capture output, tolerant Decals layouts, canonical standalone references), use [accepted decisions](HISTORY/DECISIONS.md) and the relevant [technical topic](HISTORY/Bullshit_Bible.md); do not erase these because they predate the current documentation structure.

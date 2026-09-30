@@ -2,7 +2,9 @@
 
 Durable decisions that should guide future repo work.
 
-## Active Decisions
+## Accepted decisions and dated context
+
+Current document responsibilities are defined by [Documentation and Context](../docs/policies/DOCUMENTATION_AND_CONTEXT.md); current task/release identities come from [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md). Dated probe versions, migration queues, and former MASTER tracking duties below are historical context, not new execution instructions. Technical constraints remain accepted unless explicitly superseded. The module inventory/versioning rule is clarified below.
 
 ### 2026-07-22 — Large External HeroForge Archives Use Distilled Notes and a Source Manifest
 
@@ -144,7 +146,7 @@ Decision:
 - Use `manifest.json` as the live module inventory.
 - Visible tools belong in `/tools/`.
 - Hidden HeroForge UI utilities belong in `/HeroForge_UI/`.
-- Only update `manifest.json` when adding, removing, renaming, or changing live-loaded modules.
+- Update `manifest.json` for live module inventory/configuration changes **and** synchronized version/build changes required by [MODULE_VERSIONING.md](../MODULE_VERSIONING.md). The older inventory-only wording predates the active version registry.
 
 Reason:
 - Witch Dock already uses a manifest loader, and keeping module roles separated reduces conflicts between global dock behavior and internal tool logic.
@@ -182,7 +184,7 @@ Reason:
 
 Applies to:
 - `HISTORY/STANDALONE_REFERENCES.md`
-- `MASTER.md` migration queue
+- issue #8 backlog / scoped issue (former MASTER migration queue)
 - Future migration decisions
 
 ### 2026-07-09 — Decals Scroll Must Support All Observed Layouts
@@ -231,7 +233,7 @@ Reason:
 Applies to:
 - `HISTORY/BULLSHIT/PHOTO_MODE_PNG_CAPTURE.md`
 - Future Photo Mode / PNG Series capture tool
-- `MASTER.md` migration queue
+- issue #8 backlog / scoped issue (former MASTER migration queue)
 
 ## Entry Template
 
@@ -244,4 +246,4 @@ Reason:
 - 
 
 Applies to:
-- 
+-

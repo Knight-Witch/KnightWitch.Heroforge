@@ -1,3 +1,17 @@
+## 2026-09-30 — Repository standardization final validation
+
+- Reference: HF.Status canonical operating standard, blob `8255b48d4a84da689f7b6cfcb235482c7dfa4c02`. Continued the already-registered `docs/repository-operating-standard` from `bfd8c9fc3a25d6589d1d51f3f9b4f95f11c16574`; seven live refs reconcile (three permanent, three pre-existing active, this task), queue/archive empty.
+- Reconciled the full identified authority set, including unchanged version/branch/archive/template/reference/backup sources and standing issue contracts. Primary detailed owners are indexed in `docs/policies/DOCUMENTATION_AND_CONTEXT.md`; summaries route procedures rather than competing with them.
+- Additional current-authority sources discovered: accepted decisions, STYLE_KEYS, technical evidence index, old manifest/loading topic, DIFFS/backup rules, release handoff template, Auto Host runbook/source, standing #14/#19/#35 and scoped #59/#88/#90/#97 boundaries. Preserved valid rules and corrected conflicting routing. #88 design remains on its protected branch; no acceptance invented.
+- PASS: 161 relative Markdown links/anchors across the authority set and changed docs; concrete CSS and design continuation paths verified. Historical handoff/investigation bodies retained unchanged beneath explicit non-executable notices. No preload of unrelated history.
+- PASS: all 66 tracked non-document files byte-identical to the task baseline; only Markdown and DEV_DIVERGENCES.json explanatory metadata changed. Manifest/version policy, launcher metadata, payload IDs, runtime/module sources, install/update/download URLs, delivery behavior, and automation unchanged.
+- PASS: Dev manifest equals payload `3c05f22a019278e2976d3c6ba8c847b333eff808` manifest; Stable manifest equals payload `9e0ac579d142808016a1fa4539be3acc4c65fb82` manifest. Source identities remain Dev v1.15.2 and Stable v2.3.2. Existing divergence owners/status/paths and historical stableBaseline unchanged; stale prose corrected.
+- PASS: original branch classifications/queue/archive unchanged. Existing log content is preserved, not compacted. Bootstrap contract reduced from 12,997 to 4,806 bytes; active context links exact prior evidence rather than retaining its full completed validation diary.
+- No feature-registry impact: no tool/UI/ownership implementation changed. No runtime/module/manifest/public behavior changed; no version bump, Stable promotion, HeroForge mutation, or new live smoke. No unrelated issue writes; this task's cleanup evidence remains in its PR and committed records per Amanda's explicit scope.
+- No repository GitHub Actions workflows at the baseline; PR status/check availability is verified before merge. Remaining task action: merge the validated docs PR, queue exact final task SHA, verify/delete only that ref, clear queue, reconcile live inventory.
+
+---
+
 ## 2026-09-30 — Repository-standardization registration
 
 - Re-read the canonical operating standard and Witch Dock bootstrap/governance; live heads match the completed audit.

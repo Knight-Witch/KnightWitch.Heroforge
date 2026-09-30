@@ -87,18 +87,16 @@ This is done in my spare time and I am not paid for it. It is time consuming, bu
 
 ## Project Tracking
 
-Internal repo tracking lives in these files:
+Development starts with [PROJECT_CONTRACT.md](./PROJECT_CONTRACT.md) and [ACTIVE_CONTEXT.md](./ACTIVE_CONTEXT.md) on `WITCH_DEV_MAIN`.
 
-- [MASTER.md](./MASTER.md): current architecture, tool inventory, active tasks, migration queue, blockers, and removals.
-- [PRE_FLIGHT_Check.md](./PRE_FLIGHT_Check.md): rolling pre-flight log before repo edits.
-- [CHANGELOG.md](./CHANGELOG.md): committed update history.
-- [STYLE_KEYS.md](./STYLE_KEYS.md): shared Witch Dock visual/style references.
-- [HISTORY/](./HISTORY/): session history, decisions, and HeroForge engine notes.
-- [HISTORY/Bullshit_Bible.md](./HISTORY/Bullshit_Bible.md): index of fragile HeroForge behavior discoveries.
-- [HISTORY/BULLSHIT/](./HISTORY/BULLSHIT/): segmented HeroForge engine behavior notes.
-- [DIFFS/](./DIFFS/): optional standalone patches for complex/risky changes.
-- [ASSETS/](./ASSETS/): repo assets.
-- [BACKUP_VAULT/](./BACKUP_VAULT/): major-refactor backups only.
+- [MASTER.md](./MASTER.md): system/document map, not current task or release authority.
+- [DEV_WORKFLOW.md](./DEV_WORKFLOW.md): diagnosis, validation, selective promotion, automatic closeout.
+- [Documentation/context policy](./docs/policies/DOCUMENTATION_AND_CONTEXT.md): complete authority map and bounded records.
+- [Runtime delivery](./docs/policies/RUNTIME_DELIVERY.md) and [module versioning](./MODULE_VERSIONING.md): channel paths, immutable payloads, and synchronized identities.
+- [Branch registry](./BRANCH_REGISTRY.md), [deletion queue](./BRANCH_DELETION_QUEUE.md), [archive ledger](./BRANCH_ARCHIVE.md): current branch governance.
+- [Investigation guide](./docs/investigations/README.md): durable evidence and autonomous Bridge procedure.
+- [Issue #8](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/8): standing backlog.
+- [STYLE_KEYS.md](./STYLE_KEYS.md), [HISTORY/](./HISTORY/), [CHANGELOG.md](./CHANGELOG.md), [PRE_FLIGHT_Check.md](./PRE_FLIGHT_Check.md): targeted design/evidence/change records, not mandatory startup reading.
 
 ---
 

@@ -1,5 +1,7 @@
 # KnightWitch.Heroforge Branch Cleanup Handoff
 
+> **HISTORICAL — NON-EXECUTABLE.** This handoff is superseded by the canonical [branch registry](../BRANCH_REGISTRY.md) and [exact-SHA deletion queue](../BRANCH_DELETION_QUEUE.md). Its original READY/KEEP/DELETE/next-step text below is dated evidence only and grants no current authority. Use [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) for current work; do not recreate deleted refs or execute this old list.
+
 **Status:** COMPLETE — historical execution record. The listed DELETE refs no longer exist; do not use this file as the current branch inventory. Current branch truth is in `ACTIVE_CONTEXT.md` and the live repository.
 
 **Audit date:** 2026-09-20

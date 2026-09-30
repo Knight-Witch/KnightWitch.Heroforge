@@ -1,5 +1,7 @@
 # Handoff — Issue #28 Public Modular Promotion
 
+> **HISTORICAL — NON-EXECUTABLE.** This handoff is superseded by the canonical [branch registry](../BRANCH_REGISTRY.md) and [exact-SHA deletion queue](../BRANCH_DELETION_QUEUE.md). Its original READY/KEEP/DELETE/next-step text below is dated evidence only and grants no current authority. Use [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) for current work; do not recreate deleted refs or execute this old list.
+
 **Status:** COMPLETE
 **Completed:** 2026-09-20
 **Public Stable:** `Witch_Scripts` @ `95b5cdae4c8840d950d984c73bce101ba887011e`

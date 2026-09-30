@@ -1,80 +1,27 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-09-29 UTC
-**Canonical Dev:** `WITCH_DEV_MAIN` v1.15.2 candidate / immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`
-**Public Stable:** `Witch_Scripts` v2.3.2 / immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`
-**Active engineering tracks:** #59 — Generic Bug Capture provider rollout; #90 — HF.Status public status panel + cached non-blocking client; #97 — integrated HF.Status bug reporter
-**Open unrelated product bug:** #34 — HR false restore warning / native body mask verification
+**Updated:** 2026-09-30 UTC
+**Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.15.2 candidate, immutable payload `3c05f22a019278e2976d3c6ba8c847b333eff808`
+**Public Stable:** `Witch_Scripts`, launcher v2.3.2, immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`
 
-## Confirmed #59 runtime baseline
+These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).
 
-### General Capture v1 — PASS
+## Active routes and next gates
 
-- Diagnostics Core v0.1.0 / `0.1.0-general-capture-v1`.
-- Bug Capture UI v0.2.0 / `0.2.0-provider-selection`.
-- General-only capture is observational, locally downloadable, and has 8 addressable SHA-256 sections.
-- Provider failures are isolated; no automatic upload or HF.Status runtime dependency.
+| Track | Exact continuation source | Next gate / do not repeat |
+|---|---|---|
+| [#59 — Generic Bug Capture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/59) | Canonical Dev Diagnostics Core/providers; paused checkpoint `wd/59-decals-diagnostic-provider`; [#88 Decals design](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/wd/88-diagnostic-capture-architecture/docs/diagnostics/providers/DECALS.md) | Resume remaining provider checkpoint from its latest issue/branch evidence. JSON/script-compat work is absorbed; its former branch is deleted. Do not repeat General/Texture Quality/Booth OFF validation merely to reconstruct context. |
+| [#90 — Public status panel/client](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/90) | Canonical Dev `features/status/`; [PR #91](https://github.com/Knight-Witch/KnightWitch.Heroforge/pull/91) | Static/mock gates passed. Live canonical Dev loader/network/cache verification and Amanda's Utilities → Script Status visual/interaction gate remain before any Stable promotion. Prior v1.14.0/payload evidence is a checkpoint, not the current launcher identity. |
+| [#97 — Integrated bug reporter](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/97) | `wd/97-integrated-bug-reporter`; issue's shared HF.Status contract links | Continue isolated implementation through the real Dev capture → upload → report → exact-report triage path, then human gate. No Stable integration yet. |
+| [#88 — Diagnostic provider architecture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/88) | `wd/88-diagnostic-capture-architecture/docs/diagnostics/` | Active design source; preserve draft/accepted distinctions. Do not absorb/retire its protected branch as documentation cleanup. |
+| [#34 — HR false restore warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) | Issue #34 contains observations, evidence IDs, two hypotheses, and next test | Separate product defect. Prove verifier-only versus real restore fault; do not reopen/repeat shipped #24/#32 fixes. |
 
-### Texture Quality provider v1 — PASS
+## Protected behavior and evidence
 
-- Provider `texture-quality` schema v1 / v0.1.0.
-- Generic snapshot produced 10 provider sections with healthy High Res verification.
-- Native Reconcile lifecycle state was invariant across capture.
-- Existing High Res Diagnostics v0.1.3 / Native Reconcile lifecycle behavior remains unchanged.
-- Retained pre-cleanup #34-style failure context is explicitly unavailable rather than fabricated.
+- General capture works with zero providers; providers are opt-in and failures cannot block General export. Capture is local/observational by default; heavy/armed operations remain explicit, with no automatic upload.
+- Booth snapshot must not activate/bootstrap Booth or capture media. Settings diagnostics observe/retain real user attempts and never retry save/load. High Res lifecycle remains unchanged; unavailable pre-cleanup failure context stays explicitly unavailable.
+- JSON/ReCK diagnostics exclude editor text/raw character JSON; script-compat does not enumerate Tampermonkey/extensions or mutate external-script/HeroForge limits.
+- #90 is optional/non-blocking; its Dev endpoint is not a Stable endpoint. Public status must not carry reporter-token/private triage state. HF.Status backend/storage/triage ownership stays separate.
+- Public Stable remains untouched until explicit narrow approval and all scoped gates pass.
 
-### Booth provider v1 — PASS (Booth OFF/native runtime unloaded)
-
-- Dev v1.13.0 / `1.13.0-booth-diagnostic-provider`, payload `1dd0d6b12eca3fa1fe00f4b9011ae3143a368999`.
-- Loader 31/31, failed=0, immutable=31, fallback=0.
-- Diagnostics Core providerCount=2: `booth` + `texture-quality`.
-- Booth v27.2.0 read-only diagnostic seam, Bootstrap v0.2.2 read-only state, and TRUE-resolution Readiness v1.1.0 loaded successfully.
-- Bug Capture UI visibly exposes Booth and High Res / Texture Quality provider choices.
-- Booth-only generic capture produced 17 total sections: 8 General + 9 Booth; errorCount=0.
-- Booth sections:
-  - state: captured;
-  - bootstrap: captured;
-  - native-runtime: captured;
-  - settings: unavailable because Booth runtime was not loaded (`compose-display-state-unavailable`);
-  - presentation/components/media: captured-bounded;
-  - failure-context: partial with explicit retained-history limitation;
-  - events: not-captured with explicit normalization limitation.
-- Snapshot did **not** activate or bootstrap Booth: before/after `sessionBoothView=false`, `runtimeReady=false`, bootstrap attempts=0, bootstrapCount=0, directSessionRequests=0, and global `BT` remained absent.
-- TRUE-resolution readiness stayed unchanged and no media capture ran.
-
-## Parallel #90 integration state
-
-- HF.Status public API v1 is live-validated on HF.Status Dev.
-- Public Status Client v0.1.0 / `0.1.0-etag-cache` and Public Status UI v0.1.0 / `0.1.0-compact-status-panel` are merged to canonical Dev via PR #91 / `ef931517b0d4e26dc7540713bfc29ee6bca2ed67`.
-- Dev launcher v1.14.0 pins immutable payload `d338d7ace39245ce7a845d237bf7273a80bf2fc7` and exposes only the exact Dev public-status endpoint through a bounded anonymous transport.
-- Static/mock gates passed: syntax, unique/load-ordered manifest entries, synchronous cache restore, ETag 304 validation, offline preservation of last-known data, 200 replacement/cache write, native Utilities registration, and no HFBR reporter-token/private triage behavior.
-- Public Stable is untouched.
-- Remaining #90 gate: reload canonical Dev, verify loader/network/cache behavior, then Amanda visual/interaction review of Utilities -> Script Status.
-
-## Current route
-
-- #59 JSON/script-compat capture work is absorbed into canonical Dev; its former task branch is deleted. The remaining provider checkpoint is `wd/59-decals-diagnostic-provider`.
-- #90 remains merged in Dev and still requires its live Dev/human gate before any Stable promotion.
-- #97 is active on `wd/97-integrated-bug-reporter`; keep it isolated from Stable until its own integration and human gates pass.
-- #88 / `wd/88-diagnostic-capture-architecture` remains the active design source for the diagnostic provider architecture.
-- For branch lifecycle state, use `BRANCH_REGISTRY.md` and `BRANCH_DELETION_QUEUE.md`; `ACTIVE_CONTEXT.md` is not a branch inventory.
-
-Keep HF.Status backend/storage/triage ownership separate.
-
-## Protected behavior
-
-- General remains usable with zero providers.
-- Feature providers remain opt-in.
-- Provider failure cannot block General export.
-- Heavy/armed operations remain explicit.
-- Booth snapshot must remain observational; settings diagnostics may observe/retain real user save/load attempts but must never retry them.
-- Texture Quality/High Res lifecycle remains untouched.
-- Public Stable remains untouched.
-- #90 HF.Status public client remains optional and must never block Dock startup/core behavior.
-- ReCK/general JSON diagnostics never capture editor text/raw character JSON.
-- `script-compat` never enumerates Tampermonkey/extensions or mutates external-script/HeroForge limits.
-- #34 remains separate.
-
-## Design source
-
-Issue #88 / `wd/88-diagnostic-capture-architecture`, especially `docs/diagnostics/providers/DECALS.md`.
+Completed #59 General/Texture Quality/Booth OFF results and #90 static/mock detail are preserved exactly in [bfd8c9f:ACTIVE_CONTEXT.md](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/bfd8c9fc3a25d6589d1d51f3f9b4f95f11c16574/ACTIVE_CONTEXT.md). Read only the needed section. [Investigation guide](docs/investigations/README.md) routes evidence/Bridge procedure; [MASTER.md](MASTER.md) maps other policy. Backlog remains [issue #8](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/8).

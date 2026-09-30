@@ -21,12 +21,8 @@ This folder stores durable project memory that should survive chat boundaries, c
 - If raw copies are later committed, keep them under `HISTORY/REFERENCES/` with non-installing `.txt` filenames.
 - Historical datasets and archived internal bundles are discovery aids, not current HeroForge contracts.
 
-## Documentation Checkpoints
+## Authority and checkpoints
 
-- Update the relevant files after meaningful validated findings, corrections, status changes, decisions, blockers, canonical-reference changes, or material probe milestones.
-- Batch trivial repeated observations rather than logging every test click.
-- Do not begin the next material probe/code stage while the current docs are knowingly stale.
-- Correct or remove outdated active claims instead of appending contradictory active statements.
-- Distinguish confirmed behavior from observations, inferences, and unproven hypotheses.
+[Documentation and Context](../docs/policies/DOCUMENTATION_AND_CONTEXT.md) owns knowledge placement, historical authority, checkpoint timing, and provenance-preserving retention. [Investigation guide](../docs/investigations/README.md) owns evidence fields and resumable Bridge work. Do not begin the next material stage while relevant records are knowingly stale; batch trivial repeats.
 
-Keep entries concise enough for fast recovery, but complete enough that critical project state does not depend on chat memory.
+`DECISIONS.md` and explicitly accepted topic specifications retain their technical rules. Old version/task/branch claims in history are dated evidence, not current routing or release/deletion authority. `SESSION_LOG.md` is chronological evidence only. Read just the needed topic; current state comes from `ACTIVE_CONTEXT.md`.

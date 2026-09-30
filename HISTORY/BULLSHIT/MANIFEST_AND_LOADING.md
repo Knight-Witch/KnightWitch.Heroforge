@@ -1,5 +1,7 @@
 # Manifest and Loading
 
+> **HISTORICAL DELIVERY RECORD — NON-EXECUTABLE.** The mutable raw-branch load chain and release instructions below predate immutable modular delivery. Current detailed authority is [Runtime Delivery](../../docs/policies/RUNTIME_DELIVERY.md); inventory/version changes follow [MODULE_VERSIONING.md](../../MODULE_VERSIONING.md), promotion follows [DEV_WORKFLOW.md](../../DEV_WORKFLOW.md). Preserved timing/enablement/failure constraints still apply, but these dated branch-load instructions do not authorize Stable edits.
+
 Witch Dock manifest loading, module boot order, raw GitHub loading, and runtime registration behavior.
 
 ## Known Rules

@@ -1,5 +1,7 @@
 # Branch Deletion Handoff — Issue #37 — 2026-09-25
 
+> **HISTORICAL — NON-EXECUTABLE.** This handoff is superseded by the canonical [branch registry](../BRANCH_REGISTRY.md) and [exact-SHA deletion queue](../BRANCH_DELETION_QUEUE.md). Its original READY/KEEP/DELETE/next-step text below is dated evidence only and grants no current authority. Use [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md) for current work; do not recreate deleted refs or execute this old list.
+
 **Scope:** mechanical deletion only. Do not re-audit or reinterpret unless live GitHub state contradicts this handoff.
 
 Issue #37 — Dock default-size reset utility — is fully released through public Stable v2.2.1. The following temporary refs are disposable.
