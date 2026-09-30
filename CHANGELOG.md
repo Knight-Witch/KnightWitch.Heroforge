@@ -4,15 +4,15 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Merged PR #98 into canonical Dev and paired launcher v1.15.3 with immutable payload `b69e21d700423fb2ce0588cc854d6c96c7b6ebf2` for the #97 reporter refinements.
-- The payload pairs Bug Capture UI v0.4.0, HF.Status Public UI v0.2.0, Utilities v1.4.0, and Reporter Client v0.1.0; fixed Dev identity/update URLs and HF.Status Dev transport boundaries are unchanged.
-- Registered #97's intentional Dev-only runtime divergence through its real capture/upload/report/HFBR/triage and final Amanda visual gates.
-- The rejected preview layer remains unused and its loader-sized transport remains untouched. #59 stays capture-only, #89 stays follow-up-only, and Public Stable remains untouched.
-- HF.Status feature-registry impact remains none: stable `bug-capture` and `script-status` IDs, paths, ownership, and placements are unchanged.
-- `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED` until the remaining live/human gates finish; Public Stable is unchanged.
+- Staged Dev launcher v1.15.4 metadata for Bug Capture UI v0.4.1 and the paired immutable payload; the launcher pin follows in the next commit before the new candidate is live.
+- Live v1.15.3 evidence proved the loader itself succeeded with 36 immutable resolutions, zero fallback resolutions, and zero module failures, but the still-installed loader-sized preview transport republished reporter v0.3.0 afterward.
+- Bug Capture UI v0.4.1 preserves the canonical higher-version reporter API against that stale lower-version assignment without restoring the rejected v0.2.0 refinement layer.
+- #59 remains capture-only, #89 remains follow-up-only, HF.Status registry impact remains none, and Public Stable is untouched.
+- `wd/97-integrated-bug-reporter` remains `ACTIVE PROTECTED` through the remaining live/HFBR/human gates.
 
 ## Latest Stable release — v2.3.2
 
 - Public Stable remains `Witch_Scripts` v2.3.2 with immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
 - Release #94 moved Booth JSON Save/Load into its own `Booth JSON Import / Export` section; Stable smoke and Amanda's visual gate passed.
 - Detailed release history: issue #94 and PR #96.
+
