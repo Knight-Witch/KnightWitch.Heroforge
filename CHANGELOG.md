@@ -4,9 +4,11 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-09-30
 
-- Simplified Witch Dock log retention so `CHANGELOG.md` remains a bounded current summary and `PRE_FLIGHT_Check.md` records only the latest validation/current head.
-- Ordinary replacement no longer creates separate compaction-history entries; prior contents already remain in Git history.
-- Documentation/governance only; **no runtime/module/manifest/public behavior changed**.
+- Reconciled `wd/97-integrated-bug-reporter` onto the current canonical `WITCH_DEV_MAIN` documentation/governance baseline without changing the already-gated #97 runtime bytes.
+- Preserved the #97 first implementation slice: HF.Status Reporter Client v0.1.0 / `0.1.0-shared-intake-contract` and Bug Capture UI v0.3.0 / `0.3.0-integrated-hf-status-reporter` with the matching manifest entries.
+- Human preview gate confirmed the overlay/accordion, contextual classification prefill, automatic original diagnostic capture, and additive fresh diagnostic capture. Required UI/intake refinements are recorded on issue #97 before promotion.
+- HF.Status registry impact: no taxonomy change; the reporter continues consuming the existing canonical stable IDs/contracts.
+- Public Stable remains untouched; no Stable launcher, payload, update path, or runtime behavior changed.
 
 ## Latest Stable release — v2.3.2
 

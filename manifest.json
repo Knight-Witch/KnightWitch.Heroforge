@@ -417,14 +417,24 @@
       "versionOrigin": "issue-59-general-capture-v1"
     },
     {
+      "id": "hf-status-reporter-client",
+      "title": "HF.Status Reporter Client",
+      "path": "features/status/HF_Status_Reporter_Client.js",
+      "kind": "feature-service",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-shared-intake-contract",
+      "versionOrigin": "issue-97-integrated-reporter-client"
+    },
+    {
       "id": "witch-dock-bug-capture-ui",
       "title": "Witch Dock Bug Capture UI",
       "path": "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
       "kind": "feature-ui",
       "load": "module-loader",
-      "version": "0.2.0",
-      "build": "0.2.0-provider-selection",
-      "versionOrigin": "issue-59-provider-selection"
+      "version": "0.3.0",
+      "build": "0.3.0-integrated-hf-status-reporter",
+      "versionOrigin": "issue-97-integrated-hf-status-reporter"
     },
     {
       "id": "texture-quality-diagnostic-provider",
@@ -769,10 +779,19 @@
       "type": "heroForgeUI"
     },
     {
+      "id": "hf-status-reporter-client",
+      "title": "HF.Status Reporter Client",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/status/HF_Status_Reporter_Client.js?v=0.1.0-shared-intake-contract",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
       "id": "witch-dock-bug-capture-ui",
       "title": "Witch Dock Bug Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.2.0-provider-selection",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.3.0-integrated-hf-status-reporter",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
