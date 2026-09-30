@@ -35,4 +35,11 @@ HF-Chat-Bridge is development infrastructure only, never a runtime dependency. U
 
 ## Durable records
 
-Every committed repository update must update [CHANGELOG.md](CHANGELOG.md) and add a concise [PRE_FLIGHT_Check.md](PRE_FLIGHT_Check.md) record. Documentation-only records must state: **no runtime/module/manifest/public behavior changed**. Keep logs rolling and compact under the provenance-preserving retention policy. Current work goes in active context, backlog in issue #8, evidence in its indexed investigation/issue, and accepted decisions in their existing homes.
+Every committed repository update must update [CHANGELOG.md](CHANGELOG.md) and [PRE_FLIGHT_Check.md](PRE_FLIGHT_Check.md), but neither file is an append-only archive.
+
+- `CHANGELOG.md` is a bounded current summary: latest repository change plus latest Stable release context only.
+- `PRE_FLIGHT_Check.md` is the validation record for the latest committed change/current head only; replace the prior record on the next commit.
+- Git history, issues, PRs, focused investigations, and accepted-decision docs preserve history. Do not duplicate that history into these two files.
+- Documentation-only records must state: **no runtime/module/manifest/public behavior changed**.
+
+Current work goes in active context, backlog in issue #8, evidence in its indexed investigation/issue, and accepted decisions in their existing homes.

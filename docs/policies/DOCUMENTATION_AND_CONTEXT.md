@@ -29,14 +29,14 @@ Paths below are repository-relative. Read a source only when its concern is need
 | GPT/Work mode checkpoints | [TASK_MODE_ROUTER.md](../../TASK_MODE_ROUTER.md) | Advisory; safe bounded work continues autonomously. |
 | Cross-repository ownership / registry impact | [DEV_WORKFLOW.md](../../DEV_WORKFLOW.md) | #59/#88/#90/#97 and linked external contracts own their scoped requirements. |
 | Historical authority / retention / handoffs | This policy | Branch registry owns the 2026-09-29 handoff supersession rule. |
-| Change / validation evidence | [CHANGELOG.md](../../CHANGELOG.md), [PRE_FLIGHT_Check.md](../../PRE_FLIGHT_Check.md) | Every committed update records both. |
+| Current change / validation summary | [CHANGELOG.md](../../CHANGELOG.md), [PRE_FLIGHT_Check.md](../../PRE_FLIGHT_Check.md) | Bounded current records only; Git/issues/PRs preserve history. |
 | Optional patches / major-refactor backups | [DIFFS/README.md](../../DIFFS/README.md), [BACKUP_VAULT/README.md](../../BACKUP_VAULT/README.md) | Git history is default; never delete existing vault backups. |
 
 ## Checkpoints and current-state discipline
 
 Update durable records after material validated findings, corrections, decisions, blockers, canonical-reference changes, and probe milestones. Batch repetitive observations; do not enter the next material phase while relevant records are knowingly stale. Resume the first unfinished step, not the whole investigation.
 
-Active context contains current conditions, active tracks, gates, exact continuation sources, and no-repeat constraints. Completed validation tables belong in the existing issue/record. When trimming, link an exact commit/path if the evidence is not duplicated elsewhere; do not require an unrelated issue edit to preserve it. Channel head, pinned payload, installed launcher, and validated checkpoint are different identities. Label each explicitly.
+Active context contains current conditions, active tracks, gates, exact continuation sources, and no-repeat constraints. Completed validation tables belong in the existing issue/record. When trimming, link an exact commit/path if unique evidence is not duplicated elsewhere. Channel head, pinned payload, installed launcher, and validated checkpoint are different identities. Label each explicitly.
 
 Accepted decisions remain in `HISTORY/DECISIONS.md` and existing contracts/topic specifications. A historical folder name does not invalidate an accepted technical invariant. Draft #88 provider designs remain on their protected branch until that workstream accepts/absorbs them; standardization is not design approval.
 
@@ -48,10 +48,16 @@ Closed issue bodies and version snapshots in standing issues are historical evid
 
 A handoff records the task, scope, exact branch/commit/build, evidence/conclusion, completed and ruled-out work, unresolved gate, uncertain mutation state, and next discriminating step. It links primary sources instead of copying whole transcripts.
 
-## Rolling logs and preservation
+## Bounded change and preflight records
 
-Keep new entries concise and place current entries first. Every commit updates both logs and states runtime/public impact. No mandatory startup reading of either log.
+`CHANGELOG.md` and `PRE_FLIGHT_Check.md` are current summaries, not historical logs.
 
-Compaction is permitted only after preserving unambiguous retrieval: record the repository, immutable commit SHA, original path, retained date/scope, and retrieval command (`git show <sha>:<path>`) before removing content. Keep unfinished gates and unique current evidence accessible through the router. Never rewrite historical findings to fit later conclusions. Prefer a separate bounded maintenance change if provenance or retention is unclear.
+- Every commit updates both files.
+- `CHANGELOG.md` retains only the latest repository change plus a compact latest-Stable summary when useful.
+- `PRE_FLIGHT_Check.md` retains only the validation result for the latest committed change/current head. The next commit replaces it.
+- Do not keep earlier PASS records, release diaries, branch-cleanup history, probe tables, or completed validation merely because they once appeared in these files.
+- Ordinary replacement needs no special compaction entry or copied SHA: the prior file contents already remain in the parent Git commit.
+- Before removing genuinely unique evidence that exists nowhere else, move or link it to the owning issue, investigation, decision, or active-context route. Then remove it from the bounded summary.
+- Git history, issues, PRs, and focused records are the historical archive. Retrieve an older file state with normal Git history when actually needed rather than paying its token cost on routine reads.
 
-This migration leaves existing log history intact; size reduction remains a follow-up under this rule. Source manifests retain original filenames, hashes, and provenance; do not normalize defects in archived datasets or install old executable sources as live modules.
+Source manifests retain original filenames, hashes, and provenance; do not normalize defects in archived datasets or install old executable sources as live modules.
