@@ -1,3 +1,12 @@
+## 2026-09-30 — Canonical branch deletion sweep complete
+
+- Deleted four exact-SHA READY refs: `wd/41-dev-auto-host-head-resolve`, `wd/payload-1.5.1`, `wd/payload-1.5.4`, and `wd/28-public-payload-2.0.0`.
+- Verified the complete live inventory is exactly the three PERMANENT refs and three ACTIVE PROTECTED refs recorded in `BRANCH_REGISTRY.md`; zero unregistered refs remain.
+- Removed all completed rows from `BRANCH_DELETION_QUEUE.md`; the queue is empty.
+- Documentation/governance only; no runtime/module/manifest/public behavior changed.
+
+---
+
 ## 2026-09-29 — Clarify procedural vs native GitHub branch protection
 
 - Branch lifecycle protection is now explicitly a project-governance classification independent of GitHub's native `protected` flag/ruleset availability.
