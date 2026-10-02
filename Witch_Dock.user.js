@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v2.4.1
+// @name         Witch Dock v2.4.2
 // @namespace    KnightWitch
-// @version      2.4.1
+// @version      2.4.2
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,20 +16,19 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      raw.githubusercontent.com
-// @connect      api.github.com
+// @connect      witchdock.knightwitch.dev
 // ==/UserScript==
 
 (async function () {
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.4.1";
-  const BUILD = "2.4.1-refresh-compatibility";
-  const SCRIPT_NAME = "Witch Dock v2.4.1";
+  const VERSION = "2.4.2";
+  const BUILD = "2.4.2-refresh-compatibility";
+  const SCRIPT_NAME = "Witch Dock v2.4.2";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "fa8528f19450053c383f024beb18d21e7f09574e";
+  const PAYLOAD_REF = "93c0de5cd0da1dece3ef286c5a9201c83f1addb7";
   const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
@@ -64,7 +63,7 @@
   const STABLE_REQUIRED_GRANTS = Object.freeze(Array.from(STABLE_ALLOWED_GRANTS));
   // Keep this legacy metadata contract until every installed pre-2.4 wrapper can
   // accept a staged replacement. Runtime delivery remains on the custom domains.
-  const STABLE_ALLOWED_CONNECTS = new Set(["raw.githubusercontent.com", "api.github.com"]);
+  const STABLE_ALLOWED_CONNECTS = new Set(["witchdock.knightwitch.dev"]);
   const STABLE_RESOLVED_EXECUTION = !!(UW[STABLE_RESOLVED_GUARD_KEY] && UW[STABLE_RESOLVED_GUARD_KEY].active);
 
   async function stableHostRequest(url, headers) {
