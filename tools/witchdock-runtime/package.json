@@ -1,0 +1,8 @@
+{
+  "name": "witchdock-runtime",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/runtime.test.mjs"
+  }
+}

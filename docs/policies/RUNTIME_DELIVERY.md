@@ -16,6 +16,13 @@ Repository: `Knight-Witch/KnightWitch.Heroforge`. Preserve each URL verbatim unl
 
 The custom domain is the permanent provider-independent delivery boundary. Cloudflare Worker service `witchdock-runtime` resolves GitHub `Knight-Witch/KnightWitch.Heroforge` first and public Bitbucket `knightwitch/knightwitch.heroforge.recovery` second. Userscript metadata, ref discovery, launcher fetches, and immutable payload fetches stay behind `witchdock.knightwitch.dev`; never expose or restore raw-provider install/update URLs. Permanent channel and payload commits must exist in both providers. A recovery-maintained branch may have a different provider commit SHA only when the delivered bytes are verified identical and each provider's branch head is resolved independently.
 
+### HF JSON delivery aliases
+
+Canonical Worker source and its local route contract live in `tools/witchdock-runtime/`; do not treat an untracked workstation copy as durable authority. The existing channel/ref/payload routes remain governed by this policy.
+
+`/HFJSON/` is an additive external-script delivery namespace. Its stable semantic `.user.js` aliases currently issue temporary `307` redirects with `Cache-Control: no-store` to Lob's public GitGud raw scripts. HF.Status may publish those alias URLs instead of upstream filenames so later Compatibility/Witch Dock absorption can retarget the alias without changing public resource links. The alias layer does **not** claim ownership of Lob's source bytes and does not by itself guarantee control of update behavior for already-installed standalone copies. Any future retirement shim, proxying, or Witch Dock redirect must be a deliberate scoped change with its own validation.
+
+
 ## Immutable payload pairing
 
 A moving channel head serves a launcher that pins its own `PAYLOAD_REF` commit. The channel head, resolved launcher commit, and payload commit are distinct; a documentation commit may advance Dev without changing the runtime at all.

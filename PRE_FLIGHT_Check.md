@@ -2,12 +2,14 @@
 
 This file records only the validation state for the latest committed change/current head. Replace it on the next commit; do not accumulate historical PASS entries here.
 
-## 2026-10-02 - issue #104 branch registration
+## 2026-10-02 - issue #104 HFJSON edge candidate
 
-**PASS - task registered before material work**
+**PASS - local route contract and deployment dry-run; live deployment intentionally pending**
 
-- PASS: branch `wd/104-hfjson-delivery` was created from current `WITCH_DEV_MAIN` and registered ACTIVE PROTECTED before implementation.
-- PASS: #104 records the additive delivery scope and explicit non-regression boundaries.
-- PASS: live edge deployment is gated behind local/preview validation plus paired HF.Status #89 visual readiness.
-- Feature-registry impact: **no Witch Dock registry impact**; external script install aliases are owned by HF.Status #89.
-- This commit is documentation/governance-only; no application/runtime/public behavior changed.
+- PASS: canonical Worker source is tracked at `tools/witchdock-runtime/src/index.js` with the current production channel/ref/payload implementation preserved.
+- PASS: seven semantic HFJSON aliases plus GitGud-root routing are data-driven, temporary (`307`), and `no-store`.
+- PASS: 11/11 Node route tests cover health, every alias, case-insensitive HEAD, root redirect, and unknown-alias 404 isolation.
+- PASS: `wrangler 4.146.0 deploy --dry-run` completed with no bindings.
+- NOT RUN / intentionally gated: live `witchdock-runtime` deployment. Wait until paired HF.Status #89 Dev UX is ready for Amanda's visual gate.
+- Feature-registry impact: **no Witch Dock registry impact**; paired HF.Status #89 owns external install URL changes.
+- Existing Witch Dock Stable/Dev payload and launcher files are untouched.
