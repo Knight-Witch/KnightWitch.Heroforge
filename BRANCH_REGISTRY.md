@@ -41,6 +41,7 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 
 | Branch | Owner / source | Why protected | Exit condition |
 |---|---|---|---|
+| `wd/104-hfjson-delivery` | #104 | Provider-independent HF JSON delivery aliases and durable edge source. | After alias/runtime validation and paired HF.Status #89 visual gate, preserve/merge approved work, then queue exact head for deletion. |
 | `wd/59-decals-diagnostic-provider` | #59 | Paused Decals provider checkpoint with unique unmerged work. | When #59 no longer needs the branch, validate preservation, remove this row, and add the exact head to `BRANCH_DELETION_QUEUE.md`. |
 | `wd/88-diagnostic-capture-architecture` | #88 | Authoritative diagnostic capture/provider design source still referenced by active work. | When #88/design ownership is fully absorbed or retired, validate preservation, remove this row, and queue the exact head for deletion. |
 
