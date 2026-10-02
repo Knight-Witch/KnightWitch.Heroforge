@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "devBranch": "WITCH_DEV_MAIN",
   "stableBranch": "Witch_Scripts",
-  "stableBaseline": "88280df1832b7bfa0e5b2d9ff1aa9b8d97b21940",
+  "stableBaseline": "b069d1057c3cf52414ed5365841058f0f43bdf31",
   "runtimeDivergences": [
     {
       "issue": 19,
@@ -76,6 +76,7 @@
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
     "stableBaseline is the evidenced v2.4.0 reconciliation anchor (88280df1832b7bfa0e5b2d9ff1aa9b8d97b21940). Compare live Witch_Scripts for new work; advance this anchor only with another scoped evidenced reconciliation.",
     "Issues #58/#83 shipped in Stable v2.3.1; #94 shipped in v2.3.2; #90/#97 shipped in v2.4.0. Current intentional divergences are #19/#35/#59; #35 remains the standing owner of Dev-only High Res diagnostics and #59 owns remaining provider expansion.",
-    "Current Dev/Stable source identities are routed by ACTIVE_CONTEXT.md. Dated acceptance results are evidence, not instructions to rerun completed work."
+    "Current Dev/Stable source identities are routed by ACTIVE_CONTEXT.md. Dated acceptance results are evidence, not instructions to rerun completed work.",
+    "Current Stable self-refresh compatibility is v2.4.2: runtime commit 3236f9d754703c5ff1a709209c1c251cd644e6e6, immutable payload 93c0de5cd0da1dece3ef286c5a9201c83f1addb7, documentation/parity head b069d1057c3cf52414ed5365841058f0f43bdf31. Live installed-wrapper refresh passed with 30/30 modules and zero fallback."
   ]
 }
