@@ -1,3 +1,12 @@
+## 2026-10-02 — Issues #90/#97 Dev Auto Host v0.2.2 custom-domain permission
+
+- Auto Host now permits the provider-independent Witch Dock payload host and current HF.Status Dev custom domain.
+- The retired workers.dev hostname is removed from launcher metadata validation.
+- Immutable GitHub head resolution remains development-only Auto Host infrastructure; public Witch Dock delivery remains behind witchdock.knightwitch.dev.
+- Node execution/metadata regression passed. Public Stable is unchanged.
+
+---
+
 ## 2026-09-28 — Issue #41 v0.2.1 test-fixture correction
 
 - Corrected the Auto Host v0.2.1 test regex and fixture so the simulated Dev launcher includes the newly allowed HF.Status Dev `@connect`.

@@ -1,3 +1,14 @@
+## 2026-10-02 — Issues #90/#97 Dev Auto Host v0.2.2
+
+### PASS — static execution/metadata gate; installed-host use remains optional
+
+- Source parses and the execution fixture passes.
+- Host metadata covers its GitHub resolution plus the launcher's witchdock.knightwitch.dev and status-dev.knightwitch.dev permissions.
+- Launcher validator accepts only the current two launcher hosts and rejects the retired workers.dev host.
+- Canonical Dev v1.16.0 live validation is recorded on WITCH_DEV_MAIN; Public Stable is unchanged.
+
+---
+
 ## 2026-09-28 — Issue #41 v0.2.1 test-fixture correction
 
 ### PASS pending exact-source rerun

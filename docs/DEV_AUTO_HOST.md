@@ -1,6 +1,6 @@
 # Witch Dock Dev Auto Host
 
-**Status:** canonical Dev delivery helper on `wd/dev-auto-host`; v0.2.0 live gate pending.  
+**Status:** canonical Dev delivery helper on `wd/dev-auto-host`; v0.2.2 custom-domain permission gate.  
 **Payload:** current `WITCH_DEV_MAIN/Witch_Dock_DEV.user.js`, resolved by immutable branch-head SHA.  
 **Purpose:** let Dev reloads execute the current canonical launcher without waiting on Tampermonkey's scheduled update cycle or mutable raw-branch propagation.
 
@@ -8,7 +8,7 @@
 
 `devtools/Witch_Dock_DEV_Auto_Host.user.js` is installed once in Tampermonkey. On every HeroForge page load it first resolves the current `WITCH_DEV_MAIN` head through GitHub's ref API, then fetches the Dev launcher from that immutable commit SHA, validates its identity, version, branch, grants, and connection scope, and executes it inside the userscript sandbox with the same bounded Tampermonkey capabilities.
 
-The fetched launcher remains authoritative for its own version and visible Dock title. The host supplies a synthetic `GM_info.script` matching the fetched launcher's metadata so About/diagnostics do not report the host's version as the Dock version.
+The fetched launcher remains authoritative for its own version and visible Dock title. Auto Host v0.2.2 permits the launcher's provider-independent `witchdock.knightwitch.dev` payload transport and `status-dev.knightwitch.dev` HF.Status transport; the retired workers.dev host is no longer accepted. The host supplies a synthetic `GM_info.script` matching the fetched launcher's metadata so About/diagnostics do not report the host's version as the Dock version.
 
 After a future Dev commit, the Bridge can reload the HeroForge tab. That reload fetches and runs the new launcher immediately; Amanda does not need to open Tampermonkey or wait for its scheduled update interval. The host does not poll or reload on its own, so a push cannot interrupt an in-progress mutation or human visual gate.
 
@@ -28,6 +28,7 @@ The host deliberately fails with a visible error if the direct Dev launcher is a
 - Every request uses a fresh cache key and `Cache-Control: no-cache`.
 - Fetch retry is bounded to three attempts; execution occurs at most once per page load.
 - The fetched source must remain `WITCH DOCK - DEV` / `KnightWitch`, have synchronized metadata/runtime versions, declare the expected branch, request only the host's known grants, and keep its launcher connection scope within the validated contract.
+- Launcher `@connect` scope is restricted to `witchdock.knightwitch.dev` and `status-dev.knightwitch.dev`; the host's own GitHub API/raw permissions remain private to immutable launcher resolution.
 - New Tampermonkey permissions, `@require`, `@resource`, branch migration, or host-boundary changes fail visibly and require a deliberate host update/live gate.
 - Normal launcher, core, module, timing, storage, UI, and rollback behavior remain owned by the fetched source. This candidate changes delivery only.
 - Human gates remain required for visual correctness. Route/runtime success does not certify pixels.

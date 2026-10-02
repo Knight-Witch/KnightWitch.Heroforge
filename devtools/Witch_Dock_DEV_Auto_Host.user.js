@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV AUTO HOST
 // @namespace    KnightWitch
-// @version      0.2.1
+// @version      0.2.2
 // @description  Loads the current Witch Dock Dev launcher on every HeroForge page load.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,13 +18,14 @@
 // @grant        GM_download
 // @connect      raw.githubusercontent.com
 // @connect      api.github.com
-// @connect      hf-status-dev.amanda-d5f.workers.dev
+// @connect      witchdock.knightwitch.dev
+// @connect      status-dev.knightwitch.dev
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  const HOST_VERSION = "0.2.1";
+  const HOST_VERSION = "0.2.2";
   const TARGET_NAME = "WITCH DOCK - DEV";
   const TARGET_NAMESPACE = "KnightWitch";
   const TARGET_BRANCH = "WITCH_DEV_MAIN";
@@ -42,10 +43,13 @@
     "GM_download"
   ]);
   const ALLOWED_GRANTS = new Set([...REQUIRED_GRANTS, "GM_info"]);
-  const REQUIRED_LAUNCHER_CONNECTS = Object.freeze(["raw.githubusercontent.com"]);
+  const REQUIRED_LAUNCHER_CONNECTS = Object.freeze([
+    "witchdock.knightwitch.dev",
+    "status-dev.knightwitch.dev"
+  ]);
   const ALLOWED_LAUNCHER_CONNECTS = new Set([
-    "raw.githubusercontent.com",
-    "hf-status-dev.amanda-d5f.workers.dev"
+    "witchdock.knightwitch.dev",
+    "status-dev.knightwitch.dev"
   ]);
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
 
