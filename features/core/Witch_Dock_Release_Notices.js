@@ -4,12 +4,12 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockReleaseNotices";
   const FEATURE_ID = "witch-dock-release-notices";
-  const VERSION = "0.2.2";
-  const BUILD = "0.2.2-remove-old-script-guidance";
+  const VERSION = "0.3.1";
+  const BUILD = "0.3.1-formatted-bug-reporting-notice";
   const TARGET_STABLE_VERSION = "2.3.0";
-  const UPDATE_URL = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js";
+  const UPDATE_URL = "https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js";
   const STABLE_NOTICE_ID = "stable-wrapper-update-v2.3.0-remove-old-v2";
-  const DEV_PREVIEW_NOTICE_ID = "stable-wrapper-update-v2.3.0-dev-preview-v4";
+  const BUG_REPORT_NOTICE_ID = "built-in-bug-reporting-v2";
 
   if (UW[GLOBAL] && UW[GLOBAL].version === VERSION && UW[GLOBAL].build === BUILD) return;
 
@@ -147,14 +147,112 @@
     return registered;
   }
 
+  function registerBugReportNotice() {
+    const notices = UW.KWWitchDockNotifications;
+    if (!notices || typeof notices.register !== "function") {
+      throw new Error("Witch Dock Notifications service is unavailable.");
+    }
+
+    const registered = notices.register({
+      id: BUG_REPORT_NOTICE_ID,
+      eyebrow: "NEW",
+      title: "Built-In Bug Reporting",
+      paragraphs: [
+        "Witch Dock now has its own built-in bug reporting system."
+      ],
+      overview: {
+        title: "How it works",
+        items: [
+          "If something breaks, behaves strangely, or just doesn't seem right, you can report it directly from Witch Dock without having to hunt down the right GitHub issue, Discord channel, or developer.",
+          "The reporter automatically collects the technical information we need to investigate the problem, while letting you review and add your own description and evidence before anything is submitted.",
+          "Found a bug? Hit “Report a Bug” in Witch Dock and send it our way."
+        ]
+      },
+      detailsLabel: "Learn More / Details",
+      backLabel: "Back to overview",
+      details: [
+        {
+          title: "Bug reports without the debugging homework",
+          paragraphs: [
+            "One of the biggest problems with troubleshooting Hero Forge scripts is that a simple “this broke” can have dozens of possible causes — the figure, Hero Forge itself, Witch Dock, another tool, browser state, graphics settings, or something else entirely.",
+            "The new reporter is designed to collect that context for you.",
+            "When you open it, Witch Dock can capture the relevant diagnostic information from your current session and package it together with the information you provide. You don't need to know what console logs are, dig through developer tools, or figure out which technical details might matter."
+          ]
+        },
+        {
+          title: "Tell us what actually happened",
+          paragraphs: [
+            "The reporter lets you identify the Witch Dock tool or area involved, explain what went wrong, and include additional evidence where relevant.",
+            "Depending on what you're reporting, that can include things such as:"
+          ],
+          items: [
+            { text: "your current Hero Forge save/link;" },
+            { text: "diagnostic information about Witch Dock and the current session;" },
+            { text: "JSON or other supporting data;" },
+            { text: "screenshots or other evidence you choose to provide;" },
+            { text: "your own description of what happened and what you expected instead." }
+          ],
+          closingParagraphs: [
+            "The goal is to give us enough information to reproduce and investigate bugs without making you perform the investigation yourself."
+          ]
+        },
+        {
+          title: "You get a report ID",
+          paragraphs: [
+            { runs: [
+              { text: "Every successful submission receives its own " },
+              { text: "HFBR report ID", strong: true },
+              { text: ", such as:" }
+            ] }
+          ],
+          items: [
+            { label: "Example", separator: ": ", text: "HFBR-######..." },
+            { text: "Keep that ID if you want to reference the report later." },
+            { text: "Witch Dock will also show you the current submission state so you know whether the report was successfully received." }
+          ]
+        },
+        {
+          title: "Reporting something does not automatically declare it a confirmed Witch Dock bug",
+          paragraphs: [
+            "Reports enter the HF.Status diagnostic and triage system for review.",
+            "A problem you see inside Witch Dock might ultimately be caused by Witch Dock, Hero Forge, another script, a compatibility interaction, or something else entirely.",
+            "The reporter gives us the evidence needed to determine which one it actually is before we publish a diagnosis or mark something as a confirmed issue."
+          ]
+        },
+        {
+          title: "Why we built this",
+          paragraphs: [
+            "Better reports mean faster debugging, less back-and-forth asking users for technical information, and a much better chance of reproducing weird or intermittent problems.",
+            "So if Witch Dock does something weird:"
+          ],
+          items: [
+            { label: "Report it.", separator: " ", text: "Even if you're not sure whether Witch Dock caused it." }
+          ],
+          closingParagraphs: [
+            "Figuring that part out is our job."
+          ]
+        }
+      ],
+      priority: 1100,
+      acknowledgeWhen: "show",
+      closeLabel: "Close"
+    });
+
+    if (registered) {
+      state.registeredNoticeId = BUG_REPORT_NOTICE_ID;
+      state.preview = false;
+    }
+    return registered;
+  }
+
   function initialize() {
     try {
       const channelState = getChannelState();
       state.channel = channelState && channelState.channel ? String(channelState.channel) : null;
 
       if (state.channel === "dev") {
-        state.reason = "dev-preview";
-        registerNotice(DEV_PREVIEW_NOTICE_ID, true);
+        state.reason = "built-in-bug-reporting";
+        registerBugReportNotice();
         return true;
       }
 
@@ -181,8 +279,8 @@
         return false;
       }
       if (order >= 0) {
-        state.reason = "installed-wrapper-current";
-        return false;
+        state.reason = "built-in-bug-reporting";
+        return registerBugReportNotice();
       }
 
       state.reason = "installed-wrapper-outdated";

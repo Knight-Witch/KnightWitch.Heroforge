@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.3.2",
-      "build": "2.3.2-booth-json-subtool",
-      "versionOrigin": "issue-94-booth-json-subtool"
+      "version": "2.4.0",
+      "build": "2.4.0-integrated-bug-reporting",
+      "versionOrigin": "issues-90-97-public-promotion"
     },
     {
       "id": "witch-dock-notifications",
@@ -17,9 +17,9 @@
       "path": "features/core/Witch_Dock_Notifications.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.2.1",
-      "build": "0.2.1-release-copy-formatting",
-      "versionOrigin": "issue-83-reusable-notifications-2026-09-25"
+      "version": "0.3.0",
+      "build": "0.3.0-rich-notice-copy",
+      "versionOrigin": "issue-97-built-in-bug-reporting-notice"
     },
     {
       "id": "witch-dock-core",
@@ -371,9 +371,9 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.3.1",
-      "versionOrigin": "issue-37-dock-size-reset-version-meta-2026-09-25",
-      "build": "1.3.1-dock-size-reset-version-meta"
+      "version": "1.4.0",
+      "versionOrigin": "issue-97-status-reporter-utilities-sections",
+      "build": "1.4.0-status-reporter-sections"
     },
     {
       "id": "witch-dock-release-notices",
@@ -381,9 +381,59 @@
       "path": "features/core/Witch_Dock_Release_Notices.js",
       "kind": "core-feature",
       "load": "module-loader",
-      "version": "0.2.2",
-      "build": "0.2.2-remove-old-script-guidance",
-      "versionOrigin": "issue-83-old-script-removal-2026-09-26"
+      "version": "0.3.1",
+      "build": "0.3.1-formatted-bug-reporting-notice",
+      "versionOrigin": "issue-97-formatted-bug-reporting-notice"
+    },
+    {
+      "id": "witch-dock-diagnostics-core",
+      "title": "Witch Dock Diagnostics Core",
+      "path": "features/diagnostics/Witch_Dock_Diagnostics_Core.js",
+      "kind": "feature-service",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-general-capture-v1",
+      "versionOrigin": "issue-59-general-capture-v1"
+    },
+    {
+      "id": "hf-status-reporter-client",
+      "title": "HF.Status Reporter Client",
+      "path": "features/status/HF_Status_Reporter_Client.js",
+      "kind": "feature-service",
+      "load": "module-loader",
+      "version": "0.1.1",
+      "build": "0.1.1-witch-dock-capabilities",
+      "versionOrigin": "issue-97-witch-dock-capabilities"
+    },
+    {
+      "id": "witch-dock-bug-capture-ui",
+      "title": "Witch Dock Bug Capture UI",
+      "path": "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
+      "kind": "feature-ui",
+      "load": "module-loader",
+      "version": "0.4.5",
+      "build": "0.4.5-context-routing",
+      "versionOrigin": "issue-97-context-routing"
+    },
+    {
+      "id": "hf-status-public-client",
+      "title": "HF.Status Public Status Client",
+      "path": "features/status/HF_Status_Public_Client.js",
+      "kind": "feature-service",
+      "load": "module-loader",
+      "version": "0.1.0",
+      "build": "0.1.0-etag-cache",
+      "versionOrigin": "issue-90-hf-status-public-client"
+    },
+    {
+      "id": "hf-status-public-ui",
+      "title": "HF.Status Public Status UI",
+      "path": "features/status/HF_Status_Public_UI.js",
+      "kind": "feature-ui",
+      "load": "module-loader",
+      "version": "0.2.0",
+      "build": "0.2.0-utilities-section",
+      "versionOrigin": "issue-97-status-section-integration"
     }
   ],
   "tools": [
@@ -391,7 +441,7 @@
       "id": "witch-dock-module-loader",
       "title": "Witch Dock Module Loader",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Module_Loader.js?v=0.2.0-immutable-payload-root",
+      "url": "https://witchdock.knightwitch.dev/stable/features/core/Witch_Dock_Module_Loader.js?v=0.2.0-immutable-payload-root",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -399,28 +449,10 @@
   ],
   "modules": [
     {
-      "id": "witch-dock-notifications",
-      "title": "Witch Dock Notifications",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Notifications.js?v=0.2.1-release-copy-formatting",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "witch-dock-release-notices",
-      "title": "Witch Dock Release Notices",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Release_Notices.js?v=0.2.2-remove-old-script-guidance",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
       "id": "witch-dock-developer-mode",
       "title": "Developer Mode",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/core/Witch_Dock_Developer_Mode.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/core/Witch_Dock_Developer_Mode.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -429,7 +461,7 @@
       "id": "expanded-ui-scroll-guards",
       "title": "Expanded UI Scroll Guards",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
+      "url": "https://witchdock.knightwitch.dev/stable/HeroForge_UI/Expanded_UI_Scroll_Guards.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -438,7 +470,7 @@
       "id": "hf-ui-scroll-split-safe",
       "title": "HF UI Scroll Split Safe",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
+      "url": "https://witchdock.knightwitch.dev/stable/HeroForge_UI/HF_UI_Scroll_Split_Safe.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -447,7 +479,7 @@
       "id": "hf-ui-slot-bridge",
       "title": "HF UI Slot Bridge",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/HF_UI_Slot_Bridge.js",
+      "url": "https://witchdock.knightwitch.dev/stable/HeroForge_UI/HF_UI_Slot_Bridge.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -456,7 +488,7 @@
       "id": "corrected-bound-decal-gizmo",
       "title": "Corrected Bound Decal Gizmo",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
+      "url": "https://witchdock.knightwitch.dev/stable/HeroForge_UI/Corrected_Bound_Decal_Gizmo.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -465,28 +497,28 @@
       "id": "body-editor",
       "title": "Body Editor",
       "tab": "Body",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Body_Editor.js",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/Body_Editor.js",
       "enabledByDefault": true
     },
     {
       "id": "pose-tool",
       "title": "Pose",
       "tab": "Pose",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Pose.js",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/Pose.js",
       "enabledByDefault": true
     },
     {
       "id": "decals-dev",
       "title": "Decals",
       "tab": "Decals",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Decals.js",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/Decals.js",
       "enabledByDefault": true
     },
     {
       "id": "booth-runtime-bootstrap",
       "title": "Booth Runtime Bootstrap",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Booth_Runtime_Bootstrap.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/booth/Booth_Runtime_Bootstrap.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -495,14 +527,14 @@
       "id": "booth-tool",
       "title": "Booth",
       "tab": "Booth",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Booth.js?v=27.1.1-v27.1.1-json-subtool-section",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/Booth.js?v=27.1.1-v27.1.1-json-subtool-section",
       "enabledByDefault": true
     },
     {
       "id": "booth-black-canvas-display-replay",
       "title": "Booth Black Canvas Display Replay",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/booth/Black_Canvas_Display_Replay.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/booth/Black_Canvas_Display_Replay.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -511,7 +543,7 @@
       "id": "photo-booth-true-resolution",
       "title": "High Res Image Capture Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/media/Photo_Booth_True_Resolution.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -520,7 +552,7 @@
       "id": "photo-booth-true-resolution-readiness",
       "title": "Photo Booth True Resolution Readiness",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
+      "url": "https://witchdock.knightwitch.dev/stable/HeroForge_UI/Photo_Booth_True_Resolution_Readiness.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -529,7 +561,7 @@
       "id": "photo-booth-true-resolution-ui",
       "title": "High Res Image Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Photo_Booth_True_Resolution_UI.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/media/Photo_Booth_True_Resolution_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -538,7 +570,7 @@
       "id": "spinny-mini-webp",
       "title": "Spinny Mini WebP Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/media/Spinny_Mini_WebP.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -547,7 +579,7 @@
       "id": "spinny-mini-webp-ui",
       "title": "Spinny Mini WebP UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/media/Spinny_Mini_WebP_UI.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/media/Spinny_Mini_WebP_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -556,7 +588,7 @@
       "id": "texture-quality-native-reconcile",
       "title": "Texture Quality Native Reconcile Service",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.8-supported-body-aaid-binding",
+      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Native_Reconcile.js?v=0.3.8-supported-body-aaid-binding",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -565,7 +597,7 @@
       "id": "texture-quality-same-figure-drift-guard",
       "title": "Texture Quality Same-Figure Drift Guard",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Same_Figure_Drift_Guard.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -574,7 +606,7 @@
       "id": "texture-quality-active-decal-priority",
       "title": "Texture Quality Active Decal Priority",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Active_Decal_Priority.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Active_Decal_Priority.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -583,7 +615,7 @@
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Native_Reconcile_UI.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Native_Reconcile_UI.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -592,7 +624,7 @@
       "id": "texture-quality-beta-notice",
       "title": "Texture Quality Phase 1 Beta Notice",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/features/rendering/Texture_Quality_Beta_Notice.js",
+      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Beta_Notice.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
@@ -601,14 +633,77 @@
       "id": "json-tool",
       "title": "JSON",
       "tab": "JSON",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/JSON_Tool.js",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/JSON_Tool.js",
       "enabledByDefault": true
+    },
+    {
+      "id": "witch-dock-notifications",
+      "title": "Witch Dock Notifications",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/core/Witch_Dock_Notifications.js?v=0.3.0-rich-notice-copy",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "witch-dock-release-notices",
+      "title": "Witch Dock Release Notices",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/core/Witch_Dock_Release_Notices.js?v=0.3.1-formatted-bug-reporting-notice",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "witch-dock-diagnostics-core",
+      "title": "Witch Dock Diagnostics Core",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/diagnostics/Witch_Dock_Diagnostics_Core.js?v=0.1.0-general-capture-v1",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "hf-status-reporter-client",
+      "title": "HF.Status Reporter Client",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/status/HF_Status_Reporter_Client.js?v=0.1.1-witch-dock-capabilities",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "witch-dock-bug-capture-ui",
+      "title": "Witch Dock Bug Capture UI",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.5-context-routing",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "hf-status-public-client",
+      "title": "HF.Status Public Status Client",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/status/HF_Status_Public_Client.js?v=0.1.0-etag-cache",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "hf-status-public-ui",
+      "title": "HF.Status Public Status UI",
+      "tab": "HeroForge UI",
+      "url": "https://witchdock.knightwitch.dev/stable/features/status/HF_Status_Public_UI.js?v=0.2.0-utilities-section",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
     },
     {
       "id": "utilities",
       "title": "Utilities",
       "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/tools/Utilities.js",
+      "url": "https://witchdock.knightwitch.dev/stable/tools/Utilities.js?v=1.4.0-status-reporter-sections",
       "enabledByDefault": true
     }
   ]
