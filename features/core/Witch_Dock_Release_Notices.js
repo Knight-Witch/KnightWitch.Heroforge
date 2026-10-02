@@ -4,12 +4,12 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockReleaseNotices";
   const FEATURE_ID = "witch-dock-release-notices";
-  const VERSION = "0.3.0";
-  const BUILD = "0.3.0-built-in-bug-reporting";
+  const VERSION = "0.3.1";
+  const BUILD = "0.3.1-formatted-bug-reporting-notice";
   const TARGET_STABLE_VERSION = "2.3.0";
   const UPDATE_URL = "https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js";
   const STABLE_NOTICE_ID = "stable-wrapper-update-v2.3.0-remove-old-v2";
-  const BUG_REPORT_NOTICE_ID = "built-in-bug-reporting-v1";
+  const BUG_REPORT_NOTICE_ID = "built-in-bug-reporting-v2";
 
   if (UW[GLOBAL] && UW[GLOBAL].version === VERSION && UW[GLOBAL].build === BUILD) return;
 
@@ -158,11 +158,16 @@
       eyebrow: "NEW",
       title: "Built-In Bug Reporting",
       paragraphs: [
-        "Witch Dock now has its own built-in bug reporting system.",
-        "If something breaks, behaves strangely, or just doesn't seem right, you can report it directly from Witch Dock without having to hunt down the right GitHub issue, Discord channel, or developer.",
-        "The reporter automatically collects the technical information we need to investigate the problem, while letting you review and add your own description and evidence before anything is submitted.",
-        { runs: [{ text: "Found a bug? Hit “Report a Bug” in Witch Dock and send it our way.", strong: true }] }
+        "Witch Dock now has its own built-in bug reporting system."
       ],
+      overview: {
+        title: "How it works",
+        items: [
+          "If something breaks, behaves strangely, or just doesn't seem right, you can report it directly from Witch Dock without having to hunt down the right GitHub issue, Discord channel, or developer.",
+          "The reporter automatically collects the technical information we need to investigate the problem, while letting you review and add your own description and evidence before anything is submitted.",
+          "Found a bug? Hit “Report a Bug” in Witch Dock and send it our way."
+        ]
+      },
       detailsLabel: "Learn More / Details",
       backLabel: "Back to overview",
       details: [
@@ -198,10 +203,12 @@
               { text: "Every successful submission receives its own " },
               { text: "HFBR report ID", strong: true },
               { text: ", such as:" }
-            ] },
-            { runs: [{ text: "HFBR-######...", strong: true }] },
-            "Keep that ID if you want to reference the report later.",
-            "Witch Dock will also show you the current submission state so you know whether the report was successfully received."
+            ] }
+          ],
+          items: [
+            { label: "Example", separator: ": ", text: "HFBR-######..." },
+            { text: "Keep that ID if you want to reference the report later." },
+            { text: "Witch Dock will also show you the current submission state so you know whether the report was successfully received." }
           ]
         },
         {
@@ -216,8 +223,12 @@
           title: "Why we built this",
           paragraphs: [
             "Better reports mean faster debugging, less back-and-forth asking users for technical information, and a much better chance of reproducing weird or intermittent problems.",
-            "So if Witch Dock does something weird:",
-            { runs: [{ text: "Report it. Even if you're not sure whether Witch Dock caused it.", strong: true }] },
+            "So if Witch Dock does something weird:"
+          ],
+          items: [
+            { label: "Report it.", separator: " ", text: "Even if you're not sure whether Witch Dock caused it." }
+          ],
+          closingParagraphs: [
             "Figuring that part out is our job."
           ]
         }
