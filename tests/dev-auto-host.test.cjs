@@ -6,8 +6,9 @@ const hostSource = fs.readFileSync('devtools/Witch_Dock_DEV_Auto_Host.user.js', 
 const launcherSource = fs.readFileSync('Witch_Dock_DEV.user.js', 'utf8');
 
 assert.doesNotThrow(() => new Function(hostSource), 'auto host parses');
-assert.match(hostSource, /const HOST_VERSION = "0\.2\.2";/);
+assert.match(hostSource, /const HOST_VERSION = "0\.2\.3";/);
 assert.match(hostSource, /const TARGET_BRANCH = "WITCH_DEV_MAIN";/);
+assert.match(hostSource, /https:\/\/witchdock\.knightwitch\.dev\/dev-auto\/Witch_Dock_DEV_Auto_Host\.user\.js/);
 
 const metadata = text => text.match(/^\/\/ ==UserScript==\s*\n([\s\S]*?)^\/\/ ==\/UserScript==\s*$/m)[1];
 const grants = text => [...metadata(text).matchAll(/^\/\/\s+@grant\s+(\S+)\s*$/gm)].map(match => match[1]);
@@ -15,9 +16,13 @@ const hostGrants = new Set(grants(hostSource));
 for (const grant of grants(launcherSource)) assert.ok(hostGrants.has(grant), `host grants ${grant}`);
 const connects = text => [...metadata(text).matchAll(/^\/\/\s+@connect\s+(\S+)\s*$/gm)].map(match => match[1]);
 const hostConnects = new Set(connects(hostSource));
-for (const host of ['raw.githubusercontent.com', 'api.github.com', 'witchdock.knightwitch.dev', 'status-dev.knightwitch.dev']) {
+for (const host of ['witchdock.knightwitch.dev', 'status-dev.knightwitch.dev']) {
   assert.ok(hostConnects.has(host), `host metadata permits ${host}`);
 }
+for (const host of ['raw.githubusercontent.com', 'api.github.com']) {
+  assert.ok(!hostConnects.has(host), `host metadata does not expose ${host}`);
+}
+assert.doesNotMatch(hostSource, /workers\.dev/);
 
 let fixture = launcherSource
   .replace(/^\/\/ @version\s+\S+$/m, '// @version      1.5.1')
@@ -47,7 +52,7 @@ const sandbox = {
   window: unsafeWindow,
   setTimeout,
   clearTimeout,
-  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.2.2' } },
+  GM_info: { script: { name: 'WITCH DOCK - DEV AUTO HOST', version: '0.2.3' } },
   GM_addStyle() {},
   GM_setClipboard() {},
   GM_getValue() {},
@@ -55,7 +60,7 @@ const sandbox = {
   GM_download() {},
   GM_xmlhttpRequest(options) {
     setImmediate(() => {
-      if (String(options.url || '').startsWith('https://api.github.com/')) {
+      if (String(options.url || '').startsWith('https://witchdock.knightwitch.dev/dev/ref.json')) {
         options.onload({
           status: 200,
           responseText: JSON.stringify({
@@ -67,7 +72,7 @@ const sandbox = {
       }
       assert.match(
         String(options.url || ''),
-        /raw\.githubusercontent\.com\/Knight-Witch\/KnightWitch\.Heroforge\/1234567890abcdef1234567890abcdef12345678\/Witch_Dock_DEV\.user\.js/
+        /witchdock\.knightwitch\.dev\/payloads\/1234567890abcdef1234567890abcdef12345678\/Witch_Dock_DEV\.user\.js/
       );
       options.onload({ status: 200, responseText: fixture });
     });
