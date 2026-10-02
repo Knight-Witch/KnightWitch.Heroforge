@@ -4,8 +4,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockReporterClient";
   const FEATURE_ID = "hf-status-reporter-client";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-shared-intake-contract";
+  const VERSION = "0.1.1";
+  const BUILD = "0.1.1-witch-dock-capabilities";
   const REPORT_SCHEMA_VERSION = "1.3";
   const DRAFT_SCHEMA_VERSION = "1.0";
   const DRAFT_KEY = "kw.witchDock.reportDrafts.v1";
@@ -140,7 +140,7 @@
   }
 
   async function getCapabilities() {
-    const body = await requestJson("/api/v1/capabilities", { maxBytes: CAPABILITIES_MAX_BYTES });
+    const body = await requestJson("/api/v1/capabilities?source=witch-dock", { maxBytes: CAPABILITIES_MAX_BYTES });
     const capabilities = body && body.capabilities;
     if (!capabilities || typeof capabilities !== "object" || !capabilities.evidence) {
       throw new ReporterApiError("capabilities_invalid", "HF.Status submission capabilities are unavailable.", true);

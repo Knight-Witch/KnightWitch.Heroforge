@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.4";
-  const BUILD = "0.4.4-native-2k-typography";
+  const VERSION = "0.4.5";
+  const BUILD = "0.4.5-context-routing";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -29,7 +29,7 @@
     "utilities:script-status": { productId: "witch-dock", groupId: "wd-utilities", featureId: "script-status" },
     "utilities:booth-features": { productId: "witch-dock", groupId: "wd-booth" },
     "utilities:bound-decal-gizmo": { productId: "witch-dock", groupId: "wd-decals", featureId: "bound-decal-gizmo" },
-    "utilities:heroforge-ui": { productId: "witch-dock", groupId: "wd-utilities" }
+    "utilities:heroforge-ui": { productId: "witch-dock", groupId: "wd-decals" }
   });
 
   const TOOL_CONTEXT = Object.freeze({

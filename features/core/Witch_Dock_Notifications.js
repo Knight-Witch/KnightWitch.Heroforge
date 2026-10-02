@@ -4,8 +4,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockNotifications";
   const FEATURE_ID = "witch-dock-notifications";
-  const VERSION = "0.2.1";
-  const BUILD = "0.2.1-release-copy-formatting";
+  const VERSION = "0.3.0";
+  const BUILD = "0.3.0-rich-notice-copy";
   const OVERLAY_ID = "kwWDNoticeOverlay";
   const DEFAULT_PRIORITY = 0;
 
@@ -79,10 +79,28 @@
     const title = String(def.title || "").trim();
     if (!title) throw new Error(`Witch Dock notice ${id} requires a title.`);
 
-    const paragraphs = Array.isArray(def.paragraphs)
-      ? def.paragraphs.map((value) => String(value || "").trim()).filter(Boolean)
+    const normalizeRuns = (value) => {
+      const source = value && typeof value === "object" && Array.isArray(value.runs)
+        ? value.runs
+        : [value];
+      const runs = source.map((run) => {
+        const record = run && typeof run === "object" ? run : { text: run };
+        return {
+          text: String(record.text || ""),
+          strong: record.strong === true,
+          italic: record.italic === true
+        };
+      }).filter((run) => run.text);
+      return runs.length ? { runs } : null;
+    };
+    const normalizeParagraphs = (values) => Array.isArray(values)
+      ? values.map(normalizeRuns).filter(Boolean)
       : [];
-    if (!paragraphs.length && def.message) paragraphs.push(String(def.message).trim());
+    const paragraphs = normalizeParagraphs(def.paragraphs);
+    if (!paragraphs.length && def.message) {
+      const message = normalizeRuns(def.message);
+      if (message) paragraphs.push(message);
+    }
     if (!paragraphs.length) throw new Error(`Witch Dock notice ${id} requires message text.`);
     const instructions = Array.isArray(def.instructions)
       ? def.instructions.map((value) => String(value || "").trim()).filter(Boolean)
@@ -95,6 +113,8 @@
     const details = Array.isArray(def.details) ? def.details.filter((section) => section && typeof section === "object").map((section) => ({
       title: String(section.title || "").trim(),
       headingOnly: section.headingOnly === true,
+      paragraphs: normalizeParagraphs(section.paragraphs),
+      closingParagraphs: normalizeParagraphs(section.closingParagraphs),
       items: Array.isArray(section.items) ? section.items.filter((item) => item && typeof item === "object").map((item) => ({
         label: String(item.label || "").trim(),
         text: String(item.text || "").trim(),
@@ -106,7 +126,7 @@
           italic: note.italic === true
         } : { label: "", text: String(note || "").trim(), italic: false }).filter((note) => note.label || note.text) : []
       })).filter((item) => item.label || item.text) : []
-    })).filter((section) => section.title && (section.headingOnly || section.items.length)) : [];
+    })).filter((section) => section.title && (section.headingOnly || section.paragraphs.length || section.items.length || section.closingParagraphs.length)) : [];
 
     const action = def.action && typeof def.action === "object" ? {
       label: String(def.action.label || "").trim(),
@@ -133,8 +153,29 @@
       acknowledgeWhen,
       priority: Number.isFinite(def.priority) ? Number(def.priority) : DEFAULT_PRIORITY,
       eyebrow: String(def.eyebrow || "").trim(),
-      closeLabel: String(def.closeLabel || "Close").trim() || "Close"
+      closeLabel: String(def.closeLabel || "Close").trim() || "Close",
+      detailsLabel: String(def.detailsLabel || "See details").trim() || "See details",
+      backLabel: String(def.backLabel || "Back to overview").trim() || "Back to overview"
     });
+  }
+
+  function appendRichParagraph(parent, paragraph) {
+    const p = document.createElement("p");
+    for (const run of paragraph.runs) {
+      let node = document.createTextNode(run.text);
+      if (run.italic) {
+        const em = document.createElement("em");
+        em.appendChild(node);
+        node = em;
+      }
+      if (run.strong) {
+        const strong = document.createElement("strong");
+        strong.appendChild(node);
+        node = strong;
+      }
+      p.appendChild(node);
+    }
+    parent.appendChild(p);
   }
 
   function removeOverlay() {
@@ -214,11 +255,7 @@
 
     const body = document.createElement("div");
     body.className = "kwWDNoticeBody";
-    for (const text of notice.paragraphs) {
-      const p = document.createElement("p");
-      p.textContent = text;
-      body.appendChild(p);
-    }
+    for (const paragraph of notice.paragraphs) appendRichParagraph(body, paragraph);
     if (notice.instructions.length) {
       const list = document.createElement("ul");
       for (const text of notice.instructions) {
@@ -239,7 +276,7 @@
       body.hidden = open;
       detailBody.hidden = !open;
       card.classList.toggle("kwWDNoticeExpanded", open);
-      detailsToggle.textContent = open ? "Back to overview" : "See details";
+      detailsToggle.textContent = open ? notice.backLabel : notice.detailsLabel;
       if (detailsLink) detailsLink.setAttribute("aria-expanded", String(open));
       detailsToggle.setAttribute("aria-expanded", String(open));
       (open ? detailBody : body).scrollTop = 0;
@@ -256,7 +293,7 @@
         detailsLink = document.createElement("button");
         detailsLink.type = "button";
         detailsLink.className = "kwWDNoticeDetailsLink";
-        detailsLink.textContent = "See details";
+        detailsLink.textContent = notice.detailsLabel;
         detailsLink.setAttribute("aria-expanded", "false");
         detailsLink.addEventListener("click", () => setDetailsOpen(true));
         section.appendChild(detailsLink);
@@ -282,8 +319,10 @@
           detailBody.appendChild(group);
           continue;
         }
-        const list = document.createElement("ul");
-        for (const item of section.items) {
+        for (const paragraph of section.paragraphs) appendRichParagraph(group, paragraph);
+        if (section.items.length) {
+          const list = document.createElement("ul");
+          for (const item of section.items) {
           const li = document.createElement("li");
           if (item.label) {
             const label = document.createElement("strong");
@@ -316,9 +355,11 @@
             }
             li.appendChild(notes);
           }
-          list.appendChild(li);
+            list.appendChild(li);
+          }
+          group.appendChild(list);
         }
-        group.appendChild(list);
+        for (const paragraph of section.closingParagraphs) appendRichParagraph(group, paragraph);
         detailBody.appendChild(group);
       }
     }
@@ -329,7 +370,7 @@
       detailsToggle = document.createElement("button");
       detailsToggle.type = "button";
       detailsToggle.className = "kwWDNoticeDetailsButton";
-      detailsToggle.textContent = "See details";
+      detailsToggle.textContent = notice.detailsLabel;
       detailsToggle.setAttribute("aria-expanded", "false");
       detailsToggle.addEventListener("click", () => setDetailsOpen(!card.classList.contains("kwWDNoticeExpanded")));
       footer.appendChild(detailsToggle);

@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.15.7
+// @version      1.16.0
 // @description  Witch Dock modular Dev bootstrap.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/Witch_Dock_DEV.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/Witch_Dock_DEV.user.js
+// @updateURL    https://witchdock.knightwitch.dev/dev/Witch_Dock_DEV.user.js
+// @downloadURL  https://witchdock.knightwitch.dev/dev/Witch_Dock_DEV.user.js
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_setClipboard
@@ -15,21 +15,21 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      raw.githubusercontent.com
-// @connect      hf-status-dev.amanda-d5f.workers.dev
+// @connect      witchdock.knightwitch.dev
+// @connect      status-dev.knightwitch.dev
 // ==/UserScript==
 
 (function () {
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.15.7";
-  const DEV_BUILD = "1.15.7-issue-97-2k-typography";
+  const DEV_VERSION = "1.16.0";
+  const DEV_BUILD = "1.16.0-status-routing-notice";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "WITCH_DEV_MAIN";
   const PAYLOAD_REF = "a262fde0f88847f0021621a8c285fbee38cce2db";
-  const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
+  const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
   const HOST_API_VERSION = "0.1.0";
@@ -37,7 +37,7 @@
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
-  const STATUS_SITE_BASE = "https://hf-status-dev.amanda-d5f.workers.dev";
+  const STATUS_SITE_BASE = "https://status-dev.knightwitch.dev";
   const STATUS_API_URL = STATUS_SITE_BASE + "/api/v1/public-status";
   const STATUS_HOST_API_VERSION = "0.1.0";
   const STATUS_CACHE_KEY = "kw.hfStatus.public.v1";
