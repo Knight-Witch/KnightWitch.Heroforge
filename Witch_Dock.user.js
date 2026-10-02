@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Witch Dock v2.4.0
+// @name         Witch Dock v2.4.1
 // @namespace    KnightWitch
-// @version      2.4.0
+// @version      2.4.1
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,20 +16,20 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      witchdock.knightwitch.dev
-// @connect      status.knightwitch.dev
+// @connect      raw.githubusercontent.com
+// @connect      api.github.com
 // ==/UserScript==
 
 (async function () {
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.4.0";
-  const BUILD = "2.4.0-integrated-bug-reporting";
-  const SCRIPT_NAME = "Witch Dock v2.4.0";
+  const VERSION = "2.4.1";
+  const BUILD = "2.4.1-refresh-compatibility";
+  const SCRIPT_NAME = "Witch Dock v2.4.1";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "15973ece42d42de1b9f794d63730d6815a5d484b";
+  const PAYLOAD_REF = "fa8528f19450053c383f024beb18d21e7f09574e";
   const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
@@ -62,29 +62,37 @@
     "GM_download"
   ]);
   const STABLE_REQUIRED_GRANTS = Object.freeze(Array.from(STABLE_ALLOWED_GRANTS));
-  const STABLE_ALLOWED_CONNECTS = new Set(["witchdock.knightwitch.dev", "status.knightwitch.dev"]);
+  // Keep this legacy metadata contract until every installed pre-2.4 wrapper can
+  // accept a staged replacement. Runtime delivery remains on the custom domains.
+  const STABLE_ALLOWED_CONNECTS = new Set(["raw.githubusercontent.com", "api.github.com"]);
   const STABLE_RESOLVED_EXECUTION = !!(UW[STABLE_RESOLVED_GUARD_KEY] && UW[STABLE_RESOLVED_GUARD_KEY].active);
 
-  function stableHostRequest(url, headers) {
-    return new Promise((resolve, reject) => {
-      GM_xmlhttpRequest({
+  async function stableHostRequest(url, headers) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 20000) : null;
+    try {
+      const response = await fetch(url, {
         method: "GET",
-        url,
-        headers: headers || { "Cache-Control": "no-cache" },
-        responseType: "text",
-        timeout: 20000,
-        anonymous: true,
-        onload: response => {
-          if (response.status < 200 || response.status >= 300) {
-            reject(new Error(`Stable host request failed: HTTP ${response.status}`));
-            return;
-          }
-          resolve(String(response.responseText || ""));
-        },
-        onerror: () => reject(new Error("Stable host request failed: network error")),
-        ontimeout: () => reject(new Error("Stable host request failed: timeout"))
+        headers: headers || undefined,
+        cache: "no-store",
+        credentials: "omit",
+        mode: "cors",
+        redirect: "follow",
+        signal: controller ? controller.signal : undefined
       });
-    });
+      const requested = new URL(url);
+      const finalUrl = new URL(response.url || url);
+      if (finalUrl.origin !== requested.origin || finalUrl.pathname !== requested.pathname) {
+        throw new Error("Stable host refused an unexpected redirect target");
+      }
+      if (!response.ok) throw new Error(`Stable host request failed: HTTP ${response.status}`);
+      return String(await response.text());
+    } catch (error) {
+      if (error && error.name === "AbortError") throw new Error("Stable host request failed: timeout");
+      throw error;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   }
 
   function stableHostReadCachedHead() {
@@ -116,20 +124,15 @@
     try {
       hostState.status = "resolving-branch-head";
       const source = await stableHostRequest(
-        `${STABLE_REF_URL}?kwStableHost=${encodeURIComponent(STABLE_HOST_VERSION)}-${Date.now()}`,
-        {
-          "Accept": "application/vnd.github+json",
-          "Cache-Control": "no-cache",
-          "X-GitHub-Api-Version": "2022-11-28"
-        }
+        `${STABLE_REF_URL}?kwStableHost=${encodeURIComponent(STABLE_HOST_VERSION)}-${Date.now()}`
       );
       const payload = JSON.parse(source);
       const sha = payload && payload.object && typeof payload.object.sha === "string"
         ? payload.object.sha.trim().toLowerCase()
         : "";
-      if (!/^[0-9a-f]{40}$/.test(sha)) throw new Error("GitHub ref response did not contain a commit SHA");
+      if (!/^[0-9a-f]{40}$/.test(sha)) throw new Error("Stable ref response did not contain a commit SHA");
       stableHostCacheHead(sha);
-      hostState.headSource = "github-api";
+      hostState.headSource = "custom-domain-ref";
       return sha;
     } catch (error) {
       if (cached) {
@@ -237,8 +240,7 @@
     hostState.resolvedHeadSha = headSha;
     hostState.resolvedLauncherUrl = immutableUrl;
     const source = await stableHostRequest(
-      `${immutableUrl}?kwStableHost=${encodeURIComponent(STABLE_HOST_VERSION)}-${Date.now()}`,
-      { "Cache-Control": "no-cache" }
+      `${immutableUrl}?kwStableHost=${encodeURIComponent(STABLE_HOST_VERSION)}-${Date.now()}`
     );
     return { source, immutableUrl };
   }
@@ -403,28 +405,34 @@
       return normalized;
     }
 
-    function requestText(url, options) {
+    async function requestText(url, options) {
       const target = requireRepoRawUrl(url);
       const opts = options && typeof options === "object" ? options : {};
-      const headers = { "Cache-Control": opts.cacheControl || "no-cache" };
-      return new Promise((resolve, reject) => {
-        try {
-          GM_xmlhttpRequest({
-            method: "GET",
-            url: target,
-            headers,
-            timeout: Number.isFinite(opts.timeoutMs) && opts.timeoutMs > 0 ? opts.timeoutMs : undefined,
-            onload: (res) => {
-              if (res.status >= 200 && res.status < 300) resolve(res.responseText || "");
-              else reject(new Error(`HTTP ${res.status || "unknown"} for ${target}`));
-            },
-            onerror: () => reject(new Error(`Request failed for ${target}`)),
-            ontimeout: () => reject(new Error(`Request timed out for ${target}`))
-          });
-        } catch (error) {
-          reject(error);
+      const timeoutMs = Number.isFinite(opts.timeoutMs) && opts.timeoutMs > 0 ? opts.timeoutMs : 20000;
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+      try {
+        const response = await fetch(target, {
+          method: "GET",
+          cache: "no-store",
+          credentials: "omit",
+          mode: "cors",
+          redirect: "follow",
+          signal: controller ? controller.signal : undefined
+        });
+        const requested = new URL(target);
+        const finalUrl = new URL(response.url || target);
+        if (finalUrl.origin !== requested.origin || finalUrl.pathname !== requested.pathname) {
+          throw new Error(`Witch Dock host refused an unexpected redirect target for ${target}`);
         }
-      });
+        if (!response.ok) throw new Error(`HTTP ${response.status || "unknown"} for ${target}`);
+        return String(await response.text());
+      } catch (error) {
+        if (error && error.name === "AbortError") throw new Error(`Request timed out for ${target}`);
+        throw error;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
     }
 
     function download(url, filename, options) {
@@ -497,18 +505,6 @@
   }
 
   function createStatusHost() {
-    function responseHeader(headersText, name) {
-      const wanted = String(name || "").toLowerCase();
-      const lines = String(headersText || "").split(/\r?\n/);
-      for (const line of lines) {
-        const split = line.indexOf(":");
-        if (split <= 0) continue;
-        const key = line.slice(0, split).trim().toLowerCase();
-        if (key === wanted) return line.slice(split + 1).trim();
-      }
-      return "";
-    }
-
     function requireExpectedFinalUrl(value) {
       if (!value) return true;
       let finalUrl;
@@ -522,11 +518,10 @@
       return true;
     }
 
-    function requestPublicStatus(options) {
+    async function requestPublicStatus(options) {
       const opts = options && typeof options === "object" ? options : {};
       const headers = {
-        "Accept": "application/json",
-        "Cache-Control": "no-cache"
+        "Accept": "application/json"
       };
       if (typeof opts.etag === "string" && opts.etag.trim()) {
         headers["If-None-Match"] = opts.etag.trim();
@@ -535,39 +530,35 @@
         ? Math.min(Math.max(opts.timeoutMs, 1000), 10000)
         : 5000;
 
-      return new Promise((resolve, reject) => {
-        try {
-          GM_xmlhttpRequest({
-            method: "GET",
-            url: STATUS_API_URL,
-            headers,
-            timeout: timeoutMs,
-            anonymous: true,
-            onload: (res) => {
-              try {
-                requireExpectedFinalUrl(res && res.finalUrl);
-                const status = Number(res && res.status) || 0;
-                if (status !== 200 && status !== 304) {
-                  reject(new Error("HF.Status returned HTTP " + (status || "unknown") + "."));
-                  return;
-                }
-                resolve({
-                  status,
-                  text: status === 304 ? "" : String(res && res.responseText || ""),
-                  etag: responseHeader(res && res.responseHeaders, "etag"),
-                  revision: responseHeader(res && res.responseHeaders, "x-hf-status-revision")
-                });
-              } catch (error) {
-                reject(error);
-              }
-            },
-            onerror: () => reject(new Error("HF.Status request failed.")),
-            ontimeout: () => reject(new Error("HF.Status request timed out."))
-          });
-        } catch (error) {
-          reject(error);
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+      try {
+        const response = await fetch(STATUS_API_URL, {
+          method: "GET",
+          headers,
+          cache: "no-store",
+          credentials: "omit",
+          mode: "cors",
+          redirect: "follow",
+          signal: controller ? controller.signal : undefined
+        });
+        requireExpectedFinalUrl(response.url);
+        const status = Number(response.status) || 0;
+        if (status !== 200 && status !== 304) {
+          throw new Error("HF.Status returned HTTP " + (status || "unknown") + ".");
         }
-      });
+        return {
+          status,
+          text: status === 304 ? "" : String(await response.text()),
+          etag: response.headers.get("etag") || "",
+          revision: response.headers.get("x-hf-status-revision") || ""
+        };
+      } catch (error) {
+        if (error && error.name === "AbortError") throw new Error("HF.Status request timed out.");
+        throw error;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
     }
 
     function readCache() {
