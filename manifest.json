@@ -7,9 +7,9 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.4.0",
-      "build": "2.4.0-integrated-bug-reporting",
-      "versionOrigin": "issues-90-97-public-promotion"
+      "version": "2.4.1",
+      "build": "2.4.1-refresh-compatibility",
+      "versionOrigin": "issue-97-stable-self-refresh-compatibility"
     },
     {
       "id": "witch-dock-notifications",
