@@ -11,7 +11,7 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 - Public delivery smoke passed: ref/launcher/manifest/notice routes returned 200, identities matched, and all 43 registered immutable payload sources were available.
 - Canonical Dev is v1.16.1 / `1.16.1-notice-formatting`, immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`.
 - Feature-registry impact: **no registry impact**. Existing feature/group IDs and ownership remain unchanged.
-- `wd/97-integrated-bug-reporter` is queued at exact head `860df72a87b5ed7eb6d30223649436a325607253` for mechanical deletion.
+- Completed `wd/97-integrated-bug-reporter` was deleted from GitHub and Bitbucket after exact-head verification; the deletion queue is empty.
 
 ## Latest Stable release — v2.4.0
 

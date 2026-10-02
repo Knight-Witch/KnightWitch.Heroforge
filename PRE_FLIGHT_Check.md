@@ -16,4 +16,4 @@ This file records only the validation state for the latest committed change/curr
 - Carried-forward live Dev gates remain passed: Script Status network/current, contextual mapping/source preservation, reporter UI/typography, native 2K evidence, and HFBR diagnostic/triage E2E `HFBR-20261002-4897N4YJ`.
 - Amanda explicitly waived an additional Dev smoke approval and authorized direct public promotion.
 - Feature-registry impact: **no registry impact**.
-- #90/#97 divergences are reconciled; #19/#35/#59 remain intentional. `wd/97-integrated-bug-reporter` is queued at its exact head for deletion.
+- #90/#97 divergences are reconciled; #19/#35/#59 remain intentional. `wd/97-integrated-bug-reporter` was deleted from GitHub and Bitbucket at its verified exact head; the deletion queue is empty.
