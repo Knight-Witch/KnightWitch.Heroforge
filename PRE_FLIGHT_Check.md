@@ -1,3 +1,21 @@
+## 2026-10-02 — #90/#97 public v2.4.0 release gate
+
+### PASS
+
+- Launcher JavaScript, notice JavaScript, and manifest JSON parse checks passed.
+- Stable launcher identity is synchronized at v2.4.0 / `2.4.0-integrated-bug-reporting`.
+- Immutable payload is `15973ece42d42de1b9f794d63730d6815a5d484b`; manifest launcher and Release Notices v0.3.1 identities match.
+- Notice definition smoke confirmed native `How it works` overview bullets plus structured report-ID and final-callout lists.
+- Public custom-domain ref, launcher, manifest, and notice routes returned 200 from the GitHub primary.
+- All 43 non-launcher registry payload sources returned 200 with non-empty bytes through the immutable custom-domain root.
+- Production HF.Status public-status and Witch Dock capabilities endpoints returned 200 at `https://status.knightwitch.dev`.
+- GitHub and Bitbucket `Witch_Scripts` heads exactly match at `b9ade8afa623da465010fc0d81b301e2e84e38d5`; the immutable payload commit exists in both providers.
+- Carried-forward live Dev evidence remains passed: Script Status network/current, contextual source mapping/preservation, native 2K evidence, reporter typography, and exact HFBR diagnostic/triage E2E `HFBR-20261002-4897N4YJ`.
+- Amanda explicitly waived an additional Dev smoke approval for this public promotion.
+- Feature-registry impact: **no registry impact**.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 live Stable smoke
 
 ### PASS

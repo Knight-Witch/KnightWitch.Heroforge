@@ -1,3 +1,16 @@
+## 2026-10-02 — #90/#97 public v2.4.0 integrated status and bug reporting
+
+- Public launcher is Witch Dock v2.4.0 / `2.4.0-integrated-bug-reporting`, pinned to immutable payload `15973ece42d42de1b9f794d63730d6815a5d484b`.
+- Adds the reviewed Script Status panel and integrated Witch Dock bug reporter with contextual source capture, editable classification, diagnostics/evidence, submission, and HFBR receipts.
+- The built-in bug-reporting announcement now uses native popup section headings and bullet lists in both its overview and expanded details.
+- Stable HF.Status routing uses `https://status.knightwitch.dev`; reporter capabilities use the Witch Dock-specific `?source=witch-dock` path.
+- Install, update, ref discovery, launcher, and immutable payload URLs use `https://witchdock.knightwitch.dev`; GitHub remains primary and Bitbucket is the exact recovery mirror.
+- Static checks and public delivery smoke passed: Stable ref/launcher/manifest/notice routes returned 200, v2.4.0 identities and payload pin matched, and all 43 registered immutable payload sources were available.
+- GitHub and Bitbucket `Witch_Scripts` heads are byte/history-identical at `b9ade8afa623da465010fc0d81b301e2e84e38d5`.
+- HF.Status registry impact: **no registry impact**. Existing product/group/feature IDs remain authoritative.
+
+---
+
 ## 2026-09-29 — #94 public v2.3.2 live Stable smoke
 
 - Live HF-Chat-Bridge readback confirms public immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82` and Booth `v27.1.1-json-subtool-section`.

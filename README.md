@@ -13,7 +13,7 @@ This is where all the Witch's scripts live. One easy script, no hassle. Witch Do
 The tool will continue to receive more toolkits, utilities, and workflow features over time.
 
 Install:
-https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js
 
 - To set up, follow the install link.
 - Updates are automatic.
@@ -29,7 +29,7 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scrip
 ### Witch Dock
 
 - Floating dock UI for HeroForge tools.
-- Manifest-driven tool loading from the live GitHub repo.
+- Manifest-driven tool loading through provider-independent Witch Dock delivery.
 - Automatic delivery of enabled tools and hidden utilities after refreshing HeroForge.
 - Current visible tool tabs include Body Editor, Pose, Booth, JSON, Utilities, and Decals.
 
@@ -49,6 +49,11 @@ https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scrip
 ### Utilities Tab
 
 The Utilities tab controls optional background helpers and HeroForge UI patches.
+
+Current tools include:
+
+- Script Status: shows reviewed current Hero Forge/Witch Dock alerts and releases from HF.Status.
+- Bug Capture: opens Witch Dock's integrated reporter with contextual tool/area prefilling, diagnostics, optional evidence, and an HFBR receipt.
 
 Current toggles:
 
