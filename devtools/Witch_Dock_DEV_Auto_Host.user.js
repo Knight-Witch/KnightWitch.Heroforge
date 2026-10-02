@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV AUTO HOST
 // @namespace    KnightWitch
-// @version      0.2.2
+// @version      0.2.3
 // @description  Loads the current Witch Dock Dev launcher on every HeroForge page load.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/wd/dev-auto-host/devtools/Witch_Dock_DEV_Auto_Host.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/wd/dev-auto-host/devtools/Witch_Dock_DEV_Auto_Host.user.js
+// @updateURL    https://witchdock.knightwitch.dev/dev-auto/Witch_Dock_DEV_Auto_Host.user.js
+// @downloadURL  https://witchdock.knightwitch.dev/dev-auto/Witch_Dock_DEV_Auto_Host.user.js
 // @grant        unsafeWindow
 // @grant        GM_info
 // @grant        GM_addStyle
@@ -16,8 +16,6 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      raw.githubusercontent.com
-// @connect      api.github.com
 // @connect      witchdock.knightwitch.dev
 // @connect      status-dev.knightwitch.dev
 // ==/UserScript==
@@ -25,13 +23,13 @@
 (function () {
   "use strict";
 
-  const HOST_VERSION = "0.2.2";
+  const HOST_VERSION = "0.2.3";
   const TARGET_NAME = "WITCH DOCK - DEV";
   const TARGET_NAMESPACE = "KnightWitch";
   const TARGET_BRANCH = "WITCH_DEV_MAIN";
-  const TARGET_URL = `https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/${TARGET_BRANCH}/Witch_Dock_DEV.user.js`;
-  const TARGET_REF_URL = `https://api.github.com/repos/Knight-Witch/KnightWitch.Heroforge/git/ref/heads/${TARGET_BRANCH}`;
-  const TARGET_RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
+  const TARGET_URL = "https://witchdock.knightwitch.dev/dev/Witch_Dock_DEV.user.js";
+  const TARGET_REF_URL = "https://witchdock.knightwitch.dev/dev/ref.json";
+  const TARGET_RAW_ROOT = "https://witchdock.knightwitch.dev/payloads";
   const MAX_SOURCE_CHARS = 160000;
   const REQUIRED_GRANTS = Object.freeze([
     "unsafeWindow",
@@ -174,7 +172,7 @@
             const sha = payload && payload.object && typeof payload.object.sha === "string"
               ? payload.object.sha.trim()
               : "";
-            if (!/^[0-9a-f]{40}$/i.test(sha)) throw new Error("GitHub ref response did not contain a commit SHA");
+            if (!/^[0-9a-f]{40}$/i.test(sha)) throw new Error("Dev ref response did not contain a commit SHA");
             resolve(sha.toLowerCase());
           } catch (error) {
             reject(new Error(`Dev branch-head resolve failed: ${error && error.message ? error.message : error}`));
