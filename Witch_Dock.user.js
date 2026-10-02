@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         Witch Dock v2.3.2
+// @name         Witch Dock v2.4.0
 // @namespace    KnightWitch
-// @version      2.3.2
+// @version      2.4.0
 // @description  UI for all Witch Scripts - The official release!
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @run-at       document-end
-// @updateURL    https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
-// @downloadURL  https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/Witch_Dock.user.js
+// @updateURL    https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js
+// @downloadURL  https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js
 // @grant        unsafeWindow
 // @grant        GM_info
 // @grant        GM_addStyle
@@ -16,21 +16,21 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      raw.githubusercontent.com
-// @connect      api.github.com
+// @connect      witchdock.knightwitch.dev
+// @connect      status.knightwitch.dev
 // ==/UserScript==
 
 (async function () {
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "2.3.2";
-  const BUILD = "2.3.2-booth-json-subtool";
-  const SCRIPT_NAME = "Witch Dock v2.3.2";
+  const VERSION = "2.4.0";
+  const BUILD = "2.4.0-integrated-bug-reporting";
+  const SCRIPT_NAME = "Witch Dock v2.4.0";
   const DISPLAY_NAME = "WITCH DOCK";
   const CHANNEL_BRANCH = "Witch_Scripts";
-  const PAYLOAD_REF = "9e0ac579d142808016a1fa4539be3acc4c65fb82";
-  const REPO_RAW = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge";
+  const PAYLOAD_REF = "15973ece42d42de1b9f794d63730d6815a5d484b";
+  const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
   const HOST_API_VERSION = "0.1.0";
@@ -38,11 +38,15 @@
   const REPO_RAW_PREFIX = `${REPO_RAW}/`;
   const GITHUB_REPO_URL = "https://github.com/Knight-Witch/KnightWitch.Heroforge";
   const KOFI_URL = "https://ko-fi.com/knightwitch";
+  const STATUS_SITE_BASE = "https://status.knightwitch.dev";
+  const STATUS_API_URL = STATUS_SITE_BASE + "/api/v1/public-status";
+  const STATUS_HOST_API_VERSION = "0.1.0";
+  const STATUS_CACHE_KEY = "kw.hfStatus.public.v1";
 
   const STABLE_HOST_VERSION = "1.0.0";
   const STABLE_HOST_ACTIVE_KEY = "__KW_WD_STABLE_SELF_HOST_ACTIVE__";
   const STABLE_RESOLVED_GUARD_KEY = "__KW_WD_STABLE_RESOLVED_LAUNCHER__";
-  const STABLE_REF_URL = `https://api.github.com/repos/Knight-Witch/KnightWitch.Heroforge/git/ref/heads/${CHANNEL_BRANCH}`;
+  const STABLE_REF_URL = "https://witchdock.knightwitch.dev/stable/ref.json";
   const STABLE_LAUNCHER_PATH = "Witch_Dock.user.js";
   const STABLE_HEAD_CACHE_KEY = "kw.witchDock.stableHost.head.v1";
   const STABLE_HEAD_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -58,7 +62,7 @@
     "GM_download"
   ]);
   const STABLE_REQUIRED_GRANTS = Object.freeze(Array.from(STABLE_ALLOWED_GRANTS));
-  const STABLE_ALLOWED_CONNECTS = new Set(["raw.githubusercontent.com", "api.github.com"]);
+  const STABLE_ALLOWED_CONNECTS = new Set(["witchdock.knightwitch.dev", "status.knightwitch.dev"]);
   const STABLE_RESOLVED_EXECUTION = !!(UW[STABLE_RESOLVED_GUARD_KEY] && UW[STABLE_RESOLVED_GUARD_KEY].active);
 
   function stableHostRequest(url, headers) {
@@ -492,7 +496,109 @@
     });
   }
 
+  function createStatusHost() {
+    function responseHeader(headersText, name) {
+      const wanted = String(name || "").toLowerCase();
+      const lines = String(headersText || "").split(/\r?\n/);
+      for (const line of lines) {
+        const split = line.indexOf(":");
+        if (split <= 0) continue;
+        const key = line.slice(0, split).trim().toLowerCase();
+        if (key === wanted) return line.slice(split + 1).trim();
+      }
+      return "";
+    }
+
+    function requireExpectedFinalUrl(value) {
+      if (!value) return true;
+      let finalUrl;
+      try { finalUrl = new URL(String(value)); } catch (_) {
+        throw new Error("HF.Status transport returned an invalid final URL.");
+      }
+      const expected = new URL(STATUS_API_URL);
+      if (finalUrl.origin !== expected.origin || finalUrl.pathname !== expected.pathname) {
+        throw new Error("HF.Status transport refused an unexpected redirect target.");
+      }
+      return true;
+    }
+
+    function requestPublicStatus(options) {
+      const opts = options && typeof options === "object" ? options : {};
+      const headers = {
+        "Accept": "application/json",
+        "Cache-Control": "no-cache"
+      };
+      if (typeof opts.etag === "string" && opts.etag.trim()) {
+        headers["If-None-Match"] = opts.etag.trim();
+      }
+      const timeoutMs = Number.isFinite(opts.timeoutMs) && opts.timeoutMs > 0
+        ? Math.min(Math.max(opts.timeoutMs, 1000), 10000)
+        : 5000;
+
+      return new Promise((resolve, reject) => {
+        try {
+          GM_xmlhttpRequest({
+            method: "GET",
+            url: STATUS_API_URL,
+            headers,
+            timeout: timeoutMs,
+            anonymous: true,
+            onload: (res) => {
+              try {
+                requireExpectedFinalUrl(res && res.finalUrl);
+                const status = Number(res && res.status) || 0;
+                if (status !== 200 && status !== 304) {
+                  reject(new Error("HF.Status returned HTTP " + (status || "unknown") + "."));
+                  return;
+                }
+                resolve({
+                  status,
+                  text: status === 304 ? "" : String(res && res.responseText || ""),
+                  etag: responseHeader(res && res.responseHeaders, "etag"),
+                  revision: responseHeader(res && res.responseHeaders, "x-hf-status-revision")
+                });
+              } catch (error) {
+                reject(error);
+              }
+            },
+            onerror: () => reject(new Error("HF.Status request failed.")),
+            ontimeout: () => reject(new Error("HF.Status request timed out."))
+          });
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    function readCache() {
+      try {
+        return GM_getValue(STATUS_CACHE_KEY, null);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function writeCache(value) {
+      if (!value || typeof value !== "object") {
+        throw new Error("HF.Status cache write requires a record object.");
+      }
+      GM_setValue(STATUS_CACHE_KEY, value);
+      return true;
+    }
+
+    return Object.freeze({
+      apiVersion: STATUS_HOST_API_VERSION,
+      siteBase: STATUS_SITE_BASE,
+      endpoint: STATUS_API_URL,
+      requestPublicStatus,
+      readCache,
+      writeCache
+    });
+  }
+
   const HOST = createPrivilegedHost();
+  const STATUS_HOST = createStatusHost();
+  UW.KWWitchDockStatusHost = STATUS_HOST;
 
   UW.KWWitchDockChannel = {
     channel: state.channel,
@@ -504,6 +610,8 @@
     manifestUrl: state.manifestUrl,
     immutablePayload: true,
     hostApiVersion: HOST_API_VERSION,
+    statusHostApiVersion: STATUS_HOST_API_VERSION,
+    statusApiEndpoint: STATUS_API_URL,
     getState: () => ({ ...state })
   };
 
