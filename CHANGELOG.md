@@ -4,18 +4,17 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change — 2026-10-02
 
-- Canonical Dev is Witch Dock v1.16.0 / `1.16.0-status-routing-notice`, immutable payload `a45c4c809e9f16ff30157f2484cd3e83c075a01d`.
-- Dev HF.Status routing now uses `https://status-dev.knightwitch.dev`; Witch Dock intake and capabilities use the Witch Dock-specific backend path.
-- Script Status is network-fresh and current, and contextual reporter prefilling preserves immutable source context while mapping Utilities → Hero Forge UI to `witch-dock / wd-decals`.
-- The built-in bug-reporting release notice includes the reusable overview/details copy, and the reporter retains the confirmed native 2K evidence capture and Witch Dock typography.
-- Fresh Dev end-to-end intake passed through the custom-domain path as `HFBR-20261002-4897N4YJ`: the 21,133-byte Witch Dock diagnostic was attached, parsed, indexed, and left unreviewed/untriaged with no automatic public row.
-- Provider-independent delivery remains `https://witchdock.knightwitch.dev`. GitHub is primary, Bitbucket is the recovery mirror, and Dev Auto Host v0.2.3 resolves launcher refs and immutable payloads through the custom domain.
-- Automated Dev gates are complete. The remaining gate is Amanda's final Dev smoke confirmation.
+- Public Stable is Witch Dock v2.4.0 / `2.4.0-integrated-bug-reporting`, immutable payload `15973ece42d42de1b9f794d63730d6815a5d484b`.
+- #90 Script Status and #97 integrated bug reporting are released with production `https://status.knightwitch.dev` routing and Witch Dock-specific reporter capabilities.
+- Release Notices v0.3.1 formats the Built-In Bug Reporting overview and expanded details with native headings and bullet lists.
+- Stable install/update/ref/payload delivery uses `https://witchdock.knightwitch.dev`; GitHub is primary and Bitbucket is the exact recovery mirror.
+- Public delivery smoke passed: ref/launcher/manifest/notice routes returned 200, identities matched, and all 43 registered immutable payload sources were available.
+- Canonical Dev is v1.16.1 / `1.16.1-notice-formatting`, immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`.
 - Feature-registry impact: **no registry impact**. Existing feature/group IDs and ownership remain unchanged.
-- Public Stable and `Witch_Scripts` are untouched.
+- Completed `wd/97-integrated-bug-reporter` was deleted from GitHub and Bitbucket after exact-head verification; the deletion queue is empty.
 
-## Latest Stable release — v2.3.2
+## Latest Stable release — v2.4.0
 
-- Public Stable remains `Witch_Scripts` v2.3.2 with immutable payload `9e0ac579d142808016a1fa4539be3acc4c65fb82`.
-- Release #94 moved Booth JSON Save/Load into its own `Booth JSON Import / Export` section; Stable smoke and Amanda's visual gate passed.
-- Detailed release history: issue #94 and PR #96.
+- Public release source commit: `b9ade8afa623da465010fc0d81b301e2e84e38d5`; current documentation head: `88280df1832b7bfa0e5b2d9ff1aa9b8d97b21940`.
+- Fresh pre-release Dev E2E remains `HFBR-20261002-4897N4YJ`: attached diagnostic parsed/indexed, triage stored, and no automatic public projection was created.
+- Amanda explicitly waived an additional Dev smoke approval for this promotion.

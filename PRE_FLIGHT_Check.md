@@ -2,17 +2,18 @@
 
 This file records only the validation state for the latest committed change/current head. Replace it on the next commit; do not accumulate historical PASS entries here.
 
-## 2026-10-02 — #90/#97 custom-domain repair and Dev closeout gate
+## 2026-10-02 — #90/#97 public v2.4.0 release and Dev reconciliation
 
-**PASS — implementation, static, delivery, live Dev, HF.Status E2E, diagnostic indexing, and failover checks complete; Amanda's final Dev smoke remains; Stable not approved or modified**
+**PASS — formatted notice, selective Stable payload, custom-domain delivery, provider parity, and durable closeout checks complete**
 
-- Canonical Dev launcher v1.16.0 / `1.16.0-status-routing-notice` pins immutable payload `a45c4c809e9f16ff30157f2484cd3e83c075a01d`; runtime loaded 36/36 immutable modules with zero failure and used `https://status-dev.knightwitch.dev`.
-- Script Status refreshed from network revision `2026-10-02-latest-fixes`, remained available/non-stale, and rendered current in Utilities.
-- Reporter capabilities use `/api/v1/capabilities?source=witch-dock`. The `utilities:heroforge-ui` contextual action now freezes `witch-dock / wd-decals`; live prefill preserved immutable source context and captured one T0 diagnostic.
-- Fresh custom-domain E2E passed at `HFBR-20261002-4897N4YJ`: real 21,133-byte Witch Dock diagnostic JSON → submission session → evidence upload → final report → HFBR receipt → exact D1 report/attachment/diagnostic/triage readback. Diagnostic parse state is `indexed`, evidence is `available`, source version is 1.16.0, and no reviewed public-status row was created.
-- Dev Auto Host v0.2.3 installs and updates from `https://witchdock.knightwitch.dev/dev-auto/Witch_Dock_DEV_Auto_Host.user.js`, resolves Dev through the custom-domain ref/payload paths, and contains no raw-GitHub or workers.dev dependency.
-- Cloudflare Worker `witchdock-runtime` version `bc489b50-5986-4ef0-96a3-fee8c28f2d81` serves Dev Auto Host, Dev, Stable, and immutable payload routes with GitHub primary and public Bitbucket recovery.
-- Direct recovery reads are byte-identical to live primary delivery for Auto Host, Dev, and Stable launchers. Permanent Dev/Stable refs retain exact mirrored history; the connector-authored Auto Host recovery commit has a provider-specific SHA with identical delivered bytes.
-- Public Stable remains `Witch_Scripts` v2.3.2 and was not modified or promoted. `Witch_Scripts` application/runtime source remains untouched.
-- Feature-registry impact: **no registry impact**. Existing Witch Dock product/group/feature identities remain unchanged.
-- Final gate: Amanda validates Dev Script Status, contextual reporter prefill, submission/receipt presentation, and the reusable built-in bug-reporting notice overlay.
+- Canonical Dev v1.16.1 / `1.16.1-notice-formatting` pins immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`; Release Notices is v0.3.1 / `0.3.1-formatted-bug-reporting-notice`.
+- Public Stable v2.4.0 / `2.4.0-integrated-bug-reporting` pins immutable payload `15973ece42d42de1b9f794d63730d6815a5d484b`.
+- Launcher/notice syntax, manifest JSON, unique IDs, version/build/payload synchronization, production status routing, and custom-domain-only delivery checks passed.
+- Notice-definition smoke confirmed native overview/details headings and bullet lists.
+- Public custom-domain ref, launcher, manifest, and notice routes returned 200. All 43 non-launcher registry payload paths returned 200 with non-empty bytes.
+- `https://status.knightwitch.dev/api/v1/public-status` and `/api/v1/capabilities?source=witch-dock` returned 200.
+- GitHub and Bitbucket `Witch_Scripts` heads are exact at `88280df1832b7bfa0e5b2d9ff1aa9b8d97b21940`; payload commit `15973ece42d42de1b9f794d63730d6815a5d484b` exists in both providers.
+- Carried-forward live Dev gates remain passed: Script Status network/current, contextual mapping/source preservation, reporter UI/typography, native 2K evidence, and HFBR diagnostic/triage E2E `HFBR-20261002-4897N4YJ`.
+- Amanda explicitly waived an additional Dev smoke approval and authorized direct public promotion.
+- Feature-registry impact: **no registry impact**.
+- #90/#97 divergences are reconciled; #19/#35/#59 remain intentional. `wd/97-integrated-bug-reporter` was deleted from GitHub and Bitbucket at its verified exact head; the deletion queue is empty.
