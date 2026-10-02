@@ -1,0 +1,8 @@
+name = "witchdock-runtime"
+main = "src/index.js"
+compatibility_date = "2026-10-02"
+workers_dev = false
+
+[[routes]]
+pattern = "witchdock.knightwitch.dev"
+custom_domain = true
