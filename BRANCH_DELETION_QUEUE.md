@@ -12,8 +12,7 @@ A chat that cannot delete branches must still update this queue. “Safe to dele
 
 | Branch | Expected head SHA | Reason | Source | Status |
 |---|---|---|---|---|
-
-_No pending entries._
+| `wd/97-integrated-bug-reporter` | `860df72a87b5ed7eb6d30223649436a325607253` | #97 implementation is preserved in canonical Dev and shipped in Stable v2.4.0. | #97 | READY |
 
 ## Queue rules
 

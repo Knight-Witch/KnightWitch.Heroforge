@@ -43,7 +43,6 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 |---|---|---|---|
 | `wd/59-decals-diagnostic-provider` | #59 | Paused Decals provider checkpoint with unique unmerged work. | When #59 no longer needs the branch, validate preservation, remove this row, and add the exact head to `BRANCH_DELETION_QUEUE.md`. |
 | `wd/88-diagnostic-capture-architecture` | #88 | Authoritative diagnostic capture/provider design source still referenced by active work. | When #88/design ownership is fully absorbed or retired, validate preservation, remove this row, and queue the exact head for deletion. |
-| `wd/97-integrated-bug-reporter` | #97 | Active integrated HF.Status reporter implementation branch. | On merge/closeout/abandonment, validate preservation, remove this row, and queue the exact head for deletion. |
 
 ### Active-protected creation rule
 
