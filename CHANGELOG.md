@@ -1,3 +1,15 @@
+## 2026-10-02 — Stable v2.4.2 self-refresh compatibility hotfix
+
+- Corrected the deployed v2.3.2 self-host metadata contract so a normal Hero Forge refresh dispatches the newest Stable launcher without waiting for Tampermonkey's updater.
+- Public launcher is Witch Dock v2.4.2 / `2.4.2-refresh-compatibility`, pinned to immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`; release head is `3236f9d754703c5ff1a709209c1c251cd644e6e6`.
+- Provider-independent runtime delivery remains on `https://witchdock.knightwitch.dev`; HF.Status remains on `https://status.knightwitch.dev`. The compatibility metadata does not repoint runtime delivery to raw provider URLs.
+- Live HF-Chat-Bridge refresh from the actually installed v2.3.2 wrapper resolved and dispatched v2.4.2. Loader completed 30/30 enabled modules with zero failures and zero fallback.
+- Script Status refreshed from the production network endpoint as current/non-stale. Contextual reporter source mapping remained Utilities → Bug Capture and captured one diagnostic evidence record.
+- All 44 manifest source routes returned 200 with non-empty bytes. GitHub and Bitbucket `Witch_Scripts` were mirrored to the exact release head.
+- The short-lived v2.4.1 compatibility attempt used the wrong deployed-wrapper connection metadata and was immediately superseded by v2.4.2.
+
+---
+
 ## 2026-10-02 — #90/#97 public v2.4.0 integrated status and bug reporting
 
 - Public launcher is Witch Dock v2.4.0 / `2.4.0-integrated-bug-reporting`, pinned to immutable payload `15973ece42d42de1b9f794d63730d6815a5d484b`.

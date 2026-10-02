@@ -1,3 +1,19 @@
+## 2026-10-02 — Stable v2.4.2 self-refresh hotfix gate
+
+### PASS
+
+- Launcher syntax, manifest JSON, unique registry IDs, version/build/payload synchronization, and deployed v2.3.2 metadata compatibility checks passed.
+- Stable launcher identity is v2.4.2 / `2.4.2-refresh-compatibility`; immutable payload is `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`.
+- Public ref resolved release head `3236f9d754703c5ff1a709209c1c251cd644e6e6`; launcher and manifest identities matched through the custom domain.
+- All 44 manifest source routes returned 200 with non-empty bytes.
+- Actual installed v2.3.2 wrapper refresh dispatched v2.4.2 with no Tampermonkey update action. Stable channel is running; bootstrap 12/12 and module loader 30/30 completed with zero errors/fallback.
+- Script Status is network/current/non-stale against `https://status.knightwitch.dev`.
+- Contextual reporter smoke preserved Utilities → Bug Capture source context and captured diagnostics; reporter closed cleanly.
+- GitHub and Bitbucket `Witch_Scripts` exact-head parity was restored after publication.
+- Feature-registry impact: **no registry impact**.
+
+---
+
 ## 2026-10-02 — #90/#97 public v2.4.0 release gate
 
 ### PASS
