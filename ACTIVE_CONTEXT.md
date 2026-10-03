@@ -1,6 +1,6 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-10-02 UTC
+**Updated:** 2026-10-03 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.16.1 / `1.16.1-notice-formatting`, immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`
 **Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, documentation head `b069d1057c3cf52414ed5365841058f0f43bdf31`
 
@@ -10,6 +10,8 @@ These are source identities, not a new live runtime validation. Current module v
 
 | Track | Exact continuation source | Next gate / do not repeat |
 |---|---|---|
+| [#25 — High Res coverage](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/25) | [2026-10-03 evidence/catalog/priority](docs/investigations/ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md) | Actual 4096 sources confirmed; 64 MP practical threshold unproved. Resume Twilight recovery readback, then bounded dense-fixture/visual/performance checks. No blanket source/atlas maximum. |
+| [#7 — Native connection warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/7) | [Shared recovery checkpoint and native emitter](docs/investigations/ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md) | Native notify branch proved; failing request not isolated. Scourge/Devastator OFF passed without warning. Browser replies stopped after Twilight #3882; Amanda must inspect blocking/unresponsive-page dialog before runtime recovery. Original Vermis/HR preference restoration unverified. |
 | [#59 — Generic Bug Capture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/59) | Canonical Dev Diagnostics Core/providers; paused checkpoint `wd/59-decals-diagnostic-provider`; [#88 Decals design](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/wd/88-diagnostic-capture-architecture/docs/diagnostics/providers/DECALS.md) | Resume remaining provider checkpoint from its latest issue/branch evidence. JSON/script-compat work is absorbed; its former branch is deleted. Do not repeat General/Texture Quality/Booth OFF validation merely to reconstruct context. |
 | [#88 — Diagnostic provider architecture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/88) | `wd/88-diagnostic-capture-architecture/docs/diagnostics/` | Active design source; preserve draft/accepted distinctions. Do not absorb/retire its protected branch as documentation cleanup. |
 | [#34 — HR false restore warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) | Issue #34 contains observations, evidence IDs, two hypotheses, and next test | Separate product defect. Prove verifier-only versus real restore fault; do not reopen/repeat shipped #24/#32 fixes. |

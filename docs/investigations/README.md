@@ -21,6 +21,7 @@ Accepted architecture belongs in existing decision/contract homes; implementatio
 
 | Scope | Canonical record / disposition |
 |---|---|
+| #25 / #7 — High Res host coverage and native connection warning | [Technical evidence, catalogs, priority and recovery checkpoint](ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md); active, blocked at a genuine browser interaction gate after Twilight import. Resume readback before mutations; original fixture/preference restoration not verified. |
 | #34 — HR false restore warning / native mask verification | [Issue #34](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34). Compare expected-size/shared-cache hypotheses using retained pre-cleanup state. Do not equate visually valid restoration with a proved verifier cause. |
 | #24 — HR ON→OFF body tint | [Issue #24](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/24), closed/shipped. [Old broad plan](ISSUE_24_TEXTURE_REGRESSION_PLAN_2026-09-22.md) and [failed-release reopen handoff](ISSUE_24_REOPEN_HANDOFF_2026-09-24.md) are non-executable provenance. |
 | #32 — HR body paint-zone collapse | [Issue #32](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/32), shipped; do not fold into #24/#34. |

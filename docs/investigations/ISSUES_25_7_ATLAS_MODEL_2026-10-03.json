@@ -1,0 +1,675 @@
+{
+  "status": "approximate-hypothesis-only-not-native-or-GPU-validation",
+  "method": "Exported host target-area model, native packer reconstructed from exact-build source; no derived/rim or generated/modded inheritance; decal availability approximated from metadata.",
+  "rows": [
+    {
+      "label": "Twilight Soak Copy Copy Copy",
+      "hostCount": 798,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 15307776,
+        "histogram": {
+          "32": 101,
+          "64": 52,
+          "128": 619,
+          "256": 14,
+          "512": 11,
+          "1024": 1
+        }
+      },
+      "native32": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 15307776,
+        "histogram": {
+          "32": 101,
+          "64": 52,
+          "128": 619,
+          "256": 14,
+          "512": 11,
+          "1024": 1
+        }
+      },
+      "native64": {
+        "factor": 0.5,
+        "tries": 10,
+        "pixels": 60082176,
+        "histogram": {
+          "32": 6,
+          "64": 99,
+          "128": 54,
+          "256": 613,
+          "512": 15,
+          "1024": 10,
+          "2048": 1
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.05,
+        "tries": 19,
+        "pixels": 13158528,
+        "histogram": {
+          "8": 70,
+          "16": 19,
+          "32": 73,
+          "64": 8,
+          "128": 616,
+          "256": 1,
+          "512": 11
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.1,
+        "tries": 18,
+        "pixels": 52424640,
+        "histogram": {
+          "8": 3,
+          "16": 67,
+          "32": 87,
+          "64": 5,
+          "128": 8,
+          "256": 616,
+          "512": 1,
+          "1024": 11
+        }
+      }
+    },
+    {
+      "label": "00 Vermis Legs",
+      "hostCount": 190,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.75,
+        "tries": 5,
+        "pixels": 16721920,
+        "histogram": {
+          "32": 2,
+          "64": 10,
+          "128": 62,
+          "256": 87,
+          "512": 26,
+          "1024": 3
+        }
+      },
+      "native32": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 25323520,
+        "histogram": {
+          "32": 2,
+          "64": 6,
+          "128": 32,
+          "256": 102,
+          "512": 41,
+          "1024": 7
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 25323520,
+        "histogram": {
+          "32": 2,
+          "64": 6,
+          "128": 32,
+          "256": 102,
+          "512": 41,
+          "1024": 7
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.35,
+        "tries": 13,
+        "pixels": 22170688,
+        "histogram": {
+          "8": 1,
+          "32": 11,
+          "64": 66,
+          "128": 76,
+          "256": 3,
+          "512": 22,
+          "1024": 10,
+          "2048": 1
+        }
+      },
+      "promoteLarge64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 55859200,
+        "histogram": {
+          "32": 2,
+          "64": 5,
+          "128": 32,
+          "256": 100,
+          "512": 18,
+          "1024": 30,
+          "2048": 3
+        }
+      }
+    },
+    {
+      "label": "Tsuyilia Posed Fit",
+      "hostCount": 686,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.15,
+        "tries": 17,
+        "pixels": 14154800,
+        "histogram": {
+          "4": 11,
+          "8": 2,
+          "16": 3,
+          "32": 30,
+          "64": 52,
+          "128": 573,
+          "256": 1,
+          "512": 13,
+          "1024": 1
+        }
+      },
+      "native32": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 18520976,
+        "histogram": {
+          "4": 9,
+          "8": 4,
+          "16": 2,
+          "32": 26,
+          "64": 11,
+          "128": 558,
+          "256": 62,
+          "512": 12,
+          "1024": 2
+        }
+      },
+      "native64": {
+        "factor": 0.35,
+        "tries": 13,
+        "pixels": 62482016,
+        "histogram": {
+          "4": 2,
+          "8": 9,
+          "16": 4,
+          "32": 16,
+          "64": 14,
+          "128": 41,
+          "256": 558,
+          "512": 28,
+          "1024": 13,
+          "2048": 1
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.05,
+        "tries": 19,
+        "pixels": 16374896,
+        "histogram": {
+          "4": 11,
+          "8": 3,
+          "16": 11,
+          "32": 44,
+          "64": 10,
+          "128": 534,
+          "256": 59,
+          "512": 14
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.1,
+        "tries": 18,
+        "pixels": 65374064,
+        "histogram": {
+          "4": 11,
+          "8": 3,
+          "16": 2,
+          "32": 49,
+          "64": 4,
+          "128": 10,
+          "256": 534,
+          "512": 59,
+          "1024": 14
+        }
+      }
+    },
+    {
+      "label": "Kaname Suit and Decals",
+      "hostCount": 323,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.55,
+        "tries": 9,
+        "pixels": 15217664,
+        "histogram": {
+          "8": 4,
+          "16": 3,
+          "32": 64,
+          "64": 11,
+          "128": 30,
+          "256": 207,
+          "512": 4
+        }
+      },
+      "native32": {
+        "factor": 0.7,
+        "tries": 6,
+        "pixels": 27835136,
+        "histogram": {
+          "16": 7,
+          "32": 37,
+          "64": 34,
+          "128": 32,
+          "256": 146,
+          "512": 67
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 54411008,
+        "histogram": {
+          "16": 7,
+          "32": 34,
+          "64": 35,
+          "128": 6,
+          "256": 58,
+          "512": 180,
+          "1024": 3
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.15,
+        "tries": 17,
+        "pixels": 23745344,
+        "histogram": {
+          "4": 4,
+          "16": 3,
+          "32": 100,
+          "64": 28,
+          "256": 131,
+          "512": 57
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 52296512,
+        "histogram": {
+          "4": 4,
+          "16": 3,
+          "32": 70,
+          "64": 30,
+          "128": 28,
+          "512": 185,
+          "1024": 3
+        }
+      }
+    },
+    {
+      "label": "0 Thane Desolation Base Upper",
+      "hostCount": 404,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.4,
+        "tries": 12,
+        "pixels": 9465056,
+        "histogram": {
+          "4": 2,
+          "8": 3,
+          "16": 40,
+          "32": 121,
+          "64": 70,
+          "128": 84,
+          "256": 77,
+          "512": 6,
+          "1024": 1
+        }
+      },
+      "native32": {
+        "factor": 0.8,
+        "tries": 4,
+        "pixels": 28969856,
+        "histogram": {
+          "8": 2,
+          "16": 3,
+          "32": 58,
+          "64": 118,
+          "128": 55,
+          "256": 88,
+          "512": 79,
+          "1024": 1
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 51804416,
+        "histogram": {
+          "16": 5,
+          "32": 25,
+          "64": 117,
+          "128": 79,
+          "256": 31,
+          "512": 135,
+          "1024": 12
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 28709600,
+        "histogram": {
+          "4": 2,
+          "8": 3,
+          "16": 74,
+          "32": 126,
+          "64": 29,
+          "128": 68,
+          "256": 29,
+          "512": 65,
+          "1024": 8
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.35,
+        "tries": 13,
+        "pixels": 60100064,
+        "histogram": {
+          "4": 2,
+          "8": 3,
+          "16": 53,
+          "32": 122,
+          "64": 43,
+          "128": 77,
+          "256": 25,
+          "512": 33,
+          "1024": 46
+        }
+      }
+    },
+    {
+      "label": "Devastator Lower",
+      "hostCount": 406,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.75,
+        "tries": 5,
+        "pixels": 15056896,
+        "histogram": {
+          "32": 4,
+          "64": 71,
+          "128": 185,
+          "256": 135,
+          "512": 11
+        }
+      },
+      "native32": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 29676544,
+        "histogram": {
+          "32": 1,
+          "64": 33,
+          "128": 115,
+          "256": 202,
+          "512": 55
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 29676544,
+        "histogram": {
+          "32": 1,
+          "64": 33,
+          "128": 115,
+          "256": 202,
+          "512": 55
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.1,
+        "tries": 18,
+        "pixels": 21235216,
+        "histogram": {
+          "4": 1,
+          "16": 26,
+          "32": 207,
+          "64": 15,
+          "128": 3,
+          "256": 99,
+          "512": 55
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.15,
+        "tries": 17,
+        "pixels": 45126160,
+        "histogram": {
+          "4": 1,
+          "16": 22,
+          "32": 179,
+          "64": 43,
+          "128": 4,
+          "256": 62,
+          "512": 75,
+          "1024": 20
+        }
+      }
+    },
+    {
+      "label": "Nyrethax The Vile",
+      "hostCount": 383,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.65,
+        "tries": 7,
+        "pixels": 14849024,
+        "histogram": {
+          "32": 89,
+          "64": 43,
+          "128": 130,
+          "256": 98,
+          "512": 23
+        }
+      },
+      "native32": {
+        "factor": 0.95,
+        "tries": 1,
+        "pixels": 31649792,
+        "histogram": {
+          "32": 16,
+          "64": 87,
+          "128": 77,
+          "256": 126,
+          "512": 75,
+          "1024": 2
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 34795520,
+        "histogram": {
+          "32": 16,
+          "64": 79,
+          "128": 83,
+          "256": 113,
+          "512": 90,
+          "1024": 2
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.3,
+        "tries": 14,
+        "pixels": 25570304,
+        "histogram": {
+          "16": 16,
+          "32": 119,
+          "64": 132,
+          "128": 68,
+          "256": 7,
+          "512": 25,
+          "1024": 16
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.85,
+        "tries": 3,
+        "pixels": 65675264,
+        "histogram": {
+          "32": 16,
+          "64": 94,
+          "128": 112,
+          "256": 88,
+          "512": 32,
+          "1024": 39,
+          "2048": 2
+        }
+      }
+    },
+    {
+      "label": "Nyrethax The Vile:baseItem",
+      "hostCount": 473,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.55,
+        "tries": 9,
+        "pixels": 12873728,
+        "histogram": {
+          "32": 52,
+          "64": 10,
+          "128": 308,
+          "256": 98,
+          "512": 5
+        }
+      },
+      "native32": {
+        "factor": 0.75,
+        "tries": 5,
+        "pixels": 32098304,
+        "histogram": {
+          "32": 42,
+          "64": 10,
+          "128": 186,
+          "256": 166,
+          "512": 69
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 47882240,
+        "histogram": {
+          "32": 8,
+          "64": 44,
+          "128": 31,
+          "256": 300,
+          "512": 85,
+          "1024": 5
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.25,
+        "tries": 15,
+        "pixels": 25033472,
+        "histogram": {
+          "8": 8,
+          "16": 1,
+          "32": 74,
+          "64": 289,
+          "128": 27,
+          "512": 69,
+          "1024": 5
+        }
+      },
+      "promoteLarge64": {
+        "factor": 0.35,
+        "tries": 13,
+        "pixels": 60660992,
+        "histogram": {
+          "16": 9,
+          "32": 45,
+          "64": 186,
+          "128": 157,
+          "256": 2,
+          "512": 26,
+          "1024": 48
+        }
+      }
+    },
+    {
+      "label": "The Scourge",
+      "hostCount": 214,
+      "modelCaveats": "isolated exported hosts; no derived/rim slots; decal availability approximated from metadata; native generated/modded inheritance requires live comparison",
+      "native16": {
+        "factor": 0.6,
+        "tries": 8,
+        "pixels": 15900928,
+        "histogram": {
+          "16": 1,
+          "64": 14,
+          "128": 75,
+          "256": 99,
+          "512": 23,
+          "1024": 2
+        }
+      },
+      "native32": {
+        "factor": 0.9,
+        "tries": 2,
+        "pixels": 30733312,
+        "histogram": {
+          "32": 1,
+          "64": 3,
+          "128": 35,
+          "256": 116,
+          "512": 50,
+          "1024": 9
+        }
+      },
+      "native64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 42050560,
+        "histogram": {
+          "32": 1,
+          "64": 2,
+          "128": 34,
+          "256": 81,
+          "512": 82,
+          "1024": 14
+        }
+      },
+      "promoteLarge32": {
+        "factor": 0.35,
+        "tries": 13,
+        "pixels": 31878208,
+        "histogram": {
+          "8": 1,
+          "32": 3,
+          "64": 54,
+          "128": 100,
+          "256": 18,
+          "512": 14,
+          "1024": 24
+        }
+      },
+      "promoteLarge64": {
+        "factor": 1,
+        "tries": 0,
+        "pixels": 61907968,
+        "histogram": {
+          "32": 1,
+          "64": 2,
+          "128": 34,
+          "256": 76,
+          "512": 63,
+          "1024": 38
+        }
+      }
+    }
+  ]
+}
