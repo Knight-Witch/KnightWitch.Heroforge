@@ -1,6 +1,6 @@
 # #25 High Res coverage and #7 native connection warning — 2026-10-03
 
-**Disposition:** active; browser-side recovery interaction required at the Twilight import checkpoint. Neither issue is resolved. No production fix, Stable promotion, or warning suppression was performed.
+**Disposition:** active; the browser recovery checkpoint is complete. #25 now has a reproduced multi-figure packing boundary and #7 remains unreproduced at the request level. Neither issue is resolved. No production fix, Stable promotion, or warning suppression was performed.
 
 Canonical owners: [#25](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/25) and [#7](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/7). This file adds bounded technical evidence and continuation instructions, not a second acceptance record.
 
@@ -8,7 +8,7 @@ Canonical owners: [#25](https://github.com/Knight-Witch/KnightWitch.Heroforge/is
 
 Live state, contract, active context, both issue threads/latest comments, and all three HFBR records were fetched before investigation. Reports: HFBR-20261003-EZM4RA66, HFBR-20261003-SMN3DAKH, HFBR-20261003-LC59QEDX. Reports/attachments were retrieved through authorized HF.Status operator infrastructure; raw figure JSON remains private. The five-figure report contains five separate saved fixtures, not one five-figure scene.
 
-Installed runtime evidence was public Stable v2.4.2 / 2.4.2-refresh-compatibility, immutable payload 93c0de5cd0da1dece3ef286c5a9201c83f1addb7. Native build: heroforge06.1.10.6. Live Native Reconcile was 0.3.8 / 0.3.8-supported-body-aaid-binding; Active Decal Priority 0.1.1 / 0.1.1-dev-projected-host-lifecycle-coordination; Same Figure Drift Guard 0.1.0. Dev source Native Reconcile 0.4.1 was inspected but not live-validated here. Canonical Dev launcher remains v1.16.1, immutable payload e431e26f7b3c4e4874c9238dd517015c71d824c1. Documentation baseline: Dev 706bd88ba427d11539f5c79ec5fd92ea944262ae; Stable b069d1057c3cf52414ed5365841058f0f43bdf31. Final live sync found a separate concurrent Stable wrapper-only commit c518402f40e487b1840444efd8948fdff4968998 (legacy raw wrapper compatibility); launcher version/build and immutable payload remain unchanged. This investigation made no Stable edits.
+Installed runtime evidence was public Stable v2.4.2 / 2.4.2-refresh-compatibility, immutable payload 93c0de5cd0da1dece3ef286c5a9201c83f1addb7. Native build: heroforge06.1.10.6. Initial live Native Reconcile was 0.3.8 / 0.3.8-supported-body-aaid-binding; Active Decal Priority 0.1.1 / 0.1.1-dev-projected-host-lifecycle-coordination; Same Figure Drift Guard 0.1.0. After recovery/reload, Dev Native Reconcile 0.4.1 / 0.4.1-supported-body-aaid-binding was loaded and live-validated on the explicit Wilds and Bath fixtures. Canonical Dev launcher remains v1.16.1, immutable payload e431e26f7b3c4e4874c9238dd517015c71d824c1. Documentation baseline: Dev 706bd88ba427d11539f5c79ec5fd92ea944262ae; Stable b069d1057c3cf52414ed5365841058f0f43bdf31. Final live sync found a separate concurrent Stable wrapper-only commit c518402f40e487b1840444efd8948fdff4968998 (legacy raw wrapper compatibility); launcher version/build and immutable payload remain unchanged. This investigation made no Stable edits.
 
 Source paths: features/rendering/Texture_Quality_Native_Reconcile.js and the manifest's Active Decal Priority module, plus native creationkit.js, heroforgeui.js, static_en.json and options.json for the exact native build. Bridge is private GitHub-backed dev infrastructure, not a plugin. Successful trials ran with the HeroForge tab hidden.
 
@@ -17,13 +17,13 @@ Source paths: features/rendering/Texture_Quality_Native_Reconcile.js and the man
 | Report | Submitted fixture | Available evidence / completed trial |
 |---|---|---|
 | EZM4RA66 | Tsuyilia Forest Set Full (1); native label Tsuyilia Posed Fit | Private native JSON; about 670 KB parts. Dense tails/base items/gear. Failure reports bodyLower source/allocation verification followed by native atlas restore failure. No exact failed request capture. |
-| EZM4RA66 | Bath Copy | Explicit URL https://www.heroforge.com/load_config%3D59422567/ ; diagnostics only, no attached native JSON. Primary + baseItem displays. Live comparison pending. |
+| EZM4RA66 | Bath Copy | Explicit URL https://www.heroforge.com/load_config%3D59422567/ ; no attached native JSON. Dev v0.4.1 auto-enable reached a terminal failure: primary bodyUpper source 2048 but atlas allocation 512 × 512; baseItem verified at bodyLower/bodyUpper 2048 × 2048 and face 1024 × 1024. No native warning candidate. |
 | SMN3DAKH | 0 Thane Desolation Base Upper | Private native JSON; about 368 KB, 64 unique parts, native face absent; manual atlasScale up to 23.21. Missing face is not itself a failed network request. |
 | SMN3DAKH | Devastator Lower | Private native JSON; about 405 KB, 65 unique parts; primarily KB/blank host, not a normal core body/face fixture. Completed OFF import, ready/finished true; all 190 new HF resource responses 200, no notify event. |
 | SMN3DAKH | The Scourge | Private native JSON; about 212 KB, 44 unique parts. Completed OFF import, ready/finished true; all 220 new HF responses 200, no notify event. |
 | LC59QEDX | 00 Vermis Legs | Original live fixture, about 156 KB, 30 unique parts. Source/actual atlas inspection and native CPU-only packing comparisons completed. ON/OFF recovery trial was noisy and failed readiness/restore verification; not negative evidence for #7. |
-| LC59QEDX | Twilight Soak Copy Copy Copy | About 783 KB, 19 unique parts; 589 tail occurrences, repeated KB. Native import accepted in Bridge #3882; subsequent browser-side replies stopped. Outcome unverified. |
-| LC59QEDX | Witch of Wilds | Explicit URL https://www.heroforge.com/load_config%3D56462355/ ; no attached native JSON. Hair, tails, clothing, weapons, antlers, base grass; live comparison pending. |
+| LC59QEDX | Twilight Soak Copy Copy Copy | About 783 KB, 19 unique parts; 589 tail occurrences, repeated KB. Recovery readback verified the OFF native import completed in about 51.5 s, ready/finished true, with no notify call and no asserted networkError. |
+| LC59QEDX | Witch of Wilds | Explicit URL https://www.heroforge.com/load_config%3D56462355/ ; no attached native JSON. Dev v0.4.1 verified ON at 8192 × 4096; bounded update completed in about 12.0 s with no notify/networkError or new failed resource entry. CPU-only 32/64 MP pack maps were identical. |
 | LC59QEDX | Nyrethax The Vile | About 361 KB primary plus 442 KB child human baseItem: two characters, about 803 KB total. Primary lacks face; child has face. Treat their separate atlas costs explicitly. |
 | LC59QEDX | Kaname Suit and Decals | About 304 KB, 18 unique parts; tails, weapons, hair, base items; atlasScale up to 1.62. |
 
@@ -73,12 +73,14 @@ Native CK.Atlas derives ideal size from surface area/UV density × 216 pixels-pe
 Actual CPU-only native constructors, without changing GPU atlas:
 - Vermis: 8192 × 4096 versus 8192 × 8192 kept sampled core 2048, hair/chest/sword 512, robe 1024, dagger 256. Approximate constructor times 3 ms/1 ms, not a performance benchmark.
 - Scourge: selected k_0..k_5 scale 4, budgets 4096-square / 8192 × 4096 / 8192-square; sampled k_0..k_3 remained 512 and k_4..k_5 1024. Whole-atlas equality was not established.
+- Wilds: 8192 × 4096 versus 8192 × 8192 produced identical packed coordinate maps for every visible entry. Core body/face/base remained 2048; several 1024-source clothing/horn/rim/braid hosts remained 512 or 1024; 256-source hair/weapon hosts remained 256. The 64 MP candidate produced no allocation gain.
+- Bath: Dev v0.4.1 used separate 4096 × 4096 atlases for the primary and baseItem figures. The primary bodyUpper reached scale 4 / bake and used source 2048 but packed at 512 × 512, below the verifier's supported 1024 floor; bodyLower packed 1024 × 1024. The baseItem figure packed bodyLower/bodyUpper 2048 × 2048 and face 1024 × 1024. This proves a multi-figure/packing coverage boundary but does not by itself prove that a 64 MP atlas is the correct remedy.
 
 [Approximate exported-host model](ISSUES_25_7_ATLAS_MODEL_2026-10-03.json) is a hypothesis discriminator, **not native runtime or GPU validation**: lacks derived/rim slots and generated/modded source inheritance; decal availability approximated from metadata. At 16/32/64 megapixel budgets its packing factors were Vermis .75/1/1; Twilight .25/.25/.5; Tsuyilia .15/.25/.35; Kaname .55/.7/1; Thane .4/.8/1; Devastator .75/1/1; Nyrethax primary .65/.95/1 and child .55/.75/1; Scourge .6/.9/1. Blanket promotion of all native ≥1024 hosts to scale 4 drove severe global shrink (as low as .05); this can lower unrelated textures.
 
 Hardware observed: RTX 4070 Laptop through ANGLE D3D11/WebGL1; maxTextureSize/maxRenderbufferSize 16384, combined units 32. These are dimensional/API hard limits, not a memory or performance budget. Physical VRAM usage was not measured.
 
-**Highest established source:** 4096 with decoded real HTTP images. **Existing policy budget:** 8192 × 4096 (32 MP). **Next unestablished candidate:** bounded 8192 × 8192 (64 MP) on a density-constrained fixture; its practical visual/performance threshold remains unproved. No universal highest practical budget has been established. Larger dimensions without source headroom or without improved packing cannot help.
+**Highest established source:** 4096 with decoded real HTTP images. **Existing policy budget:** 8192 × 4096 (32 MP). **Next unestablished candidate:** bounded 8192 × 8192 (64 MP) on a density-constrained fixture; its practical visual/performance threshold remains unproved. Wilds now supplies direct negative-discriminator evidence: doubling 32 MP to 64 MP changed no packed allocation. Bath supplies a positive density/verification boundary at a smaller per-figure atlas, but no controlled 64 MP visual/performance result. No universal highest practical budget has been established. Larger dimensions without source headroom or without improved packing cannot help.
 
 ### Memory/performance cost
 
@@ -111,30 +113,31 @@ Native CK.Resources loader success/error callbacks identify owner and URL; failu
 Low-noise completed trials subscribed observationally to notify/networkError, cleared and bounded resource timings to 2000, performed native unsaved local import, progressed native lifecycle, and unregistered observers/restored hook wrappers in finally:
 - Scourge, Texture Quality OFF: run 8 at 2026-10-03 05:32:18Z, ~33.5 s; ready/finished true, no notify, networkError false (clear) only; 220 HF resources, all 200.
 - Devastator, OFF: run 12 at 05:38:06Z, ~35.0 s; ready/finished true, no notify, networkError false (clear) only; 190 HF resources, all 200.
-- No failed request was observed in those windows. This does not rule out an ON-only warning, another fixture, cache-dependent failure or later request.
+- Twilight, OFF recovery readback: native import completed in about 51.5 s, ready/finished true; no notify calls and only the non-asserted networkError(false) clear state.
+- Wilds, Dev v0.4.1 ON: initial load contained no non-200 native `.ckb` or `_aaid_.png` request; a clean about-12.0 s bounded update emitted no notify/networkError and added no failed resource entry.
+- Bath, Dev v0.4.1 attempted persistent ON: the High Res verifier failed for primary bodyUpper packing, but the initial load contained no non-200 native `.ckb`/AAID candidate and no warning UI. This separates the #25 coverage failure from the #7 native warning branch.
+- No failed native warning candidate was observed in those windows. This does not rule out another fixture, cache-dependent failure or later request. Status-0 external analytics/tag scripts were excluded because they do not satisfy the native `.ckb` / `_aaid_.png` filter.
 - Earlier Vermis ON→OFF→ON run 4 at 05:11:39Z (~667 s) saturated broad console/event hooks with invalid-decal/resourcesChanged noise and failed restore/readiness. Do not repeat that broad configuration or cite its absent warning as negative proof.
 
 No warning was cosmetically suppressed; no attribution to Dock/native/CDN was made without the failing request. Pending test: one window per fixture/state, notify/non-LIVE path capture plus native loader error and full resource URL/status, with cache/request identity and Dock source ownership. Capture first bad transition before cleanup. Native missing face/core hosts need structural validation separately from failed network evidence.
 
-## Recovery checkpoint — first unfinished step
+## Recovery completed and residual boundaries
 
-Private Bridge mailbox evidence:
-- #3859 native Vermis CPU atlas comparison.
-- #3867–3869 Scourge completed OFF lifecycle and network/CPU samples.
-- #3874–3875 Devastator completed OFF lifecycle/readback.
-- #3882 Twilight import Power refresh acknowledged success at about 05:48:32Z; native import outcome unread.
-- #3883 post-import readback, #3884 inert callback construction, #3885 fresh bridge.ping have no result at checkpoint. The relay transcript accepted these requests; local relay health returned an immediate authenticated-endpoint 401 without a supplied token. This shows a listening HTTP service, not a successful browser handshake.
-- Runtime replies ceased after Twilight; the cause (main-thread stall, blocking browser dialog, pump issue, other) is not proved. Hidden state alone is not the diagnosis. Many previous hidden-tab round trips worked.
+The necessary page reload restored Bridge traffic. Pending requests were read before any mutation retry:
 
-**Amanda interaction:** inspect the authenticated HeroForge tab for an unresponsive-page/blocking dialog, dismiss it if possible and report whether the page responds. Do not reload yet: preserve unread capture and the recovery snapshot. No console commands or routine focus babysitting requested.
+- #3883 verified the Twilight import completed in about 51.5 s, ready/finished true, with no notify call and no asserted networkError.
+- #3884 created an inert callback but did not register it.
+- #3885 fresh ping succeeded. Later bounded reads/updates continued normally.
+- Reload cleared only unsaved page-local figure/probe globals. The private report attachment remains retained; no cloud save was changed. Exact restoration of the original unsaved Vermis figure was therefore no longer possible from the live page without re-fetching the private attachment.
+- Persistent High Res was restored to true. Final live state is the explicit Wilds fixture with Dev v0.4.1 enabled, 8192 × 4096, ready/finished true, no status error.
 
-After it responds, read #3883 and fresh ping before any mutation/retry; preserve at-most-once behavior. Pending #3884 only constructs/stores an inert native-frame observer and does not register it. Confirm its execution before using it. It binds native update/animation/postAnimation/preRender/end methods into a queued microtask; registration is untested and remains a candidate, not an accepted implementation.
+Bridge requests #3891–#3916 contain the explicit Wilds/Bath loads, resource discriminators, CPU-only atlas comparison, clean ON trial, Bath terminal verification values and final healthy-state readback. #3912 was a blocked read recipe and made no mutation; #3913/#3914 supplied the successful bounded state detail. No uncertain mutation was replayed.
 
-Persistent High Res was temporarily set false for OFF trials; original was true/ON. Original Vermis native JSON remains in HFChatBridgePower.runtimeBaseline and private compressed fixture backup. Restoration is **not verified**: finish pending trial capture, then restore original unsaved Vermis, Persistent High Res true and original ON state with native ready/finished/model/source checks. Twilight observer cleanup remains unverified until readback; completed Scourge/Devastator trials removed their observers.
+Original exact fixture restoration remains impossible after the user-authorized recovery reload because the unsaved page copy and its page-local backup were erased together. This is a reload consequence, not an investigative mutation. The retained private attachment can be re-imported in a future authorized window if that exact fixture is needed.
 
-Old read-only requests #3800/#3802 produced relay PowerShell ConvertFrom-Json “name” errors; their queued/requeued state needs terminal cleanup after preserving evidence. Merely closing GitHub issues does not necessarily clear the relay's in-memory queue. Do not replay uncertain mutations or restart the relay as a foreground workaround. Completed private figure-input messages can be redacted after terminal results and durable recovery data are secure; do not publish raw JSON or analytics identifiers.
+Remaining #25 gate: select a fixture where an increased budget measurably changes allocation, then run controlled visual/performance comparison. Bath also needs a narrowly scoped design/diagnostic follow-up for per-figure density and complete rollback; do not broaden that into #34 or implement a fix without authorization.
 
-Then finish untested ON/OFF fixtures, explicit Bath/Wilds URL comparisons, the native dense-fixture CPU packing discriminator and controlled visual/performance threshold. If all native replies remain blocked without a visible dialog, inspect relay/browser pump state with one bounded read; don't invent a Bridge availability diagnosis.
+Remaining #7 gate: capture the first real warning transition with failing native URL/status, request identity/owner, emitter timestamp, cache state and Texture Quality state. Do not treat unrelated external status-0 requests or a High Res verification failure as the connection warning.
 
 ## Janitorial and continuation boundaries
 
@@ -142,4 +145,4 @@ No new investigation/product issue and no new branch was created. Permanent WITC
 
 HF.Status operator/triage-requests was used for authorized read-only operator retrieval (queue checkpoint 6bbc1d6dd946b86789eb7996db06b1375e140c11); it is dev infrastructure, not a product change. Do not expose credentials, triage tokens, raw figure attachment bodies or private reporter data.
 
-Resume at the recovery readback, not at report retrieval or the successful OFF runs. #24/#32 remain shipped; #34 restore-warning ownership stays separate. Only #25/#7 follow-up and safe reversible diagnostics are authorized here; no Stable/public runtime change.
+Resume from the completed Wilds/Bath/Twilight evidence, not report retrieval, the old recovery checkpoint, or the successful OFF runs. #24/#32 remain shipped; #34 restore-warning ownership stays separate. Only #25/#7 follow-up and safe reversible diagnostics are authorized here; no Stable/public runtime change.
