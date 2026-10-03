@@ -12,7 +12,8 @@ A chat that cannot delete branches must still update this queue. “Safe to dele
 
 | Branch | Expected head SHA | Reason | Source | Status |
 |---|---|---|---|---|
-| `wd/104-hfjson-delivery` | `7af8245e63e6fbe359542e26885a6b2f61106c1e` | HFJSON edge source/aliases are merged, live, cross-repo validated, and durably recorded; temporary task ref is no longer needed. | #104 | READY |
+
+_No pending entries._
 
 ## Queue rules
 
