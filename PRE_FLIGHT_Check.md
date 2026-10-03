@@ -2,15 +2,14 @@
 
 This file records only the validation state for the latest committed change/current head. Replace it on the next commit; do not accumulate historical PASS entries here.
 
-## 2026-10-02 - issue #104 live HFJSON delivery gate
+## 2026-10-03 - issue #104 branch queue gate
 
-**PASS - live edge deployed and provider recovery reconciled; paired HF.Status visual gate pending**
+**PASS - functional work complete; exact-SHA branch deletion authorized**
 
-- PASS: `witchdock-runtime` Worker version `d301357a-44dd-4b3c-9d5f-55e4ac7497ca` serves the additive `/HFJSON/` namespace.
-- PASS: all seven configured aliases return intended temporary `307` redirects; root routes to GitGud; HEAD is supported; unknown aliases return 404.
-- PASS: existing health, Stable ref, Dev ref, and Stable launcher routes remained healthy after deployment.
-- PASS: Stable ref remained `b069d1057c3cf52414ed5365841058f0f43bdf31`; no Stable branch/runtime mutation occurred.
-- PASS: GitHub Dev `13210fded85f549f0483f6574eac0ad6f9d63dba` and Bitbucket recovery Dev `5b7a4ed826a2878efdee5730f42fb7fc4cd72ae2` resolve to identical tree `82885ba1a20410fc527843c37cdc580478808136`.
-- PASS: paired HF.Status #89 is live on Dev with rendered browser smoke passing linked cards, modal actions, and Wiki aliases.
-- PENDING: Amanda visual approval on the paired HF.Status Dev UI before branch/issue closeout.
-- This commit is documentation/governance-only; no application/runtime/public behavior changed.
+- PASS: live HFJSON Worker remains `d301357a-44dd-4b3c-9d5f-55e4ac7497ca`; seven aliases/root/HEAD/404 behavior previously passed live smoke.
+- PASS: paired HF.Status #89 is production-live and public rendered smoke passed.
+- PASS: Stable Witch Dock ref/runtime was not changed by #104.
+- PASS: useful #104 history is merged into canonical Dev; Bitbucket recovery carries equivalent tree state.
+- PASS: live GitHub temp ref `wd/104-hfjson-delivery` exactly equals `7af8245e63e6fbe359542e26885a6b2f61106c1e`; Bitbucket recovery temp ref is absent.
+- READY: delete only that exact GitHub temporary ref, then verify absence and clear the queue.
+- This commit is documentation/governance-only; **no runtime/module/manifest/public behavior changed**.

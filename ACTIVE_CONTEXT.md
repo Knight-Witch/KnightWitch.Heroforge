@@ -10,13 +10,13 @@ These are source identities, not a new live runtime validation. Current module v
 
 | Track | Exact continuation source | Next gate / do not repeat |
 |---|---|---|
-| [#104 - HF JSON delivery aliases](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/104) | `wd/104-hfjson-delivery`; current deployed edge source recovered from the existing `witchdock-runtime` workspace | Bring the edge source into durable repo ownership, add temporary GitGud-backed `/HFJSON/` aliases, validate without changing existing channel/ref/payload behavior, then stop before live edge deployment until paired HF.Status #89 reaches visual gate. |
 | [#59 — Generic Bug Capture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/59) | Canonical Dev Diagnostics Core/providers; paused checkpoint `wd/59-decals-diagnostic-provider`; [#88 Decals design](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/wd/88-diagnostic-capture-architecture/docs/diagnostics/providers/DECALS.md) | Resume remaining provider checkpoint from its latest issue/branch evidence. JSON/script-compat work is absorbed; its former branch is deleted. Do not repeat General/Texture Quality/Booth OFF validation merely to reconstruct context. |
 | [#88 — Diagnostic provider architecture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/88) | `wd/88-diagnostic-capture-architecture/docs/diagnostics/` | Active design source; preserve draft/accepted distinctions. Do not absorb/retire its protected branch as documentation cleanup. |
 | [#34 — HR false restore warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) | Issue #34 contains observations, evidence IDs, two hypotheses, and next test | Separate product defect. Prove verifier-only versus real restore fault; do not reopen/repeat shipped #24/#32 fixes. |
 
 ## Recently released
 
+- #104 HFJSON delivery aliases are live at `https://witchdock.knightwitch.dev/HFJSON/`; seven active Lob/HF JSON aliases currently redirect to GitGud. Paired HF.Status #89 is production-live and validated. The completed `wd/104-hfjson-delivery` branch is queued for exact-SHA deletion.
 - #90 and #97 shipped to public Stable v2.4.0. Script Status uses `https://status.knightwitch.dev`; integrated reporting uses Witch Dock-specific capabilities, contextual source preservation, General diagnostics/evidence, and HFBR receipts.
 - Stable launcher/update/ref/payload delivery is provider-independent through `https://witchdock.knightwitch.dev`. GitHub and Bitbucket `Witch_Scripts` histories match exactly through the public release.
 - Release notice formatting is v0.3.1 / `0.3.1-formatted-bug-reporting-notice`; the overview and expanded content use native headings and bullet lists.
