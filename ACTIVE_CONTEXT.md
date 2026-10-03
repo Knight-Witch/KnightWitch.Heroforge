@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-03 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.16.1 / `1.16.1-notice-formatting`, immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`
-**Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, documentation head `b069d1057c3cf52414ed5365841058f0f43bdf31`
+**Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, current ref `c518402f40e487b1840444efd8948fdff4968998` (separate legacy-wrapper compatibility commit; payload unchanged)
 
 These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).
 
