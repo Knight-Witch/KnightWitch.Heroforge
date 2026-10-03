@@ -4,9 +4,10 @@ This file is intentionally **not** a full historical changelog. Git history, iss
 
 ## Latest repository change - 2026-10-03
 
-- Recorded #25/#7 technical investigation: three HFBR reports, 147 source metadata families, 32 decoded HTTP texture probes, native atlas/material costs and bounded promotion priority.
-- Distinguished verified 4096 sources and existing 32 MP policy from an unproved 64 MP practical threshold; preserved approximate model caveats.
-- Recorded the native connection-warning emitter, successful Scourge/Devastator OFF trials, and unresolved failing-request attribution.
-- Routed exact Twilight browser recovery/human-interaction checkpoint, uncertain mutation/readback state, and outstanding fixture/High Res preference restoration.
-- Final sync noted a separate concurrent Stable legacy-wrapper commit c518402; launcher/payload unchanged. This investigation made no Stable edits.
-- No branch creation/deletion; no Stable ref mutation by this investigation. This commit is evidence/documentation-only; **no runtime/module/manifest/public behavior changed**.
+- Completed the #25/#7 browser/Bridge recovery checkpoint and recorded terminal Twilight, Wilds and Bath evidence.
+- Live-validated Dev Native Reconcile v0.4.1: Wilds passed ON at 8192 × 4096; CPU-only 64 MP packing produced no allocation gain.
+- Recorded Bath's two-figure boundary: primary bodyUpper 2048 source packed at 512 × 512 while the baseItem figure verified; no production fix was attempted.
+- Added negative-discriminator evidence for #7: no native warning candidate on Twilight, Wilds or Bath; exact failing request remains unresolved.
+- Restored persistent High Res true and a healthy Wilds ON state. The authorized reload erased only the unsaved Vermis/page-local probe copy; private source remains retained and no cloud save changed.
+- Updated canonical issue comments, active routes and continuation gates. No branch creation/deletion and no Stable ref mutation.
+- This commit is evidence/documentation-only; **no runtime/module/manifest/public behavior changed**.
