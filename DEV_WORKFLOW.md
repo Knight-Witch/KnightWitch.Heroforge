@@ -72,6 +72,8 @@ A parse success is not runtime proof. For startup/delivery changes use the exact
 
 ## 5. Promotion to public
 
+Routine scoped work and file/content edits on `WITCH_DEV_MAIN` or another permanent ref do not require separate approval. Public Stable promotion is the normal explicit human gate unless Amanda already granted that promotion in advance; structural permanent-ref replacement/deletion/rename/repurpose remains governed by `BRANCH_REGISTRY.md`.
+
 Promotion is always explicit and narrow. Do not merge all of Dev merely because one feature is ready.
 
 Identify the exact validated files/commits, promote only that scope to `Witch_Scripts`, then run the Stable smoke.

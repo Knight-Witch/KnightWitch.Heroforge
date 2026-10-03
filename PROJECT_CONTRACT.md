@@ -13,7 +13,7 @@ Before material work, read this file and [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md) 
 - [Investigation guide](docs/investigations/README.md) owns evidence records, bounded autonomous Bridge work, and resumable checkpoints.
 - [TASK_MODE_ROUTER.md](TASK_MODE_ROUTER.md) is advisory at meaningful task/phase checkpoints only; do not re-evaluate on routine messages or interrupt a bounded step to switch modes.
 
-For every branch-affecting task, additionally read [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md); read [BRANCH_ARCHIVE.md](BRANCH_ARCHIVE.md) for permanent replacement/archival. Register every new branch before material work. Completed non-permanent branches transition to the exact-SHA queue. Permanent changes require Amanda's explicit approval. Native GitHub protection is defense-in-depth; only the queue authorizes deletion.
+For every branch-affecting task, additionally read [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md); read [BRANCH_ARCHIVE.md](BRANCH_ARCHIVE.md) for permanent replacement/archival. Register every new branch before material work. Completed non-permanent branches transition to the exact-SHA queue. Routine file/content/code/workflow/documentation edits on permanent branches do not require separate approval. Amanda's explicit approval is required only for structural permanent-ref replacement/deletion/rename/repurpose; public Stable promotion remains its own explicit gate unless already granted in advance. Native GitHub protection is defense-in-depth; only the queue authorizes deletion.
 
 ## Binding preservation and release boundaries
 

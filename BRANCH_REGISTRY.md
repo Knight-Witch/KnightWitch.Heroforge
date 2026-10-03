@@ -72,7 +72,7 @@ A candidate here must also remain listed under ACTIVE PROTECTED until approval i
 
 ### Permanent promotion / replacement contract
 
-Permanent branch changes require Amanda's explicit approval.
+Routine file/content edits on permanent branches do not require separate approval. Amanda's explicit approval is required only for structural replacement/deletion/rename/repurpose of a permanent ref or its durable role.
 
 For a **new permanent branch**:
 
