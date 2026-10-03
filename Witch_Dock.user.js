@@ -16,7 +16,8 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
-// @connect      witchdock.knightwitch.dev
+// @connect      raw.githubusercontent.com
+// @connect      api.github.com
 // ==/UserScript==
 
 (async function () {
