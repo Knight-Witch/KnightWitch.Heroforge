@@ -1,10 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-04 — #25 owned lifecycle paired Dev delivery
+## 2026-10-04 — #25 coverage evidence checkpoint
 
-- PASS: four focused VM regression tests; module/launcher syntax and manifest version/build consistency.
-- PASS: existing Bath wrapped-entry discriminator #3936–3937; no need to rerun it. Resume health #3939 and state #3940 are healthy; #3938 capture terminalized.
-- PENDING: live patched automatic Bath, native OFF and manual-scale gates. Runtime acceptance remains pending.
-- PASS: payload `b84bc4140a34dad91c67fd3c453cad0d903364e9` and launcher manifest versions pair; prior recovery runtime tree matches canonical baseline. Recovery ancestry retained, no forced branch replacement.
-- No registry impact: existing High Res modules and ownership stay at their current paths, no tool taxonomy change.
-- Sole ACTIVE PROTECTED branch `wd/25-texture-coverage`; no new branch or Stable change.
+- PASS: paired Dev v1.16.2 automatically verified ON on Bath (two figures) and Wilds. Riptide three-host CPU trial changes only the selected rectangles; live manual trial reached 1024² on all three and kept 2048² core verification. Riptide and Shaelynn native character names read back from submitted URLs.
+- EXCLUDED: Amanda observed Aowyn's failed/deleted figure popup. Its apparent default-part inventory is not a fixture result.
+- PENDING: human visual/performance evidence before adopting selected-host policy; Bath OFF bodyUpper restore warning remains separate and unproved.
+- PASS: matrix schema/row totals and per-instance packed pixel sums checked against retained inventories; report private JSON remains uncommitted.
+- No runtime/module/manifest/public behavior changed. Sole ACTIVE PROTECTED branch `wd/25-texture-coverage`; no branch classification change.

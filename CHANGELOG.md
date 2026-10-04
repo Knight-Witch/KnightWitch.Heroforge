@@ -2,10 +2,8 @@
 
 ## Latest repository change — 2026-10-04
 
-- #25: Native Reconcile 0.4.2 routes persistent/scene-sync lifecycle through the existing policy owner; Active Decal Priority 0.1.2 preserves manual/external accessory scales.
-- Pair Dev launcher/manifest 1.16.2 with immutable payload `b84bc4140a34dad91c67fd3c453cad0d903364e9` for live validation. No public change.
-- Join the existing recovery history without changing canonical content; both Dev refs can advance normally without forced replacement. Prior recovery runtime bytes matched canonical Dev.
-- Preserve prior source/packing evidence and add coverage matrix plus exact continuation gates.
+- #25 documentation: record patched automatic Bath/Wilds ON gates, Riptide/Shaelynn instance packing, and the Riptide three-host CPU/live candidate gain. Exclude Aowyn's failed/deleted URL from the matrix and retain Bath OFF restore warning under #34-adjacent investigation.
+- No runtime/module/manifest/public behavior changed.
 
 ## Latest Stable context
 
