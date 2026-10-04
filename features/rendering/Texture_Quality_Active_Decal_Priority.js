@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Active Decal Priority
 // @namespace    KnightWitch
-// @version      0.1.1
+// @version      0.1.2
 // @description  Dev-only adaptive atlas policy for textures that actually carry decals.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityActiveDecalPriority';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-dev-projected-host-lifecycle-coordination';
+  const VERSION = '0.1.2';
+  const BUILD = '0.1.2-preserve-external-scales';
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const SCALE = 4;
   const ATLAS_WIDTH = 8192;
@@ -201,15 +201,21 @@
 
     for (const key of desired) {
       let snapshot = state.snapshots.get(key) || null;
+      // An outside edit supersedes our last write; retain its new baseline.
+      if (snapshot && state.scale[key] !== snapshot.applied) {
+        state.snapshots.delete(key);
+        snapshot = null;
+      }
+      const current = Number(state.scale[key]);
+      // Priority is a floor. Do not downsize or claim a manual/native value.
+      if (Number.isFinite(current) && current >= SCALE) continue;
       if (!snapshot) {
         snapshot = own(state.scale, key);
         state.snapshots.set(key, snapshot);
       }
-      if (Number(state.scale[key]) !== SCALE) {
-        state.scale[key] = SCALE;
-        changed = true;
-      }
+      state.scale[key] = SCALE;
       snapshot.applied = state.scale[key];
+      changed = true;
     }
 
     state.active = desired;

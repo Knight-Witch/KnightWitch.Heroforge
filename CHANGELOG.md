@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-04
 
-- Registered `wd/25-texture-coverage` as the sole ACTIVE PROTECTED #25 implementation/investigation branch after live inventory and registry/queue checks.
-- Existing #25 report/source/packing evidence remains authoritative; Dev-only implementation is authorized, public promotion is not.
-- Documentation-only: **no runtime/module/manifest/public behavior changed**.
+- #25: Native Reconcile 0.4.2 routes persistent/scene-sync lifecycle through the existing policy owner; Active Decal Priority 0.1.2 preserves manual/external accessory scales.
+- Stage Dev launcher/manifest 1.16.2 for immutable payload pairing. No public change.
+- Preserve prior source/packing evidence and add coverage matrix plus exact continuation gates.
 
 ## Latest Stable context
 
-Stable v2.4.2 / `2.4.2-refresh-compatibility`; payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`; no Stable changes.
+Stable v2.4.2, payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`; unchanged.

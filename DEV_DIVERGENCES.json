@@ -65,6 +65,22 @@
         "Kit heat uses only the currently validated zero-argument observational seam; no cap/slot/model mutation is permitted.",
         "Stable v2.4.0 contains General capture/reporter infrastructure; remaining provider expansions stay Dev-only until separately approved."
       ]
+    },
+    {
+      "issue": 25,
+      "status": "dev-validation-pending",
+      "reason": "Coverage closure: persistent and scene-sync entry must honor the existing accessory/atlas owner; decal priority must preserve outside/manual scales. No blanket allocation expansion.",
+      "paths": [
+        "features/rendering/Texture_Quality_Native_Reconcile.js",
+        "features/rendering/Texture_Quality_Active_Decal_Priority.js",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Automatic enable and scene membership use the public owned entry; existing readiness/retries preserved.",
+        "Manual values above scale 4 are never lowered or restored over later outside edits.",
+        "Bath/Wilds live Dev gates plus supported-AAID/native OFF regressions remain required.",
+        "Public Stable remains unchanged."
+      ]
     }
   ],
   "notes": [

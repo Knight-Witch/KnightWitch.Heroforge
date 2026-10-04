@@ -1,6 +1,6 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-10-03 UTC
+**Updated:** 2026-10-04 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.16.1 / `1.16.1-notice-formatting`, immutable payload `e431e26f7b3c4e4874c9238dd517015c71d824c1`
 **Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, current ref `c518402f40e487b1840444efd8948fdff4968998` (separate legacy-wrapper compatibility commit; payload unchanged)
 
@@ -10,7 +10,7 @@ These are source identities, not a new live runtime validation. Current module v
 
 | Track | Exact continuation source | Next gate / do not repeat |
 |---|---|---|
-| [#25 — High Res coverage](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/25) | [2026-10-03 evidence/catalog/priority](docs/investigations/ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md) | Recovery complete. Wilds verifies 32 MP ON and shows no 64 MP packing gain; Bath reproduces a two-figure primary bodyUpper 2048-source → 512-allocation failure. Next gate is a controlled allocation-changing visual/performance fixture and per-host/per-figure priority design. No blanket maximum. |
+| [#25 — High Res coverage](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/25) | [Coverage closure and live matrix](docs/investigations/ISSUE_25_COVERAGE_CLOSURE_2026-10-04.md); sole branch `wd/25-texture-coverage` | Bath wrapper discriminator PASSED (#3936–3937); do not repeat. Native Reconcile 0.4.2 and Active Decal Priority 0.1.2 implement owned automatic/scene-sync entry and manual-scale preservation. Next: paired Dev payload, automatic Bath gate, ON/OFF AAID/restore checks, then continue family/packing closure. No Stable promotion. |
 | [#7 — Native connection warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/7) | [Native emitter and completed recovery evidence](docs/investigations/ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md) | Native notify branch proved; failing request not isolated. Scourge/Devastator/Twilight OFF and Wilds ON produced no warning; Bath's separate HR failure had no bad native `.ckb`/AAID candidate. Next gate is first-transition capture with URL/status/request owner/cache/state. |
 | [#59 — Generic Bug Capture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/59) | Canonical Dev Diagnostics Core/providers; paused checkpoint `wd/59-decals-diagnostic-provider`; [#88 Decals design](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/wd/88-diagnostic-capture-architecture/docs/diagnostics/providers/DECALS.md) | Resume remaining provider checkpoint from its latest issue/branch evidence. JSON/script-compat work is absorbed; its former branch is deleted. Do not repeat General/Texture Quality/Booth OFF validation merely to reconstruct context. |
 | [#88 — Diagnostic provider architecture](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/88) | `wd/88-diagnostic-capture-architecture/docs/diagnostics/` | Active design source; preserve draft/accepted distinctions. Do not absorb/retire its protected branch as documentation cleanup. |

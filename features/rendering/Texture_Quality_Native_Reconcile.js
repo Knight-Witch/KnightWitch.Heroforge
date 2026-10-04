@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.4.1
+// @version      0.4.2
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.4.1';
-  const BUILD = '0.4.1-supported-body-aaid-binding';
+  const VERSION = '0.4.2';
+  const BUILD = '0.4.2-owned-lifecycle-entry';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -1254,7 +1254,9 @@
         }
         markAutoAttempted();
         setStatus(`Persistent High Res — enabling for ${cap.pipelines.length} figure${cap.pipelines.length === 1 ? '' : 's'}…`, false);
-        return enable({ automatic: true });
+        // Enter through the public service so the existing accessory/budget owner
+        // runs before the core snapshots and rebuilds the native pipeline.
+        return UW[GLOBAL].enable({ automatic: true });
       }
       return false;
     })().finally(() => {
@@ -1274,7 +1276,7 @@
       const cap = await waitForStableScene(AUTO_READY_TIMEOUT);
       if (!enabled || !session || !cap) return false;
       if (sameFigureSet(session)) return true;
-      return reconcile({ sceneSync: true });
+      return UW[GLOBAL].reconcile({ sceneSync: true });
     })().finally(() => {
       sceneSyncPromise = null;
       emit();
