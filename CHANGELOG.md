@@ -2,7 +2,7 @@
 
 ## Latest repository change — 2026-10-04
 
-- #25 documentation: correct Shaelynn wing interpretation (those KB wings are tiny eyelashes), record the guarded human-ear 256→512 one-side trial and D5's four 1024-ceiling wings, and route Wilds/Viper/Counting Sheep as the next user-selected fixtures. The source-specific 512/1024 and 1024/2048 HTTP results constrain per-host promotion.
+- #25 documentation: accept Shaelynn's visible human-ear benefit and Viper's visibly sharper Snowforged rapier at 512²; both fixtures have verified native restoration. Viper's 56-host, 98.64%-occupied atlas, exact selected-part source probes, and CPU/live discrimination show that rapier plus one gauntlet are collateral-free together, while hair/skulldron/cuirass/dress promotion transfers quality from unrelated hosts. Gauntlet benefit remains visually unresolved.
 - No runtime/module/manifest/public behavior changed.
 
 ## Latest Stable context

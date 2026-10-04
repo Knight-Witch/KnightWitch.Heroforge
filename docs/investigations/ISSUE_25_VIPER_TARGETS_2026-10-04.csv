@@ -1,0 +1,14 @@
+display_label,host,source_id,source_slot,source_name,version,metadata_bake_size,native_packed,source_instances,active_decal_owned,probe_size,mask_status,aaid_status,normal_status,candidate_scale,cpu_packed,cpu_size_changes,live_packed,visual_result,restored_packed,assessment
+Long Straight Hair,k_15,23697,hairZ,hair06,22,1024,512,1,0,1024,200,404,200,4,1024,5,,,,Source mask/normal headroom exists; promotion halves cape k_10 and both ears/tongue in the dense atlas.
+Ponytail,k_2,23647,hairZ,baldPonytailLong,16,256,256,6,0,512,404,not probed,not probed,,,,,,,Current packed size equals metadata ceiling; tested next mask variant is absent.
+Lionfolk Mane,k_20,23981,hairZ,lionFolk,46,512,512,5,0,1024,404,not probed,not probed,,,,,,,Five separate atlas rectangles already equal this source's metadata ceiling; tested next mask variant is absent.
+Skulldrons,k_32,22488,shouldersR,skullMetal,25,1024,512,2,0,1024,200,200,200,4,1024,5,,,,One-side promotion has source headroom but halves cape k_10 and both ears/tongue.
+Snowforged Rapier,k_25,25484,itemR,rapierWinterWarrior,49,512,128,1,0,512,200,200,200,4,512,1,512,sharper accepted,128,Collateral-free alone and in the combined live trial; native scale/allocation restored and verified.
+Epic Longsword,k_26,22607,itemR,swordFantasyPlate,117,1024,1024,1,1,2048,404,not probed,not probed,,,,,,,Already at metadata/source ceiling and owned by Active Decal Priority.
+Thin Cloth Dress,k_1,11755,legs,clothVDress,47,2048,1024,1,0,2048,200,200,200,4,2048,15,,,,Source headroom exists but one-host promotion downsizes fourteen other hosts.
+Exquisite Split Cape,k_10,24665,back,beautifulNightmareAlt,64,1024,1024,1,0,2048,404,not probed,not probed,,,,,,,Already at metadata ceiling; it is the first large host sacrificed by several other promotions.
+Mercenary of Sol Waist Wrap,k_11,25329,chest,pistolDervishOuterAlt,32,1024,1024,2,0,2048,404,not probed,not probed,,,,,,,Both placements already equal the metadata ceiling; tested next mask variant is absent.
+Elegant Cuirass,chest,24339,chest,breastplateRoyal,76,1024,512,1,0,1024,200,200,200,4,1024,5,,,,Source headroom exists; promotion halves cape k_10 and both ears/tongue.
+Swashbuckler Armor,chestOuter,24414,chest,swashBucklerOuterAlt,107,1024,1024,1,0,2048,404,not probed,not probed,,,,,,,Already at metadata ceiling; tested next mask variant is absent.
+Bird of Prey Gauntlets,glovesL,24639,glovesR,beautifulNightmare,103,512,256,2,0,512,200,200,200,4,512,1,512,unsure,256,Left-only promotion was collateral-free with the right 256 control; visual gate unresolved; native property/allocation restored and verified.
+Over-the-knee Armor Boots,feetL,26001,feetR,heelMedTallArmorSlimNoKnee,12,1024,1024,2,1,2048,404,not probed,not probed,,,,,,,Both placements already equal the metadata ceiling and are owned by Active Decal Priority.

@@ -1,0 +1,26 @@
+source_slot,source_name,version,source_size,kind,path,status,bytes,content_type
+hairZ,hair06,22,1024,mask,/static/herobundles/hairZ/hair06/hair06_mask_1024.webp?23=pv,200,73636,image/webp
+hairZ,hair06,22,1024,aaid,/static/herobundles/hairZ/hair06/hair06_aaid_1024.png?23=pv,404,169,text/html; charset=utf-8
+hairZ,hair06,22,1024,nrml,/static/herobundles/hairZ/hair06/hair06_nrml_1024.webp?23=pv,200,118674,image/webp
+shouldersR,skullMetal,25,1024,mask,/static/herobundles/shouldersR/skullMetal/skullMetal_mask_1024.webp?26=pv,200,74210,image/webp
+shouldersR,skullMetal,25,1024,aaid,/static/herobundles/shouldersR/skullMetal/skullMetal_aaid_1024.png?26=pv,200,27766,image/png
+shouldersR,skullMetal,25,1024,nrml,/static/herobundles/shouldersR/skullMetal/skullMetal_nrml_1024.webp?26=pv,200,100876,image/webp
+itemR,rapierWinterWarrior,49,512,mask,/static/herobundles/itemR/rapierWinterWarrior/rapierWinterWarrior_mask_512.webp?50=pv,200,51082,image/webp
+itemR,rapierWinterWarrior,49,512,aaid,/static/herobundles/itemR/rapierWinterWarrior/rapierWinterWarrior_aaid_512.png?50=pv,200,14783,image/png
+itemR,rapierWinterWarrior,49,512,nrml,/static/herobundles/itemR/rapierWinterWarrior/rapierWinterWarrior_nrml_512.webp?50=pv,200,63268,image/webp
+legs,clothVDress,47,2048,mask,/static/herobundles/legs/clothVDress/clothVDress_mask_2048.webp?48=pv,200,195104,image/webp
+legs,clothVDress,47,2048,aaid,/static/herobundles/legs/clothVDress/clothVDress_aaid_2048.png?48=pv,200,82303,image/png
+legs,clothVDress,47,2048,nrml,/static/herobundles/legs/clothVDress/clothVDress_nrml_2048.webp?48=pv,200,272838,image/webp
+chest,breastplateRoyal,76,1024,mask,/static/herobundles/chest/breastplateRoyal/breastplateRoyal_mask_1024.webp?77=pv,200,227326,image/webp
+chest,breastplateRoyal,76,1024,aaid,/static/herobundles/chest/breastplateRoyal/breastplateRoyal_aaid_1024.png?77=pv,200,320119,image/png
+chest,breastplateRoyal,76,1024,nrml,/static/herobundles/chest/breastplateRoyal/breastplateRoyal_nrml_1024.webp?77=pv,200,269478,image/webp
+glovesR,beautifulNightmare,103,512,mask,/static/herobundles/glovesR/beautifulNightmare/beautifulNightmare_mask_512.webp?104=pv,200,92508,image/webp
+glovesR,beautifulNightmare,103,512,aaid,/static/herobundles/glovesR/beautifulNightmare/beautifulNightmare_aaid_512.png?104=pv,200,81928,image/png
+glovesR,beautifulNightmare,103,512,nrml,/static/herobundles/glovesR/beautifulNightmare/beautifulNightmare_nrml_512.webp?104=pv,200,96644,image/webp
+hairZ,baldPonytailLong,16,512,mask,/static/herobundles/hairZ/baldPonytailLong/baldPonytailLong_mask_512.webp?17=pv,404,169,text/html; charset=utf-8
+hairZ,lionFolk,46,1024,mask,/static/herobundles/hairZ/lionFolk/lionFolk_mask_1024.webp?47=pv,404,169,text/html; charset=utf-8
+itemR,swordFantasyPlate,117,2048,mask,/static/herobundles/itemR/swordFantasyPlate/swordFantasyPlate_mask_2048.webp?118=pv,404,169,text/html; charset=utf-8
+back,beautifulNightmareAlt,64,2048,mask,/static/herobundles/back/beautifulNightmareAlt/beautifulNightmareAlt_mask_2048.webp?65=pv,404,169,text/html; charset=utf-8
+chest,pistolDervishOuterAlt,32,2048,mask,/static/herobundles/chest/pistolDervishOuterAlt/pistolDervishOuterAlt_mask_2048.webp?33=pv,404,169,text/html; charset=utf-8
+chest,swashBucklerOuterAlt,107,2048,mask,/static/herobundles/chest/swashBucklerOuterAlt/swashBucklerOuterAlt_mask_2048.webp?108=pv,404,169,text/html; charset=utf-8
+feetR,heelMedTallArmorSlimNoKnee,12,2048,mask,/static/herobundles/feetR/heelMedTallArmorSlimNoKnee/heelMedTallArmorSlimNoKnee_mask_2048.webp?13=pv,404,169,text/html; charset=utf-8
