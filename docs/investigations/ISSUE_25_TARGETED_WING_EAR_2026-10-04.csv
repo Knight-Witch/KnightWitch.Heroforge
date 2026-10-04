@@ -1,0 +1,7 @@
+fixture,config_id,host,source_id,source_family,source_name,metadata_bake_size,source_max_verified_http,native_packed,trial_packed,trial_atlas_scale,source_repeats,source_sharing,assessment
+Shaelynn Nude v3,537074906,k_78,21569,earSharedR,human,512,512,256,256,4,2,source shared; atlas rectangle distinct,within-figure control
+Shaelynn Nude v3,537074906,k_80,21569,earSharedR,human,512,512,256,512,8,2,source shared; atlas rectangle distinct,live transient trial; visual result pending
+D5 Wings Copy,58790613,humanWing1L,22326,wingSharedR,griffonOpen,1024,1024,1024,1024,4,1,separate sided source and atlas rectangle,already at verified source ceiling
+D5 Wings Copy,58790613,humanWing1R,22325,wingSharedR,griffonOpen,1024,1024,1024,1024,4,1,separate sided source and atlas rectangle,already at verified source ceiling
+D5 Wings Copy,58790613,humanWing2L,22332,wingSharedR,griffonClosed,1024,1024,1024,1024,4,1,separate sided source and atlas rectangle,already at verified source ceiling
+D5 Wings Copy,58790613,humanWing2R,22331,wingSharedR,griffonClosed,1024,1024,1024,1024,4,1,separate sided source and atlas rectangle,already at verified source ceiling

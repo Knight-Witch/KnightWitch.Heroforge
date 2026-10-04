@@ -2,7 +2,7 @@
 
 ## Latest repository change — 2026-10-04
 
-- #25 documentation: record patched automatic Bath/Wilds ON gates, Riptide/Shaelynn instance packing, and the Riptide three-host CPU/live candidate gain. Exclude Aowyn's failed/deleted URL from the matrix and retain Bath OFF restore warning under #34-adjacent investigation.
+- #25 documentation: correct Shaelynn wing interpretation (those KB wings are tiny eyelashes), record the guarded human-ear 256→512 one-side trial and D5's four 1024-ceiling wings, and route Wilds/Viper/Counting Sheep as the next user-selected fixtures. The source-specific 512/1024 and 1024/2048 HTTP results constrain per-host promotion.
 - No runtime/module/manifest/public behavior changed.
 
 ## Latest Stable context
