@@ -1,13 +1,13 @@
-# Changelog
+﻿# Changelog
 
 ## Latest repository change — 2026-10-05
 
-- Canonical Dev runtime commit `159caea74078d2533bcdb1d238a5f68095b321fc` corrected HFJSON targets for HF Core Tweaks, Full Res Decals, Advanced Decal Posing, 2000 kitbash parts, and Camera Control Modifier to Amanda's exact supplied GitGud install URLs while preserving stable semantic `/HFJSON/` aliases.
-- Added `reck-for-hero-forge.user.js`, redirecting to the upstream ReCK GitHub latest-release userscript. Extra Slots and Photo Booth Shader Fix targets are unchanged.
-- Local route-contract tests pass 12/12. Direct smoke confirmed all six supplied upstream targets return HTTP 200.
-- Live-edge inspection found deployment `1d07135d-62f9-4b49-b593-3ad4c537e7bc` still serves `/health` and Stable refs but returns 404 for `/HFJSON/` and a known Full Res alias. The missing live alias namespace is confirmed; the cause of the deployment drift is not established.
-- The public `witchdock-runtime` edge has not been redeployed during this task. Explicit approval remains required before restoring/correcting the live alias routes.
-- This follow-up commit is documentation-only and changes no additional runtime/module/manifest/public behavior.
+- Canonical Dev runtime commit `159caea74078d2533bcdb1d238a5f68095b321fc` corrected the HFJSON alias map and added the ReCK alias; follow-up documentation recorded the pre-deploy edge drift.
+- Amanda explicitly authorized making the public `/HFJSON/` aliases reroute users to their authoritative upstream script targets.
+- Deployed `witchdock-runtime` Worker version `7b50ece3-addb-4e82-a847-f2a64bb07e1c` to `witchdock.knightwitch.dev`; no Stable launcher/module/manifest bytes changed.
+- Production smoke: all eight semantic aliases return HTTP 307 with `Cache-Control: no-store` and the expected `Location`; Full Res, Extra Slots, and ReCK follow through to upstream HTTP 200 targets.
+- The previously observed live HFJSON 404 namespace failure is resolved. The cause of the superseded deployment drift was not established.
+- Paired HF.Status ReCK/resource metadata remains Dev-live; this deployment did not promote unrelated HF.Status production changes.
 
 ## Latest Stable context
 
