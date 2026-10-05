@@ -1,9 +1,11 @@
 # Changelog
 
-## Latest repository change — 2026-10-04
+## Latest repository change — 2026-10-05
 
-- #25 documentation: record patched automatic Bath/Wilds ON gates, Riptide/Shaelynn instance packing, and the Riptide three-host CPU/live candidate gain. Exclude Aowyn's failed/deleted URL from the matrix and retain Bath OFF restore warning under #34-adjacent investigation.
-- No runtime/module/manifest/public behavior changed.
+- Corrected canonical Dev HFJSON redirect targets for HF Core Tweaks, Full Res Decals, Advanced Decal Posing, 2000 kitbash parts, and Camera Control Modifier to Amanda's exact supplied GitGud install URLs while preserving the stable semantic `/HFJSON/` aliases.
+- Added `reck-for-hero-forge.user.js`, redirecting to the upstream ReCK GitHub latest-release userscript. Extra Slots and Photo Booth Shader Fix targets are unchanged.
+- Updated the runtime delivery policy to describe both GitGud- and GitHub-backed external aliases. Local runtime tests pass all 8 aliases plus root redirect, HEAD/case handling, health, and unknown-alias 404 behavior.
+- This is canonical Dev source only. The public `witchdock-runtime` edge has not been redeployed; no Stable launcher/module/manifest behavior changed yet.
 
 ## Latest Stable context
 

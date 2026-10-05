@@ -1,10 +1,16 @@
 # Active Context — WITCH_DEV_MAIN
 
-**Updated:** 2026-10-04 UTC
+**Updated:** 2026-10-05 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.16.2 / `1.16.2-texture-owned-lifecycle`, immutable payload `b84bc4140a34dad91c67fd3c453cad0d903364e9`
 **Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, current ref `c518402f40e487b1840444efd8948fdff4968998` (separate legacy-wrapper compatibility commit; payload unchanged)
 
 These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).
+
+## Current bounded delivery correction
+
+- HFJSON canonical Dev routing is being corrected to Amanda's exact upstream install targets for HF Core Tweaks, Full Res Decals, Advanced Decal Posing, 2000 kitbash parts, and Camera Control Modifier, while preserving the stable `/HFJSON/` aliases published by HF.Status.
+- A new stable alias `reck-for-hero-forge.user.js` routes to ReCK's upstream GitHub latest-release userscript. Extra Slots and Photo Booth Shader Fix targets remain unchanged because no replacement targets were supplied.
+- This is Dev source only until explicit public-edge deployment approval. No Stable launcher/module/manifest change is included; paired HF.Status registry/resource metadata is handled in HF.Status `dev`.
 
 ## Active routes and next gates
 

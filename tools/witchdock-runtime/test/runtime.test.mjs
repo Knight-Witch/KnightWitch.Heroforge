@@ -4,13 +4,14 @@ import worker from "../src/index.js";
 
 const base = "https://witchdock.knightwitch.dev";
 const cases = [
-  ["2000-kitbash-parts.user.js", "2000_kitbash_parts-0.4.user.js"],
-  ["advanced-decal-posing.user.js", "Advanced_Decal_Posing-0.2.user.js"],
-  ["camera-control-modifier.user.js", "Camera_Control_Modifier-2025-03-19.user.js"],
-  ["full-res-decals.user.js", "FullResDecals.user.js"],
-  ["hf-core-tweaks.user.js", "HF%20Core%20Tweaks.user.js"],
-  ["extra-slots.user.js", "I_love_extra_slots-0.2.user.js"],
-  ["photo-booth-shader-fix.user.js", "Shader_Fix_for_Photo_Booth-2025-03-20.user.js"],
+  ["2000-kitbash-parts.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/2000_kitbash_parts-0.4.user.js?ref_type=heads&inline=false", "hfjson-gitgud"],
+  ["advanced-decal-posing.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/Advanced_Decal_Posing-0.2.user.js?ref_type=heads&inline=false", "hfjson-gitgud"],
+  ["camera-control-modifier.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/Camera_Control_Modifier-2025-03-19.user.js?ref_type=heads&inline=false", "hfjson-gitgud"],
+  ["full-res-decals.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/FullResDecals.user.js?ref_type=heads&inline=false", "hfjson-gitgud"],
+  ["hf-core-tweaks.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/HF%20Core%20Tweaks.user.js?ref_type=heads&inline=false", "hfjson-gitgud"],
+  ["extra-slots.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/I_love_extra_slots-0.2.user.js", "hfjson-gitgud"],
+  ["photo-booth-shader-fix.user.js", "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/Shader_Fix_for_Photo_Booth-2025-03-20.user.js", "hfjson-gitgud"],
+  ["reck-for-hero-forge.user.js", "https://github.com/arm32x/hero-forge-reck/releases/latest/download/hero-forge-reck.user.js", "hfjson-github"],
 ];
 
 test("health contract is unchanged", async () => {
@@ -31,20 +32,20 @@ test("HFJSON root temporarily redirects to Lob GitGud", async () => {
   assert.equal(response.headers.get("cache-control"), "no-store");
 });
 
-for (const [alias, upstreamFile] of cases) {
+for (const [alias, upstreamUrl, expectedOrigin] of cases) {
   test(`HFJSON ${alias} redirects to the current upstream script`, async () => {
     const response = await worker.fetch(new Request(`${base}/HFJSON/${alias}`), { redirect: "manual" });
     assert.equal(response.status, 307);
-    assert.equal(response.headers.get("location"), `https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/${upstreamFile}`);
+    assert.equal(response.headers.get("location"), upstreamUrl);
     assert.equal(response.headers.get("cache-control"), "no-store");
-    assert.equal(response.headers.get("x-witchdock-origin"), "hfjson-gitgud");
+    assert.equal(response.headers.get("x-witchdock-origin"), expectedOrigin);
   });
 }
 
 test("HFJSON aliases are case-insensitive and support HEAD", async () => {
   const response = await worker.fetch(new Request(`${base}/hfjson/FULL-RES-DECALS.USER.JS`, { method: "HEAD" }));
   assert.equal(response.status, 307);
-  assert.equal(response.headers.get("location"), "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/FullResDecals.user.js");
+  assert.equal(response.headers.get("location"), "https://gitgud.io/GasStationTweaker/hf-scripts-public/-/raw/master/FullResDecals.user.js?ref_type=heads&inline=false");
   assert.equal(await response.text(), "");
 });
 

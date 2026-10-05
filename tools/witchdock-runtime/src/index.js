@@ -8,13 +8,14 @@ const BRANCHES = Object.freeze({
 
 const HFJSON_UPSTREAM = "https://gitgud.io/GasStationTweaker/hf-scripts-public";
 const HFJSON_ROUTES = Object.freeze({
-  "2000-kitbash-parts.user.js": `${HFJSON_UPSTREAM}/-/raw/master/2000_kitbash_parts-0.4.user.js`,
-  "advanced-decal-posing.user.js": `${HFJSON_UPSTREAM}/-/raw/master/Advanced_Decal_Posing-0.2.user.js`,
-  "camera-control-modifier.user.js": `${HFJSON_UPSTREAM}/-/raw/master/Camera_Control_Modifier-2025-03-19.user.js`,
-  "full-res-decals.user.js": `${HFJSON_UPSTREAM}/-/raw/master/FullResDecals.user.js`,
-  "hf-core-tweaks.user.js": `${HFJSON_UPSTREAM}/-/raw/master/HF%20Core%20Tweaks.user.js`,
+  "2000-kitbash-parts.user.js": `${HFJSON_UPSTREAM}/-/raw/master/2000_kitbash_parts-0.4.user.js?ref_type=heads&inline=false`,
+  "advanced-decal-posing.user.js": `${HFJSON_UPSTREAM}/-/raw/master/Advanced_Decal_Posing-0.2.user.js?ref_type=heads&inline=false`,
+  "camera-control-modifier.user.js": `${HFJSON_UPSTREAM}/-/raw/master/Camera_Control_Modifier-2025-03-19.user.js?ref_type=heads&inline=false`,
+  "full-res-decals.user.js": `${HFJSON_UPSTREAM}/-/raw/master/FullResDecals.user.js?ref_type=heads&inline=false`,
+  "hf-core-tweaks.user.js": `${HFJSON_UPSTREAM}/-/raw/master/HF%20Core%20Tweaks.user.js?ref_type=heads&inline=false`,
   "extra-slots.user.js": `${HFJSON_UPSTREAM}/-/raw/master/I_love_extra_slots-0.2.user.js`,
   "photo-booth-shader-fix.user.js": `${HFJSON_UPSTREAM}/-/raw/master/Shader_Fix_for_Photo_Booth-2025-03-20.user.js`,
+  "reck-for-hero-forge.user.js": "https://github.com/arm32x/hero-forge-reck/releases/latest/download/hero-forge-reck.user.js",
 });
 
 function commonHeaders(origin, cacheControl, contentType) {
@@ -198,7 +199,8 @@ function hfJsonRedirect(pathname, requestMethod) {
   const target = Object.entries(HFJSON_ROUTES).find(([key]) => key.toLowerCase() === alias)?.[1];
   if (!target) return new Response("HF JSON delivery alias not found", { status: 404 });
 
-  const headers = commonHeaders("hfjson-gitgud", "no-store");
+  const origin = target.startsWith("https://github.com/") ? "hfjson-github" : "hfjson-gitgud";
+  const headers = commonHeaders(origin, "no-store");
   headers.set("Location", target);
   headers.set("X-WitchDock-Delivery-Alias", alias);
   return new Response(requestMethod === "HEAD" ? null : null, { status: 307, headers });
