@@ -10,7 +10,8 @@ These are source identities, not a new live runtime validation. Current module v
 
 - HFJSON canonical Dev routing is being corrected to Amanda's exact upstream install targets for HF Core Tweaks, Full Res Decals, Advanced Decal Posing, 2000 kitbash parts, and Camera Control Modifier, while preserving the stable `/HFJSON/` aliases published by HF.Status.
 - A new stable alias `reck-for-hero-forge.user.js` routes to ReCK's upstream GitHub latest-release userscript. Extra Slots and Photo Booth Shader Fix targets remain unchanged because no replacement targets were supplied.
-- This is Dev source only until explicit public-edge deployment approval. No Stable launcher/module/manifest change is included; paired HF.Status registry/resource metadata is handled in HF.Status `dev`.
+- This is Dev source only until explicit public-edge deployment approval. Live smoke on 2026-10-05 confirmed the current edge deployment `1d07135d-62f9-4b49-b593-3ad4c537e7bc` still serves `/health` and Stable refs but returns 404 for `/HFJSON/` and a known Full Res alias. The missing live alias namespace is confirmed; the cause of that deployment drift is not yet established.
+- No Stable launcher/module/manifest change is included; paired HF.Status registry/resource metadata is Dev-live and validated.
 
 ## Active routes and next gates
 
@@ -24,7 +25,7 @@ These are source identities, not a new live runtime validation. Current module v
 
 ## Recently released
 
-- #104 HFJSON delivery aliases are live at `https://witchdock.knightwitch.dev/HFJSON/`; seven active Lob/HF JSON aliases currently redirect to GitGud. Paired HF.Status #89 is production-live and validated. The completed `wd/104-hfjson-delivery` branch was deleted from GitHub at exact queued SHA `7af8245e63e6fbe359542e26885a6b2f61106c1e`; Bitbucket recovery never carried that temporary ref.
+- #104 HFJSON alias source implementation and paired HF.Status #89 were completed, but the earlier live-edge claim is superseded: 2026-10-05 smoke found the current Worker deployment returning 404 for the HFJSON namespace. Canonical Dev `159caea74078d2533bcdb1d238a5f68095b321fc` contains the restored/corrected alias map pending explicit edge deployment approval. The completed `wd/104-hfjson-delivery` branch was deleted from GitHub at exact queued SHA `7af8245e63e6fbe359542e26885a6b2f61106c1e`; Bitbucket recovery never carried that temporary ref.
 - #90 and #97 shipped to public Stable v2.4.0. Script Status uses `https://status.knightwitch.dev`; integrated reporting uses Witch Dock-specific capabilities, contextual source preservation, General diagnostics/evidence, and HFBR receipts.
 - Stable launcher/update/ref/payload delivery is provider-independent through `https://witchdock.knightwitch.dev`. GitHub and Bitbucket `Witch_Scripts` histories match exactly through the public release.
 - Release notice formatting is v0.3.1 / `0.3.1-formatted-bug-reporting-notice`; the overview and expanded content use native headings and bullet lists.
