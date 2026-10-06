@@ -347,6 +347,16 @@
       "versionOrigin": "issue-25-external-scale-ownership-2026-10-04"
     },
     {
+      "id": "texture-quality-all-part-promotion",
+      "title": "Texture Quality All-Part Promotion",
+      "path": "features/rendering/Texture_Quality_All_Part_Promotion.js",
+      "kind": "feature-service",
+      "load": "manifest",
+      "version": "0.1.0",
+      "build": "0.1.0-budgeted-normal-promotion",
+      "versionOrigin": "issue-25-budgeted-normal-promotion-2026-10-06"
+    },
+    {
       "id": "texture-quality-native-reconcile-ui",
       "title": "Texture Quality Native Reconcile UI",
       "path": "features/rendering/Texture_Quality_Native_Reconcile_UI.js",
@@ -695,6 +705,15 @@
       "title": "Texture Quality Active Decal Priority",
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Active_Decal_Priority.js?v=0.1.2-preserve-external-scales",
+      "enabledByDefault": true,
+      "hidden": true,
+      "type": "heroForgeUI"
+    },
+    {
+      "id": "texture-quality-all-part-promotion",
+      "title": "Texture Quality All-Part Promotion",
+      "tab": "HeroForge UI",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_All_Part_Promotion.js?v=0.1.0-budgeted-normal-promotion",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
