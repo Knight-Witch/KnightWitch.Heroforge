@@ -12,5 +12,6 @@
 - PASS: `node --check`, JSON parsing, and `git diff --check` pass.
 - PASS: focused VM tests pass 13/13 across all-part coverage plus existing Texture Quality ownership/readiness regressions.
 - PASS: HF.Status feature-registry impact gate checked on `HF.Status:dev`; no new reporter-facing feature ID/path is created because this is an internal service under the existing Texture Quality feature.
-- PENDING: canonical Dev immutable-payload pairing and required seven-fixture HF-Chat-Bridge live regression matrix.
+- PASS: Dev launcher header/runtime and manifest registry are synchronized at v1.17.0 / `1.17.0-all-part-promotion` for the payload candidate.
+- PENDING: after this candidate commit exists, pin the Dev launcher to that exact immutable payload SHA, then run the required seven-fixture HF-Chat-Bridge live regression matrix.
 - No Stable/public promotion is authorized or performed.

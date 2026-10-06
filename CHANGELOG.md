@@ -7,6 +7,7 @@
 - Apply only owned scale/_usedTextureSize/normal changes, reject any native repack that downsizes existing hosts, isolate optional failures, and restore exact owned state without overwriting later outside edits.
 - Add focused VM regression coverage for parsing, target selection, cache reuse, repeated-instance budgeting/downgrade, collateral detection, rollback/outside edits, failure isolation, multi-display enumeration, and disposal. Focused suite passes 13/13.
 - Branch was synchronized with current WITCH_DEV_MAIN (0e6717a2396106480adbc7c0c4c9dccb13704402) before implementation. HF.Status feature-registry check found no new reporter-facing feature ID/path; this remains internal support for existing Texture Quality.
+- Dev delivery preparation: advance Dev launcher metadata/manifest registry to v1.17.0 / `1.17.0-all-part-promotion`; the immutable payload ref remains on the prior payload only until this candidate commit exists, then the follow-up pairing commit will pin this exact candidate.
 - Dev-only. No Stable launcher/module/manifest edit or public promotion.
 
 ## Latest Stable context
