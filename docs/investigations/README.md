@@ -21,7 +21,7 @@ Accepted architecture belongs in existing decision/contract homes; implementatio
 
 | Scope | Canonical record / disposition |
 |---|---|
-| #25 / #7 — High Res host coverage and native connection warning | [#25 coverage closure](ISSUE_25_COVERAGE_CLOSURE_2026-10-04.md), [prior source/packing and #7 evidence](ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md). Recovery completed; sole active #25 branch `wd/25-texture-coverage`. #7 awaits an actual warning transition; no new warning trial needed for #25. |
+| #25 / #7 — High Res host coverage and native connection warning | [#25 Dev implementation handoff](ISSUE_25_DEV_IMPLEMENTATION_HANDOFF_2026-10-06.md), [coverage closure](ISSUE_25_COVERAGE_CLOSURE_2026-10-04.md), and [prior source/packing and #7 evidence](ISSUES_25_7_HIGH_RES_AND_CONNECTION_2026-10-03.md). #25's mechanism/census investigation is complete enough for bounded Dev implementation on sole branch `wd/25-texture-coverage`; do not repeat it. #7 separately awaits an actual warning transition. |
 | #34 — HR false restore warning / native mask verification | [Issue #34](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34). Compare expected-size/shared-cache hypotheses using retained pre-cleanup state. Do not equate visually valid restoration with a proved verifier cause. |
 | #24 — HR ON→OFF body tint | [Issue #24](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/24), closed/shipped. [Old broad plan](ISSUE_24_TEXTURE_REGRESSION_PLAN_2026-09-22.md) and [failed-release reopen handoff](ISSUE_24_REOPEN_HANDOFF_2026-09-24.md) are non-executable provenance. |
 | #32 — HR body paint-zone collapse | [Issue #32](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/32), shipped; do not fold into #24/#34. |
