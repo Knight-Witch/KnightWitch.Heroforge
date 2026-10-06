@@ -1,11 +1,9 @@
-# Pre-Flight Check
+﻿# Pre-Flight Check
 
-## 2026-10-06 — #25 census closure and Dev handoff
+## 2026-10-06 — #25 branch synchronization before implementation
 
-- PASS: existing ACTIVE PROTECTED `wd/25-texture-coverage` used; no new branch or branch classification change.
-- PASS: seven-fixture census covered 542 rendered meshes/parts and 542 normal bindings across eight displays. It found 515 direct source-path bindings, 27 expected derived body/face outputs, 398 upgradeable instances, and no alternate/no-normal/mesh-only/part-only capture omissions.
-- PASS: candidate maxima reconcile to 398 instances: 38 at 256, 184 at 512, 156 at 1024, 7 at 2048, and 13 at 4096.
-- PASS: generic Aowyn `campFireModern` probe reached a 512 normal source and 512×512 allocation from a 32/32×32 baseline; exact final restoration read back scale `0.04`, `_usedTextureSize=32`, 32×32 allocation, healthy 4096² service, and no error (#4437–#4451).
-- PASS: selective-policy pressure calculation identifies unsafe blanket application: Viper 2.9%, Brandis 11.8%, Counting Sheep 12.3%, Wilds 27.7%, Aowyn 39.8%, Shaelynn 50.7%, and D5 77.5% additional atlas area. D5's 50 repeated `horseLong` hosts alone account for about 9.38 MP.
-- PASS: current route distinguishes implementation requirements from human calibration and Stable release gates. No further pre-build census is required; #7 remains separately unresolved.
-- No runtime/module/manifest/public behavior changed. No branch classification change or Stable change.
+- PASS: live `wd/25-texture-coverage` head was verified at `85a0644466c82b928daa10f53498f4e586215f4c` and live `WITCH_DEV_MAIN` at `0e6717a2396106480adbc7c0c4c9dccb13704402` before integration.
+- PASS: reused the registered ACTIVE PROTECTED `wd/25-texture-coverage` branch; no duplicate branch or branch lifecycle change.
+- PASS: merged current `WITCH_DEV_MAIN` into the existing #25 branch and resolved only the three expected rolling-record conflicts (`ACTIVE_CONTEXT.md`, `CHANGELOG.md`, `PRE_FLIGHT_Check.md`).
+- PASS: #25 implementation handoff/census evidence remains present and authoritative for this branch; canonical Dev HFJSON runtime source/tests are carried forward unchanged.
+- No Stable launcher/module/manifest change or public promotion was made by this synchronization checkpoint.
