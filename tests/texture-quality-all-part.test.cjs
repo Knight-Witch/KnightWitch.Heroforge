@@ -13,10 +13,15 @@ function texture(url, size) {
   return { image: { src: url, width: size, height: size }, url };
 }
 
-function coreService({ onReconcile = null, onDisable = null } = {}) {
+function coreService({
+  onReconcile = null,
+  onDisable = null,
+  initialEnabled = false,
+  initialBusy = false
+} = {}) {
   const core = {
-    enabled: false,
-    busy: false,
+    enabled: initialEnabled,
+    busy: initialBusy,
     enable: async () => { core.enabled = true; return true; },
     disable: async () => {
       if (onDisable) await onDisable(core);
@@ -345,6 +350,35 @@ test('source-only promotion skips density reconcile and leaves used texture size
   assert.equal(fixture.uv.a.z * fixture.atlas.width, 512);
   assert.equal(fixture.meshes.a.material.uniforms.normalMap.value.image.width, 512);
   assert.equal(h.api.getState().activeBindings, 1);
+});
+
+test('attach while core is busy defers exactly one initial coverage pass until refresh-ready', async () => {
+  const fixture = displayFixture({ keys: ['bodyLower'] });
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    coreOptions: { initialEnabled: true, initialBusy: true }
+  });
+
+  let state = h.api.getState();
+  assert.equal(state.initialCoveragePending, true);
+  assert.equal(state.lastRun.trigger, 'idle');
+
+  h.core.busy = false;
+  h.core.refresh();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  state = h.api.getState();
+  assert.equal(state.initialCoveragePending, false);
+  assert.equal(state.lastRun.trigger, 'attach-ready');
+  assert.equal(state.busy, false);
+  assert.equal(state.queued, false);
+
+  const startedAt = state.lastRun.startedAt;
+  for (let i = 0; i < 8; i += 1) h.core.refresh();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(h.api.getState().lastRun.startedAt, startedAt);
 });
 
 test('external data.change is debounced into one coverage pass', async () => {

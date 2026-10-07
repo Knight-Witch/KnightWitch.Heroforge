@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.3
+// @version      0.1.4
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.3';
-  const BUILD = '0.1.3-data-change-observer';
+  const VERSION = '0.1.4';
+  const BUILD = '0.1.4-deferred-initial-coverage';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -42,6 +42,7 @@
   let changeDirtyAt = 0;
   let changeDirtyReason = null;
   let changeObservers = [];
+  let initialCoveragePending = true;
   let lastError = null;
   let lastRun = emptyRun('idle');
   let lastRestored = [];
@@ -994,6 +995,7 @@
     if (disposed || !service || !service.enabled || service.busy || lifecycleBlocked()) return false;
     if (running) return running;
 
+    initialCoveragePending = false;
     running = (async () => {
       const run = emptyRun(trigger);
       run.startedAt = Date.now();
@@ -1110,13 +1112,19 @@
       enable: async (...args) => {
         const ok = await withChangeSuppressed(() => originals.enable.apply(candidate, args));
         syncChangeObservers();
-        if (ok && candidate.enabled && !candidate.busy) await runCoverage('enable');
+        if (ok && candidate.enabled && !candidate.busy) {
+          initialCoveragePending = false;
+          await runCoverage('enable');
+        }
         return ok;
       },
       reconcile: async (...args) => {
         const ok = await withChangeSuppressed(() => originals.reconcile.apply(candidate, args));
         syncChangeObservers();
-        if (ok && candidate.enabled && !candidate.busy) await runCoverage('reconcile');
+        if (ok && candidate.enabled && !candidate.busy) {
+          initialCoveragePending = false;
+          await runCoverage('reconcile');
+        }
         return ok;
       },
       disable: async (...args) => {
@@ -1138,7 +1146,13 @@
           void restoreActive(false, 'refresh-off');
           return state;
         }
-        if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) queuePendingChange();
+        if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
+          if (initialCoveragePending) {
+            if (queueCoverage('attach-ready')) initialCoveragePending = false;
+          } else {
+            queuePendingChange();
+          }
+        }
         return state;
       }
     };
@@ -1150,7 +1164,9 @@
     candidate.refresh = wrappers.refresh;
 
     syncChangeObservers();
-    if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) queueCoverage('attach');
+    if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
+      if (queueCoverage('attach')) initialCoveragePending = false;
+    }
     return true;
   }
 
@@ -1176,6 +1192,7 @@
       negativeCache: negativeCache.size,
       inFlight: inFlight.size,
       activeBindings: active ? active.selected.length : 0,
+      initialCoveragePending,
       changePending: changeDirty,
       changeObserverCount: changeObservers.length,
       changeSuppressed: changeSuppression > 0,
@@ -1199,6 +1216,7 @@
 
     for (let index = changeObservers.length - 1; index >= 0; index -= 1) restoreChangeObserver(changeObservers[index]);
     changeObservers = [];
+    initialCoveragePending = false;
     changeDirty = false;
     changeDirtyAt = 0;
     changeDirtyReason = null;
@@ -1218,7 +1236,13 @@
     refresh: () => {
       if (!service) attach();
       syncChangeObservers();
-      if (service && service.enabled && !service.busy && !lifecycleBlocked()) queuePendingChange();
+      if (service && service.enabled && !service.busy && !lifecycleBlocked()) {
+        if (initialCoveragePending) {
+          if (queueCoverage('attach-ready')) initialCoveragePending = false;
+        } else {
+          queuePendingChange();
+        }
+      }
       return state();
     },
     reconcile: () => runCoverage('manual-reconcile'),
