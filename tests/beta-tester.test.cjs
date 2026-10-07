@@ -370,3 +370,63 @@ test("beta diagnostic provider reports bounded state, not module source bytes", 
   assert.equal(JSON.stringify(result).includes("function activate"), false);
   assert.equal(result.summary.moduleCount, 0);
 });
+
+
+test("real smoke module reports bounded state and deactivates live", async () => {
+  const smokeSource = fs.readFileSync(
+    path.join(__dirname, "../beta/modules/Beta_Channel_Smoke.js"),
+    "utf8"
+  );
+  const manifest = {
+    schemaVersion: 1,
+    channel: "public-beta",
+    revision: 2,
+    minimumStableVersion: "2.4.2",
+    reporting: {
+      productId: "witch-dock",
+      groupId: "wd-beta-qa",
+      featureId: "public-beta-testing",
+      diagnosticProviderId: "beta-tester"
+    },
+    modules: [{
+      id: "beta-channel-smoke",
+      title: "Beta Channel Smoke Test",
+      version: "0.1.0",
+      build: "0.1.0-public-beta-smoke",
+      status: "active",
+      defaultEnabled: true,
+      payloadRef: SHA,
+      path: "beta/modules/Beta_Channel_Smoke.js",
+      diagnosticProviderIds: []
+    }]
+  };
+  const key = SHA + "/beta/modules/Beta_Channel_Smoke.js";
+  const h = harness({
+    manifest,
+    masterEnabled: true,
+    moduleSources: { [key]: smokeSource }
+  });
+  await tick(30);
+
+  let state = h.window.KWWitchDockBetaTester.getState();
+  assert.equal(state.activeCount, 1);
+  assert.equal(state.modules[0].id, "beta-channel-smoke");
+  assert.equal(state.modules[0].active, true);
+
+  const provider = h.providers.get("beta-tester");
+  const before = await provider.capture();
+  const moduleState = before.sections.modules[0].moduleState;
+  assert.equal(moduleState.active, true);
+  assert.equal(moduleState.activationCount, 1);
+
+  assert.equal(
+    await h.window.KWWitchDockBetaTester.setModuleEnabled("beta-channel-smoke", false),
+    true
+  );
+  state = h.window.KWWitchDockBetaTester.getState();
+  assert.equal(state.modules[0].active, false);
+
+  const after = await provider.capture();
+  assert.equal(after.sections.modules[0].moduleState.active, false);
+  assert.equal(after.sections.modules[0].moduleState.deactivationCount, 1);
+});
