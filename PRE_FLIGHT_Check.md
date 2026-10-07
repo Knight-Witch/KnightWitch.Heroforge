@@ -12,5 +12,6 @@
 - PASS: stale figure observers restore exactly, replacement/current figure data is observed, and outside method replacement survives disposal.
 - PASS: v0.1.1 density/source/rollback behavior remains intact: owned Native Reconcile density, no generic used-size forcing, source-only no-repack, current-live-scene rollback, and outside-edit preservation.
 - PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 18/18, inherited runtime-delivery 12/12, manifest/divergence validation, and git diff check.
-- PENDING: new immutable Dev payload pairing and recovery parity, then Counting Sheep anti-loop proof and remaining fixture/lifecycle regression.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.3 / `1.17.3-data-change-observer`; the prior payload pin is intentionally retained until the payload candidate commit exists.
+- PENDING: pin the exact candidate SHA, verify recovery parity, then Counting Sheep anti-loop proof and remaining fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.
