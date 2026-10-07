@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev v1.17.3 / `1.17.3-data-change-observer` currently pins immutable payload `7fd83e93ce2b615c02ec42e7df1e4ed10ee657b4` containing all-part v0.1.3. v0.1.4 must receive a new immutable Dev payload before live revalidation.
+Dev v1.17.4 / `1.17.4-deferred-initial-coverage` payload candidate is being prepared from the validated v0.1.4 tree. The launcher intentionally retains the prior v1.17.3 payload pin until this candidate commit exists.
