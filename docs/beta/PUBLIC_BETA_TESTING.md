@@ -170,3 +170,16 @@ The next correction does not relax that guard. All-part v0.1.14 / `0.1.14-native
 If the native shadow builder is unavailable, the old direct `CK.Atlas` path remains only as a bounded fallback. Existing post-rebuild collateral detection and exact rollback are unchanged.
 
 Regression coverage includes both directions: a native shadow build that preserves an unrelated 128 baseline permits the shield-style 512 plan, while a native shadow build that would shrink that unrelated slot rejects/downgrades the 512 candidate before mutation. Focused all-part/ownership/Beta tests pass 42/42. The Stable-compatible wrapper is v0.1.2 / `0.1.2-native-shadow-preflight`.
+
+
+### Manifest revision 5 native-shadow machine gate
+
+Revision 5 replaces the failed r4 Phase 2 package with:
+
+- version/build: v0.1.2 / `0.1.2-native-shadow-preflight`
+- immutable payload: `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`
+- embedded all-part: v0.1.14 / `0.1.14-native-shadow-preflight`
+- `defaultEnabled: false`
+- Stable minimum v2.4.2.
+
+Amanda's saved local preference remains ON, so one controlled manifest refresh may replace and activate r5 automatically. Treat that refresh at-most-once and read back before any retry. Required proof: module must settle active without post-rebuild collateral failure; both bird-shield families and `fanBattle` must receive the selected density or be explicitly downgraded by the native-shadow planner; unrelated allocations must remain non-regressed; then perform rollback/settle and re-enable before human visual confirmation.
