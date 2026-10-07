@@ -28,7 +28,7 @@
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "WITCH_DEV_MAIN";
-  const PAYLOAD_REF = "297dd62e0ea5686a36407edb52c02241c2a656da";
+  const PAYLOAD_REF = "0a4b5a8de4eb825c881f5ecf21d236f202c08004";
   const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;

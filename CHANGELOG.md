@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.2 / `1.17.2-stable-asset-sync` payload candidate is being prepared from the validated v0.1.2 tree. The launcher intentionally retains the prior v1.17.1 payload pin until this candidate commit exists.
+Dev v1.17.2 / `1.17.2-stable-asset-sync` is paired to immutable payload `0a4b5a8de4eb825c881f5ecf21d236f202c08004`, containing all-part v0.1.2 / `0.1.2-stable-asset-scene-sync`.

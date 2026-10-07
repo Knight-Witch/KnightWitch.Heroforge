@@ -11,5 +11,6 @@
 - PASS: v0.1.1 density/source/rollback corrections remain intact: no generic used-size forcing, owned Native Reconcile density, source-only no-repack, current-live-scene rollback, outside-edit preservation.
 - PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 17/17, inherited runtime-delivery 12/12, manifest/divergence validation, and git diff check.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.2 / `1.17.2-stable-asset-sync`; the prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact candidate SHA, verify recovery parity, then Counting Sheep anti-loop proof and remaining seven-fixture/lifecycle regression.
+- PASS: Dev launcher pins exact immutable v1.17.2 payload candidate `0a4b5a8de4eb825c881f5ecf21d236f202c08004`; candidate manifest contains all-part v0.1.2 / `0.1.2-stable-asset-scene-sync`.
+- PENDING: verify recovery parity, then Counting Sheep anti-loop proof and remaining seven-fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.
