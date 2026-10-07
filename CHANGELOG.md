@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev v1.17.1 / `1.17.1-all-part-stability` currently pins immutable payload `297dd62e0ea5686a36407edb52c02241c2a656da` containing all-part v0.1.1. v0.1.2 must receive a new immutable Dev payload before live revalidation.
+Dev v1.17.2 / `1.17.2-stable-asset-sync` payload candidate is being prepared from the validated v0.1.2 tree. The launcher intentionally retains the prior v1.17.1 payload pin until this candidate commit exists.
