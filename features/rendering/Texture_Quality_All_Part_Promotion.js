@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.6
+// @version      0.1.7
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.6';
-  const BUILD = '0.1.6-native-packing-preflight';
+  const VERSION = '0.1.7';
+  const BUILD = '0.1.7-native-ideal-priority';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -289,15 +289,22 @@
     return 0;
   }
 
+  function nativeIdeal(part, fallback = 0) {
+    const values = [
+      part && part._idealTextureSize,
+      part && part.idealTextureSize,
+      part && part.idealTextureSizeLegacy,
+      part && part.textureSize
+    ].map(Number).filter((value) => Number.isFinite(value) && value > 0);
+    return values.length ? Math.max(...values) : Math.max(0, Number(fallback) || 0);
+  }
+
   function idealTarget(part, currentSource, allocation) {
     const values = [
       currentSource,
       allocation ? Math.max(allocation.width, allocation.height) : 0,
       part && part.bakeSize,
-      part && part._idealTextureSize,
-      part && part.idealTextureSize,
-      part && part.idealTextureSizeLegacy,
-      part && part.textureSize
+      nativeIdeal(part, currentSource)
     ].map(Number).filter((value) => Number.isFinite(value) && value > 0);
     const declared = values.length ? Math.max(...values) : currentSource;
     const normalized = normalizeTarget(declared) || currentSource;
@@ -508,6 +515,7 @@
           hosts: [],
           existingBySize: new Map(),
           desired: 0,
+          nativeIdeal: 0,
           maxAllocation: 0,
           uniqueKeys: new Set(),
           sourceCeiling: 0,
@@ -520,6 +528,7 @@
       group.hosts.push(host);
       group.uniqueKeys.add(host.key);
       group.desired = Math.max(group.desired, host.ideal);
+      group.nativeIdeal = Math.max(group.nativeIdeal, nativeIdeal(host.part, host.currentSource));
       group.maxAllocation = Math.max(group.maxAllocation, host.allocation.width, host.allocation.height);
       if (!group.existingBySize.has(host.currentSource)) {
         group.existingBySize.set(host.currentSource, { texture: host.texture, url: host.source });
@@ -529,9 +538,13 @@
   }
 
   function groupPriority(a, b) {
-    if (b.maxAllocation !== a.maxAllocation) return b.maxAllocation - a.maxAllocation;
+    if (b.nativeIdeal !== a.nativeIdeal) return b.nativeIdeal - a.nativeIdeal;
     if (a.uniqueKeys.size !== b.uniqueKeys.size) return a.uniqueKeys.size - b.uniqueKeys.size;
+    const aDeficit = a.desired / Math.max(1, a.maxAllocation);
+    const bDeficit = b.desired / Math.max(1, b.maxAllocation);
+    if (bDeficit !== aDeficit) return bDeficit - aDeficit;
     if (b.desired !== a.desired) return b.desired - a.desired;
+    if (b.maxAllocation !== a.maxAllocation) return b.maxAllocation - a.maxAllocation;
     return a.id.localeCompare(b.id);
   }
 
@@ -1269,6 +1282,7 @@
       },
       disable: async (...args) => {
         await restoreActive(false, 'disable');
+        initialCoveragePending = true;
         const result = await withChangeSuppressed(() => originals.disable.apply(candidate, args));
         releaseOwnedResources();
         return result;
@@ -1282,8 +1296,9 @@
       refresh: (...args) => {
         const state = originals.refresh.apply(candidate, args);
         syncChangeObservers();
-        if (!candidate.enabled && active) {
-          void restoreActive(false, 'refresh-off');
+        if (!candidate.enabled) {
+          initialCoveragePending = true;
+          if (active) void restoreActive(false, 'refresh-off');
           return state;
         }
         if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
@@ -1392,7 +1407,9 @@
     __test: {
       parseNormalSource,
       normalizeTarget,
+      nativeIdeal,
       idealTarget,
+      groupPriority,
       targetCost,
       restoreIfOwned,
       loadVariant,

@@ -2,14 +2,15 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.6 / `0.1.6-native-packing-preflight`.
-- Live v0.1.5 Counting Sheep performed exactly one deferred `attach-ready` pass and did not self-loop, but the area-only planner drove the primary 8192×4096 display to effectively full occupancy. HeroForge then globally reduced many selected and unselected allocations; the existing no-collateral verifier correctly rolled the pass back.
-- Runtime source confirms current native `modded.buildAtlas()` delegates to `new CK.Atlas(parts, undefined, undefined, undefined, data.isUHD(), data.atlasScale)`. `CK.Atlas` reduces a global packing factor in 0.05 steps until the pack fits, so summed rectangle area is not a sufficient predictor of safe native packing.
-- v0.1.6 keeps the fast area budget as a coarse filter, then preflights every prospective density selection through a detached native `CK.Atlas` using the exact current parts/UHD/scales. A candidate is accepted only when every baseline allocation survives and every selected host reaches its requested target within the existing 32 MP owned ceiling.
-- Unsafe higher targets are downgraded or skipped before any live mutation. Source-only promotions remain independent of the density preflight.
-- Focused Texture Quality VM tests pass 20/20, including a native-packer regression where 512 would shrink an unrelated host but 256 is selected safely with no live-state mutation. Inherited runtime-delivery tests pass 12/12.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.7 / `0.1.7-native-ideal-priority`.
+- Live v0.1.6 Counting Sheep passed deterministic native-packer selection: one `attach-ready` pass retained 38 active bindings, 7 deliberate downgrades, 33 skips, zero failures, and no error. The exact run timestamp stayed unchanged across the prior self-loop recurrence window.
+- Counting Sheep OFF restored all 83 all-part-owned normal/atlasScale/observed-used entries with `restored=true`, `outside=false`. Core then reported the existing bodyLower restore warning tracked separately by #34; #25 did not broaden into that defect.
+- Re-enabling core High Res exposed a #25 lifecycle gap: core returned healthy ON, but all-part stayed inactive because OFF had not re-armed the initial coverage obligation.
+- v0.1.7 re-arms one coverage obligation whenever core is disabled, so the next settled ON receives exactly one all-part pass.
+- v0.1.7 also ranks scarce-budget groups by HeroForge intrinsic ideal-texture metadata before repeat count and deficit. This prevents already-large low-intrinsic-detail allocations from receiving priority merely because they are already large, while retaining the v0.1.6 detached native `CK.Atlas` no-collateral preflight.
+- Full gates pass: all-part VM 18/18, inherited Texture Quality ownership 4/4 (22/22 combined), runtime delivery 12/12, syntax, manifest/divergence consistency, and git diff checks.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.6 / `1.17.6-native-packing-preflight` is paired to immutable payload `7248b54d8e1670056b63b845072973f0e25c8cec`, containing all-part v0.1.6 / `0.1.6-native-packing-preflight`.
+Canonical Dev v1.17.6 / `1.17.6-native-packing-preflight` still pins immutable payload `7248b54d8e1670056b63b845072973f0e25c8cec` containing all-part v0.1.6. v0.1.7 requires a new immutable Dev pairing before live revalidation.

@@ -1,18 +1,15 @@
 # Pre-Flight Check
 
-## 2026-10-06 — #25 all-part High Res v0.1.6 native packing preflight
+## 2026-10-06 — #25 all-part High Res v0.1.7 native priority + OFF→ON re-arm
 
-- PASS: existing ACTIVE PROTECTED `wd/25-texture-coverage` remains the sole #25 task branch and was fast-forwarded to canonical Dev v1.17.5 before this correction.
-- PASS: v0.1.5 live Counting Sheep initial coverage ran once with no self-loop, proving the deferred-pass/event-observer lifecycle correction.
-- PASS: v0.1.5's live planner then failed closed because native packing reduced 33 allocations, including face 2048→1024 and selected accessory targets. The pass rolled back; core High Res remained enabled/healthy.
-- PASS: lowering the runtime source ceiling to 512 did not remove the failure, ruling out source ceiling as the control; the planner continued spending available area on more groups.
-- PASS: current runtime source for native `buildAtlas()`, `CK.Atlas`, and `getTargetTextureSize()` was read directly. Native Atlas applies a global packing factor in 0.05 steps until fit; this explains the broad allocation reduction.
-- PASS: v0.1.6 adds detached native `CK.Atlas` preflight before density mutation, using exact current parts, UHD state, and proposed scales; every baseline host and selected target must survive and candidate atlas area must remain <= 8192×4096.
-- PASS: unsafe targets are downgraded/skipped before live mutation; the coarse area budget remains only an early filter.
-- PASS: regression proves a 512 target that would shrink an unrelated host is rejected, 256 is accepted, and planning leaves live scales/allocations untouched.
-- PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 20/20, inherited runtime-delivery 12/12, and git diff check.
-- PASS: manifest/module URL and DEV_DIVERGENCES consistency gates pass for v0.1.6.
-- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.6 / `1.17.6-native-packing-preflight`; the prior payload pin is intentionally retained until the candidate commit exists.
-- PASS: Dev launcher pins exact immutable v1.17.6 payload candidate `7248b54d8e1670056b63b845072973f0e25c8cec`; candidate manifest contains all-part v0.1.6 / `0.1.6-native-packing-preflight`.
-- PENDING: verify recovery parity, then Counting Sheep deterministic selection + anti-loop proof and remaining fixture/lifecycle regression.
+- PASS: existing ACTIVE PROTECTED `wd/25-texture-coverage` remains the sole #25 task branch and is integrated through canonical Dev v1.17.6 before this correction.
+- PASS: v0.1.6 live Counting Sheep selected 38 bindings with 7 downgrades, 33 skips, zero failures, no rollback/error, and no self-loop across the prior recurrence window.
+- PASS: v0.1.6 OFF restored all 83 all-part-owned normal/atlasScale/observed-used entries exactly; every returned entry was `restored=true`, `outside=false`.
+- PASS: core OFF completed with the already-known #34 bodyLower restore warning; this remains outside #25 scope.
+- PASS: v0.1.6 OFF→ON exposed a real #25 gap: core returned healthy persistent ON while all-part remained at zero active bindings because the initial coverage obligation was not re-armed.
+- PASS: v0.1.7 re-arms the initial obligation on disable and whenever refresh observes core OFF; regression proves the next enable runs exactly once and repeated refresh polling does not duplicate it.
+- PASS: v0.1.7 uses HeroForge intrinsic ideal-texture metadata for group priority before repeat count/deficit, without using bake ceiling or current allocation as the primary importance signal.
+- PASS: v0.1.6 detached native `CK.Atlas` packing preflight remains intact: unsafe density targets are downgraded/skipped before live mutation and unrelated baseline hosts may not shrink.
+- PASS: full gates pass: all-part VM 18/18, inherited ownership 4/4 (22/22 combined), runtime-delivery 12/12, module syntax, manifest/divergence consistency, and git diff check.
+- PENDING: new immutable Dev payload pairing and recovery parity, then Counting Sheep OFF→ON revalidation and the remaining seven-fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

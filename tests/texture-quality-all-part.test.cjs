@@ -184,6 +184,40 @@ test('target calculation respects current source, ideal evidence, and quality ce
   );
 });
 
+test('group priority follows HeroForge intrinsic ideal size instead of rewarding already-large allocations', () => {
+  const h = harness();
+  assert.equal(
+    h.api.__test.nativeIdeal({ bakeSize: 512, _idealTextureSize: 201, idealTextureSizeLegacy: 201 }, 128),
+    201,
+    'bakeSize is not the intrinsic importance signal'
+  );
+
+  const pauldrons = {
+    id: 'pauldrons',
+    nativeIdeal: 201,
+    desired: 512,
+    maxAllocation: 128,
+    uniqueKeys: new Set(['left', 'right'])
+  };
+  const tinyAlreadyLarge = {
+    id: 'tiny',
+    nativeIdeal: 44,
+    desired: 512,
+    maxAllocation: 512,
+    uniqueKeys: new Set(['tiny'])
+  };
+  const eyebrows = {
+    id: 'eyebrows',
+    nativeIdeal: 80,
+    desired: 512,
+    maxAllocation: 64,
+    uniqueKeys: new Set(['browL', 'browR'])
+  };
+
+  const ordered = [tinyAlreadyLarge, eyebrows, pauldrons].sort(h.api.__test.groupPriority);
+  assert.deepEqual(ordered.map((group) => group.id), ['pauldrons', 'eyebrows', 'tiny']);
+});
+
 test('positive and negative source caching avoid duplicate resource loads', async () => {
   const store = {};
   const calls = new Map();
@@ -600,6 +634,35 @@ test('figure replacement restores the old owned density/source state against the
   assert.equal(newFixture.data.atlasScale.b, 1);
   assert.equal(newFixture.parts.b._usedTextureSize, 512);
   assert.equal(newFixture.meshes.b.material.uniforms.normalMap.value.image.width, 512);
+});
+
+test('disable re-arms exactly one all-part coverage pass for the next enable', async () => {
+  const h = harness();
+
+  assert.equal(await h.core.enable(), true);
+  const first = h.api.getState();
+  assert.equal(first.initialCoveragePending, false);
+  assert.equal(first.lastRun.trigger, 'enable');
+
+  await h.core.disable();
+  const off = h.api.getState();
+  assert.equal(h.core.enabled, false);
+  assert.equal(off.initialCoveragePending, true);
+  assert.equal(off.activeBindings, 0);
+
+  await new Promise((resolve) => setTimeout(resolve, 2));
+  assert.equal(await h.core.enable(), true);
+  const second = h.api.getState();
+  assert.equal(h.core.enabled, true);
+  assert.equal(second.initialCoveragePending, false);
+  assert.equal(second.lastRun.trigger, 'enable');
+  assert.ok(second.lastRun.startedAt > first.lastRun.startedAt);
+
+  const startedAt = second.lastRun.startedAt;
+  for (let i = 0; i < 8; i += 1) h.core.refresh();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(h.api.getState().lastRun.startedAt, startedAt);
 });
 
 test('250ms core refresh polling does not retrigger coverage after owned rendering changes', async () => {
