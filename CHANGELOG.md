@@ -2,15 +2,15 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.11 / `0.1.11-marginal-value-replan-restore`.
-- Live v0.1.10 evidence exposed two implementation defects behind the failed 512 quality gate: transient source misses were retained in the negative cache across later passes, and all-part rollback rebuilt density before restoring HeroForge's observed `_usedTextureSize`, allowing prior promoted allocations to contaminate a later planning baseline.
-- Direct HF-Chat-Bridge resource proof confirms both relative and absolute Celestial Circlet `starCirclet_nrml_512.webp?42=pv` URLs load as real 512x512 textures; URL/version construction is not the failure.
-- v0.1.11 consumes the resolved texture returned by HeroForge's resource promise, scopes negative source results to one coverage pass, restores observed used-size metadata before rollback rebuilds, and replaces floor-first budgeting with one-increment-at-a-time marginal value selection.
-- Marginal selection uses HeroForge native ideal, geometry detail pressure, repeated-instance cost, and diminishing returns above native demand. Source-only improvements cost zero; repeated families remain atomic; every density increment still requires the detached native `CK.Atlas` no-collateral proof.
-- Focused regression suite passes 27/27 including transient source recovery, restored-baseline rebuild ordering, significant-part versus tiny-accessory marginal ordering, repeated-family starvation, packing safety, rollback, OFF->ON, failure isolation, and anti-loop behavior.
-- Feature-registry impact: none. This remains internal selection/resource/rollback behavior inside the existing Texture Quality service.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.12 / `0.1.12-independent-normal-headroom`.
+- Live v0.1.11 on Counting Sheep confirmed Amanda's visual comparison: Witch Dock improved the scene but still left the lion torque and Corvidae Herald pauldrons on 256x256 normals/allocations and all six Celestial Circlet hosts on 128x128 normals/allocations, below the prior 512 visual control.
+- This is not a missing-resource problem. The 512 normal variants are valid, and the prior bounded causal probe established that replacing the displayed normal maps with verified 512 variants produced the accepted sharpness without independently requiring Lob's global pixels-per-unit/output-size/giant-atlas patches.
+- v0.1.12 separates those two channels. Highest verified normal-map source headroom can bind directly to the rendered material even when the bounded atlas-density planner cannot safely enlarge the paint/mask rectangle. Atlas density remains under the existing 32 MP ceiling, marginal-value selection, repeated-family atomicity, and detached native `CK.Atlas` no-collateral proof.
+- The change preserves pass-scoped negative caching, clean `_usedTextureSize` restore ordering, exact ownership/outside-edit preservation, OFF->ON re-arm, event-driven observation, body/face separation, and failure isolation.
+- Focused all-part + ownership regression suite passes 28/28. New coverage proves a 128->512 normal source can bind with a completely exhausted atlas-density budget while `atlasScale`, `_usedTextureSize`, and the 128x128 allocation remain untouched.
+- Feature-registry impact: none. No fixture/item/category allowlist, blanket scale multiplier, CreationKit global patch, or Stable/public change is introduced.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.11 / `1.17.11-marginal-value-replan-restore` is paired to immutable payload `9c12a336dbe9d983747c3176719b3cc0f772b14a`, containing all-part v0.1.11 / `0.1.11-marginal-value-replan-restore`.
+Canonical Dev remains v1.17.11 / `1.17.11-marginal-value-replan-restore` on immutable payload `9c12a336dbe9d983747c3176719b3cc0f772b14a` while the v0.1.12 #25 issue-branch checkpoint is prepared for the next paired Dev payload.

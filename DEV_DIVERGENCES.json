@@ -69,7 +69,7 @@
     {
       "issue": 25,
       "status": "dev-implementation-validation",
-      "reason": "All-part High Res coverage is an isolated owned Dev service. v0.1.11 retains dynamic source resolution, repeated-family atomicity, exact ownership/rollback, OFF→ON re-arm, event-driven lifecycle, and detached CK.Atlas safety. Selection now spends headroom one resolution increment at a time by marginal visual value versus incremental atlas cost; source negatives are pass-scoped, and observed HeroForge used-size metadata is restored before rollback rebuilds.",
+      "reason": "All-part High Res coverage is an isolated owned Dev service. v0.1.12 retains dynamic source resolution, repeated-family atomicity, exact ownership/rollback, OFF→ON re-arm, event-driven lifecycle, pass-scoped negative caching, clean used-size restore ordering, and detached CK.Atlas safety. Verified normal-map source headroom is now bound independently from atlas-density allocation; density still spends bounded headroom one increment at a time under marginal-value and no-collateral packing rules.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Active_Decal_Priority.js",
@@ -78,7 +78,7 @@
       ],
       "acceptance": [
         "Automatic enable and scene membership continue through the public owned entry; existing readiness/retries remain preserved.",
-        "Eligible rendered URL-backed normal bindings are resolved dynamically and cached by URL within each coverage pass. Atlas headroom is selected one resolution increment at a time from HeroForge native ideal, geometry pressure, repeated-instance cost, and diminishing returns above native demand; source-only gains are free. Repeated families remain atomic and every prospective density step still requires detached native CK.Atlas proof that selected targets fit without downsizing any baseline host.",
+        "Eligible rendered URL-backed normal bindings are resolved dynamically and cached by URL within each coverage pass. The highest verified normal source up to the bounded quality target may bind without requiring a larger paint/mask atlas rectangle; atlas density remains a separate marginal-value decision. Repeated families remain atomic and every prospective density step still requires detached native CK.Atlas proof that selected targets fit without downsizing any baseline host.",
         "Body/face derived targets remain under Native Reconcile; Active Decal Priority retains its existing accessory/atlas ownership.",
         "OFF, failure, scene replacement, and disposal restore only values still owned by the all-part service; later outside edits survive; a completed OFF state re-arms one coverage pass for the next ON.",
         "The 250 ms Texture Quality UI refresh poll is observational after one required initial attach-ready pass: actual outside figure-data change(...) calls set one debounced pending coverage pass, while Witch Dock-owned enable/reconcile/disable/density lifecycle calls are suppressed and cannot self-trigger coverage.",

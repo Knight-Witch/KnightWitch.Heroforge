@@ -99,6 +99,7 @@ function runState(trigger = 'test') {
     startedAt: Date.now(),
     finishedAt: null,
     selected: [],
+    densitySelected: [],
     downgraded: [],
     skipped: [],
     failed: [],
@@ -723,6 +724,48 @@ test('optional density reconcile failure rolls back owned state without disablin
   assert.equal(fixture.parts.a._usedTextureSize, baselineUsed);
   assert.equal(fixture.meshes.a.material.uniforms.normalMap.value, baselineNormal);
   assert.match(h.api.getState().lastError, /synthetic density reconcile failure/);
+});
+
+test('normal-source headroom binds even when atlas density budget is exhausted', async () => {
+  const fixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 128
+  });
+  const store = {};
+  let reconcileCalls = 0;
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (size !== 512) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 128, textureHeightMax: 128 },
+    coreOptions: {
+      onReconcile: async () => { reconcileCalls += 1; return true; }
+    }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  assert.equal(reconcileCalls, 0, 'normal source promotion must not require atlas headroom');
+  assert.equal(fixture.data.atlasScale.a, 1);
+  assert.equal(fixture.parts.a._usedTextureSize, 128);
+  assert.equal(fixture.uv.a.z * fixture.atlas.width, 128, 'atlas allocation stays at the safe baseline');
+  assert.equal(fixture.meshes.a.material.uniforms.normalMap.value.image.width, 512);
+  assert.equal(h.api.getState().activeBindings, 1);
+  assert.equal(h.api.getState().lastRun.densitySelected.length, 0);
 });
 
 test('source-only promotion skips density reconcile and leaves used texture size untouched', async () => {

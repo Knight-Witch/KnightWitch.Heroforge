@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.11
-// @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
+// @version      0.1.12
+// @description  Dev-only independent normal-source and budgeted atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
 // @grant        none
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.11';
-  const BUILD = '0.1.11-marginal-value-replan-restore';
+  const VERSION = '0.1.12';
+  const BUILD = '0.1.12-independent-normal-headroom';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -57,6 +57,7 @@
       startedAt: null,
       finishedAt: null,
       selected: [],
+      densitySelected: [],
       downgraded: [],
       skipped: [],
       failed: [],
@@ -856,6 +857,7 @@
     const budget = displayBudget(row, baseline.occupied);
     let remaining = Math.max(0, budget - baseline.occupied);
     const selected = [];
+    const normalSelected = [];
     const selectedByGroup = new Map();
 
     const displayDiag = {
@@ -890,19 +892,20 @@
 
       const currentMax = Math.max(...group.hosts.map((host) => host.currentSource));
       const desiredUpper = Math.max(currentMax, Math.min(group.desired, group.sourceCeiling, qualityCeiling));
+      const normalTarget = desiredUpper;
       const floorTarget = Math.max(currentMax, Math.min(desiredUpper, groupIntrinsicFloorTarget(group)));
-      const hasBenefit = (target) => group.hosts.some((host) => (
-        target > host.currentSource ||
+      const hasDensityBenefit = (target) => group.hosts.some((host) => (
         target > Math.max(host.allocation.width, host.allocation.height)
       ));
       const candidates = selectionCandidateSizes(group)
-        .filter((size) => size <= desiredUpper && hasBenefit(size))
+        .filter((size) => size <= desiredUpper && hasDensityBenefit(size))
         .sort((a, b) => a - b);
 
       return {
         group,
         currentMax,
         desiredUpper,
+        normalTarget,
         floorTarget,
         candidates,
         nextIndex: 0,
@@ -915,6 +918,39 @@
         blockedPhase: null
       };
     });
+
+    // Normal-map source quality is independent from atlas density. The normal map
+    // is sampled directly by the rendered material, while atlasScale controls the
+    // paint/mask allocation. Bind the highest verified normal variant even when a
+    // larger atlas rectangle would be unsafe or unavailable; density remains under
+    // the existing budget + detached CK.Atlas no-collateral policy below.
+    for (const state of states) {
+      const { group, normalTarget } = state;
+      if (group.resolveError || !(normalTarget > 0)) continue;
+      if (!group.hosts.some((host) => normalTarget > host.currentSource)) continue;
+      const variant = await textureForTarget(group, normalTarget);
+      if (!variant) {
+        boundedPush(run.failed, {
+          display: row.key,
+          group: group.id,
+          reason: 'normal-source-target-unavailable',
+          target: normalTarget
+        });
+        continue;
+      }
+      normalSelected.push({
+        row,
+        group,
+        target: normalTarget,
+        texture: variant.texture,
+        url: variant.url
+      });
+    }
+    displayDiag.normalSourceGroups = normalSelected.length;
+    displayDiag.normalSourceBindings = normalSelected.reduce(
+      (sum, selection) => sum + selection.group.hosts.filter((host) => selection.target > host.currentSource).length,
+      0
+    );
 
     async function advanceState(state, maxTarget, phase) {
       const { group } = state;
@@ -992,11 +1028,11 @@
       return true;
     }
 
-    // Spend atlas headroom one resolution increment at a time. Each round picks
-    // the currently highest-value next increment using HeroForge's native detail
-    // demand, geometry pressure, repeated-instance cost, and diminishing returns
-    // above the native ideal. Free source-only upgrades win first. Repeated groups
-    // remain atomic and every accepted density step still passes native CK.Atlas.
+    // Spend atlas headroom one density increment at a time. Normal-source headroom
+    // is already handled independently above. Each round picks the currently
+    // highest-value density increment using HeroForge's native detail demand,
+    // geometry pressure, repeated-instance cost, and diminishing returns. Repeated
+    // groups remain atomic and every accepted density step still passes native CK.Atlas.
     let allocationRounds = 0;
     const maxAttempts = states.reduce((sum, state) => sum + state.candidates.length, 0) + states.length;
     while (allocationRounds < maxAttempts) {
@@ -1025,7 +1061,7 @@
       }
     }
 
-    displayDiag.selectionPolicy = 'marginal-value-per-cost';
+    displayDiag.selectionPolicy = 'independent-normal+marginal-density-per-cost';
     displayDiag.allocationRounds = allocationRounds;
     displayDiag.progressiveRounds = allocationRounds;
 
@@ -1095,7 +1131,7 @@
     }
 
     displayDiag.remainingPixelsAfter = remaining;
-    return { row, hosts, groups, selected, baseline, budget };
+    return { row, hosts, groups, selected, normalSelected, baseline, budget };
   }
 
   function findScaleSnapshot(policy, row, key) {
@@ -1132,28 +1168,12 @@
     }
   }
 
-  function applySelection(policy, selection, run) {
+  function applyNormalSelection(policy, selection, run) {
     const { row, group, target } = selection;
     const selectedHosts = [];
 
     for (const host of group.hosts) {
-      const desiredScale = desiredScaleForHost(host, target);
-      const currentScale = Number(row.d.atlasScale[host.key]);
-      let needsDensity = false;
-      if (desiredScale > 0 && (!Number.isFinite(currentScale) || currentScale < desiredScale)) {
-        let snapshot = findScaleSnapshot(policy, row, host.key);
-        if (!snapshot) {
-          snapshot = own(row.d.atlasScale, host.key);
-          snapshot._diag = { display: row.key, key: host.key, kind: 'atlasScale' };
-          policy.scaleSnapshots.push(snapshot);
-        }
-        rememberObservedUsed(policy, row, host);
-        row.d.atlasScale[host.key] = desiredScale;
-        snapshot.applied = row.d.atlasScale[host.key];
-        needsDensity = true;
-        policy.densityDisplays.add(row.d);
-      }
-
+      if (!(target > host.currentSource)) continue;
       selectedHosts.push({
         displayData: row.d,
         displayKey: row.key,
@@ -1166,8 +1186,7 @@
         target,
         texture: selection.texture,
         url: selection.url,
-        repeatCount: group.uniqueKeys.size,
-        needsDensity
+        repeatCount: group.uniqueKeys.size
       });
 
       boundedPush(run.selected, {
@@ -1181,11 +1200,57 @@
         repeatCount: group.uniqueKeys.size,
         intrinsicFloorTarget: groupIntrinsicFloorTarget(group),
         priority: groupPriorityMetrics(group),
-        needsDensity
+        needsDensity: false
       });
     }
 
     policy.selected.push(...selectedHosts);
+  }
+
+  function applyDensitySelection(policy, selection, run) {
+    const { row, group, target } = selection;
+    const seen = new Set();
+
+    for (const host of group.hosts) {
+      if (seen.has(host.key)) continue;
+      seen.add(host.key);
+
+      const desiredScale = desiredScaleForHost(host, target);
+      const currentScale = Number(row.d.atlasScale[host.key]);
+      if (!(desiredScale > 0)) continue;
+
+      const selected = {
+        displayData: row.d,
+        displayKey: row.key,
+        key: host.key,
+        baselineAllocation: [host.allocation.width, host.allocation.height],
+        target,
+        repeatCount: group.uniqueKeys.size
+      };
+      policy.densitySelected.push(selected);
+      boundedPush(run.densitySelected, {
+        display: row.key,
+        key: host.key,
+        currentAllocation: selected.baselineAllocation,
+        target,
+        repeatCount: group.uniqueKeys.size,
+        intrinsicFloorTarget: groupIntrinsicFloorTarget(group),
+        priority: groupPriorityMetrics(group)
+      });
+
+      if (Number.isFinite(currentScale) && currentScale >= desiredScale) continue;
+
+      let snapshot = findScaleSnapshot(policy, row, host.key);
+      if (!snapshot) {
+        snapshot = own(row.d.atlasScale, host.key);
+        snapshot._diag = { display: row.key, key: host.key, kind: 'atlasScale' };
+        policy.scaleSnapshots.push(snapshot);
+      }
+      rememberObservedUsed(policy, row, host);
+      row.d.atlasScale[host.key] = desiredScale;
+      snapshot.applied = row.d.atlasScale[host.key];
+      policy.densityDisplays.add(row.d);
+    }
   }
 
   async function waitForStableRows(expectedData, timeout = SETTLE_TIMEOUT) {
@@ -1350,7 +1415,8 @@
   function selectedVerification(policy) {
     const rows = collectRows();
     const failures = [];
-    for (const selected of policy.selected) {
+
+    for (const selected of policy.densitySelected) {
       const row = rows.find((entry) => entry.d === selected.displayData);
       const rect = row && allocationRect(row.display.atlas, selected.key);
       if (!rect || rect.width < selected.target || rect.height < selected.target) {
@@ -1361,8 +1427,11 @@
           target: selected.target,
           allocation: rect ? [rect.width, rect.height] : null
         });
-        continue;
       }
+    }
+
+    for (const selected of policy.selected) {
+      const row = rows.find((entry) => entry.d === selected.displayData);
       const binding = row && normalUniforms(row.meshes[selected.key])[selected.bindingIndex];
       const size = binding ? squareTextureSize(binding.uniform.value) : 0;
       if (selected.baselineSourceSize < selected.target && size < selected.target) {
@@ -1462,9 +1531,10 @@
 
         const plans = [];
         for (const row of rows) plans.push(await planDisplay(row, run));
-        const selections = plans.flatMap((plan) => plan.selected);
+        const densitySelections = plans.flatMap((plan) => plan.selected);
+        const normalSelections = plans.flatMap((plan) => plan.normalSelected);
 
-        if (!selections.length) {
+        if (!densitySelections.length && !normalSelections.length) {
           run.finishedAt = Date.now();
           lastRun = run;
           releaseOwnedResources();
@@ -1477,12 +1547,14 @@
           usedSnapshots: [],
           normalSnapshots: [],
           selected: [],
+          densitySelected: [],
           densityDisplays: new Set(),
           plans
         };
         active = policy;
 
-        for (const selection of selections) applySelection(policy, selection, run);
+        for (const selection of normalSelections) applyNormalSelection(policy, selection, run);
+        for (const selection of densitySelections) applyDensitySelection(policy, selection, run);
         const stableRows = policy.densityDisplays.size
           ? await reconcileDensity(policy)
           : collectRows();
