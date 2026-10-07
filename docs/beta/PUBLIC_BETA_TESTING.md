@@ -104,3 +104,16 @@ Manifest revision 2 assigns `beta-channel-smoke` / **Beta Channel Smoke Test** t
 This module is intentionally non-feature-mutating. It proves the full Public Beta module path: immutable fetch, registration, automatic/default activation, visible `IN BETA` module UI, live module OFF/ON, bounded module state inside the `beta-tester` diagnostic provider, and the canonical Beta bug-report action.
 
 It includes a local **Mark Smoke Check** button. The counter exists only in the loaded module instance and is not persisted or uploaded automatically.
+
+
+## High Res Phase 2 Stable-compatible package — source staged, not assigned
+
+The first real feature Beta is `high-res-phase-2` v0.1.0 / `0.1.0-stable-compat-phase2`. This source-staging checkpoint does **not** change the moving Beta manifest; revision 2 still assigns only the completed generic smoke module.
+
+The package deliberately keeps Stable Native Reconcile in place and fails closed unless the live baseline is exactly Native Reconcile 0.3.8 / `0.3.8-supported-body-aaid-binding` plus Active Decal Priority 0.1.1 / `0.1.1-dev-projected-host-lifecycle-coordination`.
+
+While active it disposes Stable priority through its public cleanup contract, loads exact Dev Active Decal Priority 0.1.2 / `0.1.2-preserve-external-scales`, then layers exact all-part v0.1.12 / `0.1.12-independent-normal-headroom`. The generated package pins source blobs `24246a918e7132158941caee74ca6f5f3ff7d76d`, `9f24f18b3f91fcb0d2c49546e904282cfb85b9f8`, and Stable restore blob `a89c57e09cdaa2f4213f6b3a8eed95118f4c4d14`.
+
+Stable 0.3.8's lexical automatic-enable / scene-sync calls bypass public owner wrappers. The Beta package compensates only after the native core settles: a bounded display-identity bridge refreshes the 0.1.2 priority owner, waits for its reconcile, then ensures one all-part coverage pass. It schedules only on a stable OFF→ON transition or changed live display identity and suppresses emissions caused by its own repair pass.
+
+Beta OFF disposes all-part first, disposes Beta priority second, then restores the exact Stable 0.1.1 priority source in-page. The Stable Native Reconcile object is never replaced. Focused regression covers fail-closed identity checks, owner swap/restore, core identity preservation, repeated-emission anti-loop behavior, and one-repair-per-display-change. Live Stable proof remains required before manifest assignment.
