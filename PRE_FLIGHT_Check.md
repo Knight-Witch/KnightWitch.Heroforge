@@ -11,5 +11,7 @@
 - PASS: constrained VM regression reproduces five repeated 32px hosts competing with six repeated 128px hosts and proves the 128px group reaches 512 while the tiny family is downgraded.
 - PASS: full gates: all-part 19/19 + ownership 4/4 (23/23 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax and git diff check.
 - PASS: feature-registry impact = none; no user-facing feature identity/path/ownership/tab/routing change.
-- PENDING: issue-branch commit, immutable Dev pairing/recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation and remaining fixture/lifecycle matrix.
+- PASS: issue-branch checkpoint is committed/pushed at `7d6314675819c7f198b1c1a1d7c4ee5e2b0c1145` and fast-forward integrated into canonical Dev locally.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.9 / `1.17.9-progressive-budget`; the prior payload pin is intentionally retained until the payload candidate commit exists.
+- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation and remaining fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.
