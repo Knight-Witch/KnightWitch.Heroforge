@@ -2,14 +2,16 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.2 / `0.1.2-stable-asset-scene-sync`.
-- Counting Sheep live Dev proved v0.1.1 still periodically self-reconciled after the first feedback fix. The remaining discriminator was HeroForge regenerating display/data object identities and numeric part IDs during native reconcile.
-- v0.1.2 removes generated object/numeric IDs from scene-sync detection. Polling now compares stable display keys plus rendered host keys, stable part metadata, and size-neutral normal-family URLs, so Witch Dock source promotion and HeroForge reconcile generations do not appear to be scene changes while real rendered asset swaps still do.
-- v0.1.1's owned-density corrections remain: generic `_usedTextureSize` is never forced, density uses Native Reconcile, source-only promotion does not repack, rollback preserves outside edits, and figure replacement waits on the current live scene.
-- Focused Texture Quality VM tests pass 17/17, including regenerated part-ID/display-data identity stability and real asset-change detection.
-- v0.1.1 was disposed from the active Counting Sheep page before this patch; core High Res remains independently owned.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.3 / `0.1.3-data-change-observer`.
+- Counting Sheep live Dev proved v0.1.2 still periodically self-reconciled. A controlled core reconcile left `allDisplays` semantic keys and sampled accessory part metadata unchanged, so renderer-state signatures are no longer treated as a safe user-change detector.
+- v0.1.3 removes render-signature comparison from the 250 ms Texture Quality UI refresh path. It observes the existing live figure-data `change(...)` lifecycle seam instead, debounces outside changes by 600 ms, and uses refresh only to attach/retire observers and flush a pending change after HeroForge settles.
+- Witch Dock-owned core enable/reconcile/disable and all-part density reconciles run under change-suppression, so their own native `data.change()` calls cannot schedule another coverage pass.
+- Observer ownership is exact and reversible: stale figure observers restore when membership changes, current figure data is re-observed, disposal restores only methods still owned by this service, and later outside replacements survive.
+- v0.1.1 density/source/rollback corrections remain intact: no generic `_usedTextureSize` forcing, density uses Native Reconcile, source-only promotion does not repack, and rollback preserves outside edits.
+- Focused Texture Quality VM tests pass 18/18, including external-change debounce, owned-change suppression, figure observer replacement, 250 ms polling non-retrigger, failure isolation, and exact rollback.
+- v0.1.2 was disposed from the active Counting Sheep page after live loop confirmation; core High Res remained stable and independently owned.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.2 / `1.17.2-stable-asset-sync` is paired to immutable payload `0a4b5a8de4eb825c881f5ecf21d236f202c08004`, containing all-part v0.1.2 / `0.1.2-stable-asset-scene-sync`.
+Canonical Dev v1.17.2 / `1.17.2-stable-asset-sync` currently pins immutable payload `0a4b5a8de4eb825c881f5ecf21d236f202c08004` containing all-part v0.1.2. v0.1.3 must receive a new immutable Dev payload before live revalidation.

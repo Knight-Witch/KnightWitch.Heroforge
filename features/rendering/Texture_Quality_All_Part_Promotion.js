@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.2
+// @version      0.1.3
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.2';
-  const BUILD = '0.1.2-stable-asset-scene-sync';
+  const VERSION = '0.1.3';
+  const BUILD = '0.1.3-data-change-observer';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -25,6 +25,7 @@
   const LOAD_TIMEOUT = 5000;
   const SETTLE_TIMEOUT = 15000;
   const POLL_MS = 75;
+  const CHANGE_DEBOUNCE_MS = 600;
   const PROBE_SIZES = [4096, 2048, 1024, 512, 256, 128, 64, 32];
   const MAX_DIAGNOSTICS = 900;
 
@@ -36,7 +37,11 @@
   let queued = null;
   let active = null;
   let qualityCeiling = DEFAULT_QUALITY_CEILING;
-  let lastAppliedSignature = '';
+  let changeSuppression = 0;
+  let changeDirty = false;
+  let changeDirtyAt = 0;
+  let changeDirtyReason = null;
+  let changeObservers = [];
   let lastError = null;
   let lastRun = emptyRun('idle');
   let lastRestored = [];
@@ -195,6 +200,74 @@
       for (const [key, display] of Object.entries(c.allDisplays)) add(key, display);
     }
     return rows;
+  }
+
+  async function withChangeSuppressed(task) {
+    changeSuppression += 1;
+    try {
+      return await task();
+    } finally {
+      changeSuppression = Math.max(0, changeSuppression - 1);
+    }
+  }
+
+  function markDataChange(reason = 'data-change') {
+    if (disposed || changeSuppression > 0) return false;
+    changeDirty = true;
+    changeDirtyAt = Date.now();
+    changeDirtyReason = reason;
+    return true;
+  }
+
+  function restoreChangeObserver(entry) {
+    if (!entry || !entry.snapshot) return { restored: false, outside: false };
+    return restoreIfOwned(entry.snapshot);
+  }
+
+  function syncChangeObservers() {
+    const rows = collectRows();
+    const live = new Set(rows.map((row) => row.d));
+
+    for (let index = changeObservers.length - 1; index >= 0; index -= 1) {
+      const entry = changeObservers[index];
+      if (live.has(entry.d) && entry.d.change === entry.wrapper) continue;
+      if (!live.has(entry.d)) restoreChangeObserver(entry);
+      changeObservers.splice(index, 1);
+    }
+
+    for (const row of rows) {
+      const d = row.d;
+      if (!d || typeof d.change !== 'function') continue;
+      if (changeObservers.some((entry) => entry.d === d && d.change === entry.wrapper)) continue;
+
+      const original = d.change;
+      const snapshot = own(d, 'change');
+      const wrapper = function (...args) {
+        const result = original.apply(this, args);
+        markDataChange('data-change');
+        return result;
+      };
+
+      try {
+        d.change = wrapper;
+        if (d.change === wrapper) {
+          snapshot.applied = wrapper;
+          changeObservers.push({ d, wrapper, snapshot });
+        }
+      } catch (_) {}
+    }
+    return changeObservers.length;
+  }
+
+  function queuePendingChange() {
+    syncChangeObservers();
+    if (!changeDirty || (Date.now() - changeDirtyAt) < CHANGE_DEBOUNCE_MS) return false;
+    const reason = changeDirtyReason || 'data-change';
+    if (!queueCoverage(reason)) return false;
+    changeDirty = false;
+    changeDirtyAt = 0;
+    changeDirtyReason = null;
+    return true;
   }
 
   function normalUniforms(mesh) {
@@ -722,7 +795,7 @@
       throw new Error('Owned Texture Quality reconcile seam is unavailable for all-part density.');
     }
 
-    const ok = await originals.reconcile.call(service);
+    const ok = await withChangeSuppressed(() => originals.reconcile.call(service));
     if (!ok) throw new Error('Owned Texture Quality reconcile rejected all-part density changes.');
 
     // Reconcile may legitimately replace the active figure/display set. Wait on
@@ -901,31 +974,9 @@
     }
 
     active = null;
-    lastAppliedSignature = '';
     lastRestored = restored.slice(-MAX_DIAGNOSTICS);
     releaseOwnedResources();
     return restored;
-  }
-
-  function stableHostIdentity(row, key) {
-    const normalFamilies = normalUniforms(row.meshes[key])
-      .map((entry) => parseNormalSource(textureSource(entry.uniform.value)))
-      .filter(Boolean)
-      .map((parsed) => parsed.key)
-      .sort();
-    return [key, partId(row.parts[key]), normalFamilies];
-  }
-
-  function sceneSignature() {
-    const rows = collectRows();
-    return JSON.stringify(rows.map((row) => ({
-      key: row.key,
-      // Stable scene identity only. HeroForge may regenerate display/data
-      // objects and numeric part ids during native reconcile. Host keys,
-      // stable part metadata, and size-neutral normal-family URLs survive
-      // Witch Dock's own promotion while detecting rendered asset changes.
-      parts: Object.keys(row.parts).sort().map((key) => stableHostIdentity(row, key))
-    })));
   }
 
   function lifecycleBlocked() {
@@ -964,7 +1015,6 @@
         if (!selections.length) {
           run.finishedAt = Date.now();
           lastRun = run;
-          lastAppliedSignature = sceneSignature();
           releaseOwnedResources();
           return true;
         }
@@ -1000,7 +1050,7 @@
         run.finishedAt = Date.now();
         run.restored = [];
         lastRun = run;
-        lastAppliedSignature = sceneSignature();
+        syncChangeObservers();
         return true;
       } catch (error) {
         lastError = String(error && error.message || error);
@@ -1058,18 +1108,20 @@
 
     wrappers = {
       enable: async (...args) => {
-        const ok = await originals.enable.apply(candidate, args);
+        const ok = await withChangeSuppressed(() => originals.enable.apply(candidate, args));
+        syncChangeObservers();
         if (ok && candidate.enabled && !candidate.busy) await runCoverage('enable');
         return ok;
       },
       reconcile: async (...args) => {
-        const ok = await originals.reconcile.apply(candidate, args);
+        const ok = await withChangeSuppressed(() => originals.reconcile.apply(candidate, args));
+        syncChangeObservers();
         if (ok && candidate.enabled && !candidate.busy) await runCoverage('reconcile');
         return ok;
       },
       disable: async (...args) => {
         await restoreActive(false, 'disable');
-        const result = await originals.disable.apply(candidate, args);
+        const result = await withChangeSuppressed(() => originals.disable.apply(candidate, args));
         releaseOwnedResources();
         return result;
       },
@@ -1081,14 +1133,12 @@
       },
       refresh: (...args) => {
         const state = originals.refresh.apply(candidate, args);
+        syncChangeObservers();
         if (!candidate.enabled && active) {
           void restoreActive(false, 'refresh-off');
           return state;
         }
-        if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
-          const signature = sceneSignature();
-          if (signature !== lastAppliedSignature) queueCoverage('scene-change');
-        }
+        if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) queuePendingChange();
         return state;
       }
     };
@@ -1099,6 +1149,7 @@
     candidate.setPersistent = wrappers.setPersistent;
     candidate.refresh = wrappers.refresh;
 
+    syncChangeObservers();
     if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) queueCoverage('attach');
     return true;
   }
@@ -1107,7 +1158,6 @@
     const numeric = normalizeTarget(value);
     if (!numeric || numeric > 4096) return false;
     qualityCeiling = numeric;
-    lastAppliedSignature = '';
     if (service && service.enabled && !service.busy && !lifecycleBlocked()) queueCoverage('quality-ceiling');
     return true;
   }
@@ -1126,6 +1176,9 @@
       negativeCache: negativeCache.size,
       inFlight: inFlight.size,
       activeBindings: active ? active.selected.length : 0,
+      changePending: changeDirty,
+      changeObserverCount: changeObservers.length,
+      changeSuppressed: changeSuppression > 0,
       lastError,
       lastRun,
       lastRestored
@@ -1144,6 +1197,12 @@
       if (service.setPersistent === wrappers.setPersistent) service.setPersistent = originals.setPersistent;
     }
 
+    for (let index = changeObservers.length - 1; index >= 0; index -= 1) restoreChangeObserver(changeObservers[index]);
+    changeObservers = [];
+    changeDirty = false;
+    changeDirtyAt = 0;
+    changeDirtyReason = null;
+    changeSuppression = 0;
     service = null;
     originals = null;
     wrappers = null;
@@ -1158,10 +1217,8 @@
     attach,
     refresh: () => {
       if (!service) attach();
-      if (service && service.enabled && !service.busy && !lifecycleBlocked()) {
-        const signature = sceneSignature();
-        if (signature !== lastAppliedSignature) queueCoverage('manual-refresh');
-      }
+      syncChangeObservers();
+      if (service && service.enabled && !service.busy && !lifecycleBlocked()) queuePendingChange();
       return state();
     },
     reconcile: () => runCoverage('manual-reconcile'),
@@ -1175,8 +1232,10 @@
       targetCost,
       restoreIfOwned,
       loadVariant,
-      sceneSignature,
       collectRows,
+      syncChangeObservers,
+      markDataChange,
+      withChangeSuppressed,
       collectHosts,
       groupHosts,
       displayBudget,

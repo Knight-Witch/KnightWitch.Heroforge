@@ -102,7 +102,15 @@ function displayFixture({
     };
     atlasScale[key] = 1;
   });
-  const data = { atlasScale };
+  const data = {
+    atlasScale,
+    changeCalls: 0,
+    change(...args) {
+      data.changeCalls += 1;
+      data.lastChangeArgs = args;
+      return true;
+    }
+  };
   const atlas = {
     width: atlasSize,
     height: atlasSize,
@@ -339,52 +347,52 @@ test('source-only promotion skips density reconcile and leaves used texture size
   assert.equal(h.api.getState().activeBindings, 1);
 });
 
-test('scene signature ignores owned rendering changes but detects structural part changes', () => {
-  const fixture = displayFixture({
-    keys: ['a', 'b'],
-    allocationSize: 128,
-    sourceSize: 128,
-    usedSize: 128,
-    atlasSize: 1024
-  });
+test('external data.change is debounced into one coverage pass', async () => {
+  const fixture = displayFixture({ keys: ['bodyLower'] });
   const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const originalChange = fixture.data.change;
   const h = harness({ character });
+  h.core.enabled = true;
 
-  const baseline = h.api.__test.sceneSignature();
-  fixture.data.atlasScale.a = 4;
-  fixture.parts.a._usedTextureSize = 512;
-  fixture.uv.a.z = 512 / 1024;
-  fixture.uv.a.w = 512 / 1024;
-  fixture.meshes.a.material.uniforms.normalMap.value = texture('/textures/asset_nrml_512.webp', 512);
+  assert.notEqual(fixture.data.change, originalChange);
+  assert.equal(h.api.getState().changeObserverCount, 1);
+  fixture.data.change({ parts: { bodyLower: 'changed' } });
+  assert.equal(fixture.data.changeCalls, 1);
+  assert.equal(h.api.getState().changePending, true);
 
-  assert.equal(
-    h.api.__test.sceneSignature(),
-    baseline,
-    'owned source/density/allocation changes must not look like a scene change'
-  );
+  h.core.refresh();
+  await Promise.resolve();
+  assert.equal(h.api.getState().changePending, true, 'debounce keeps the first refresh observational');
 
-  fixture.parts.a.id = 999;
-  assert.equal(
-    h.api.__test.sceneSignature(),
-    baseline,
-    'regenerated numeric part ids must not look like a scene change'
-  );
+  await new Promise((resolve) => setTimeout(resolve, 625));
+  h.core.refresh();
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const replacementData = { ...fixture.data, atlasScale: fixture.data.atlasScale };
-  fixture.display.data = replacementData;
-  character.data = replacementData;
-  assert.equal(
-    h.api.__test.sceneSignature(),
-    baseline,
-    'regenerated display/data identity must not look like a scene change'
-  );
+  const state = h.api.getState();
+  assert.equal(state.changePending, false);
+  assert.equal(state.lastRun.trigger, 'data-change');
+  assert.equal(state.busy, false);
+  assert.equal(state.queued, false);
+});
 
-  fixture.parts.a.name = 'replacement-asset';
-  assert.notEqual(
-    h.api.__test.sceneSignature(),
-    baseline,
-    'stable rendered asset identity changes must invalidate the scene signature'
-  );
+test('owned core reconcile suppresses its native data.change signal', async () => {
+  const fixture = displayFixture({ keys: ['bodyLower'] });
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    coreOptions: {
+      onReconcile: async () => {
+        fixture.data.change({});
+        return true;
+      }
+    }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.core.reconcile(), true);
+  assert.equal(fixture.data.changeCalls, 1);
+  assert.equal(h.api.getState().changePending, false);
+  assert.equal(h.api.getState().lastRun.trigger, 'reconcile');
 });
 
 test('figure replacement restores the old owned density/source state against the current live scene', async () => {
@@ -406,6 +414,8 @@ test('figure replacement restores the old owned density/source state against the
     atlasSize: 1024,
     sharedSource: 'new'
   });
+  const oldChange = oldFixture.data.change;
+  const newChange = newFixture.data.change;
   const character = { data: oldFixture.data, display: oldFixture.display, allDisplays: {} };
   const store = {};
   const resources = {
@@ -434,6 +444,7 @@ test('figure replacement restores the old owned density/source state against the
   });
   h.core.enabled = true;
 
+  assert.notEqual(oldFixture.data.change, oldChange);
   assert.equal(await h.api.reconcile(), true);
   assert.equal(oldFixture.data.atlasScale.a, 4);
   assert.equal(oldFixture.parts.a._usedTextureSize, 512);
@@ -444,6 +455,8 @@ test('figure replacement restores the old owned density/source state against the
   character.allDisplays = {};
 
   assert.equal(await h.core.reconcile(), true);
+  assert.equal(oldFixture.data.change, oldChange, 'stale figure observer must restore exactly');
+  assert.notEqual(newFixture.data.change, newChange, 'current figure must become observed');
   assert.equal(oldFixture.data.atlasScale.a, 1);
   assert.equal(oldFixture.parts.a._usedTextureSize, 128);
   assert.equal(oldFixture.meshes.a.material.uniforms.normalMap.value.image.width, 128);
@@ -488,15 +501,25 @@ test('250ms core refresh polling does not retrigger coverage after owned renderi
   assert.equal(state.queued, false);
 });
 
-test('all live displays enumerate and disposal only removes this service wrappers', async () => {
+test('all live displays enumerate and disposal restores owned wrappers only', async () => {
   const a = displayFixture({ keys: ['a'] });
   const b = displayFixture({ keys: ['b'] });
+  const aChange = a.data.change;
+  const bChange = b.data.change;
   const character = { data: a.data, display: a.display, allDisplays: { child: b.display } };
   const h = harness({ character });
   assert.equal(h.api.__test.collectRows().length, 2);
   assert.notEqual(h.core.enable, h.original.enable);
+  assert.notEqual(a.data.change, aChange);
+  assert.notEqual(b.data.change, bChange);
+
+  const outsideChange = function () { return 'outside'; };
+  b.data.change = outsideChange;
+
   await h.api.dispose();
   assert.equal(h.core.enable, h.original.enable);
   assert.equal(h.core.disable, h.original.disable);
+  assert.equal(a.data.change, aChange);
+  assert.equal(b.data.change, outsideChange, 'outside replacement must survive disposal');
   assert.equal(h.w.KWTextureQualityAllPartPromotion, undefined);
 });
