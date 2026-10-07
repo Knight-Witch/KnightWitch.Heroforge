@@ -11,4 +11,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.5 / `1.17.5-initial-coverage-race` payload candidate is being prepared from the validated v0.1.5 tree. The launcher intentionally retains the prior v1.17.4 payload pin until this candidate commit exists.
+Dev v1.17.5 / `1.17.5-initial-coverage-race` is paired to immutable payload `07c245f16c1a869d8b680bfef2859825e0c099a4`, containing all-part v0.1.5 / `0.1.5-initial-coverage-race`.
