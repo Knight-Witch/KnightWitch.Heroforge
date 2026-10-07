@@ -13,4 +13,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev remains v1.17.10 / `1.17.10-intrinsic-floor-headroom` at immutable payload `732bcea1843528c0ebc30592379a1a264de5436b` while v0.1.11 is staged on the protected #25 issue branch for the next Dev payload.
+Dev v1.17.11 / `1.17.11-marginal-value-replan-restore` payload candidate is being prepared from the validated v0.1.11 tree. The launcher intentionally retains the prior v1.17.10 payload pin until the candidate commit exists.

@@ -13,5 +13,7 @@
 - PASS: body/face ownership, exact outside-edit preservation, OFF->ON re-arm, event-driven observation, failure isolation, and disposal contracts remain intact.
 - PASS: all-part + ownership regression suite passes 27/27.
 - PASS: feature-registry impact = none.
-- PENDING: package v0.1.11 into the next immutable Dev payload, live-prove Counting Sheep exact 512 source+allocation, then OFF->ON/anti-loop and the remaining required fixture/lifecycle matrix.
+- PASS: issue-branch checkpoint is committed/pushed at `516ec79898af8fec164ec47dc2251a3e672116d2` and fast-forward integrated into canonical Dev locally.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.11 / `1.17.11-marginal-value-replan-restore`; the prior payload pin is intentionally retained until the payload candidate commit exists.
+- PENDING: pin the exact payload candidate SHA, verify recovery parity, live-prove Counting Sheep exact 512 source+allocation, then OFF->ON/anti-loop and the remaining required fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.
