@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev v1.17.0 / `1.17.0-all-part-promotion` currently pins immutable payload `69d7e4eecd371c0d36a49712f986c36a3073661a` containing all-part v0.1.0. v0.1.1 must be paired as a new immutable Dev payload before live revalidation.
+Dev v1.17.1 / `1.17.1-all-part-stability` payload candidate is being prepared from the validated v0.1.1 tree. Until the follow-up pairing commit pins that exact candidate SHA, the moving launcher still references the prior immutable v1.17.0 payload `69d7e4eecd371c0d36a49712f986c36a3073661a`.

@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.17.0",
-      "build": "1.17.0-all-part-promotion",
-      "versionOrigin": "issue-25-all-part-promotion"
+      "version": "1.17.1",
+      "build": "1.17.1-all-part-stability",
+      "versionOrigin": "issue-25-all-part-stability"
     },
     {
       "id": "witch-dock-notifications",
