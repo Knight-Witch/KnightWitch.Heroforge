@@ -196,3 +196,20 @@ The native-shadow r5 machine gate PASSED on Amanda's Public Stable v2.4.2 sessio
 - #4656: one re-enable returned to 104 active bindings; shield/fan remained 512×512, eyebrow remained 128×128, and the same all-part coverage-run timestamp persisted through a quiet three-second window with no busy, queued, or change-pending state.
 
 Amanda's local r5 is intentionally left ON for renewed human visual/performance confirmation. Manifest r5 remains `defaultEnabled: false` for other testers until that human gate passes.
+
+
+### Manifest revision 6 — Public Beta assignment
+
+Amanda passed the renewed human visual gate on r5: the previously soft bird shields and battle hand fan now look correct with the native-shadow fix.
+
+Revision 6 therefore moves Phase 2 from the controlled default-OFF gate into the actual Public Beta assignment:
+
+- `high-res-phase-2` remains v0.1.2 / `0.1.2-native-shadow-preflight`.
+- immutable payload remains `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`;
+- `defaultEnabled` becomes `true` for testers who have no saved preference;
+- any explicit saved OFF preference remains OFF because module preferences override the manifest default;
+- the completed `beta-channel-smoke` assignment is removed so normal testers see only the real Beta feature.
+
+The host already treats manifest removal as a reversible lifecycle event: it deactivates the loaded removed module, disposes it, deletes its runtime record, and then reconciles the remaining manifest. No Stable source/module is changed by r6.
+
+HF.Status #112 remains the separately owned Beta/QA reporting backend lane. Runtime use must continue to degrade safely if that backend/public reporting path is not yet promoted.

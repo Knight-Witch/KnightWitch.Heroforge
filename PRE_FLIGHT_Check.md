@@ -1,14 +1,12 @@
 # Pre-Flight Check
 
-## 2026-10-07 — #25 native-shadow Phase 2 Beta r5 live gate PASS
+## 2026-10-07 — #25 Phase 2 Public Beta assignment r6
 
-- PASS: immutable source/package commit `150e420e069dd1eb3cfd9872e71fe52a6ce9f063` is integrated into canonical Dev.
-- PASS: all-part v0.1.14 / `0.1.14-native-shadow-preflight`; Stable-compatible wrapper v0.1.2 / `0.1.2-native-shadow-preflight`.
-- PASS: focused all-part/ownership/Beta suites remain 42/42.
-- PASS #4652: manifest r5 is loaded and the replacement module is active with no host error.
-- PASS #4653/#4654: `shieldBirdWing`, `shieldBirdFlying`, and `fanBattle` are each 512×512 in the live atlas and use real 512×512 normal maps; `eyebrowL` remains 128×128.
-- PASS #4655: Beta OFF removed all-part, restored exact Stable Active Decal Priority 0.1.1, and left Native Reconcile 0.3.8 ON/persistent, verified, idle, and error-free.
-- PASS #4656: re-enable settled with 104 active bindings, no error, and no busy/queued/change-pending state; the coverage-run timestamp remained unchanged across a quiet 3-second interval.
-- HUMAN GATE: Amanda's local r5 remains ON for renewed visual/performance smoke on the previously soft shields and hand fan plus normal interaction.
-- Manifest r5 remains `defaultEnabled: false`; Public Stable source is unchanged and no Stable promotion is authorized.
-- This documentation-only checkpoint changes no runtime/module/manifest/public behavior.
+- PASS: r5 machine gate #4652–#4656 proved shield/fan 512 density + 512 normal coverage, unrelated eyebrow preservation, exact OFF rollback, clean re-enable, and quiet anti-loop behavior.
+- PASS HUMAN: Amanda visually confirmed the corrected shields and hand fan look good.
+- PASS: manifest revision increments 5 → 6.
+- PASS: `high-res-phase-2` remains pinned to immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`, wrapper v0.1.2 / `0.1.2-native-shadow-preflight`, Stable minimum v2.4.2.
+- PASS: `defaultEnabled: true` affects only testers without a saved module preference; explicit saved OFF remains OFF by existing host contract.
+- PASS: obsolete `beta-channel-smoke` is removed; existing host reconciliation deactivates/disposes removed modules before deleting their runtime record.
+- REQUIRED LIVE SMOKE: refresh manifest r6 on the current Stable+Beta session, verify smoke removal, one active Phase 2 module, unchanged Phase 2 identity/bindings, no new coverage run/churn, and no Stable identity change.
+- Public Stable source remains unchanged; no Stable promotion is authorized.

@@ -2,15 +2,12 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 High Res Phase 2 manifest r5 live machine gate PASSED on Public Stable v2.4.2.
-- r5 uses wrapper v0.1.2 / `0.1.2-native-shadow-preflight` from immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`, embedding all-part v0.1.14 / `0.1.14-native-shadow-preflight`.
-- Both bird-shield families and `fanBattle` now receive 512×512 atlas allocations and verified 512×512 normal maps; unrelated `eyebrowL` remains 128×128.
-- OFF restored exact Stable Active Decal Priority 0.1.1 and left Stable Native Reconcile 0.3.8 verified; re-enable returned to 104 active bindings with no error.
-- Quiet 3-second readback retained the same coverage-run timestamp with no busy, queued, or change-pending state.
-- Amanda's local r5 is left ON for renewed human visual/performance smoke. Manifest r5 remains `defaultEnabled: false` for everyone else.
-- Public Stable source remains unchanged.
-- This documentation-only checkpoint changes no runtime/module/manifest/public behavior.
+- #25 High Res Phase 2 completed the renewed human visual gate after the native-shadow correction; Amanda confirmed the previously soft shields and hand fan now look good.
+- Public Beta manifest revision 6 makes `high-res-phase-2` v0.1.2 / `0.1.2-native-shadow-preflight` the sole active Beta module, pinned to immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`.
+- Phase 2 is now `defaultEnabled: true` for testers with no saved module preference; an explicit saved OFF preference remains authoritative.
+- The obsolete `beta-channel-smoke` assignment is removed. The Beta host's existing manifest-removal contract deactivates/disposes a loaded removed module before deleting its runtime record.
+- Public Stable source remains unchanged; Stable promotion remains separately gated.
 
 ## Latest Dev delivery context
 
-Canonical Dev carries the native-shadow package and manifest r5. The next gate is Amanda's renewed human visual/performance confirmation; no Stable promotion and no default-ON Beta rollout is authorized.
+Canonical Dev is preparing manifest r6 as the actual Public Beta assignment for Phase 2. HF.Status #112 remains the separate Beta/QA backend lane; Beta reporting continues to degrade safely until that backend/public reporting path is promoted.
