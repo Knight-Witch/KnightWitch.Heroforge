@@ -12,5 +12,6 @@
 - PASS: v0.1.6 detached native `CK.Atlas` packing preflight remains intact: unsafe density targets are downgraded/skipped before live mutation and unrelated baseline hosts may not shrink.
 - PASS: full gates pass: all-part VM 18/18, inherited ownership 4/4 (22/22 combined), runtime-delivery 12/12, module syntax, manifest/divergence consistency, and git diff check.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.7 / `1.17.7-native-ideal-priority`; the prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep OFF→ON revalidation and the remaining seven-fixture/lifecycle matrix.
+- PASS: Dev launcher pins exact immutable v1.17.7 payload candidate `9ca289962df50a9042dd20d883fc529837534734`; candidate manifest contains all-part v0.1.7 / `0.1.7-native-ideal-priority`.
+- PENDING: verify recovery parity, then Counting Sheep OFF→ON revalidation and the remaining seven-fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.
