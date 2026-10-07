@@ -13,5 +13,6 @@
 - PASS: feature-registry impact = none; no user-facing feature identity/path/ownership/tab/routing change.
 - PASS: issue-branch checkpoint is committed/pushed at `7d6314675819c7f198b1c1a1d7c4ee5e2b0c1145` and fast-forward integrated into canonical Dev locally.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.9 / `1.17.9-progressive-budget`; the prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation and remaining fixture/lifecycle matrix.
+- PASS: Dev launcher pins exact immutable v1.17.9 payload candidate `8f243042c2a704486293c197d0b1f58b611f9fdf`; candidate manifest contains all-part v0.1.9 / `0.1.9-progressive-budget`.
+- PENDING: verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation and remaining fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

@@ -14,4 +14,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.9 / `1.17.9-progressive-budget` payload candidate is being prepared from the validated v0.1.9 tree. The launcher intentionally retains the prior v1.17.8 payload pin until the candidate commit exists.
+Dev v1.17.9 / `1.17.9-progressive-budget` is paired to immutable payload `8f243042c2a704486293c197d0b1f58b611f9fdf`, containing all-part v0.1.9 / `0.1.9-progressive-budget`.
