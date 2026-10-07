@@ -95,3 +95,12 @@ Validated 2026-10-07 against Public Stable v2.4.2 with Beta Tester v0.1.0 instal
 - The live Stable dock visibly exposed `Beta Tester: ON`, `Refresh Beta Manifest`, and `Report Beta Channel Bug`.
 - HF.Status #112 owns the separate `wd-beta-qa` / `public-beta-testing` backend taxonomy and triage implementation.
 - Automatic Beta-specific provider selection in the canonical Stable reporter remains separately gated on Bug Capture UI v0.4.6.
+
+
+## Current smoke module
+
+Manifest revision 2 assigns `beta-channel-smoke` / **Beta Channel Smoke Test** to immutable payload `fc758733f445624b39797fc8edef91e130627237`.
+
+This module is intentionally non-feature-mutating. It proves the full Public Beta module path: immutable fetch, registration, automatic/default activation, visible `IN BETA` module UI, live module OFF/ON, bounded module state inside the `beta-tester` diagnostic provider, and the canonical Beta bug-report action.
+
+It includes a local **Mark Smoke Check** button. The counter exists only in the loaded module instance and is not persisted or uploaded automatically.

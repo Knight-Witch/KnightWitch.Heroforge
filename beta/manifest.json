@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "channel": "public-beta",
-  "revision": 1,
-  "updatedAt": "2026-10-07T00:00:00Z",
+  "revision": 2,
+  "updatedAt": "2026-10-07T23:15:00Z",
   "minimumStableVersion": "2.4.2",
   "reporting": {
     "productId": "witch-dock",
@@ -10,5 +10,21 @@
     "featureId": "public-beta-testing",
     "diagnosticProviderId": "beta-tester"
   },
-  "modules": []
+  "modules": [
+    {
+      "id": "beta-channel-smoke",
+      "title": "Beta Channel Smoke Test",
+      "version": "0.1.0",
+      "build": "0.1.0-public-beta-smoke",
+      "status": "active",
+      "defaultEnabled": true,
+      "payloadRef": "fc758733f445624b39797fc8edef91e130627237",
+      "path": "beta/modules/Beta_Channel_Smoke.js",
+      "minimumStableVersion": "2.4.2",
+      "diagnosticProviderIds": [],
+      "reporting": {
+        "featureId": "public-beta-testing"
+      }
+    }
+  ]
 }
