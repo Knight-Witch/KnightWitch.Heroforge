@@ -83,3 +83,15 @@ HF.Status owns the `wd-beta-qa` / `public-beta-testing` taxonomy, storage/indexi
 The standalone Beta Tester maintains its own semantic userscript version/build in source. The Beta manifest maintains a monotonic integer `revision`. Each beta module maintains its own version/build and immutable payload reference.
 
 The normal Witch Dock `manifest.json.moduleRegistry` does not list the standalone Beta Tester or transient Beta modules because they are not part of the Stable/Dev application bootstrap. The separate Beta manifest is their runtime authority.
+
+
+## Live Stable + Beta validation
+
+Validated 2026-10-07 against Public Stable v2.4.2 with Beta Tester v0.1.0 installed.
+
+- Stable remained authoritative and the Dev channel was absent.
+- Beta Tester reached `ready`, loaded manifest revision 1 without error, registered `beta-tester` diagnostics, and correctly reported zero staged/active modules for the intentionally empty manifest.
+- Master Beta OFF then ON completed reversibly without changing Stable version, ref, payload, or status.
+- The live Stable dock visibly exposed `Beta Tester: ON`, `Refresh Beta Manifest`, and `Report Beta Channel Bug`.
+- HF.Status #112 owns the separate `wd-beta-qa` / `public-beta-testing` backend taxonomy and triage implementation.
+- Automatic Beta-specific provider selection in the canonical Stable reporter remains separately gated on Bug Capture UI v0.4.6.
