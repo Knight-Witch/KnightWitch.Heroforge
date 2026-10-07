@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.10
+// @version      0.1.11
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.10';
-  const BUILD = '0.1.10-intrinsic-floor-headroom';
+  const VERSION = '0.1.11';
+  const BUILD = '0.1.11-marginal-value-replan-restore';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -628,6 +628,75 @@
     return a.id.localeCompare(b.id);
   }
 
+  function nextStateTarget(state) {
+    if (!state || state.blockedReason) return 0;
+    while (
+      state.nextIndex < state.candidates.length &&
+      state.candidates[state.nextIndex] <= state.finalTarget
+    ) {
+      state.nextIndex += 1;
+    }
+    return state.nextIndex < state.candidates.length ? state.candidates[state.nextIndex] : 0;
+  }
+
+  function incrementPriorityMetrics(state, target = nextStateTarget(state)) {
+    const group = state && state.group;
+    if (!group || !(target > 0)) {
+      return {
+        target: 0,
+        priorTarget: 0,
+        incrementalCost: 0,
+        benefit: 0,
+        efficiency: 0,
+        free: false,
+        demandRatio: 0,
+        detailWeight: 0,
+        repeatBenefit: 0
+      };
+    }
+
+    const sourceBase = Math.max(1, state.finalTarget || state.currentMax || 1);
+    const priorCost = Math.max(0, Number(state.finalCost) || 0);
+    const totalCost = targetCost(group, target);
+    const incrementalCost = Math.max(0, totalCost - priorCost);
+    const nativeDemand = Math.max(1, Number(group.nativeIdeal) || sourceBase);
+    const demandRatio = Math.min(1, nativeDemand / Math.max(1, target));
+    const pressure = Math.max(0, Number(group.maxDetailPressure) || 0);
+    const detailWeight = 1 + Math.min(3, Math.sqrt(pressure));
+    const repeatBenefit = Math.sqrt(Math.max(1, group.uniqueKeys.size));
+    const qualityStep = Math.max(1, Math.log2(Math.max(1, target / sourceBase)));
+    const benefit =
+      nativeDemand * nativeDemand *
+      detailWeight *
+      repeatBenefit *
+      demandRatio * demandRatio *
+      qualityStep;
+
+    return {
+      target,
+      priorTarget: state.finalTarget || state.currentMax || 0,
+      incrementalCost,
+      benefit,
+      efficiency: incrementalCost > 0 ? benefit / incrementalCost : null,
+      free: incrementalCost === 0,
+      demandRatio,
+      detailWeight,
+      repeatBenefit
+    };
+  }
+
+  function compareStateIncrement(a, b) {
+    const am = incrementPriorityMetrics(a);
+    const bm = incrementPriorityMetrics(b);
+    if (am.free !== bm.free) return am.free ? -1 : 1;
+    if (!am.free && bm.efficiency !== am.efficiency) return bm.efficiency - am.efficiency;
+    if (bm.benefit !== am.benefit) return bm.benefit - am.benefit;
+    if (b.group.nativeIdeal !== a.group.nativeIdeal) return b.group.nativeIdeal - a.group.nativeIdeal;
+    if (a.group.uniqueKeys.size !== b.group.uniqueKeys.size) return a.group.uniqueKeys.size - b.group.uniqueKeys.size;
+    if (bm.target !== am.target) return bm.target - am.target;
+    return a.group.id.localeCompare(b.group.id);
+  }
+
   async function loadVariant(url, expectedSize) {
     if (positiveCache.has(url)) return positiveCache.get(url);
     if (negativeCache.has(url)) return null;
@@ -636,18 +705,19 @@
     const promise = (async () => {
       const CK = UW && UW.CK;
       const R = CK && CK.Resources;
-      if (!R || typeof R.getResource !== 'function' || typeof R.getNow !== 'function') {
-        negativeCache.set(url, 'resources-unavailable');
-        return null;
-      }
+      if (!R || typeof R.getResource !== 'function' || typeof R.getNow !== 'function') return null;
 
       let loadError = null;
       let settled = false;
+      let resolvedTexture = null;
       try {
         const pending = R.getResource(url, resourceType(url), OWNER);
         if (pending && typeof pending.then === 'function') {
           pending.then(
-            () => { settled = true; },
+            (value) => {
+              settled = true;
+              resolvedTexture = value || null;
+            },
             (error) => {
               settled = true;
               loadError = String(error && error.message || error);
@@ -655,14 +725,21 @@
           );
         } else {
           settled = true;
+          resolvedTexture = pending || null;
         }
       } catch (error) {
-        negativeCache.set(url, String(error && error.message || error));
-        return null;
+        loadError = String(error && error.message || error);
+        settled = true;
       }
 
       const end = Date.now() + LOAD_TIMEOUT;
       while (Date.now() < end) {
+        const resolvedSize = squareTextureSize(resolvedTexture);
+        if (resolvedTexture && resolvedSize === expectedSize) {
+          positiveCache.set(url, resolvedTexture);
+          return resolvedTexture;
+        }
+
         let texture = null;
         try { texture = R.getNow(url); } catch (_) {}
         const size = squareTextureSize(texture);
@@ -670,14 +747,20 @@
           positiveCache.set(url, texture);
           return texture;
         }
-        if (settled && loadError) {
-          negativeCache.set(url, loadError);
+
+        if (settled) {
+          const wrongSize = resolvedTexture && resolvedSize > 0 && resolvedSize !== expectedSize;
+          negativeCache.set(
+            url,
+            loadError || (wrongSize ? `size-mismatch-${resolvedSize}-expected-${expectedSize}` : 'load-failed')
+          );
           return null;
         }
         await sleep(POLL_MS);
       }
 
-      negativeCache.set(url, loadError || 'load-timeout-or-size-mismatch');
+      // A timeout can be transient under a large scene/resource queue. Do not
+      // poison later reconciliation passes with a permanent negative result.
       return null;
     })().finally(() => inFlight.delete(url));
 
@@ -909,38 +992,42 @@
       return true;
     }
 
-    // Phase 1: bring eligible groups toward HeroForge's own intrinsic ideal without
-    // allowing any group to consume premium headroom early. Repeated families remain
-    // atomic and every step still passes the detached native packer.
-    let floorRounds = 0;
-    while (floorRounds < PROBE_SIZES.length) {
-      floorRounds += 1;
-      let advanced = false;
-      for (const state of states) {
-        if (state.finalTarget >= state.floorTarget) continue;
-        if (await advanceState(state, state.floorTarget, 'intrinsic-floor')) advanced = true;
+    // Spend atlas headroom one resolution increment at a time. Each round picks
+    // the currently highest-value next increment using HeroForge's native detail
+    // demand, geometry pressure, repeated-instance cost, and diminishing returns
+    // above the native ideal. Free source-only upgrades win first. Repeated groups
+    // remain atomic and every accepted density step still passes native CK.Atlas.
+    let allocationRounds = 0;
+    const maxAttempts = states.reduce((sum, state) => sum + state.candidates.length, 0) + states.length;
+    while (allocationRounds < maxAttempts) {
+      const eligible = states.filter((state) => (
+        !state.group.resolveError &&
+        !state.blockedReason &&
+        nextStateTarget(state) > 0
+      ));
+      if (!eligible.length) break;
+
+      eligible.sort(compareStateIncrement);
+      const state = eligible[0];
+      const beforeIndex = state.nextIndex;
+      const beforeTarget = state.finalTarget;
+      state.lastAttemptPriority = incrementPriorityMetrics(state);
+      await advanceState(state, state.highestCandidate, 'marginal-value');
+      allocationRounds += 1;
+
+      if (
+        state.nextIndex === beforeIndex &&
+        state.finalTarget === beforeTarget &&
+        !state.blockedReason
+      ) {
+        state.blockedReason = 'no-progress';
+        state.blockedPhase = 'marginal-value';
       }
-      if (!advanced) break;
     }
 
-    // Phase 2: spend remaining headroom by HeroForge native ideal first. This keeps
-    // physically/significantly sized parts ahead of tiny accessories once each group
-    // has had a fair chance to reach its native detail floor.
-    const premiumStates = states.slice().sort((a, b) => premiumPriority(a.group, b.group));
-    let premiumRounds = 0;
-    while (premiumRounds < PROBE_SIZES.length) {
-      premiumRounds += 1;
-      let advanced = false;
-      for (const state of premiumStates) {
-        if (state.finalTarget >= state.highestCandidate) continue;
-        if (await advanceState(state, state.highestCandidate, 'premium-headroom')) advanced = true;
-      }
-      if (!advanced) break;
-    }
-
-    displayDiag.floorRounds = floorRounds;
-    displayDiag.premiumRounds = premiumRounds;
-    displayDiag.progressiveRounds = floorRounds + premiumRounds;
+    displayDiag.selectionPolicy = 'marginal-value-per-cost';
+    displayDiag.allocationRounds = allocationRounds;
+    displayDiag.progressiveRounds = allocationRounds;
 
     for (const state of states) {
       const { group, currentMax } = state;
@@ -1319,16 +1406,19 @@
       restored.push({ ...(snapshot._diag || { kind: 'atlasScale' }), restored: result.restored, outside: result.outside });
     }
 
-    if (rebuild && policy.densityDisplays && policy.densityDisplays.size) {
-      try { await reconcileDensity(policy, false); } catch (error) {
-        restored.push({ kind: 'densityReconcile', restored: false, outside: false, error: String(error && error.message || error) });
-      }
-    }
-
+    // Restore HeroForge's observed source-size metadata before rebuilding.
+    // buildAtlas() consults this sticky value for non-core parts; rebuilding first
+    // can preserve our promoted allocation even after atlasScale is restored.
     for (let index = policy.usedSnapshots.length - 1; index >= 0; index -= 1) {
       const snapshot = policy.usedSnapshots[index];
       const result = restoreObservedUsed(snapshot);
       restored.push({ ...(snapshot._diag || { kind: 'usedTextureSize' }), restored: result.restored, outside: result.outside });
+    }
+
+    if (rebuild && policy.densityDisplays && policy.densityDisplays.size) {
+      try { await reconcileDensity(policy, false); } catch (error) {
+        restored.push({ kind: 'densityReconcile', restored: false, outside: false, error: String(error && error.message || error) });
+      }
     }
 
     active = null;
@@ -1360,6 +1450,9 @@
 
       try {
         await restoreActive(!!active, 'replan');
+        // Negative source probes are scoped to one coverage pass. A timeout or
+        // transient loader failure must not suppress a later valid scene pass.
+        negativeCache.clear();
         const rows = collectRows();
         if (!rows.length) {
           run.finishedAt = Date.now();
@@ -1618,6 +1711,8 @@
       groupPriorityMetrics,
       groupPriority,
       premiumPriority,
+      incrementPriorityMetrics,
+      compareStateIncrement,
       targetCost,
       restoreIfOwned,
       loadVariant,

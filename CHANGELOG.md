@@ -1,17 +1,16 @@
 # Changelog
 
-## Latest repository change — 2026-10-06
+## Latest repository change — 2026-10-07
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.10 / `0.1.10-intrinsic-floor-headroom`.
-- Live v0.1.9 Counting Sheep is safe and broad: 91 active bindings, 23 deliberate downgrades, 12 skips, and zero failures. However both accepted Corvidae Herald pauldrons and all six Celestial Circlet hosts were bound to shared 256 normal sources and packed at 256×256, below the previously accepted 512 control.
-- The 512 failures had different causes: pauldrons reached a detached native-packing rejection after lower-priority progressive upgrades had already consumed packing headroom; circlet reached a display-budget stop.
-- v0.1.10 divides spending into two phases. First, each eligible group advances only toward the next power-of-two that covers HeroForge's own native ideal. Second, remaining verified source/allocation headroom is spent in descending native-ideal order.
-- This bounds tiny 32/64px accessories at small intrinsic floors before larger/significant parts compete for premium headroom. There are no fixture names, item/category allowlists, blanket scale multipliers, global CreationKit patches, or relaxed no-collateral checks.
-- Repeated families remain atomic. Every density step still passes the detached native `CK.Atlas` preflight before live mutation, and exact ownership/rollback, cache sharing, OFF→ON re-arm, event-driven observation, body/face isolation, and failure isolation remain intact.
-- Full gates pass: all-part 20/20 plus inherited ownership 4/4 (24/24 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax, and git diff checks. New contracts cover native ideal 55→64, circlet-like ideal 184→256, premium native-ideal ordering, repeated-family starvation, packing safety, rollback, OFF→ON, and anti-loop behavior.
-- Feature-registry impact: none. This is internal selection/budgeting inside the existing Texture Quality service; no feature ID, module ownership/path, tab/group, or reporter-facing routing changes.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.11 / `0.1.11-marginal-value-replan-restore`.
+- Live v0.1.10 evidence exposed two implementation defects behind the failed 512 quality gate: transient source misses were retained in the negative cache across later passes, and all-part rollback rebuilt density before restoring HeroForge's observed `_usedTextureSize`, allowing prior promoted allocations to contaminate a later planning baseline.
+- Direct HF-Chat-Bridge resource proof confirms both relative and absolute Celestial Circlet `starCirclet_nrml_512.webp?42=pv` URLs load as real 512x512 textures; URL/version construction is not the failure.
+- v0.1.11 consumes the resolved texture returned by HeroForge's resource promise, scopes negative source results to one coverage pass, restores observed used-size metadata before rollback rebuilds, and replaces floor-first budgeting with one-increment-at-a-time marginal value selection.
+- Marginal selection uses HeroForge native ideal, geometry detail pressure, repeated-instance cost, and diminishing returns above native demand. Source-only improvements cost zero; repeated families remain atomic; every density increment still requires the detached native `CK.Atlas` no-collateral proof.
+- Focused regression suite passes 27/27 including transient source recovery, restored-baseline rebuild ordering, significant-part versus tiny-accessory marginal ordering, repeated-family starvation, packing safety, rollback, OFF->ON, failure isolation, and anti-loop behavior.
+- Feature-registry impact: none. This remains internal selection/resource/rollback behavior inside the existing Texture Quality service.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.10 / `1.17.10-intrinsic-floor-headroom` is paired to immutable payload `732bcea1843528c0ebc30592379a1a264de5436b`, containing all-part v0.1.10 / `0.1.10-intrinsic-floor-headroom`.
+Canonical Dev remains v1.17.10 / `1.17.10-intrinsic-floor-headroom` at immutable payload `732bcea1843528c0ebc30592379a1a264de5436b` while v0.1.11 is staged on the protected #25 issue branch for the next Dev payload.

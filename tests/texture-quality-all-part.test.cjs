@@ -300,6 +300,61 @@ test('intrinsic floors bound tiny parts and premium ordering favors larger HeroF
   );
 });
 
+test('marginal increment value ranks significant detailed groups ahead of tiny high-pressure accessories', () => {
+  const h = harness();
+  const makeState = ({ id, ideal, pressure, repeats, current, target }) => {
+    const group = {
+      id,
+      nativeIdeal: ideal,
+      maxDetailPressure: pressure,
+      uniqueKeys: new Set(Array.from({ length: repeats }, (_, index) => `${id}-${index}`)),
+      hosts: Array.from({ length: repeats }, (_, index) => ({
+        key: `${id}-${index}`,
+        allocation: { area: current * current, width: current, height: current }
+      }))
+    };
+    return {
+      group,
+      currentMax: current,
+      candidates: [target],
+      nextIndex: 0,
+      finalTarget: 0,
+      finalCost: 0,
+      blockedReason: null
+    };
+  };
+
+  const pauldrons = makeState({
+    id: 'detailed-significant',
+    ideal: 201,
+    pressure: 69996 / (128 * 128),
+    repeats: 2,
+    current: 128,
+    target: 512
+  });
+  const circletLike = makeState({
+    id: 'significant-repeated',
+    ideal: 184,
+    pressure: 2960 / (128 * 128),
+    repeats: 6,
+    current: 128,
+    target: 512
+  });
+  const tiny = makeState({
+    id: 'tiny-high-pressure',
+    ideal: 55,
+    pressure: 2.859375,
+    repeats: 1,
+    current: 32,
+    target: 512
+  });
+
+  assert.deepEqual(
+    [tiny, circletLike, pauldrons].sort(h.api.__test.compareStateIncrement).map((state) => state.group.id),
+    ['detailed-significant', 'significant-repeated', 'tiny-high-pressure']
+  );
+});
+
 test('positive and negative source caching avoid duplicate resource loads', async () => {
   const store = {};
   const calls = new Map();
@@ -326,6 +381,49 @@ test('positive and negative source caching avoid duplicate resource loads', asyn
   assert.equal(await h.api.__test.loadVariant(bad, 512), null);
   assert.equal(calls.get(bad), 1);
   assert.equal(h.api.__test.negativeCacheSize, 1);
+});
+
+test('negative source results are scoped to one coverage pass so a later valid load can recover', async () => {
+  const fixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 512,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024
+  });
+  const store = {};
+  let allowLoad = false;
+  let calls = 0;
+  const resources = {
+    getResource(url) {
+      calls += 1;
+      if (!allowLoad) return Promise.resolve(undefined);
+      const size = Number(url.match(/_(\d+)\.webp/)[1]);
+      if (size !== 512) return Promise.resolve(undefined);
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1024, textureHeightMax: 1024 }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  const firstCalls = calls;
+  assert.equal(h.api.getState().activeBindings, 0);
+
+  allowLoad = true;
+  assert.equal(await h.api.reconcile(), true);
+  assert.ok(calls > firstCalls, 'the second coverage pass must retry a prior negative source result');
+  assert.equal(h.api.getState().activeBindings, 1);
+  assert.equal(fixture.meshes.a.material.uniforms.normalMap.value.image.width, 512);
 });
 
 test('repeated instances are grouped atomically and charged per packed host', () => {
@@ -538,6 +636,59 @@ test('rollback restores exact descriptors but preserves outside edits', () => {
     { restored: false, outside: true }
   );
   assert.equal(obj2.x, 7);
+});
+
+test('replan restores observed used-size metadata before rebuilding the native baseline', async () => {
+  const fixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024
+  });
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp/)[1]);
+      if (![256, 512].includes(size)) return Promise.resolve(undefined);
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1024, textureHeightMax: 1024 },
+    coreOptions: {
+      onReconcile: async () => {
+        const scale = Number(fixture.data.atlasScale.a) || 1;
+        if (scale > 1) fixture.parts.a._usedTextureSize = 512;
+        const edge = scale > 1
+          ? 512
+          : Math.max(128, Number(fixture.parts.a._usedTextureSize) || 128);
+        fixture.uv.a.z = edge / fixture.atlas.width;
+        fixture.uv.a.w = edge / fixture.atlas.height;
+        return true;
+      }
+    }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  assert.equal(fixture.parts.a._usedTextureSize, 512);
+  assert.equal(fixture.uv.a.z * fixture.atlas.width, 512);
+
+  assert.equal(await h.api.reconcile(), true);
+  const display = h.api.getState().lastRun.displays[0];
+  assert.equal(
+    display.occupiedPixels,
+    128 * 128,
+    'the second plan must measure the restored native allocation, not the prior owned promotion'
+  );
 });
 
 test('optional density reconcile failure rolls back owned state without disabling core High Res', async () => {
