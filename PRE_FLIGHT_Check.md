@@ -1,12 +1,12 @@
 # Pre-Flight Check
 
-## 2026-10-07 — #25 High Res Phase 2 Beta manifest r3 controlled gate
+## 2026-10-07 — #25 High Res Phase 2 Public Stable machine gate PASS
 
-- PASS: package source checkpoint `58ea087c63f61d945396a20eb9bffca8f383c9ee` is integrated into canonical Dev with no Public Stable change.
-- PASS: manifest revision increments 2 → 3 and pins `high-res-phase-2` to immutable 40-character payload `58ea087c63f61d945396a20eb9bffca8f383c9ee`.
-- PASS: Phase 2 identity matches source: v0.1.0 / `0.1.0-stable-compat-phase2`.
-- PASS: minimum Stable remains v2.4.2.
-- PASS: `defaultEnabled: false`; manifest refresh alone cannot activate Phase 2 for testers.
+- PASS #4615: Beta manifest r3 loaded on Public Stable v2.4.2; Phase 2 stayed inactive/preferred OFF by default.
+- PASS #4616/#4624: activation kept Native Reconcile 0.3.8, installed priority 0.1.2 + all-part 0.1.12, verified two figures, and reached 104 active bindings with no error.
+- PASS #4625: lifecycle repair count remained 2 across the quiet three-second anti-loop window; no repair/core/priority work remained pending.
+- PASS #4626/#4627: OFF removed all-part, restored exact Stable priority 0.1.1, and Stable settled verified, High Res ON/persistent, no errors.
+- PASS #4628/#4629: a fresh activation from the known Stable baseline settled active again at 104 bindings, no errors, no pending repair.
 - PASS: focused package/Beta/ownership suite remains 16/16 green.
-- NEXT LIVE GATE: refresh manifest on Public Stable, verify inactive default, activate once through Beta host, prove owner identities/coverage, OFF rollback, and anti-loop readback.
-- Public Stable remains unchanged.
+- HUMAN GATE: Amanda's local Phase 2 preference is intentionally ON; inspect Counting Sheep/known sharpness targets and normal interaction/performance. Manifest r3 remains default-OFF for everyone else.
+- Public Stable code remains unchanged; no Stable promotion is authorized.

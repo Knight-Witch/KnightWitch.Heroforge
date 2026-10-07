@@ -116,9 +116,17 @@ While active it disposes Stable priority through its public cleanup contract, lo
 
 Stable 0.3.8's lexical automatic-enable / scene-sync calls bypass public owner wrappers. The Beta package compensates only after the native core settles: a bounded display-identity bridge refreshes the 0.1.2 priority owner, waits for its reconcile, then ensures one all-part coverage pass. It schedules only on a stable OFF→ON transition or changed live display identity and suppresses emissions caused by its own repair pass.
 
-Beta OFF disposes all-part first, disposes Beta priority second, then restores the exact Stable 0.1.1 priority source in-page. The Stable Native Reconcile object is never replaced. Focused regression covers fail-closed identity checks, owner swap/restore, core identity preservation, repeated-emission anti-loop behavior, and one-repair-per-display-change. Live Stable proof remains required before manifest assignment.
+Beta OFF disposes all-part first, disposes Beta priority second, then restores the exact Stable 0.1.1 priority source in-page. The Stable Native Reconcile object is never replaced. Focused regression covers fail-closed identity checks, owner swap/restore, core identity preservation, repeated-emission anti-loop behavior, and one-repair-per-display-change. The live Public Stable machine gate has now passed; human visual/performance confirmation remains before public/default enablement.
 
 
 ### Manifest revision 3 machine gate
 
-Revision 3 retains `beta-channel-smoke` and adds `high-res-phase-2` default-OFF. The next authorized step is to refresh the live Beta manifest on Amanda's Public Stable session, verify the module remains inactive by default, then enable it once through the Beta host, read back owner identities/coverage state, exercise OFF rollback, and verify repeated Stable emissions do not create a lifecycle loop. Only after that machine gate passes may a later manifest revision make Phase 2 default-ON for human/public Beta testing.
+Revision 3 retains `beta-channel-smoke` and adds `high-res-phase-2` default-OFF. The live machine gate PASSED on Amanda's Public Stable v2.4.2 session:
+
+- Bridge #4615: manifest r3 loaded cleanly; Phase 2 remained inactive/preferred OFF by default.
+- #4616/#4624: one activation preserved Native Reconcile 0.3.8, installed Active Decal Priority 0.1.2 and all-part 0.1.12, verified two figures, and settled with 104 active bindings / 69 density selections / zero failures.
+- #4625: bounded Beta diagnostics showed lifecycle repair count 2 with no pending work; the count remained exactly 2 across a quiet 3-second interval, proving no self-loop.
+- #4626/#4627: Beta OFF removed the all-part global, restored exact Stable priority 0.1.1, and Stable settled with High Res still ON/persistent, verified, and error-free.
+- #4628/#4629: a new activation from the known Stable baseline settled normally; Phase 2 is active with 104 bindings, no error, no pending repair, and the Stable core remains 0.3.8.
+
+Amanda's local module preference is intentionally left ON for the human visual/performance smoke. Manifest r3 remains default-OFF for everyone else. Do not make a later revision default-ON until Amanda confirms the visual gate.
