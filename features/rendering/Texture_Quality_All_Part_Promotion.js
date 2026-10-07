@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.4
+// @version      0.1.5
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.4';
-  const BUILD = '0.1.4-deferred-initial-coverage';
+  const VERSION = '0.1.5';
+  const BUILD = '0.1.5-initial-coverage-race';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -1113,7 +1113,6 @@
         const ok = await withChangeSuppressed(() => originals.enable.apply(candidate, args));
         syncChangeObservers();
         if (ok && candidate.enabled && !candidate.busy) {
-          initialCoveragePending = false;
           await runCoverage('enable');
         }
         return ok;
@@ -1122,7 +1121,6 @@
         const ok = await withChangeSuppressed(() => originals.reconcile.apply(candidate, args));
         syncChangeObservers();
         if (ok && candidate.enabled && !candidate.busy) {
-          initialCoveragePending = false;
           await runCoverage('reconcile');
         }
         return ok;
@@ -1148,7 +1146,7 @@
         }
         if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
           if (initialCoveragePending) {
-            if (queueCoverage('attach-ready')) initialCoveragePending = false;
+            queueCoverage('attach-ready');
           } else {
             queuePendingChange();
           }
@@ -1165,7 +1163,7 @@
 
     syncChangeObservers();
     if (candidate.enabled && !candidate.busy && !lifecycleBlocked()) {
-      if (queueCoverage('attach')) initialCoveragePending = false;
+      queueCoverage('attach');
     }
     return true;
   }
@@ -1238,7 +1236,7 @@
       syncChangeObservers();
       if (service && service.enabled && !service.busy && !lifecycleBlocked()) {
         if (initialCoveragePending) {
-          if (queueCoverage('attach-ready')) initialCoveragePending = false;
+          queueCoverage('attach-ready');
         } else {
           queuePendingChange();
         }

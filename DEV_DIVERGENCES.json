@@ -69,7 +69,7 @@
     {
       "issue": 25,
       "status": "dev-implementation-validation",
-      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.4 retains the reversible debounced live figure-data change(...) observer and owned-lifecycle suppression from v0.1.3, and adds exactly one deferred initial coverage obligation when attach occurs while core High Res is busy.",
+      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.5 retains reversible debounced live figure-data change(...) observation and owned-lifecycle suppression, and preserves the single deferred initial-coverage obligation until runCoverage actually passes its readiness guard and starts.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Active_Decal_Priority.js",

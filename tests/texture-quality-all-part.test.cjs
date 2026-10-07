@@ -366,6 +366,15 @@ test('attach while core is busy defers exactly one initial coverage pass until r
 
   h.core.busy = false;
   h.core.refresh();
+  h.core.busy = true;
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  state = h.api.getState();
+  assert.equal(state.initialCoveragePending, true, 'queued pass must not consume the obligation before runCoverage starts');
+  assert.equal(state.lastRun.trigger, 'idle');
+
+  h.core.busy = false;
+  h.core.refresh();
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   state = h.api.getState();
