@@ -87,19 +87,24 @@ After Stable passes:
 1. reconcile the shipped scope in Dev to the final Stable state;
 2. remove the resolved entry from `DEV_DIVERGENCES.json`;
 3. remove temporary diagnostics/probes/flags/shims, migration adapters, and test assets unless intentionally retained and documented;
-4. produce the factual HF.Status publication handoff using [the canonical template](docs/templates/HF_STATUS_PUBLICATION_HANDOFF_TEMPLATE.md) and post it durably to the owning release/source issue before that issue is closed;
+4. reconcile Public Beta state for the shipped scope before closing the issue:
+   - if the feature/module is active in `beta/manifest.json`, change that entry to `graduated`, set `defaultEnabled: false`, increment the Beta manifest revision, and preserve the same immutable payload identity for that graduation revision so already-open Beta Tester sessions can deactivate cleanly;
+   - do not leave shipped features permanently disabled in the Beta manifest: remove the graduated tombstone on the next normal Beta-manifest maintenance pass after delivery is verified; Git history is the archive;
+   - a later patch test may re-add the same stable module ID with a newer version/build/immutable payload;
+   - if the shipped scope was never in Public Beta, record `no beta-manifest impact` rather than inventing an entry;
+5. produce the factual HF.Status publication handoff using [the canonical template](docs/templates/HF_STATUS_PUBLICATION_HANDOFF_TEMPLATE.md) and post it durably to the owning release/source issue before that issue is closed;
    - this handoff is mandatory after every Stable smoke, including `version truth only`, `internal / silent`, and no-publication outcomes;
    - verify the actual Stable version, launcher/source commit, immutable payload, release type, user-visible changes, user action requirements, status impact, install/update-path impact, internal-only changes, registry impact, and validation evidence before posting it;
    - Witch Dock reports verified engineering/product facts only; do not author HF.Status headlines, public copy, grouping/prominence, notification class, or reviewed publication state from this repo;
    - HF.Status availability is not a runtime/release dependency: if cross-repo processing is unavailable, the completed factual handoff remains in the Witch Dock source issue as an explicit pending publication follow-up rather than being skipped;
-5. update or close the source issue only after the publication handoff is durable;
-6. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
+6. update or close the source issue only after the publication handoff is durable;
+7. transition every short-lived task/promotion branch that is no longer needed from ACTIVE PROTECTED to `BRANCH_DELETION_QUEUE.md` with its exact current SHA;
    - delete directly only when the tool surface supports safe exact-ref deletion;
    - otherwise leave the READY queue entry for Work/GitHub UI;
    - per-issue deletion handoffs may be generated for complex releases, but must mirror the canonical registry/queue rather than replace them;
-7. trim `ACTIVE_CONTEXT.md` to current work;
-8. compare untouched runtime/module paths for accidental drift;
-9. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
+8. trim `ACTIVE_CONTEXT.md` to current work;
+9. compare untouched runtime/module paths for accidental drift;
+10. confirm the canonical Dev launcher/manifest still identify and route Dev correctly.
 
 Do not call the rollout complete before those steps are done. This cleanup authorization does not permit unrelated Stable edits or scope expansion.
 
