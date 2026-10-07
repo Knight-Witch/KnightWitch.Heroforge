@@ -25,6 +25,54 @@ test("health contract is unchanged", async () => {
   });
 });
 
+test("public beta ref resolves canonical WITCH_DEV_MAIN", async () => {
+  const originalFetch = globalThis.fetch;
+  const sha = "1111111111111111111111111111111111111111";
+  globalThis.fetch = async (url) => {
+    assert.equal(
+      String(url),
+      "https://api.github.com/repos/Knight-Witch/KnightWitch.Heroforge/git/ref/heads/WITCH_DEV_MAIN"
+    );
+    return new Response(JSON.stringify({
+      ref: "refs/heads/WITCH_DEV_MAIN",
+      object: { sha, type: "commit" }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const response = await worker.fetch(new Request(`${base}/beta/ref.json`));
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.object.sha, sha);
+    assert.equal(body.ref, "refs/heads/WITCH_DEV_MAIN");
+    assert.equal(response.headers.get("cache-control"), "no-cache, max-age=0");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("public beta content is projected from the beta directory on canonical Dev", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    assert.equal(
+      String(url),
+      "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/beta/manifest.json"
+    );
+    return new Response('{"schemaVersion":1}', {
+      status: 200,
+      headers: { "content-type": "application/json; charset=utf-8", etag: '"beta-test"' }
+    });
+  };
+  try {
+    const response = await worker.fetch(new Request(`${base}/beta/manifest.json`));
+    assert.equal(response.status, 200);
+    assert.equal(await response.text(), '{"schemaVersion":1}');
+    assert.equal(response.headers.get("x-witchdock-origin"), "github");
+    assert.equal(response.headers.get("cache-control"), "no-cache, max-age=0");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("HFJSON root temporarily redirects to Lob GitGud", async () => {
   const response = await worker.fetch(new Request(`${base}/HFJSON/`));
   assert.equal(response.status, 307);

@@ -2,6 +2,7 @@ const GITHUB_REPO = "Knight-Witch/KnightWitch.Heroforge";
 const BITBUCKET_REPO = "knightwitch/knightwitch.heroforge.recovery";
 const BRANCHES = Object.freeze({
   dev: "WITCH_DEV_MAIN",
+  beta: "WITCH_DEV_MAIN",
   "dev-auto": "wd/dev-auto-host",
   stable: "Witch_Scripts",
 });
@@ -256,15 +257,15 @@ export default {
       });
     }
 
-    const refMatch = pathname.match(/^\/(dev-auto|dev|stable)\/ref\.json$/);
+    const refMatch = pathname.match(/^\/(dev-auto|dev|beta|stable)\/ref\.json$/);
     if (refMatch) return refResponse(BRANCHES[refMatch[1]], method);
 
-    const channelMatch = pathname.match(/^\/(dev-auto|dev|stable)\/(.+)$/);
+    const channelMatch = pathname.match(/^\/(dev-auto|dev|beta|stable)\/(.+)$/);
     if (channelMatch) {
       const channel = channelMatch[1];
-      const path = channel === "dev-auto" && !channelMatch[2].startsWith("devtools/")
-        ? "devtools/" + channelMatch[2]
-        : channelMatch[2];
+      let path = channelMatch[2];
+      if (channel === "dev-auto" && !path.startsWith("devtools/")) path = "devtools/" + path;
+      if (channel === "beta" && !path.startsWith("beta/")) path = "beta/" + path;
       return contentResponse(BRANCHES[channel], path, method);
     }
 

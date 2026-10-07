@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "channel": "public-beta",
+  "revision": 1,
+  "updatedAt": "2026-10-07T00:00:00Z",
+  "minimumStableVersion": "2.4.2",
+  "reporting": {
+    "productId": "witch-dock",
+    "groupId": "wd-beta-qa",
+    "featureId": "public-beta-testing",
+    "diagnosticProviderId": "beta-tester"
+  },
+  "modules": []
+}

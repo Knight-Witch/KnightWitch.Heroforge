@@ -85,6 +85,32 @@
         "Required seven-fixture live Dev regression and deterministic rollback gates pass before human visual calibration.",
         "Public Stable remains unchanged."
       ]
+    },
+    {
+      "issue": 107,
+      "status": "dev-public-beta-infrastructure",
+      "reason": "Public Beta is an additive optional layer over normal Stable, not a replacement Stable build. The standalone Beta Tester owns its own moving manifest, immutable beta-module payload references, live reversible module lifecycle, visible IN BETA labeling, and bounded Beta diagnostic provider. Stable remains independent when Beta is absent, disabled, offline, or broken. Dev reporter v0.4.6 adds only a local contextual diagnostic-provider selection seam; provider IDs are not added to the HF.Status submitted sourceContext.",
+      "paths": [
+        "beta/Witch_Dock_Beta_Tester.user.js",
+        "beta/manifest.json",
+        "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
+        "tools/witchdock-runtime/src/index.js",
+        "tools/witchdock-runtime/test/runtime.test.mjs",
+        "docs/beta/PUBLIC_BETA_TESTING.md",
+        "docs/policies/RUNTIME_DELIVERY.md",
+        "manifest.json"
+      ],
+      "acceptance": [
+        "Beta Tester layers only onto Public Stable and refuses the Dev channel.",
+        "Moving Beta manifest may add, pause, graduate, or remove explicit modules, but executable module code must come from an immutable 40-character payload commit and exact path.",
+        "Beta modules register exact id/version/build and implement activate/deactivate; modules that cannot safely deactivate must explicitly require reload rather than pretending to hot-unload.",
+        "Beta Tester can be toggled without reloading when all active beta modules support reversible deactivation; Stable startup/runtime does not depend on Beta.",
+        "Each active module is visibly marked IN BETA and exposes a Beta report action plus targeted diagnostic capture.",
+        "Beta diagnostic capture includes bounded Beta host/module state and excludes module source, raw character JSON, and credentials.",
+        "HF.Status owns the distinct Beta/QA taxonomy and triage bucket. Witch Dock reuses the canonical reporter/client rather than introducing a second reporting backend.",
+        "Graduated modules remain as a disabled tombstone for one manifest revision so open pages can deactivate cleanly, then are removed; Git history is the archive.",
+        "Public Stable remains unchanged until an explicitly authorized narrow reporter-seam promotion."
+      ]
     }
   ],
   "notes": [
@@ -95,7 +121,7 @@
     "Governance/documentation files are not runtime divergences.",
     "HF-Chat-Bridge is development infrastructure only and never a Witch Dock runtime dependency.",
     "stableBaseline is the evidenced v2.4.0 reconciliation anchor (88280df1832b7bfa0e5b2d9ff1aa9b8d97b21940). Compare live Witch_Scripts for new work; advance this anchor only with another scoped evidenced reconciliation.",
-    "Issues #58/#83 shipped in Stable v2.3.1; #94 shipped in v2.3.2; #90/#97 shipped in v2.4.0. Current intentional divergences are #19/#25/#35/#59; #25 owns Dev-only all-part High Res coverage validation, #35 owns Dev-only High Res diagnostics, and #59 owns remaining provider expansion.",
+    "Issues #58/#83 shipped in Stable v2.3.1; #94 shipped in v2.3.2; #90/#97 shipped in v2.4.0. Current intentional divergences are #19/#25/#35/#59/#107; #25 owns Dev-only all-part High Res coverage validation, #35 owns Dev-only High Res diagnostics, #59 owns remaining provider expansion, and #107 owns the optional Public Beta overlay/reporter seam.",
     "Current Dev/Stable source identities are routed by ACTIVE_CONTEXT.md. Dated acceptance results are evidence, not instructions to rerun completed work.",
     "Current Stable self-refresh compatibility is v2.4.2: runtime commit 3236f9d754703c5ff1a709209c1c251cd644e6e6, immutable payload 93c0de5cd0da1dece3ef286c5a9201c83f1addb7, documentation/parity head b069d1057c3cf52414ed5365841058f0f43bdf31. Live installed-wrapper refresh passed with 30/30 modules and zero fallback."
   ]

@@ -442,9 +442,9 @@
       "path": "features/diagnostics/Witch_Dock_Bug_Capture_UI.js",
       "kind": "feature-ui",
       "load": "module-loader",
-      "version": "0.4.5",
-      "build": "0.4.5-context-routing",
-      "versionOrigin": "issue-97-context-routing"
+      "version": "0.4.6",
+      "build": "0.4.6-context-diagnostic-providers",
+      "versionOrigin": "issue-107-context-diagnostic-providers"
     },
     {
       "id": "texture-quality-diagnostic-provider",
@@ -810,7 +810,7 @@
       "id": "witch-dock-bug-capture-ui",
       "title": "Witch Dock Bug Capture UI",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.5-context-routing",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Bug_Capture_UI.js?v=0.4.6-context-diagnostic-providers",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

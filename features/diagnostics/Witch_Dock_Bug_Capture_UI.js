@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.5";
-  const BUILD = "0.4.5-context-routing";
+  const VERSION = "0.4.6";
+  const BUILD = "0.4.6-context-diagnostic-providers";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";
@@ -131,9 +131,10 @@
     document.head.appendChild(style);
   }
 
-  function makeEmptyState(sourceContext) {
+  function makeEmptyState(sourceContext, localContext) {
     const now = nowIso();
     const source = clone(sourceContext) || {};
+    const local = localContext && typeof localContext === "object" ? localContext : {};
     const contextual = source.launchMethod === "contextual-action";
     const initialFeature = contextual ? (source.featureId || "") : "";
     return {
@@ -141,6 +142,7 @@
       draftCreatedAt: now,
       clientSubmissionId: uuid(),
       sourceContext: source,
+      diagnosticProviderIds: sanitizeProviderIds(local.diagnosticProviderIds),
       context: null,
       contextError: "",
       capabilities: null,
@@ -255,8 +257,20 @@
     return "";
   }
 
-  function providerIdsFor(classification) {
-    const result = [];
+  function sanitizeProviderIds(value) {
+    if (!Array.isArray(value)) return [];
+    const out = [];
+    for (const raw of value) {
+      const id = clean(raw);
+      if (!/^[a-z0-9][a-z0-9-]*$/.test(id) || out.includes(id)) continue;
+      out.push(id);
+      if (out.length >= 20) break;
+    }
+    return out;
+  }
+
+  function providerIdsFor(classification, contextualProviderIds) {
+    const result = sanitizeProviderIds(contextualProviderIds);
     const featureId = classification && classification.featureId || "";
     const groupId = classification && classification.groupId || "";
     const scriptId = classification && classification.scriptId || "";
@@ -310,7 +324,7 @@
       state.originalCaptureError = "Diagnostic service unavailable at report open.";
       return null;
     }
-    const providers = providerIdsFor(state.classification);
+    const providers = providerIdsFor(state.classification, state.diagnosticProviderIds);
     state.originalCaptureState = "capturing";
     const promise = svc.captureCurrent({ captureMode: "snapshot", providerIds: providers });
     state.originalCapturePromise = promise;
@@ -508,8 +522,9 @@
       render();
       return clone(state.sourceContext);
     }
-    const sourceContext = makeSourceContext(context || {});
-    state = makeEmptyState(sourceContext);
+    const rawContext = context && typeof context === "object" ? context : {};
+    const sourceContext = makeSourceContext(rawContext);
+    state = makeEmptyState(sourceContext, { diagnosticProviderIds: rawContext.diagnosticProviderIds });
     overlay = createOverlay();
     overlay.style.display = "flex";
     overlay.dataset.minimized = "0";
@@ -1026,7 +1041,7 @@
     state.message = "Capturing diagnostics…";
     render();
     try {
-      const result = await svc.captureCurrent({ captureMode: "snapshot", providerIds: providerIdsFor(state.classification) });
+      const result = await svc.captureCurrent({ captureMode: "snapshot", providerIds: providerIdsFor(state.classification, state.diagnosticProviderIds) });
       if (!result || !result.ok || !result.capture) throw new Error(result && result.error || "Diagnostic capture failed.");
       addDiagnosticEvidence(result.capture, "current", "primary-reproduction");
       state.message = "Fresh diagnostic capture attached.";
@@ -1037,7 +1052,7 @@
   }
 
   function renderDiagnostics() {
-    const providers = providerIdsFor(state.classification);
+    const providers = providerIdsFor(state.classification, state.diagnosticProviderIds);
     const original = state.originalCaptureState;
     const input = el("input", { type: "file", multiple: "multiple", accept: ".json,application/json" });
     input.style.display = "none";
@@ -1576,7 +1591,7 @@
     open: openReporter,
     close: closeReporter,
     getSourceContext: function () { return state ? clone(state.sourceContext) : null; },
-    getState: function () { return state ? { open: !!(overlay && overlay.style.display !== "none"), minimized: !!state.minimized, sourceContext: clone(state.sourceContext), classification: clone(state.classification), evidenceCount: state.evidence.length, diagnosticCaptureCount: state.diagnosticCaptures.length, receipt: clone(state.receipt) } : { open: false }; },
+    getState: function () { return state ? { open: !!(overlay && overlay.style.display !== "none"), minimized: !!state.minimized, sourceContext: clone(state.sourceContext), classification: clone(state.classification), diagnosticProviderIds: state.diagnosticProviderIds.slice(), evidenceCount: state.evidence.length, diagnosticCaptureCount: state.diagnosticCaptures.length, receipt: clone(state.receipt) } : { open: false }; },
     attachContextualActions: attachContextualActions
   }));
 

@@ -10,6 +10,7 @@ Repository: `Knight-Witch/KnightWitch.Heroforge`. Preserve each URL verbatim unl
 |---|---|---|
 | Canonical direct Dev | `WITCH_DEV_MAIN` / `Witch_Dock_DEV.user.js` | https://witchdock.knightwitch.dev/dev/Witch_Dock_DEV.user.js |
 | Public Stable | `Witch_Scripts` / `Witch_Dock.user.js` | https://witchdock.knightwitch.dev/stable/Witch_Dock.user.js |
+| Public Beta Tester overlay | `WITCH_DEV_MAIN` / `beta/Witch_Dock_Beta_Tester.user.js` | https://witchdock.knightwitch.dev/beta/Witch_Dock_Beta_Tester.user.js |
 | Dev Auto Host | `wd/dev-auto-host` / `devtools/Witch_Dock_DEV_Auto_Host.user.js` | https://witchdock.knightwitch.dev/dev-auto/Witch_Dock_DEV_Auto_Host.user.js |
 
 `Witch_Scripts` is also the repository default. `Witch_Dock.user.js` retained on canonical Dev is legacy/history, not the installed Dev entrypoint. Do not rewrite it merely to make Dev look like Stable.
