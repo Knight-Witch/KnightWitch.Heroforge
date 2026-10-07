@@ -14,4 +14,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.3 / `1.17.3-data-change-observer` payload candidate is being prepared from the validated v0.1.3 tree. The launcher intentionally retains the prior v1.17.2 payload pin until this candidate commit exists.
+Dev v1.17.3 / `1.17.3-data-change-observer` is paired to immutable payload `7fd83e93ce2b615c02ec42e7df1e4ed10ee657b4`, containing all-part v0.1.3 / `0.1.3-data-change-observer`.
