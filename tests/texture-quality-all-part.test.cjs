@@ -340,6 +340,59 @@ test('budget planning downgrades a repeated class instead of exhausting a displa
   assert.equal(run.downgraded[0].to, 256);
 });
 
+test('progressive budgeting prevents tiny repeated parts from starving a larger repeated 128-to-512 group', async () => {
+  const tinyKeys = ['t1', 't2', 't3', 't4', 't5'];
+  const circletKeys = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+  const fixture = displayFixture({
+    keys: tinyKeys.concat(circletKeys),
+    allocationSize: 32,
+    sourceSize: 32,
+    usedSize: 32,
+    bakeSize: 512,
+    atlasSize: 1024,
+    sharedSource: 'tiny'
+  });
+
+  for (const key of circletKeys) {
+    fixture.uv[key].z = 128 / fixture.atlas.width;
+    fixture.uv[key].w = 128 / fixture.atlas.height;
+    fixture.parts[key].__testAllocation = 128;
+    fixture.parts[key]._usedTextureSize = 128;
+    fixture.meshes[key].material.uniforms.normalMap.value = texture('/textures/circlet_nrml_128.webp', 128);
+  }
+
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (![64, 128, 256, 512].includes(size)) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1300, textureHeightMax: 1300 }
+  });
+  const row = h.api.__test.collectRows()[0];
+  const run = runState();
+  const plan = await h.api.__test.planDisplay(row, run);
+
+  const tiny = plan.selected.find((entry) => entry.group.id.includes('/tiny_'));
+  const circlet = plan.selected.find((entry) => entry.group.id.includes('/circlet_'));
+  assert.ok(tiny);
+  assert.ok(circlet);
+  assert.equal(circlet.target, 512, 'circlet-like repeated group must reach its verified 512 target');
+  assert.ok(tiny.target < 512, 'tiny repeated group must be bounded before consuming the entire display budget');
+  assert.equal(circlet.group.uniqueKeys.size, 6);
+  assert.ok(run.downgraded.some((entry) => entry.group.includes('/tiny_')));
+});
+
 test('native packing preflight downgrades before live mutation when a higher target would shrink another host', async () => {
   const fixture = displayFixture({
     keys: ['a', 'b'],

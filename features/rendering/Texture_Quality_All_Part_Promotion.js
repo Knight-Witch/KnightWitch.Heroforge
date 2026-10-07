@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.8
+// @version      0.1.9
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.8';
-  const BUILD = '0.1.8-detail-pressure-priority';
+  const VERSION = '0.1.9';
+  const BUILD = '0.1.9-progressive-budget';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -747,6 +747,7 @@
     const budget = displayBudget(row, baseline.occupied);
     let remaining = Math.max(0, budget - baseline.occupied);
     const selected = [];
+    const selectedByGroup = new Map();
 
     const displayDiag = {
       key: row.key,
@@ -760,7 +761,7 @@
     };
     run.displays.push(displayDiag);
 
-    for (const group of groups) {
+    const states = groups.map((group) => {
       if (group.resolveError) {
         boundedPush(run.failed, {
           display: row.key,
@@ -768,7 +769,6 @@
           reason: 'source-resolution-error',
           error: group.resolveError
         });
-        continue;
       }
       for (const url of group.failedUrls) {
         boundedPush(run.failed, {
@@ -781,45 +781,120 @@
 
       const currentMax = Math.max(...group.hosts.map((host) => host.currentSource));
       const desiredUpper = Math.max(currentMax, Math.min(group.desired, group.sourceCeiling, qualityCeiling));
-      const candidates = selectionCandidateSizes(group).filter((size) => size <= desiredUpper);
-      let chosen = null;
-      const packingRejected = [];
+      const hasBenefit = (target) => group.hosts.some((host) => (
+        target > host.currentSource ||
+        target > Math.max(host.allocation.width, host.allocation.height)
+      ));
+      const candidates = selectionCandidateSizes(group)
+        .filter((size) => size <= desiredUpper && hasBenefit(size))
+        .sort((a, b) => a - b);
 
-      for (const target of candidates) {
-        const hasAnyBenefit = group.hosts.some((host) => (
-          target > host.currentSource ||
-          target > Math.max(host.allocation.width, host.allocation.height)
-        ));
-        if (!hasAnyBenefit) continue;
+      return {
+        group,
+        currentMax,
+        desiredUpper,
+        candidates,
+        nextIndex: 0,
+        highestCandidate: candidates.length ? candidates[candidates.length - 1] : 0,
+        finalTarget: 0,
+        finalCost: 0,
+        packingRejected: [],
+        variantRejected: [],
+        blockedReason: null
+      };
+    });
 
-        const cost = targetCost(group, target);
-        if (cost > remaining) continue;
+    // Spend scarce atlas budget progressively. Each eligible group gets at most one
+    // successful resolution step per round before any group can advance again.
+    // This prevents tiny low-resolution accessories from jumping straight to their
+    // maximum target and starving larger groups, while keeping repeated hosts atomic.
+    let rounds = 0;
+    while (rounds < PROBE_SIZES.length) {
+      rounds += 1;
+      let advanced = false;
 
-        const prospective = { row, group, target, cost };
-        const packing = nativePackingPreflight(row, baseline, selected.concat(prospective));
-        if (!packing.ok) {
-          packingRejected.push({
-            target,
-            reason: packing.reason,
-            atlas: packing.atlas,
-            regression: packing.regressions[0] || null,
-            selectedFailure: packing.selectedFailures[0] || null,
-            error: packing.error || null
-          });
-          displayDiag.nativePackingRejects = (displayDiag.nativePackingRejects || 0) + 1;
-          continue;
+      for (const state of states) {
+        const { group } = state;
+        if (group.resolveError || state.blockedReason || state.nextIndex >= state.candidates.length) continue;
+
+        let chosen = null;
+        while (state.nextIndex < state.candidates.length) {
+          const target = state.candidates[state.nextIndex++];
+          if (target <= state.finalTarget) continue;
+
+          const cost = targetCost(group, target);
+          const incrementalCost = Math.max(0, cost - state.finalCost);
+          if (incrementalCost > remaining) {
+            state.blockedReason = 'display-budget';
+            break;
+          }
+
+          const prospective = { row, group, target, cost };
+          const prior = selectedByGroup.get(group);
+          const prospectiveSelected = prior
+            ? selected.map((entry) => entry === prior ? prospective : entry)
+            : selected.concat(prospective);
+          const packing = nativePackingPreflight(row, baseline, prospectiveSelected);
+          if (!packing.ok) {
+            state.packingRejected.push({
+              target,
+              reason: packing.reason,
+              atlas: packing.atlas,
+              regression: packing.regressions[0] || null,
+              selectedFailure: packing.selectedFailures[0] || null,
+              error: packing.error || null
+            });
+            displayDiag.nativePackingRejects = (displayDiag.nativePackingRejects || 0) + 1;
+            state.blockedReason = 'native-packing';
+            break;
+          }
+
+          const variant = await textureForTarget(group, target);
+          if (!variant) {
+            state.variantRejected.push(target);
+            continue;
+          }
+
+          chosen = { target, cost, incrementalCost, variant, packing };
+          break;
         }
 
-        const variant = await textureForTarget(group, target);
-        if (!variant) continue;
-        chosen = { target, cost, variant, packing };
-        break;
+        if (!chosen) continue;
+
+        const entry = {
+          row,
+          group,
+          target: chosen.target,
+          texture: chosen.variant.texture,
+          url: chosen.variant.url,
+          cost: chosen.cost,
+          packingAtlas: chosen.packing.atlas
+        };
+        const prior = selectedByGroup.get(group);
+        if (prior) {
+          const index = selected.indexOf(prior);
+          if (index >= 0) selected[index] = entry;
+        } else {
+          selected.push(entry);
+        }
+        selectedByGroup.set(group, entry);
+        remaining -= chosen.incrementalCost;
+        state.finalTarget = chosen.target;
+        state.finalCost = chosen.cost;
+        advanced = true;
       }
 
-      if (!chosen) {
-        const reason = group.sourceCeiling <= currentMax
-          ? 'no-higher-source-or-density-benefit'
-          : (packingRejected.length ? 'native-packing-or-variant-unavailable' : 'display-budget-or-variant-unavailable');
+      if (!advanced) break;
+    }
+
+    displayDiag.progressiveRounds = rounds;
+
+    for (const state of states) {
+      const { group, currentMax } = state;
+      if (group.resolveError) continue;
+
+      const chosen = selectedByGroup.get(group);
+      if (!state.highestCandidate) {
         boundedPush(run.skipped, {
           display: row.key,
           group: group.id,
@@ -831,21 +906,39 @@
           priority: groupPriorityMetrics(group),
           remainingPixels: remaining,
           failedUrls: group.failedUrls.slice(),
-          packingRejected: packingRejected.slice(0, 8)
+          packingRejected: state.packingRejected.slice(0, 8),
+          reason: 'no-higher-source-or-density-benefit'
         });
-        const last = run.skipped[run.skipped.length - 1];
-        if (last) last.reason = reason;
         continue;
       }
 
-      const highestCandidate = candidates.find((size) => size <= desiredUpper) || chosen.target;
-      if (chosen.target < highestCandidate) {
+      if (!chosen) {
+        boundedPush(run.skipped, {
+          display: row.key,
+          group: group.id,
+          repeatCount: group.uniqueKeys.size,
+          hostKeys: Array.from(group.uniqueKeys).slice(0, 24),
+          currentSource: currentMax,
+          sourceCeiling: group.sourceCeiling,
+          desired: group.desired,
+          priority: groupPriorityMetrics(group),
+          remainingPixels: remaining,
+          failedUrls: group.failedUrls.slice(),
+          packingRejected: state.packingRejected.slice(0, 8),
+          reason: state.packingRejected.length || state.variantRejected.length
+            ? 'native-packing-or-variant-unavailable'
+            : 'display-budget-or-variant-unavailable'
+        });
+        continue;
+      }
+
+      if (chosen.target < state.highestCandidate) {
         boundedPush(run.downgraded, {
           display: row.key,
           group: group.id,
-          from: highestCandidate,
+          from: state.highestCandidate,
           to: chosen.target,
-          reason: packingRejected.some((entry) => entry.target > chosen.target)
+          reason: state.packingRejected.length
             ? 'native-packing'
             : 'display-budget',
           repeatCount: group.uniqueKeys.size,
@@ -853,17 +946,6 @@
           priority: groupPriorityMetrics(group)
         });
       }
-
-      remaining -= chosen.cost;
-      selected.push({
-        row,
-        group,
-        target: chosen.target,
-        texture: chosen.variant.texture,
-        url: chosen.variant.url,
-        cost: chosen.cost,
-        packingAtlas: chosen.packing.atlas
-      });
     }
 
     displayDiag.remainingPixelsAfter = remaining;

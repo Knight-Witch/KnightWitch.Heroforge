@@ -2,14 +2,16 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.8 / `0.1.8-detail-pressure-priority`.
-- v0.1.7 live Counting Sheep retained detached native-packer safety, one-shot anti-loop behavior, and healthy core High Res, but the accepted Corvidae Herald pauldrons `k_23/k_25` remained 128px source/128×128 allocation and the six-host Celestial Circlet group was also skipped.
-- Both accepted groups have verified 512 normal sources, desired 512, and zero native-packing rejection. Their skip diagnostics show only `display-budget-or-variant-unavailable` with 29,440 pixels remaining, isolating greedy selection order rather than source availability or packing safety.
-- Runtime metadata gives the pauldrons 69,996 high-resolution faces versus 2,778 on a competing large shield control. v0.1.8 therefore resolves source ceilings before sorting and scores intrinsic mesh-detail pressure from HeroForge `facesHiRez`/faces per currently displayable normal texel, amplified by verified source/effective-detail gain. Physically large but low-detail parts no longer win simply because their native ideal or current allocation is large; zero-benefit groups sink.
-- The detached native `CK.Atlas` no-collateral preflight and v0.1.7 OFF→ON re-arm remain unchanged.
-- Full gates pass: all-part VM 18/18, inherited Texture Quality ownership 4/4 (22/22 combined), runtime delivery 12/12, syntax, manifest/divergence consistency, and git diff checks.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.9 / `0.1.9-progressive-budget`.
+- Live v0.1.8 Counting Sheep is safe and materially improved: 60 active bindings, three downgrades, 27 skips, zero failures. The accepted Corvidae Herald pauldrons `k_23/k_25` now select their verified 512 normal source.
+- Celestial Circlet remained a verified 128→512 candidate with no native-packing rejection but was still skipped on display budget.
+- Runtime evidence isolated the remaining starvation mechanism: tiny 32/64px accessories could take their maximum 512 target in one greedy step, consuming most of the primary display budget before the six-host 128px circlet group was considered.
+- v0.1.9 preserves detail-pressure ranking, source verification/cache behavior, repeated-family atomicity, exact ownership/rollback, OFF→ON re-arm, event-driven observation, and detached native `CK.Atlas` no-collateral preflight. Budget spending is now progressive: each eligible group receives at most one successful resolution step per round before any group advances again.
+- The new constrained regression models five repeated 32px hosts versus six repeated 128px hosts under a shared budget. The 128px group reaches its verified 512 target while the tiny family is downgraded rather than consuming the entire budget first.
+- Full gates pass: all-part VM 19/19 plus inherited ownership 4/4 (23/23 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax, and git diff checks.
+- Feature-registry impact: none. This changes internal selection/budgeting inside the existing Texture Quality provider/service; no feature ID, path ownership, tab/group, or reporter-facing routing changes.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.8 / `1.17.8-detail-pressure-priority` is paired to immutable payload `d579ca8981ad1bb0dbe7a434e7d7e36a5b3630eb`, containing all-part v0.1.8 / `0.1.8-detail-pressure-priority`.
+Canonical Dev remains v1.17.8 / `1.17.8-detail-pressure-priority`, immutable payload `d579ca8981ad1bb0dbe7a434e7d7e36a5b3630eb`, until v0.1.9 receives a new immutable Dev pairing.
