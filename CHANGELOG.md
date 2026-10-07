@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.4 / `1.17.4-deferred-initial-coverage` payload candidate is being prepared from the validated v0.1.4 tree. The launcher intentionally retains the prior v1.17.3 payload pin until this candidate commit exists.
+Dev v1.17.4 / `1.17.4-deferred-initial-coverage` is paired to immutable payload `84e69975abfab3a68371e02604fbfdc27997facf`, containing all-part v0.1.4 / `0.1.4-deferred-initial-coverage`.

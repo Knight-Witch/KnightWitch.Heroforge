@@ -10,5 +10,6 @@
 - PASS: v0.1.3 event-driven change observation remains: 600 ms outside-change debounce, owned-lifecycle suppression, reversible figure-data observers, outside-edit preservation, and no renderer-signature polling.
 - PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 19/19, inherited runtime-delivery 12/12, manifest/divergence validation, and git diff check.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.4 / `1.17.4-deferred-initial-coverage`; prior payload pin is retained until the payload candidate commit exists.
-- PENDING: pin the exact candidate SHA, verify recovery parity, then Counting Sheep initial-coverage + anti-loop proof and remaining fixture/lifecycle regression.
+- PASS: Dev launcher pins exact immutable v1.17.4 payload candidate `84e69975abfab3a68371e02604fbfdc27997facf`; candidate manifest contains all-part v0.1.4 / `0.1.4-deferred-initial-coverage`.
+- PENDING: verify recovery parity, then Counting Sheep initial-coverage + anti-loop proof and remaining fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.
