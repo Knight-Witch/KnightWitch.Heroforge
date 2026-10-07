@@ -13,5 +13,6 @@
 - PASS: focused VM Texture Quality tests pass 17/17, including polling-loop prevention, figure replacement, failure isolation, cache reuse, repeated-instance budgeting, collateral detection, outside-edit preservation, multi-display enumeration, and disposal.
 - PASS: full static/runtime-delivery gates pass: module syntax, JSON/manifest/divergence validation, git diff check, Texture Quality VM 17/17, inherited runtime-delivery 12/12.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.1 / `1.17.1-all-part-stability`; prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact new candidate SHA, verify provider-independent parity, then Counting Sheep revalidation and the remaining required fixture/lifecycle matrix.
+- PASS: Dev launcher pins exact immutable v1.17.1 payload candidate `297dd62e0ea5686a36407edb52c02241c2a656da`; candidate manifest contains all-part v0.1.1 / `0.1.1-owned-density-structural-sync`.
+- PENDING: verify provider-independent parity, then Counting Sheep revalidation and the remaining required fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

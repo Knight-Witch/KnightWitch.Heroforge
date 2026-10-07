@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.1 / `1.17.1-all-part-stability` payload candidate is being prepared from the validated v0.1.1 tree. Until the follow-up pairing commit pins that exact candidate SHA, the moving launcher still references the prior immutable v1.17.0 payload `69d7e4eecd371c0d36a49712f986c36a3073661a`.
+Dev v1.17.1 / `1.17.1-all-part-stability` is paired to immutable payload `297dd62e0ea5686a36407edb52c02241c2a656da`, containing all-part v0.1.1 / `0.1.1-owned-density-structural-sync`.
