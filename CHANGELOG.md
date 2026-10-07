@@ -13,4 +13,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev v1.17.6 / `1.17.6-native-packing-preflight` still pins immutable payload `7248b54d8e1670056b63b845072973f0e25c8cec` containing all-part v0.1.6. v0.1.7 requires a new immutable Dev pairing before live revalidation.
+Dev v1.17.7 / `1.17.7-native-ideal-priority` payload candidate is being prepared from the validated v0.1.7 tree. The launcher intentionally retains the prior v1.17.6 payload pin until the candidate commit exists.

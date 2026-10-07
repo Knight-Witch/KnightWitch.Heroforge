@@ -11,5 +11,6 @@
 - PASS: v0.1.7 uses HeroForge intrinsic ideal-texture metadata for group priority before repeat count/deficit, without using bake ceiling or current allocation as the primary importance signal.
 - PASS: v0.1.6 detached native `CK.Atlas` packing preflight remains intact: unsafe density targets are downgraded/skipped before live mutation and unrelated baseline hosts may not shrink.
 - PASS: full gates pass: all-part VM 18/18, inherited ownership 4/4 (22/22 combined), runtime-delivery 12/12, module syntax, manifest/divergence consistency, and git diff check.
-- PENDING: new immutable Dev payload pairing and recovery parity, then Counting Sheep OFF→ON revalidation and the remaining seven-fixture/lifecycle matrix.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.7 / `1.17.7-native-ideal-priority`; the prior payload pin is intentionally retained until the payload candidate commit exists.
+- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep OFF→ON revalidation and the remaining seven-fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.
