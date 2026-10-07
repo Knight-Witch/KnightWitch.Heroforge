@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "channel": "public-beta",
-  "revision": 3,
-  "updatedAt": "2026-10-07T15:30:00Z",
+  "revision": 4,
+  "updatedAt": "2026-10-07T21:30:00Z",
   "minimumStableVersion": "2.4.2",
   "reporting": {
     "productId": "witch-dock",
@@ -29,11 +29,11 @@
     {
       "id": "high-res-phase-2",
       "title": "High Res Texture Phase 2",
-      "version": "0.1.0",
-      "build": "0.1.0-stable-compat-phase2",
+      "version": "0.1.1",
+      "build": "0.1.1-native-baseline-preflight",
       "status": "active",
       "defaultEnabled": false,
-      "payloadRef": "58ea087c63f61d945396a20eb9bffca8f383c9ee",
+      "payloadRef": "cf0c24a4c31571df53f6c24b4e5dad3ac6bfc2d2",
       "path": "beta/modules/High_Res_Phase_2.js",
       "minimumStableVersion": "2.4.2",
       "diagnosticProviderIds": [],

@@ -147,3 +147,15 @@ Live runtime evidence isolates the cause:
 All-part v0.1.13 / `0.1.13-native-baseline-preflight` corrects only that detached safety model: it passes the current live baseline allocation edges as native `minimumSizes` during preflight. This prevents the synthetic preflight from inventing unrelated shrinkage before evaluating a candidate. It does **not** relax the real runtime safety boundary: after the actual HeroForge rebuild, collateral detection still checks every live allocation and the existing owned rollback still rejects/restores any genuine shrink.
 
 The Stable-compatible Beta wrapper is bumped to v0.1.1 / `0.1.1-native-baseline-preflight` and embeds exact all-part v0.1.13. Focused all-part, ownership, Beta-wrapper, and Beta-host tests pass 41/41. A new immutable package payload and manifest revision are required before live retest; manifest r3 remains default-OFF.
+
+
+### Manifest revision 4 corrective machine gate
+
+Revision 4 replaces only the `high-res-phase-2` assignment:
+
+- version/build: v0.1.1 / `0.1.1-native-baseline-preflight`
+- immutable payload: `cf0c24a4c31571df53f6c24b4e5dad3ac6bfc2d2`
+- `defaultEnabled: false`
+- Stable minimum remains v2.4.2.
+
+Because Amanda's local preference for this module is already ON, a controlled manifest refresh may replace and reactivate the module in her current session. Treat that refresh as one at-most-once mutation and read back before any retry. The required live proof is specific: both bird-shield families and `fanBattle` must gain the intended density without shrinking `eyebrowL` below its 128x128 baseline or producing any unrelated collateral; then compare total skipped groups/rejection reasons, rollback once, and re-enable for human visual confirmation.
