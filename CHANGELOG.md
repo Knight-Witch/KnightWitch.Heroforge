@@ -13,4 +13,4 @@
 
 ## Latest Dev delivery context
 
-Dev launcher v1.17.12 / `1.17.12-independent-normal-headroom` is prepared with all-part v0.1.12. The prior payload pin is intentionally retained only until this payload-candidate commit has an immutable SHA; the following pairing commit will pin that exact candidate.
+Dev v1.17.12 / `1.17.12-independent-normal-headroom` is paired to immutable payload `0eb197e36e4231c6dde23001f74eabf04179cc6b`, containing all-part v0.1.12 / `0.1.12-independent-normal-headroom`.
