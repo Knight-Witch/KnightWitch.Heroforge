@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.6 / `1.17.6-native-packing-preflight` payload candidate is being prepared from the validated v0.1.6 tree. The launcher intentionally retains the v1.17.5 payload pin until that candidate commit exists.
+Dev v1.17.6 / `1.17.6-native-packing-preflight` is paired to immutable payload `7248b54d8e1670056b63b845072973f0e25c8cec`, containing all-part v0.1.6 / `0.1.6-native-packing-preflight`.

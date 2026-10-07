@@ -13,5 +13,6 @@
 - PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 20/20, inherited runtime-delivery 12/12, and git diff check.
 - PASS: manifest/module URL and DEV_DIVERGENCES consistency gates pass for v0.1.6.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.6 / `1.17.6-native-packing-preflight`; the prior payload pin is intentionally retained until the candidate commit exists.
-- PENDING: pin the exact immutable candidate, verify recovery parity, then Counting Sheep deterministic selection + anti-loop proof and remaining fixture/lifecycle regression.
+- PASS: Dev launcher pins exact immutable v1.17.6 payload candidate `7248b54d8e1670056b63b845072973f0e25c8cec`; candidate manifest contains all-part v0.1.6 / `0.1.6-native-packing-preflight`.
+- PENDING: verify recovery parity, then Counting Sheep deterministic selection + anti-loop proof and remaining fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.
