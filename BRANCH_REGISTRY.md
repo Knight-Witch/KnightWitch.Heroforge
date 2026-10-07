@@ -42,6 +42,7 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 | Branch | Owner / source | Why protected | Exit condition |
 |---|---|---|---|
 | `wd/25-texture-coverage` | #25 | Dev-only coverage closure, owned allocation policy and fixture validation. | After validated integration and remaining #25 gates, preserve evidence and queue exact head; no parallel #25 branch. |
+| `wd/107-public-beta-tester` | #107 | Public Beta Tester bootstrap, manifest/module lifecycle, visible beta labeling, and targeted QA reporting integration. | After beta infrastructure is validated and integrated into canonical Dev, preserve evidence and queue exact head; any future permanent beta delivery ref requires separate explicit permanent-promotion approval. |
 | `wd/59-decals-diagnostic-provider` | #59 | Paused Decals provider checkpoint with unique unmerged work. | When #59 no longer needs the branch, validate preservation, remove this row, and add the exact head to `BRANCH_DELETION_QUEUE.md`. |
 | `wd/88-diagnostic-capture-architecture` | #88 | Authoritative diagnostic capture/provider design source still referenced by active work. | When #88/design ownership is fully absorbed or retired, validate preservation, remove this row, and queue the exact head for deletion. |
 

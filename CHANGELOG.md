@@ -2,15 +2,13 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.12 / `0.1.12-independent-normal-headroom`.
-- Live v0.1.11 on Counting Sheep confirmed Amanda's visual comparison: Witch Dock improved the scene but still left the lion torque and Corvidae Herald pauldrons on 256x256 normals/allocations and all six Celestial Circlet hosts on 128x128 normals/allocations, below the prior 512 visual control.
-- This is not a missing-resource problem. The 512 normal variants are valid, and the prior bounded causal probe established that replacing the displayed normal maps with verified 512 variants produced the accepted sharpness without independently requiring Lob's global pixels-per-unit/output-size/giant-atlas patches.
-- v0.1.12 separates those two channels. Highest verified normal-map source headroom can bind directly to the rendered material even when the bounded atlas-density planner cannot safely enlarge the paint/mask rectangle. Atlas density remains under the existing 32 MP ceiling, marginal-value selection, repeated-family atomicity, and detached native `CK.Atlas` no-collateral proof.
-- The change preserves pass-scoped negative caching, clean `_usedTextureSize` restore ordering, exact ownership/outside-edit preservation, OFF->ON re-arm, event-driven observation, body/face separation, and failure isolation.
-- Focused all-part + ownership regression suite passes 28/28. New coverage proves a 128->512 normal source can bind with a completely exhausted atlas-density budget while `atlasScale`, `_usedTextureSize`, and the 128x128 allocation remain untouched.
-- Feature-registry impact: none. No fixture/item/category allowlist, blanket scale multiplier, CreationKit global patch, or Stable/public change is introduced.
-- Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
+- #107 Public Beta Tester workstream opened and ACTIVE PROTECTED branch `wd/107-public-beta-tester` registered before implementation.
+- Scope is a lightweight standalone Beta Tester userscript that layers explicitly allowlisted beta modules onto normal Public Stable without replacing the Stable launcher.
+- Planned runtime shape keeps Stable startup independent: Beta Tester owns its own manifest fetch, module lifecycle, visible IN BETA labeling, local enable/disable state, and failure isolation.
+- Beta module delivery will use versioned immutable payload references rather than executing arbitrary current-Dev code.
+- Targeted Beta/QA reporting will reuse Witch Dock's existing reporter and diagnostics architecture rather than creating a second reporting backend; HF.Status taxonomy/backend changes remain owned by HF.Status.
+- No Public Stable runtime/module behavior changed in this registration commit.
 
 ## Latest Dev delivery context
 
-Dev v1.17.12 / `1.17.12-independent-normal-headroom` is paired to immutable payload `0eb197e36e4231c6dde23001f74eabf04179cc6b`, containing all-part v0.1.12 / `0.1.12-independent-normal-headroom`.
+Canonical Dev remains v1.17.12 / `1.17.12-independent-normal-headroom`, paired to immutable payload `0eb197e36e4231c6dde23001f74eabf04179cc6b`.
