@@ -261,6 +261,45 @@ test('group priority favors intrinsic detail pressure and verified headroom over
   );
 });
 
+test('intrinsic floors bound tiny parts and premium ordering favors larger HeroForge-native demand', () => {
+  const h = harness();
+  const makeGroup = ({ id, source, allocation, ideal, ceiling, desired = ceiling, repeats = 1 }) => ({
+    id,
+    nativeIdeal: ideal,
+    desired,
+    sourceCeiling: ceiling,
+    minEffectiveDetail: Math.min(source, allocation),
+    maxDetailPressure: 0,
+    maxAllocation: allocation,
+    existingBySize: new Map([[source, {}]]),
+    uniqueKeys: new Set(Array.from({ length: repeats }, (_, index) => `${id}-${index}`))
+  });
+
+  const tiny = makeGroup({
+    id: 'tiny',
+    source: 32,
+    allocation: 32,
+    ideal: 55,
+    ceiling: 512,
+    repeats: 5
+  });
+  const circletLike = makeGroup({
+    id: 'circlet-like',
+    source: 128,
+    allocation: 128,
+    ideal: 184,
+    ceiling: 512,
+    repeats: 6
+  });
+
+  assert.equal(h.api.__test.groupIntrinsicFloorTarget(tiny), 64);
+  assert.equal(h.api.__test.groupIntrinsicFloorTarget(circletLike), 256);
+  assert.deepEqual(
+    [tiny, circletLike].sort(h.api.__test.premiumPriority).map((entry) => entry.id),
+    ['circlet-like', 'tiny']
+  );
+});
+
 test('positive and negative source caching avoid duplicate resource loads', async () => {
   const store = {};
   const calls = new Map();

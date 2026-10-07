@@ -2,16 +2,16 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.9 / `0.1.9-progressive-budget`.
-- Live v0.1.8 Counting Sheep is safe and materially improved: 60 active bindings, three downgrades, 27 skips, zero failures. The accepted Corvidae Herald pauldrons `k_23/k_25` now select their verified 512 normal source.
-- Celestial Circlet remained a verified 128→512 candidate with no native-packing rejection but was still skipped on display budget.
-- Runtime evidence isolated the remaining starvation mechanism: tiny 32/64px accessories could take their maximum 512 target in one greedy step, consuming most of the primary display budget before the six-host 128px circlet group was considered.
-- v0.1.9 preserves detail-pressure ranking, source verification/cache behavior, repeated-family atomicity, exact ownership/rollback, OFF→ON re-arm, event-driven observation, and detached native `CK.Atlas` no-collateral preflight. Budget spending is now progressive: each eligible group receives at most one successful resolution step per round before any group advances again.
-- The new constrained regression models five repeated 32px hosts versus six repeated 128px hosts under a shared budget. The 128px group reaches its verified 512 target while the tiny family is downgraded rather than consuming the entire budget first.
-- Full gates pass: all-part VM 19/19 plus inherited ownership 4/4 (23/23 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax, and git diff checks.
-- Feature-registry impact: none. This changes internal selection/budgeting inside the existing Texture Quality provider/service; no feature ID, path ownership, tab/group, or reporter-facing routing changes.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.10 / `0.1.10-intrinsic-floor-headroom`.
+- Live v0.1.9 Counting Sheep is safe and broad: 91 active bindings, 23 deliberate downgrades, 12 skips, and zero failures. However both accepted Corvidae Herald pauldrons and all six Celestial Circlet hosts were bound to shared 256 normal sources and packed at 256×256, below the previously accepted 512 control.
+- The 512 failures had different causes: pauldrons reached a detached native-packing rejection after lower-priority progressive upgrades had already consumed packing headroom; circlet reached a display-budget stop.
+- v0.1.10 divides spending into two phases. First, each eligible group advances only toward the next power-of-two that covers HeroForge's own native ideal. Second, remaining verified source/allocation headroom is spent in descending native-ideal order.
+- This bounds tiny 32/64px accessories at small intrinsic floors before larger/significant parts compete for premium headroom. There are no fixture names, item/category allowlists, blanket scale multipliers, global CreationKit patches, or relaxed no-collateral checks.
+- Repeated families remain atomic. Every density step still passes the detached native `CK.Atlas` preflight before live mutation, and exact ownership/rollback, cache sharing, OFF→ON re-arm, event-driven observation, body/face isolation, and failure isolation remain intact.
+- Full gates pass: all-part 20/20 plus inherited ownership 4/4 (24/24 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax, and git diff checks. New contracts cover native ideal 55→64, circlet-like ideal 184→256, premium native-ideal ordering, repeated-family starvation, packing safety, rollback, OFF→ON, and anti-loop behavior.
+- Feature-registry impact: none. This is internal selection/budgeting inside the existing Texture Quality service; no feature ID, module ownership/path, tab/group, or reporter-facing routing changes.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.9 / `1.17.9-progressive-budget` is paired to immutable payload `8f243042c2a704486293c197d0b1f58b611f9fdf`, containing all-part v0.1.9 / `0.1.9-progressive-budget`.
+Canonical Dev remains v1.17.9 / `1.17.9-progressive-budget`, immutable payload `8f243042c2a704486293c197d0b1f58b611f9fdf`, until v0.1.10 receives a new immutable Dev pairing.

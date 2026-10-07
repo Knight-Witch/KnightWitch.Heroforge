@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.9
+// @version      0.1.10
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.9';
-  const BUILD = '0.1.9-progressive-budget';
+  const VERSION = '0.1.10';
+  const BUILD = '0.1.10-intrinsic-floor-headroom';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -287,6 +287,14 @@
     if (!(numeric > 0)) return 0;
     for (const size of PROBE_SIZES) if (size <= numeric) return size;
     return 0;
+  }
+
+  function ceilTarget(value) {
+    const numeric = Number(value);
+    if (!(numeric > 0)) return 0;
+    const ascending = PROBE_SIZES.slice().sort((a, b) => a - b);
+    for (const size of ascending) if (size >= numeric) return size;
+    return ascending[ascending.length - 1] || 0;
   }
 
   function nativeIdeal(part, fallback = 0) {
@@ -565,6 +573,14 @@
     );
   }
 
+  function groupIntrinsicFloorTarget(group) {
+    const existingSource = Math.max(...Array.from(group.existingBySize.keys()));
+    const current = Math.max(existingSource, group.maxAllocation || 0);
+    const ceiling = groupPriorityTarget(group);
+    const intrinsic = ceilTarget(group.nativeIdeal || current) || current;
+    return Math.max(current, Math.min(ceiling, intrinsic));
+  }
+
   function groupPriorityMetrics(group) {
     const target = groupPriorityTarget(group);
     const source = Math.max(1, Math.max(...Array.from(group.existingBySize.keys())));
@@ -599,6 +615,16 @@
     if (a.uniqueKeys.size !== b.uniqueKeys.size) return a.uniqueKeys.size - b.uniqueKeys.size;
     if (bm.target !== am.target) return bm.target - am.target;
     if (b.maxAllocation !== a.maxAllocation) return b.maxAllocation - a.maxAllocation;
+    return a.id.localeCompare(b.id);
+  }
+
+  function premiumPriority(a, b) {
+    if (b.nativeIdeal !== a.nativeIdeal) return b.nativeIdeal - a.nativeIdeal;
+    const am = groupPriorityMetrics(a);
+    const bm = groupPriorityMetrics(b);
+    if (bm.score !== am.score) return bm.score - am.score;
+    if (a.uniqueKeys.size !== b.uniqueKeys.size) return a.uniqueKeys.size - b.uniqueKeys.size;
+    if (bm.target !== am.target) return bm.target - am.target;
     return a.id.localeCompare(b.id);
   }
 
@@ -781,6 +807,7 @@
 
       const currentMax = Math.max(...group.hosts.map((host) => host.currentSource));
       const desiredUpper = Math.max(currentMax, Math.min(group.desired, group.sourceCeiling, qualityCeiling));
+      const floorTarget = Math.max(currentMax, Math.min(desiredUpper, groupIntrinsicFloorTarget(group)));
       const hasBenefit = (target) => group.hosts.some((host) => (
         target > host.currentSource ||
         target > Math.max(host.allocation.width, host.allocation.height)
@@ -793,6 +820,7 @@
         group,
         currentMax,
         desiredUpper,
+        floorTarget,
         candidates,
         nextIndex: 0,
         highestCandidate: candidates.length ? candidates[candidates.length - 1] : 0,
@@ -800,94 +828,119 @@
         finalCost: 0,
         packingRejected: [],
         variantRejected: [],
-        blockedReason: null
+        blockedReason: null,
+        blockedPhase: null
       };
     });
 
-    // Spend scarce atlas budget progressively. Each eligible group gets at most one
-    // successful resolution step per round before any group can advance again.
-    // This prevents tiny low-resolution accessories from jumping straight to their
-    // maximum target and starving larger groups, while keeping repeated hosts atomic.
-    let rounds = 0;
-    while (rounds < PROBE_SIZES.length) {
-      rounds += 1;
-      let advanced = false;
+    async function advanceState(state, maxTarget, phase) {
+      const { group } = state;
+      if (group.resolveError || state.blockedReason || state.nextIndex >= state.candidates.length) return false;
 
-      for (const state of states) {
-        const { group } = state;
-        if (group.resolveError || state.blockedReason || state.nextIndex >= state.candidates.length) continue;
+      let chosen = null;
+      while (state.nextIndex < state.candidates.length) {
+        const target = state.candidates[state.nextIndex];
+        if (target > maxTarget) break;
+        state.nextIndex += 1;
+        if (target <= state.finalTarget) continue;
 
-        let chosen = null;
-        while (state.nextIndex < state.candidates.length) {
-          const target = state.candidates[state.nextIndex++];
-          if (target <= state.finalTarget) continue;
-
-          const cost = targetCost(group, target);
-          const incrementalCost = Math.max(0, cost - state.finalCost);
-          if (incrementalCost > remaining) {
-            state.blockedReason = 'display-budget';
-            break;
-          }
-
-          const prospective = { row, group, target, cost };
-          const prior = selectedByGroup.get(group);
-          const prospectiveSelected = prior
-            ? selected.map((entry) => entry === prior ? prospective : entry)
-            : selected.concat(prospective);
-          const packing = nativePackingPreflight(row, baseline, prospectiveSelected);
-          if (!packing.ok) {
-            state.packingRejected.push({
-              target,
-              reason: packing.reason,
-              atlas: packing.atlas,
-              regression: packing.regressions[0] || null,
-              selectedFailure: packing.selectedFailures[0] || null,
-              error: packing.error || null
-            });
-            displayDiag.nativePackingRejects = (displayDiag.nativePackingRejects || 0) + 1;
-            state.blockedReason = 'native-packing';
-            break;
-          }
-
-          const variant = await textureForTarget(group, target);
-          if (!variant) {
-            state.variantRejected.push(target);
-            continue;
-          }
-
-          chosen = { target, cost, incrementalCost, variant, packing };
+        const cost = targetCost(group, target);
+        const incrementalCost = Math.max(0, cost - state.finalCost);
+        if (incrementalCost > remaining) {
+          state.blockedReason = 'display-budget';
+          state.blockedPhase = phase;
           break;
         }
 
-        if (!chosen) continue;
-
-        const entry = {
-          row,
-          group,
-          target: chosen.target,
-          texture: chosen.variant.texture,
-          url: chosen.variant.url,
-          cost: chosen.cost,
-          packingAtlas: chosen.packing.atlas
-        };
+        const prospective = { row, group, target, cost };
         const prior = selectedByGroup.get(group);
-        if (prior) {
-          const index = selected.indexOf(prior);
-          if (index >= 0) selected[index] = entry;
-        } else {
-          selected.push(entry);
+        const prospectiveSelected = prior
+          ? selected.map((entry) => entry === prior ? prospective : entry)
+          : selected.concat(prospective);
+        const packing = nativePackingPreflight(row, baseline, prospectiveSelected);
+        if (!packing.ok) {
+          state.packingRejected.push({
+            target,
+            phase,
+            reason: packing.reason,
+            atlas: packing.atlas,
+            regression: packing.regressions[0] || null,
+            selectedFailure: packing.selectedFailures[0] || null,
+            error: packing.error || null
+          });
+          displayDiag.nativePackingRejects = (displayDiag.nativePackingRejects || 0) + 1;
+          state.blockedReason = 'native-packing';
+          state.blockedPhase = phase;
+          break;
         }
-        selectedByGroup.set(group, entry);
-        remaining -= chosen.incrementalCost;
-        state.finalTarget = chosen.target;
-        state.finalCost = chosen.cost;
-        advanced = true;
+
+        const variant = await textureForTarget(group, target);
+        if (!variant) {
+          state.variantRejected.push({ target, phase });
+          continue;
+        }
+
+        chosen = { target, cost, incrementalCost, variant, packing };
+        break;
       }
 
+      if (!chosen) return false;
+
+      const entry = {
+        row,
+        group,
+        target: chosen.target,
+        texture: chosen.variant.texture,
+        url: chosen.variant.url,
+        cost: chosen.cost,
+        packingAtlas: chosen.packing.atlas
+      };
+      const prior = selectedByGroup.get(group);
+      if (prior) {
+        const index = selected.indexOf(prior);
+        if (index >= 0) selected[index] = entry;
+      } else {
+        selected.push(entry);
+      }
+      selectedByGroup.set(group, entry);
+      remaining -= chosen.incrementalCost;
+      state.finalTarget = chosen.target;
+      state.finalCost = chosen.cost;
+      return true;
+    }
+
+    // Phase 1: bring eligible groups toward HeroForge's own intrinsic ideal without
+    // allowing any group to consume premium headroom early. Repeated families remain
+    // atomic and every step still passes the detached native packer.
+    let floorRounds = 0;
+    while (floorRounds < PROBE_SIZES.length) {
+      floorRounds += 1;
+      let advanced = false;
+      for (const state of states) {
+        if (state.finalTarget >= state.floorTarget) continue;
+        if (await advanceState(state, state.floorTarget, 'intrinsic-floor')) advanced = true;
+      }
       if (!advanced) break;
     }
 
-    displayDiag.progressiveRounds = rounds;
+    // Phase 2: spend remaining headroom by HeroForge native ideal first. This keeps
+    // physically/significantly sized parts ahead of tiny accessories once each group
+    // has had a fair chance to reach its native detail floor.
+    const premiumStates = states.slice().sort((a, b) => premiumPriority(a.group, b.group));
+    let premiumRounds = 0;
+    while (premiumRounds < PROBE_SIZES.length) {
+      premiumRounds += 1;
+      let advanced = false;
+      for (const state of premiumStates) {
+        if (state.finalTarget >= state.highestCandidate) continue;
+        if (await advanceState(state, state.highestCandidate, 'premium-headroom')) advanced = true;
+      }
+      if (!advanced) break;
+    }
+
+    displayDiag.floorRounds = floorRounds;
+    displayDiag.premiumRounds = premiumRounds;
+    displayDiag.progressiveRounds = floorRounds + premiumRounds;
 
     for (const state of states) {
       const { group, currentMax } = state;
@@ -903,6 +956,8 @@
           currentSource: currentMax,
           sourceCeiling: group.sourceCeiling,
           desired: group.desired,
+          floorTarget: state.floorTarget,
+          blockedPhase: state.blockedPhase,
           priority: groupPriorityMetrics(group),
           remainingPixels: remaining,
           failedUrls: group.failedUrls.slice(),
@@ -921,13 +976,15 @@
           currentSource: currentMax,
           sourceCeiling: group.sourceCeiling,
           desired: group.desired,
+          floorTarget: state.floorTarget,
+          blockedPhase: state.blockedPhase,
           priority: groupPriorityMetrics(group),
           remainingPixels: remaining,
           failedUrls: group.failedUrls.slice(),
           packingRejected: state.packingRejected.slice(0, 8),
-          reason: state.packingRejected.length || state.variantRejected.length
+          reason: state.blockedReason === 'native-packing'
             ? 'native-packing-or-variant-unavailable'
-            : 'display-budget-or-variant-unavailable'
+            : (state.variantRejected.length ? 'source-variant-unavailable' : 'display-budget-or-variant-unavailable')
         });
         continue;
       }
@@ -943,6 +1000,8 @@
             : 'display-budget',
           repeatCount: group.uniqueKeys.size,
           hostKeys: Array.from(group.uniqueKeys).slice(0, 24),
+          floorTarget: state.floorTarget,
+          blockedPhase: state.blockedPhase,
           priority: groupPriorityMetrics(group)
         });
       }
@@ -1033,6 +1092,7 @@
         target,
         source: selection.url,
         repeatCount: group.uniqueKeys.size,
+        intrinsicFloorTarget: groupIntrinsicFloorTarget(group),
         priority: groupPriorityMetrics(group),
         needsDensity
       });
@@ -1549,12 +1609,15 @@
     __test: {
       parseNormalSource,
       normalizeTarget,
+      ceilTarget,
       nativeIdeal,
       detailFaces,
       detailPressure,
       idealTarget,
+      groupIntrinsicFloorTarget,
       groupPriorityMetrics,
       groupPriority,
+      premiumPriority,
       targetCost,
       restoreIfOwned,
       loadVariant,
