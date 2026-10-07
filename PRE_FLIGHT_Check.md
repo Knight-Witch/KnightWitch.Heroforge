@@ -1,14 +1,11 @@
 # Pre-Flight Check
 
-## 2026-10-07 — Public Beta r6 live smoke PASS
+## 2026-10-07 — #25 heavy-build BALLROOM fixture routing
 
-- PASS HUMAN: Amanda confirmed the corrected shield/fan visuals look good.
-- PASS: focused all-part/ownership/Beta suites were 42/42 before r6 integration.
-- PASS: manifest r6 is live with exactly one assigned module, `high-res-phase-2` v0.1.2 / `0.1.2-native-shadow-preflight`, immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`.
-- PASS #4657: Beta host reports revision 6, one module/one active, no manifest/module error.
-- PASS #4657: Stable Native Reconcile remains 0.3.8; Beta priority remains 0.1.2; all-part remains 0.1.14.
-- PASS #4657: Phase 2 remains at 104 active bindings, idle with no busy/queued/change-pending state.
-- PASS #4657: `lastRun.startedAt` stayed exactly `1791412230830`, proving r6 manifest cleanup caused no coverage rerun/churn.
-- PASS: obsolete `beta-channel-smoke` runtime record is gone after manifest reconciliation.
-- Public Stable source remains unchanged; no Stable promotion is authorized.
-- This documentation-only checkpoint changes no runtime/module/manifest/public behavior.
+- PASS: canonical #25 branch `wd/25-texture-coverage` and `WITCH_DEV_MAIN` were both at `80960736f1fc2c3490ebd72b340a76140962aa95` before this documentation-only update.
+- PASS: private `Counting Sheep_BALLROOM.json` is identified by SHA-256 `07f1f7ad8587ee5043f99241885f60c892cdbfccb115ee43a5c6587476a64501`; the JSON itself is not added to the repository.
+- PASS: static parse confirms root `humanoidCount=2`, `kitbashed=true`, 427 kit entries, 431 transform hosts, 55 atlasScale entries, with kit keys through at least `k_468`; nested baseItem has 20 kit entries and 23 transform hosts.
+- PASS: fixture role is explicit: primary heavy-build/native ceiling discriminator first, Phase 2 recovery fixture second.
+- PASS: ordinary Counting Sheep remains the positive control; the new fixture does not replace prior accepted coverage evidence.
+- PASS: no blanket scale/atlas policy is authorized from this fixture without live ceiling evidence.
+- No runtime/module/manifest/public behavior changed.
