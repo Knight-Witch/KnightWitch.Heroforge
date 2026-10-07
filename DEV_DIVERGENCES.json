@@ -69,7 +69,7 @@
     {
       "issue": 25,
       "status": "dev-implementation-validation",
-      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.5 retains reversible debounced live figure-data change(...) observation and owned-lifecycle suppression, and preserves the single deferred initial-coverage obligation until runCoverage actually passes its readiness guard and starts.",
+      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.6 retains reversible debounced live figure-data change(...) observation and owned-lifecycle suppression, preserves the deferred initial-coverage obligation, and preflights every density candidate through HeroForge's own detached CK.Atlas packing algorithm before live mutation.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Active_Decal_Priority.js",
@@ -78,7 +78,7 @@
       ],
       "acceptance": [
         "Automatic enable and scene membership continue through the public owned entry; existing readiness/retries remain preserved.",
-        "Eligible rendered URL-backed normal bindings are resolved dynamically, cached by URL, budgeted per display/group, and never improve by downsizing unrelated hosts.",
+        "Eligible rendered URL-backed normal bindings are resolved dynamically, cached by URL, budgeted per display/group, and density candidates are accepted/downgraded/skipped only after detached native CK.Atlas packing proves selected targets fit without downsizing any baseline host.",
         "Body/face derived targets remain under Native Reconcile; Active Decal Priority retains its existing accessory/atlas ownership.",
         "OFF, failure, scene replacement, and disposal restore only values still owned by the all-part service; later outside edits survive.",
         "The 250 ms Texture Quality UI refresh poll is observational after one required initial attach-ready pass: actual outside figure-data change(...) calls set one debounced pending coverage pass, while Witch Dock-owned enable/reconcile/disable/density lifecycle calls are suppressed and cannot self-trigger coverage.",

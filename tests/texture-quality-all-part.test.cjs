@@ -36,19 +36,50 @@ function coreService({
   return core;
 }
 
-function harness({ character = null, resources = null, settings = null, coreOptions = null } = {}) {
+function harness({
+  character = null,
+  resources = null,
+  settings = null,
+  coreOptions = null,
+  atlasCtor = null
+} = {}) {
   const core = coreService(coreOptions || {});
   const original = { ...core };
+  const effectiveSettings = settings || { textureWidthMax: 1024, textureHeightMax: 1024 };
+  const DefaultAtlas = class {
+    constructor(parts, width, height, caps, isUHD, scale = {}) {
+      this.width = width || effectiveSettings.textureWidthMax;
+      this.height = height || effectiveSettings.textureHeightMax;
+      this._sizes = {};
+      for (const [key, part] of Object.entries(parts || {})) {
+        const base = Number(part.__testAllocation) || 128;
+        const baseScale = Number(part.__testScale) || 1;
+        const nextScale = Number(scale[key]);
+        let edge = base;
+        if (Number.isFinite(nextScale) && nextScale > baseScale) {
+          edge = Math.round(base * (nextScale / baseScale));
+        }
+        const cap = Number(part.bakeSize) || Number.POSITIVE_INFINITY;
+        this._sizes[key] = Math.min(edge, cap);
+      }
+    }
+    getUV(key) {
+      const edge = this._sizes[key];
+      if (!(edge > 0)) return null;
+      return { x: 0, y: 0, z: edge / this.width, w: edge / this.height };
+    }
+  };
   const w = {
     KWTextureQualityNativeReconcile: core,
     CK: {
       character,
+      Atlas: atlasCtor || DefaultAtlas,
       Resources: resources || {
         getResource: () => Promise.reject(new Error('missing')),
         getNow: () => null,
         unregister() {}
       },
-      Settings: settings || { textureWidthMax: 1024, textureHeightMax: 1024 },
+      Settings: effectiveSettings,
       GameLoop: { requestRenderRefresh() {} }
     }
   };
@@ -97,7 +128,7 @@ function displayFixture({
       z: allocationSize / atlasSize,
       w: allocationSize / atlasSize
     };
-    parts[key] = { id: index + 1, name: key, bakeSize, _usedTextureSize: usedSize };
+    parts[key] = { id: index + 1, name: key, bakeSize, _usedTextureSize: usedSize, __testAllocation: allocationSize, __testScale: 1 };
     meshes[key] = {
       material: {
         uniforms: {
@@ -109,6 +140,7 @@ function displayFixture({
   });
   const data = {
     atlasScale,
+    isUHD: () => false,
     changeCalls: 0,
     change(...args) {
       data.changeCalls += 1;
@@ -229,6 +261,68 @@ test('budget planning downgrades a repeated class instead of exhausting a displa
   assert.equal(run.downgraded.length, 1);
   assert.equal(run.downgraded[0].from, 512);
   assert.equal(run.downgraded[0].to, 256);
+});
+
+test('native packing preflight downgrades before live mutation when a higher target would shrink another host', async () => {
+  const fixture = displayFixture({
+    keys: ['a', 'b'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024,
+    sharedSource: 'asset'
+  });
+  fixture.meshes.b.material.uniforms.normalMap.value = texture('/textures/control_nrml_128.webp', 128);
+  fixture.parts.b.bakeSize = 128;
+
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (!url.includes('/asset_') || ![256, 512].includes(size)) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+
+  class PackingAtlas {
+    constructor(parts, width, height, caps, isUHD, scale = {}) {
+      this.width = 1024;
+      this.height = 1024;
+      const aScale = Number(scale.a) || 1;
+      this._sizes = {
+        a: aScale >= 4 ? 512 : (aScale >= 2 ? 256 : 128),
+        b: aScale >= 4 ? 64 : 128
+      };
+    }
+    getUV(key) {
+      const edge = this._sizes[key];
+      return edge ? { x: 0, y: 0, z: edge / this.width, w: edge / this.height } : null;
+    }
+  }
+
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1024, textureHeightMax: 1024 },
+    atlasCtor: PackingAtlas
+  });
+  const row = h.api.__test.collectRows()[0];
+  const run = runState();
+  const plan = await h.api.__test.planDisplay(row, run);
+
+  assert.equal(plan.selected.length, 1);
+  assert.equal(plan.selected[0].target, 256);
+  assert.equal(run.downgraded.length, 1);
+  assert.equal(run.downgraded[0].from, 512);
+  assert.equal(run.downgraded[0].to, 256);
+  assert.equal(run.downgraded[0].reason, 'native-packing');
+  assert.equal(fixture.data.atlasScale.a, 1, 'planning must not mutate live scale metadata');
+  assert.equal(fixture.uv.b.z * fixture.atlas.width, 128, 'planning must not downsize the live control host');
 });
 
 test('collateral detection identifies an unrelated host that native packing downsized', () => {

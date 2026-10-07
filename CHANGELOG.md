@@ -2,13 +2,14 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.5 / `0.1.5-initial-coverage-race`.
-- v0.1.3 removed renderer-signature polling in favor of reversible debounced live figure-data `change(...)` observation with Witch Dock-owned lifecycle suppression.
-- v0.1.4 added a deferred initial coverage obligation for attach-during-core-busy, but live Counting Sheep exposed a queue/start race: UI refresh could enqueue `attach-ready`, clear the obligation, then core could become busy before the queued microtask entered `runCoverage()`; the run was correctly rejected but the obligation was lost.
-- v0.1.5 makes `runCoverage()` the only code path allowed to consume the initial obligation, and only after its ready guards pass. Queue acceptance alone no longer consumes it.
-- Regression reproduces the exact race: queue while ready, flip core busy before the microtask runs, verify the obligation remains, then verify one successful `attach-ready` pass after core settles and no duplicate runs under repeated refresh polling.
-- Focused Texture Quality VM tests pass 19/19. Public Stable remains v2.4.2 and is unchanged.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.6 / `0.1.6-native-packing-preflight`.
+- Live v0.1.5 Counting Sheep performed exactly one deferred `attach-ready` pass and did not self-loop, but the area-only planner drove the primary 8192×4096 display to effectively full occupancy. HeroForge then globally reduced many selected and unselected allocations; the existing no-collateral verifier correctly rolled the pass back.
+- Runtime source confirms current native `modded.buildAtlas()` delegates to `new CK.Atlas(parts, undefined, undefined, undefined, data.isUHD(), data.atlasScale)`. `CK.Atlas` reduces a global packing factor in 0.05 steps until the pack fits, so summed rectangle area is not a sufficient predictor of safe native packing.
+- v0.1.6 keeps the fast area budget as a coarse filter, then preflights every prospective density selection through a detached native `CK.Atlas` using the exact current parts/UHD/scales. A candidate is accepted only when every baseline allocation survives and every selected host reaches its requested target within the existing 32 MP owned ceiling.
+- Unsafe higher targets are downgraded or skipped before any live mutation. Source-only promotions remain independent of the density preflight.
+- Focused Texture Quality VM tests pass 20/20, including a native-packer regression where 512 would shrink an unrelated host but 256 is selected safely with no live-state mutation. Inherited runtime-delivery tests pass 12/12.
+- Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.5 / `1.17.5-initial-coverage-race` is paired to immutable payload `07c245f16c1a869d8b680bfef2859825e0c099a4`, containing all-part v0.1.5 / `0.1.5-initial-coverage-race`.
+Canonical Dev v1.17.5 / `1.17.5-initial-coverage-race` currently pins immutable payload `07c245f16c1a869d8b680bfef2859825e0c099a4` containing all-part v0.1.5. v0.1.6 must receive a new immutable Dev pairing before live revalidation.

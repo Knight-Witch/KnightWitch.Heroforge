@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.5
+// @version      0.1.6
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.5';
-  const BUILD = '0.1.5-initial-coverage-race';
+  const VERSION = '0.1.6';
+  const BUILD = '0.1.6-native-packing-preflight';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -373,6 +373,130 @@
     return Number.isFinite(budget) && budget > 0 ? budget : occupied;
   }
 
+  function desiredScaleForHost(host, target) {
+    const allocationEdge = Math.max(host.allocation.width, host.allocation.height);
+    if (!(target > allocationEdge) || !(allocationEdge > 0)) return null;
+    return target / allocationEdge;
+  }
+
+  function applySelectionScale(scale, selection) {
+    let changed = false;
+    for (const host of selection.group.hosts) {
+      const desiredScale = desiredScaleForHost(host, selection.target);
+      if (!(desiredScale > 0)) continue;
+      const currentScale = Number(scale[host.key]);
+      if (!Number.isFinite(currentScale) || currentScale < desiredScale) {
+        scale[host.key] = desiredScale;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  function nativePackingPreflight(row, baseline, selections) {
+    const densitySelections = selections.filter((selection) => (
+      selection.group.hosts.some((host) => (
+        selection.target > Math.max(host.allocation.width, host.allocation.height)
+      ))
+    ));
+    if (!densitySelections.length) {
+      return { ok: true, available: true, reason: 'source-only', atlas: null, regressions: [], selectedFailures: [] };
+    }
+
+    const CK = UW && UW.CK;
+    if (!CK || typeof CK.Atlas !== 'function' || !row.d || typeof row.d.isUHD !== 'function') {
+      return {
+        ok: false,
+        available: false,
+        reason: 'native-atlas-preflight-unavailable',
+        atlas: null,
+        regressions: [],
+        selectedFailures: []
+      };
+    }
+
+    const scale = Object.assign({}, row.d.atlasScale || {});
+    for (const selection of selections) applySelectionScale(scale, selection);
+
+    let atlas = null;
+    try {
+      atlas = new CK.Atlas(
+        Object.assign({}, row.parts),
+        undefined,
+        undefined,
+        undefined,
+        row.d.isUHD(),
+        scale
+      );
+    } catch (error) {
+      return {
+        ok: false,
+        available: true,
+        reason: 'native-atlas-preflight-error',
+        error: String(error && error.message || error),
+        atlas: null,
+        regressions: [],
+        selectedFailures: []
+      };
+    }
+
+    const atlasPixels = Math.max(0, Number(atlas.width) * Number(atlas.height));
+    if (!(atlasPixels > 0) || atlasPixels > MAX_OWNED_ATLAS_PIXELS) {
+      return {
+        ok: false,
+        available: true,
+        reason: 'native-atlas-area-ceiling',
+        atlas: [Number(atlas.width), Number(atlas.height)],
+        atlasPixels,
+        regressions: [],
+        selectedFailures: []
+      };
+    }
+
+    const selectedTargets = new Map();
+    for (const selection of selections) {
+      for (const host of selection.group.hosts) {
+        selectedTargets.set(host.key, Math.max(selectedTargets.get(host.key) || 0, selection.target));
+      }
+    }
+
+    const regressions = [];
+    for (const [key, base] of baseline.map.entries()) {
+      const current = allocationRect(atlas, key);
+      if (!current || current.width < base.width || current.height < base.height) {
+        regressions.push({
+          key,
+          baseline: [base.width, base.height],
+          current: current ? [current.width, current.height] : null
+        });
+      }
+    }
+
+    const selectedFailures = [];
+    for (const [key, target] of selectedTargets.entries()) {
+      const current = allocationRect(atlas, key);
+      if (!current || current.width < target || current.height < target) {
+        selectedFailures.push({
+          key,
+          target,
+          current: current ? [current.width, current.height] : null
+        });
+      }
+    }
+
+    return {
+      ok: regressions.length === 0 && selectedFailures.length === 0,
+      available: true,
+      reason: regressions.length
+        ? 'native-packing-regression'
+        : (selectedFailures.length ? 'native-packing-target-miss' : 'native-packing-safe'),
+      atlas: [Number(atlas.width), Number(atlas.height)],
+      atlasPixels,
+      regressions,
+      selectedFailures
+    };
+  }
+
   function groupHosts(hosts) {
     const groups = new Map();
     for (const host of hosts) {
@@ -591,7 +715,7 @@
       const desiredUpper = Math.max(currentMax, Math.min(group.desired, group.sourceCeiling, qualityCeiling));
       const candidates = selectionCandidateSizes(group).filter((size) => size <= desiredUpper);
       let chosen = null;
-      let firstAvailable = null;
+      const packingRejected = [];
 
       for (const target of candidates) {
         const hasAnyBenefit = group.hosts.some((host) => (
@@ -602,17 +726,32 @@
 
         const cost = targetCost(group, target);
         if (cost > remaining) continue;
+
+        const prospective = { row, group, target, cost };
+        const packing = nativePackingPreflight(row, baseline, selected.concat(prospective));
+        if (!packing.ok) {
+          packingRejected.push({
+            target,
+            reason: packing.reason,
+            atlas: packing.atlas,
+            regression: packing.regressions[0] || null,
+            selectedFailure: packing.selectedFailures[0] || null,
+            error: packing.error || null
+          });
+          displayDiag.nativePackingRejects = (displayDiag.nativePackingRejects || 0) + 1;
+          continue;
+        }
+
         const variant = await textureForTarget(group, target);
         if (!variant) continue;
-        if (!firstAvailable) firstAvailable = target;
-        chosen = { target, cost, variant };
+        chosen = { target, cost, variant, packing };
         break;
       }
 
       if (!chosen) {
         const reason = group.sourceCeiling <= currentMax
           ? 'no-higher-source-or-density-benefit'
-          : 'display-budget-or-variant-unavailable';
+          : (packingRejected.length ? 'native-packing-or-variant-unavailable' : 'display-budget-or-variant-unavailable');
         boundedPush(run.skipped, {
           display: row.key,
           group: group.id,
@@ -621,7 +760,8 @@
           sourceCeiling: group.sourceCeiling,
           desired: group.desired,
           remainingPixels: remaining,
-          failedUrls: group.failedUrls.slice()
+          failedUrls: group.failedUrls.slice(),
+          packingRejected: packingRejected.slice(0, 8)
         });
         const last = run.skipped[run.skipped.length - 1];
         if (last) last.reason = reason;
@@ -635,7 +775,9 @@
           group: group.id,
           from: highestCandidate,
           to: chosen.target,
-          reason: 'display-budget',
+          reason: packingRejected.some((entry) => entry.target > chosen.target)
+            ? 'native-packing'
+            : 'display-budget',
           repeatCount: group.uniqueKeys.size
         });
       }
@@ -647,7 +789,8 @@
         target: chosen.target,
         texture: chosen.variant.texture,
         url: chosen.variant.url,
-        cost: chosen.cost
+        cost: chosen.cost,
+        packingAtlas: chosen.packing.atlas
       });
     }
 
@@ -694,11 +837,10 @@
     const selectedHosts = [];
 
     for (const host of group.hosts) {
-      const allocationEdge = Math.max(host.allocation.width, host.allocation.height);
-      const desiredScale = allocationEdge > 0 ? target / allocationEdge : 1;
+      const desiredScale = desiredScaleForHost(host, target);
       const currentScale = Number(row.d.atlasScale[host.key]);
       let needsDensity = false;
-      if (target > allocationEdge && (!Number.isFinite(currentScale) || currentScale < desiredScale)) {
+      if (desiredScale > 0 && (!Number.isFinite(currentScale) || currentScale < desiredScale)) {
         let snapshot = findScaleSnapshot(policy, row, host.key);
         if (!snapshot) {
           snapshot = own(row.d.atlasScale, host.key);
