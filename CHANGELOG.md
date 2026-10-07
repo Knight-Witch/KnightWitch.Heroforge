@@ -14,4 +14,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.10 / `1.17.10-intrinsic-floor-headroom` payload candidate is being prepared from the validated v0.1.10 tree. The launcher intentionally retains the prior v1.17.9 payload pin until the candidate commit exists.
+Dev v1.17.10 / `1.17.10-intrinsic-floor-headroom` is paired to immutable payload `732bcea1843528c0ebc30592379a1a264de5436b`, containing all-part v0.1.10 / `0.1.10-intrinsic-floor-headroom`.

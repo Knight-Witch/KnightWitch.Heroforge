@@ -14,5 +14,6 @@
 - PASS: feature-registry impact = none; no feature identity/path/ownership/tab/routing change.
 - PASS: issue-branch checkpoint is committed/pushed at `8e0c704bad8b08842b5585d27841d81a4e64c42f` and fast-forward integrated into canonical Dev locally.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.10 / `1.17.10-intrinsic-floor-headroom`; the prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep exact 512 source+allocation proof followed by OFF→ON/anti-loop and remaining fixture/lifecycle matrix.
+- PASS: Dev launcher pins exact immutable v1.17.10 payload candidate `732bcea1843528c0ebc30592379a1a264de5436b`; candidate manifest contains all-part v0.1.10 / `0.1.10-intrinsic-floor-headroom`.
+- PENDING: verify recovery parity, then Counting Sheep exact 512 source+allocation proof followed by OFF→ON/anti-loop and remaining fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.
