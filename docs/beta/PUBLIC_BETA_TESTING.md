@@ -213,3 +213,23 @@ Revision 6 therefore moves Phase 2 from the controlled default-OFF gate into the
 The host already treats manifest removal as a reversible lifecycle event: it deactivates the loaded removed module, disposes it, deletes its runtime record, and then reconciles the remaining manifest. No Stable source/module is changed by r6.
 
 HF.Status #112 remains the separately owned Beta/QA reporting backend lane. Runtime use must continue to degrade safely if that backend/public reporting path is not yet promoted.
+
+
+### Manifest revision 6 live result
+
+Revision 6 is live and passed its manifest smoke on Amanda's Public Stable v2.4.2 session.
+
+Bridge #4657 verified:
+
+- Beta host revision 6, ready, no manifest error;
+- exactly one module assigned and one active;
+- sole module `high-res-phase-2` v0.1.2 / `0.1.2-native-shadow-preflight`;
+- immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`;
+- obsolete `beta-channel-smoke` removed cleanly;
+- Stable Native Reconcile remains 0.3.8;
+- Beta Active Decal Priority remains 0.1.2;
+- all-part remains 0.1.14 with 104 active bindings;
+- no module error, busy, queued, or change-pending state;
+- all-part `lastRun.startedAt` remained `1791412230830`, identical to the pre-refresh value, so the manifest cleanup did not trigger a new coverage pass.
+
+The High Res Phase 2 Public Beta assignment is therefore live. Continue observation/feedback. Public Stable promotion is still a separate explicit gate.
