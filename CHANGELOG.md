@@ -11,4 +11,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev v1.17.4 / `1.17.4-deferred-initial-coverage` currently pins immutable payload `84e69975abfab3a68371e02604fbfdc27997facf` containing all-part v0.1.4. v0.1.5 must receive a new immutable Dev payload before live revalidation.
+Dev v1.17.5 / `1.17.5-initial-coverage-race` payload candidate is being prepared from the validated v0.1.5 tree. The launcher intentionally retains the prior v1.17.4 payload pin until this candidate commit exists.
