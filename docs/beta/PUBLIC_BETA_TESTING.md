@@ -183,3 +183,16 @@ Revision 5 replaces the failed r4 Phase 2 package with:
 - Stable minimum v2.4.2.
 
 Amanda's saved local preference remains ON, so one controlled manifest refresh may replace and activate r5 automatically. Treat that refresh at-most-once and read back before any retry. Required proof: module must settle active without post-rebuild collateral failure; both bird-shield families and `fanBattle` must receive the selected density or be explicitly downgraded by the native-shadow planner; unrelated allocations must remain non-regressed; then perform rollback/settle and re-enable before human visual confirmation.
+
+
+### Manifest revision 5 live machine result
+
+The native-shadow r5 machine gate PASSED on Amanda's Public Stable v2.4.2 session.
+
+- #4652: Beta Tester reported manifest revision 5, wrapper v0.1.2 / `0.1.2-native-shadow-preflight`, immutable payload `150e420e069dd1eb3cfd9872e71fe52a6ce9f063`, active with no error.
+- #4653: live atlas readback proved both `shieldBirdWing` hosts, both `shieldBirdFlying` hosts, and `fanBattle` at 512×512 while `eyebrowL` remained 128×128.
+- #4654: the displayed normal bindings for `shieldBirdWing`, `shieldBirdFlying`, and `fanBattle` are real 512×512 source textures.
+- #4655: one OFF transition removed all-part, restored exact Stable Active Decal Priority 0.1.1, and left Native Reconcile 0.3.8 verified ON/persistent with no error.
+- #4656: one re-enable returned to 104 active bindings; shield/fan remained 512×512, eyebrow remained 128×128, and the same all-part coverage-run timestamp persisted through a quiet three-second window with no busy, queued, or change-pending state.
+
+Amanda's local r5 is intentionally left ON for renewed human visual/performance confirmation. Manifest r5 remains `defaultEnabled: false` for other testers until that human gate passes.
