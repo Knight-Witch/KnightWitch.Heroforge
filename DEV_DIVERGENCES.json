@@ -69,7 +69,7 @@
     {
       "issue": 25,
       "status": "dev-implementation-validation",
-      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.7 retains the v0.1.6 detached native CK.Atlas safety preflight, changes group ordering to HeroForge's intrinsic ideal-texture demand instead of rewarding already-large packed rectangles, and re-arms exactly one initial coverage obligation whenever core High Res is disabled so OFF→ON reapplies the service.",
+      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.8 retains the detached native CK.Atlas safety preflight and OFF→ON re-arm, resolves verified source ceilings before ranking, and prioritizes intrinsic mesh-detail pressure from HeroForge facesHiRez/faces per currently displayable normal texel, amplified by source/effective-detail gain.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Active_Decal_Priority.js",
@@ -78,7 +78,7 @@
       ],
       "acceptance": [
         "Automatic enable and scene membership continue through the public owned entry; existing readiness/retries remain preserved.",
-        "Eligible rendered URL-backed normal bindings are resolved dynamically, cached by URL, ranked by intrinsic HeroForge ideal-texture demand with repeated-instance awareness, budgeted per display/group, and density candidates are accepted/downgraded/skipped only after detached native CK.Atlas packing proves selected targets fit without downsizing any baseline host.",
+        "Eligible rendered URL-backed normal bindings are resolved dynamically, cached by URL, ranked after source verification by intrinsic mesh-detail pressure times source/effective-detail gain with intrinsic ideal/repeat tie-breakers, budgeted per display/group, and density candidates are accepted/downgraded/skipped only after detached native CK.Atlas packing proves selected targets fit without downsizing any baseline host.",
         "Body/face derived targets remain under Native Reconcile; Active Decal Priority retains its existing accessory/atlas ownership.",
         "OFF, failure, scene replacement, and disposal restore only values still owned by the all-part service; later outside edits survive; a completed OFF state re-arms one coverage pass for the next ON.",
         "The 250 ms Texture Quality UI refresh poll is observational after one required initial attach-ready pass: actual outside figure-data change(...) calls set one debounced pending coverage pass, while Witch Dock-owned enable/reconcile/disable/density lifecycle calls are suppressed and cannot self-trigger coverage.",

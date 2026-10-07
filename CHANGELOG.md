@@ -2,15 +2,14 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.7 / `0.1.7-native-ideal-priority`.
-- Live v0.1.6 Counting Sheep passed deterministic native-packer selection: one `attach-ready` pass retained 38 active bindings, 7 deliberate downgrades, 33 skips, zero failures, and no error. The exact run timestamp stayed unchanged across the prior self-loop recurrence window.
-- Counting Sheep OFF restored all 83 all-part-owned normal/atlasScale/observed-used entries with `restored=true`, `outside=false`. Core then reported the existing bodyLower restore warning tracked separately by #34; #25 did not broaden into that defect.
-- Re-enabling core High Res exposed a #25 lifecycle gap: core returned healthy ON, but all-part stayed inactive because OFF had not re-armed the initial coverage obligation.
-- v0.1.7 re-arms one coverage obligation whenever core is disabled, so the next settled ON receives exactly one all-part pass.
-- v0.1.7 also ranks scarce-budget groups by HeroForge intrinsic ideal-texture metadata before repeat count and deficit. This prevents already-large low-intrinsic-detail allocations from receiving priority merely because they are already large, while retaining the v0.1.6 detached native `CK.Atlas` no-collateral preflight.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.8 / `0.1.8-detail-pressure-priority`.
+- v0.1.7 live Counting Sheep retained detached native-packer safety, one-shot anti-loop behavior, and healthy core High Res, but the accepted Corvidae Herald pauldrons `k_23/k_25` remained 128px source/128×128 allocation and the six-host Celestial Circlet group was also skipped.
+- Both accepted groups have verified 512 normal sources, desired 512, and zero native-packing rejection. Their skip diagnostics show only `display-budget-or-variant-unavailable` with 29,440 pixels remaining, isolating greedy selection order rather than source availability or packing safety.
+- Runtime metadata gives the pauldrons 69,996 high-resolution faces versus 2,778 on a competing large shield control. v0.1.8 therefore resolves source ceilings before sorting and scores intrinsic mesh-detail pressure from HeroForge `facesHiRez`/faces per currently displayable normal texel, amplified by verified source/effective-detail gain. Physically large but low-detail parts no longer win simply because their native ideal or current allocation is large; zero-benefit groups sink.
+- The detached native `CK.Atlas` no-collateral preflight and v0.1.7 OFF→ON re-arm remain unchanged.
 - Full gates pass: all-part VM 18/18, inherited Texture Quality ownership 4/4 (22/22 combined), runtime delivery 12/12, syntax, manifest/divergence consistency, and git diff checks.
 - Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.7 / `1.17.7-native-ideal-priority` is paired to immutable payload `9ca289962df50a9042dd20d883fc529837534734`, containing all-part v0.1.7 / `0.1.7-native-ideal-priority`.
+Canonical Dev remains v1.17.7 / `1.17.7-native-ideal-priority`, immutable payload `9ca289962df50a9042dd20d883fc529837534734`, until v0.1.8 receives a new immutable Dev pairing.

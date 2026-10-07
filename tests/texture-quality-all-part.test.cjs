@@ -184,38 +184,81 @@ test('target calculation respects current source, ideal evidence, and quality ce
   );
 });
 
-test('group priority follows HeroForge intrinsic ideal size instead of rewarding already-large allocations', () => {
+test('group priority favors intrinsic detail pressure and verified headroom over large-world-size parts', () => {
   const h = harness();
   assert.equal(
     h.api.__test.nativeIdeal({ bakeSize: 512, _idealTextureSize: 201, idealTextureSizeLegacy: 201 }, 128),
     201,
     'bakeSize is not the intrinsic importance signal'
   );
+  assert.equal(
+    h.api.__test.detailPressure({ faces: 616, facesHiRez: 69996 }, 128),
+    69996 / (128 * 128),
+    'high-resolution face density is measured against the currently displayable normal edge'
+  );
 
-  const pauldrons = {
+  const group = ({
+    id,
+    source,
+    sourceCeiling,
+    target,
+    effective = source,
+    nativeIdeal,
+    pressure,
+    repeats = 1
+  }) => ({
+    id,
+    nativeIdeal,
+    desired: target,
+    sourceCeiling,
+    minEffectiveDetail: effective,
+    maxDetailPressure: pressure,
+    maxAllocation: effective,
+    existingBySize: new Map([[source, {}]]),
+    uniqueKeys: new Set(Array.from({ length: repeats }, (_, index) => `${id}-${index}`))
+  });
+
+  const pauldrons = group({
     id: 'pauldrons',
+    source: 128,
+    sourceCeiling: 512,
+    target: 512,
     nativeIdeal: 201,
-    desired: 512,
-    maxAllocation: 128,
-    uniqueKeys: new Set(['left', 'right'])
-  };
-  const tinyAlreadyLarge = {
-    id: 'tiny',
-    nativeIdeal: 44,
-    desired: 512,
-    maxAllocation: 512,
-    uniqueKeys: new Set(['tiny'])
-  };
-  const eyebrows = {
-    id: 'eyebrows',
-    nativeIdeal: 80,
-    desired: 512,
-    maxAllocation: 64,
-    uniqueKeys: new Set(['browL', 'browR'])
-  };
+    pressure: 69996 / (128 * 128),
+    repeats: 2
+  });
+  const largeShield = group({
+    id: 'large-shield',
+    source: 128,
+    sourceCeiling: 512,
+    target: 512,
+    nativeIdeal: 604,
+    pressure: 2778 / (128 * 128),
+    repeats: 2
+  });
+  const braid = group({
+    id: 'braid',
+    source: 512,
+    sourceCeiling: 1024,
+    target: 1024,
+    nativeIdeal: 514,
+    pressure: 39996 / (512 * 512)
+  });
+  const noBenefit = group({
+    id: 'no-benefit',
+    source: 512,
+    sourceCeiling: 512,
+    target: 512,
+    nativeIdeal: 900,
+    pressure: 80000 / (512 * 512)
+  });
 
-  const ordered = [tinyAlreadyLarge, eyebrows, pauldrons].sort(h.api.__test.groupPriority);
-  assert.deepEqual(ordered.map((group) => group.id), ['pauldrons', 'eyebrows', 'tiny']);
+  const ordered = [largeShield, braid, noBenefit, pauldrons].sort(h.api.__test.groupPriority);
+  assert.deepEqual(
+    ordered.map((entry) => entry.id),
+    ['pauldrons', 'large-shield', 'braid', 'no-benefit'],
+    'a highly detailed undersampled part must outrank physically larger but far lower-detail controls; zero-benefit groups sink'
+  );
 });
 
 test('positive and negative source caching avoid duplicate resource loads', async () => {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.7
+// @version      0.1.8
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.7';
-  const BUILD = '0.1.7-native-ideal-priority';
+  const VERSION = '0.1.8';
+  const BUILD = '0.1.8-detail-pressure-priority';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -299,6 +299,20 @@
     return values.length ? Math.max(...values) : Math.max(0, Number(fallback) || 0);
   }
 
+  function detailFaces(part) {
+    const values = [
+      part && part.facesHiRez,
+      part && part.faces
+    ].map(Number).filter((value) => Number.isFinite(value) && value > 0);
+    return values.length ? Math.max(...values) : 0;
+  }
+
+  function detailPressure(part, effectiveDetail) {
+    const faces = detailFaces(part);
+    const edge = Math.max(1, Number(effectiveDetail) || 0);
+    return faces > 0 ? faces / (edge * edge) : 0;
+  }
+
   function idealTarget(part, currentSource, allocation) {
     const values = [
       currentSource,
@@ -516,6 +530,8 @@
           existingBySize: new Map(),
           desired: 0,
           nativeIdeal: 0,
+          minEffectiveDetail: Number.POSITIVE_INFINITY,
+          maxDetailPressure: 0,
           maxAllocation: 0,
           uniqueKeys: new Set(),
           sourceCeiling: 0,
@@ -529,6 +545,10 @@
       group.uniqueKeys.add(host.key);
       group.desired = Math.max(group.desired, host.ideal);
       group.nativeIdeal = Math.max(group.nativeIdeal, nativeIdeal(host.part, host.currentSource));
+      const allocationEdge = Math.max(host.allocation.width, host.allocation.height);
+      const effectiveDetail = Math.max(1, Math.min(host.currentSource, allocationEdge));
+      group.minEffectiveDetail = Math.min(group.minEffectiveDetail, effectiveDetail);
+      group.maxDetailPressure = Math.max(group.maxDetailPressure, detailPressure(host.part, effectiveDetail));
       group.maxAllocation = Math.max(group.maxAllocation, host.allocation.width, host.allocation.height);
       if (!group.existingBySize.has(host.currentSource)) {
         group.existingBySize.set(host.currentSource, { texture: host.texture, url: host.source });
@@ -537,13 +557,47 @@
     return Array.from(groups.values());
   }
 
+  function groupPriorityTarget(group) {
+    const existing = Math.max(...Array.from(group.existingBySize.keys()));
+    return Math.max(
+      existing,
+      Math.min(group.desired || existing, group.sourceCeiling || existing, qualityCeiling)
+    );
+  }
+
+  function groupPriorityMetrics(group) {
+    const target = groupPriorityTarget(group);
+    const source = Math.max(1, Math.max(...Array.from(group.existingBySize.keys())));
+    const effective = Math.max(
+      1,
+      Number.isFinite(group.minEffectiveDetail) ? group.minEffectiveDetail : group.maxAllocation
+    );
+    const sourceGain = target / source;
+    const effectiveGain = target / effective;
+    const pressure = Math.max(0, Number(group.maxDetailPressure) || 0);
+    const hasBenefit = target > source || target > effective;
+    return {
+      target,
+      source,
+      effective,
+      sourceGain,
+      effectiveGain,
+      pressure,
+      score: hasBenefit
+        ? (pressure > 0 ? pressure * effectiveGain * Math.max(1, sourceGain) : effectiveGain * Math.max(1, sourceGain))
+        : 0
+    };
+  }
+
   function groupPriority(a, b) {
+    const am = groupPriorityMetrics(a);
+    const bm = groupPriorityMetrics(b);
+    if (bm.score !== am.score) return bm.score - am.score;
+    if (bm.pressure !== am.pressure) return bm.pressure - am.pressure;
+    if (bm.sourceGain !== am.sourceGain) return bm.sourceGain - am.sourceGain;
     if (b.nativeIdeal !== a.nativeIdeal) return b.nativeIdeal - a.nativeIdeal;
     if (a.uniqueKeys.size !== b.uniqueKeys.size) return a.uniqueKeys.size - b.uniqueKeys.size;
-    const aDeficit = a.desired / Math.max(1, a.maxAllocation);
-    const bDeficit = b.desired / Math.max(1, b.maxAllocation);
-    if (bDeficit !== aDeficit) return bDeficit - aDeficit;
-    if (b.desired !== a.desired) return b.desired - a.desired;
+    if (bm.target !== am.target) return bm.target - am.target;
     if (b.maxAllocation !== a.maxAllocation) return b.maxAllocation - a.maxAllocation;
     return a.id.localeCompare(b.id);
   }
@@ -678,7 +732,7 @@
 
   async function planDisplay(row, run) {
     const hosts = collectHosts(row);
-    const groups = groupHosts(hosts).sort(groupPriority);
+    const groups = groupHosts(hosts);
     await mapLimit(groups, 8, async (group) => {
       try {
         await resolveSourceCeiling(group);
@@ -687,6 +741,7 @@
       }
       return group;
     });
+    groups.sort(groupPriority);
 
     const baseline = collectAllocations(row);
     const budget = displayBudget(row, baseline.occupied);
@@ -769,9 +824,11 @@
           display: row.key,
           group: group.id,
           repeatCount: group.uniqueKeys.size,
+          hostKeys: Array.from(group.uniqueKeys).slice(0, 24),
           currentSource: currentMax,
           sourceCeiling: group.sourceCeiling,
           desired: group.desired,
+          priority: groupPriorityMetrics(group),
           remainingPixels: remaining,
           failedUrls: group.failedUrls.slice(),
           packingRejected: packingRejected.slice(0, 8)
@@ -791,7 +848,9 @@
           reason: packingRejected.some((entry) => entry.target > chosen.target)
             ? 'native-packing'
             : 'display-budget',
-          repeatCount: group.uniqueKeys.size
+          repeatCount: group.uniqueKeys.size,
+          hostKeys: Array.from(group.uniqueKeys).slice(0, 24),
+          priority: groupPriorityMetrics(group)
         });
       }
 
@@ -892,6 +951,7 @@
         target,
         source: selection.url,
         repeatCount: group.uniqueKeys.size,
+        priority: groupPriorityMetrics(group),
         needsDensity
       });
     }
@@ -1408,7 +1468,10 @@
       parseNormalSource,
       normalizeTarget,
       nativeIdeal,
+      detailFaces,
+      detailPressure,
       idealTarget,
+      groupPriorityMetrics,
       groupPriority,
       targetCost,
       restoreIfOwned,
