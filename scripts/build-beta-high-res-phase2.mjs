@@ -45,7 +45,7 @@ const blobs = {
 
 const required = {
   devPriority: "24246a918e7132158941caee74ca6f5f3ff7d76d",
-  allPart: "9f24f18b3f91fcb0d2c49546e904282cfb85b9f8",
+  allPart: "75e721560c50eccb6c56c92bef0272396f84ac1d",
   stablePriority: "a89c57e09cdaa2f4213f6b3a8eed95118f4c4d14"
 };
 
@@ -67,8 +67,8 @@ const out = `(function () {
   }
 
   const ID = "high-res-phase-2";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-stable-compat-phase2";
+  const VERSION = "0.1.1";
+  const BUILD = "0.1.1-native-baseline-preflight";
   const EXPECTED = Object.freeze({
     core: Object.freeze({
       version: "0.3.8",
@@ -84,8 +84,8 @@ const out = `(function () {
       sourceBlob: ${JSON.stringify(blobs.devPriority)}
     }),
     allPart: Object.freeze({
-      version: "0.1.12",
-      build: "0.1.12-independent-normal-headroom",
+      version: "0.1.13",
+      build: "0.1.13-native-baseline-preflight",
       sourceBlob: ${JSON.stringify(blobs.allPart)}
     }),
     restorePriority: Object.freeze({

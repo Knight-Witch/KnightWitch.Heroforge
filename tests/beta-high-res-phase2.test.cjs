@@ -218,7 +218,7 @@ test("activation swaps only priority owner and OFF restores Stable in-page", asy
 
   assert.equal(h.window.KWTextureQualityNativeReconcile, coreIdentity);
   assert.equal(h.window.KWTextureQualityActiveDecalPriority.version, "0.1.2");
-  assert.equal(h.window.KWTextureQualityAllPartPromotion.version, "0.1.12");
+  assert.equal(h.window.KWTextureQualityAllPartPromotion.version, "0.1.13");
 
   assert.equal(await h.definition.deactivate(), true);
 

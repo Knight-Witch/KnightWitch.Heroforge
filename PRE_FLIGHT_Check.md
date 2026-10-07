@@ -1,12 +1,15 @@
 # Pre-Flight Check
 
-## 2026-10-07 — #25 High Res Phase 2 Public Stable machine gate PASS
+## 2026-10-07 — #25 shield/fan false-preflight correction
 
-- PASS #4615: Beta manifest r3 loaded on Public Stable v2.4.2; Phase 2 stayed inactive/preferred OFF by default.
-- PASS #4616/#4624: activation kept Native Reconcile 0.3.8, installed priority 0.1.2 + all-part 0.1.12, verified two figures, and reached 104 active bindings with no error.
-- PASS #4625: lifecycle repair count remained 2 across the quiet three-second anti-loop window; no repair/core/priority work remained pending.
-- PASS #4626/#4627: OFF removed all-part, restored exact Stable priority 0.1.1, and Stable settled verified, High Res ON/persistent, no errors.
-- PASS #4628/#4629: a fresh activation from the known Stable baseline settled active again at 104 bindings, no errors, no pending repair.
-- PASS: focused package/Beta/ownership suite remains 16/16 green.
-- HUMAN GATE: Amanda's local Phase 2 preference is intentionally ON; inspect Counting Sheep/known sharpness targets and normal interaction/performance. Manifest r3 remains default-OFF for everyone else.
-- Public Stable code remains unchanged; no Stable promotion is authorized.
+- PASS: user visual report reproduced in runtime evidence rather than inferred from appearance.
+- PASS #4633/#4634: `shieldBirdWing`, `shieldBirdFlying`, and `fanBattle` each resolve a valid 512 normal source and are blocked only by detached native packing preflight.
+- PASS #4635: each rejection reports the same false collateral: live `eyebrowL` baseline 128x128 reconstructed as 32x32.
+- PASS #4636/#4637: live shield/fan metadata is eligible; `eyebrowL._usedTextureSize` is 128 and its live atlas allocation is 128x128.
+- PASS #4638/#4639: live HeroForge source confirms `CK.Atlas` consumes `options.minimumSizes` and real `buildAtlas` supplies the seventh options argument; v0.1.12 detached preflight did not.
+- PASS: all-part v0.1.13 / `0.1.13-native-baseline-preflight` supplies observed live baseline allocation edges as detached native minimum floors.
+- PASS: existing real-collateral rejection regression remains green; new false-preflight regression proves a valid shield-style promotion reaches 512 while preserving the unrelated baseline floor.
+- PASS: manifest/module version references and Stable-compatible Beta wrapper are updated to all-part v0.1.13; wrapper v0.1.1 / `0.1.1-native-baseline-preflight`.
+- PASS: focused all-part/ownership/Beta suites pass 41/41.
+- PENDING: commit immutable package, stage Beta manifest r4 default-OFF, then live prove shield/fan density plus collateral/rollback/anti-loop behavior.
+- Public Stable remains unchanged; no Stable promotion is authorized.

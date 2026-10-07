@@ -130,3 +130,20 @@ Revision 3 retains `beta-channel-smoke` and adds `high-res-phase-2` default-OFF.
 - #4628/#4629: a new activation from the known Stable baseline settled normally; Phase 2 is active with 104 bindings, no error, no pending repair, and the Stable core remains 0.3.8.
 
 Amanda's local module preference is intentionally left ON for the human visual/performance smoke. Manifest r3 remains default-OFF for everyone else. Do not make a later revision default-ON until Amanda confirms the visual gate.
+
+
+### Human smoke coverage gap and v0.1.13 correction
+
+Amanda's first High Res Phase 2 human smoke on Counting Sheep confirmed that substantial coverage improved, but both bird-shield families and the battle hand fan remained visibly lower resolution.
+
+Live runtime evidence isolates the cause:
+
+- Bridge #4633/#4634: `shieldBirdWing`, `shieldBirdFlying`, and `fanBattle` all have verified 512 normal-source headroom with no failed source URLs. Their density plans were blocked during marginal-value packing.
+- The rejected detached atlas reconstructed unrelated `eyebrowL` at 32x32 even though the live baseline is 128x128 (#4635).
+- #4636/#4637 confirms the shield/fan metadata is eligible and `eyebrowL` is genuinely live at 128x128.
+- #4638 shows `CK.Atlas` natively accepts `options.minimumSizes` as per-slot packing floors.
+- #4639 shows HeroForge's real `buildAtlas` supplies the constructor's seventh options argument, while all-part v0.1.12's detached preflight omitted it.
+
+All-part v0.1.13 / `0.1.13-native-baseline-preflight` corrects only that detached safety model: it passes the current live baseline allocation edges as native `minimumSizes` during preflight. This prevents the synthetic preflight from inventing unrelated shrinkage before evaluating a candidate. It does **not** relax the real runtime safety boundary: after the actual HeroForge rebuild, collateral detection still checks every live allocation and the existing owned rollback still rejects/restores any genuine shrink.
+
+The Stable-compatible Beta wrapper is bumped to v0.1.1 / `0.1.1-native-baseline-preflight` and embeds exact all-part v0.1.13. Focused all-part, ownership, Beta-wrapper, and Beta-host tests pass 41/41. A new immutable package payload and manifest revision are required before live retest; manifest r3 remains default-OFF.

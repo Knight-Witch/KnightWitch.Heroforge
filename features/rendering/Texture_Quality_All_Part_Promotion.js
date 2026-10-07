@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.12
+// @version      0.1.13
 // @description  Dev-only independent normal-source and budgeted atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.12';
-  const BUILD = '0.1.12-independent-normal-headroom';
+  const VERSION = '0.1.13';
+  const BUILD = '0.1.13-native-baseline-preflight';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -403,6 +403,15 @@
     return Number.isFinite(budget) && budget > 0 ? budget : occupied;
   }
 
+  function baselinePackingOptions(baseline) {
+    const minimumSizes = {};
+    for (const [key, rect] of baseline.map.entries()) {
+      const edge = Math.max(Number(rect.width) || 0, Number(rect.height) || 0);
+      if (edge > 0) minimumSizes[key] = edge;
+    }
+    return { minimumSizes };
+  }
+
   function desiredScaleForHost(host, target) {
     const allocationEdge = Math.max(host.allocation.width, host.allocation.height);
     if (!(target > allocationEdge) || !(allocationEdge > 0)) return null;
@@ -456,7 +465,8 @@
         undefined,
         undefined,
         row.d.isUHD(),
-        scale
+        scale,
+        baselinePackingOptions(baseline)
       );
     } catch (error) {
       return {
@@ -1795,6 +1805,7 @@
       collectHosts,
       groupHosts,
       displayBudget,
+      baselinePackingOptions,
       planDisplay,
       collateralAfter,
       releaseOwnedResources,

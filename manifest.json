@@ -352,9 +352,9 @@
       "path": "features/rendering/Texture_Quality_All_Part_Promotion.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.1.12",
-      "build": "0.1.12-independent-normal-headroom",
-      "versionOrigin": "issue-25-independent-normal-headroom-2026-10-07"
+      "version": "0.1.13",
+      "build": "0.1.13-native-baseline-preflight",
+      "versionOrigin": "issue-25-native-baseline-preflight-2026-10-07"
     },
     {
       "id": "texture-quality-native-reconcile-ui",
@@ -713,7 +713,7 @@
       "id": "texture-quality-all-part-promotion",
       "title": "Texture Quality All-Part Promotion",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_All_Part_Promotion.js?v=0.1.12-independent-normal-headroom",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_All_Part_Promotion.js?v=0.1.13-native-baseline-preflight",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

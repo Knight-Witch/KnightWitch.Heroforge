@@ -2,13 +2,14 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 High Res Phase 2 Public Stable machine gate PASSED through the real Beta host on manifest r3.
-- Activation preserved Stable Native Reconcile 0.3.8, layered priority 0.1.2 + all-part 0.1.12, and settled with 104 active bindings and no error.
-- Anti-loop proof held lifecycle repair count constant across the quiet observation window.
-- Beta OFF removed all-part, restored exact Stable priority 0.1.1, and Stable returned to verified idle High Res; a fresh activation then settled successfully again.
-- Amanda's local Phase 2 preference is left ON for human visual/performance smoke. Manifest r3 remains default-OFF for other testers.
-- Public Stable code remains unchanged.
+- #25 fixes a confirmed Phase 2 coverage false-negative found by Amanda's Public Stable Beta smoke: bird shields and the battle hand fan had verified 512 source headroom but were rejected by the detached atlas safety preflight.
+- Live HeroForge source proves `CK.Atlas` supports per-slot `minimumSizes`, and HeroForge's real `buildAtlas` uses the seventh constructor options argument. All-part v0.1.12 omitted those floors during detached preflight, falsely reconstructing `eyebrowL` as 32x32 versus its live 128x128 baseline.
+- All-part is bumped to v0.1.13 / `0.1.13-native-baseline-preflight`: detached preflight now preserves observed live baseline allocation floors before evaluating new density.
+- The actual post-rebuild no-collateral check and exact rollback remain unchanged and authoritative.
+- Stable-compatible Beta package is bumped to v0.1.1 / `0.1.1-native-baseline-preflight` and embeds exact all-part v0.1.13.
+- Focused all-part/ownership/Beta suites pass 41/41.
+- Beta manifest r3 and Public Stable remain unchanged until the new immutable package is committed and live-gated.
 
 ## Latest Dev delivery context
 
-Canonical Dev contains the Stable-compatible Phase 2 Beta package and manifest r3. The next gate is Amanda's human visual/performance confirmation; no Stable promotion and no default-ON Beta rollout is authorized yet.
+The next gate is an immutable Beta payload + manifest r4, followed by Counting Sheep live proof for both shield families, the battle fan, eyebrow baseline preservation, skipped-group reduction, rollback and anti-loop behavior. No Stable promotion is authorized.
