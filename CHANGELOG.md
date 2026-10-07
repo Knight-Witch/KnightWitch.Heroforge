@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev remains v1.17.7 / `1.17.7-native-ideal-priority`, immutable payload `9ca289962df50a9042dd20d883fc529837534734`, until v0.1.8 receives a new immutable Dev pairing.
+Dev v1.17.8 / `1.17.8-detail-pressure-priority` payload candidate is being prepared from the validated v0.1.8 tree. The launcher intentionally retains the prior v1.17.7 payload pin until the candidate commit exists.

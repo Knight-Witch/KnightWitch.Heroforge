@@ -12,5 +12,7 @@
 - PASS: detached native `CK.Atlas` preflight remains final density admission authority and may downgrade/skip any candidate that would shrink a baseline host.
 - PASS: v0.1.7 OFF→ON re-arm, exact owned rollback, outside-edit preservation, readiness, and anti-loop behavior remain covered.
 - PASS: full gates pass: all-part VM 18/18, inherited ownership 4/4 (22/22 combined), runtime-delivery 12/12, module syntax, manifest/divergence consistency, and `git diff --check`.
-- PENDING: issue-branch commit, immutable Dev pairing/recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation.
+- PASS: issue-branch checkpoint is committed at `75ba55f93ced0b67ac6ec90687771f87b182b864` and integrated into canonical Dev.
+- PASS: Dev launcher header/runtime and manifest registry are prepared at v1.17.8 / `1.17.8-detail-pressure-priority`; prior payload pin is intentionally retained until the candidate commit exists.
+- PENDING: pin the immutable candidate SHA and verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation.
 - No Stable/public promotion is authorized or performed.
