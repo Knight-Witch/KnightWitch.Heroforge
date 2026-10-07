@@ -12,5 +12,7 @@
 - PASS: synthetic regression proves 128->512 normal binding with zero atlas headroom and no density reconcile, no `atlasScale` change, no `_usedTextureSize` change, and allocation remaining 128x128.
 - PASS: module syntax, git diff check, and all-part + ownership tests pass 28/28.
 - PASS: feature-registry impact = none.
-- PENDING: commit/push the protected #25 checkpoint, pair Dev v1.17.12 to an immutable payload, verify provider-independent delivery, then live-read normal/density state and perform the visual gate plus OFF->ON/anti-loop matrix.
+- PASS: protected #25 checkpoint `9d0187a846fbce13cfed3fac30c3ae3812f74c51` is committed/pushed and fast-forward integrated into canonical Dev locally.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.12 / `1.17.12-independent-normal-headroom`; the prior payload pin is intentionally retained until this candidate commit has an immutable SHA.
+- PENDING: pin the exact v1.17.12 payload candidate in the pairing commit, push/mirror canonical Dev, verify provider-independent delivery, then live-read normal/density state and perform the visual gate plus OFF->ON/anti-loop matrix.
 - No Stable/public promotion is authorized or performed.

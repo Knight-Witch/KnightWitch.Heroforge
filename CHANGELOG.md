@@ -13,4 +13,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev remains v1.17.11 / `1.17.11-marginal-value-replan-restore` on immutable payload `9c12a336dbe9d983747c3176719b3cc0f772b14a` while the v0.1.12 #25 issue-branch checkpoint is prepared for the next paired Dev payload.
+Dev launcher v1.17.12 / `1.17.12-independent-normal-headroom` is prepared with all-part v0.1.12. The prior payload pin is intentionally retained only until this payload-candidate commit has an immutable SHA; the following pairing commit will pin that exact candidate.
