@@ -106,9 +106,9 @@ This module is intentionally non-feature-mutating. It proves the full Public Bet
 It includes a local **Mark Smoke Check** button. The counter exists only in the loaded module instance and is not persisted or uploaded automatically.
 
 
-## High Res Phase 2 Stable-compatible package — source staged, not assigned
+## High Res Phase 2 Stable-compatible package — controlled manifest gate
 
-The first real feature Beta is `high-res-phase-2` v0.1.0 / `0.1.0-stable-compat-phase2`. This source-staging checkpoint does **not** change the moving Beta manifest; revision 2 still assigns only the completed generic smoke module.
+The first real feature Beta is `high-res-phase-2` v0.1.0 / `0.1.0-stable-compat-phase2`. Manifest revision 3 exposes this package as an active but `defaultEnabled: false` entry pinned to immutable payload `58ea087c63f61d945396a20eb9bffca8f383c9ee`. This is a controlled machine-validation gate: existing/new testers are not automatically opted into Phase 2.
 
 The package deliberately keeps Stable Native Reconcile in place and fails closed unless the live baseline is exactly Native Reconcile 0.3.8 / `0.3.8-supported-body-aaid-binding` plus Active Decal Priority 0.1.1 / `0.1.1-dev-projected-host-lifecycle-coordination`.
 
@@ -117,3 +117,8 @@ While active it disposes Stable priority through its public cleanup contract, lo
 Stable 0.3.8's lexical automatic-enable / scene-sync calls bypass public owner wrappers. The Beta package compensates only after the native core settles: a bounded display-identity bridge refreshes the 0.1.2 priority owner, waits for its reconcile, then ensures one all-part coverage pass. It schedules only on a stable OFF→ON transition or changed live display identity and suppresses emissions caused by its own repair pass.
 
 Beta OFF disposes all-part first, disposes Beta priority second, then restores the exact Stable 0.1.1 priority source in-page. The Stable Native Reconcile object is never replaced. Focused regression covers fail-closed identity checks, owner swap/restore, core identity preservation, repeated-emission anti-loop behavior, and one-repair-per-display-change. Live Stable proof remains required before manifest assignment.
+
+
+### Manifest revision 3 machine gate
+
+Revision 3 retains `beta-channel-smoke` and adds `high-res-phase-2` default-OFF. The next authorized step is to refresh the live Beta manifest on Amanda's Public Stable session, verify the module remains inactive by default, then enable it once through the Beta host, read back owner identities/coverage state, exercise OFF rollback, and verify repeated Stable emissions do not create a lifecycle loop. Only after that machine gate passes may a later manifest revision make Phase 2 default-ON for human/public Beta testing.

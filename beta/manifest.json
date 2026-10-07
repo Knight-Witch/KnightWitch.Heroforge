@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "channel": "public-beta",
-  "revision": 2,
-  "updatedAt": "2026-10-07T23:15:00Z",
+  "revision": 3,
+  "updatedAt": "2026-10-07T15:30:00Z",
   "minimumStableVersion": "2.4.2",
   "reporting": {
     "productId": "witch-dock",
@@ -20,6 +20,21 @@
       "defaultEnabled": true,
       "payloadRef": "fc758733f445624b39797fc8edef91e130627237",
       "path": "beta/modules/Beta_Channel_Smoke.js",
+      "minimumStableVersion": "2.4.2",
+      "diagnosticProviderIds": [],
+      "reporting": {
+        "featureId": "public-beta-testing"
+      }
+    },
+    {
+      "id": "high-res-phase-2",
+      "title": "High Res Texture Phase 2",
+      "version": "0.1.0",
+      "build": "0.1.0-stable-compat-phase2",
+      "status": "active",
+      "defaultEnabled": false,
+      "payloadRef": "58ea087c63f61d945396a20eb9bffca8f383c9ee",
+      "path": "beta/modules/High_Res_Phase_2.js",
       "minimumStableVersion": "2.4.2",
       "diagnosticProviderIds": [],
       "reporting": {
