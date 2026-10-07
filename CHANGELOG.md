@@ -12,4 +12,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.8 / `1.17.8-detail-pressure-priority` payload candidate is being prepared from the validated v0.1.8 tree. The launcher intentionally retains the prior v1.17.7 payload pin until the candidate commit exists.
+Dev v1.17.8 / `1.17.8-detail-pressure-priority` is paired to immutable payload `d579ca8981ad1bb0dbe7a434e7d7e36a5b3630eb`, containing all-part v0.1.8 / `0.1.8-detail-pressure-priority`.

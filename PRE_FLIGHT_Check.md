@@ -14,5 +14,6 @@
 - PASS: full gates pass: all-part VM 18/18, inherited ownership 4/4 (22/22 combined), runtime-delivery 12/12, module syntax, manifest/divergence consistency, and `git diff --check`.
 - PASS: issue-branch checkpoint is committed at `75ba55f93ced0b67ac6ec90687771f87b182b864` and integrated into canonical Dev.
 - PASS: Dev launcher header/runtime and manifest registry are prepared at v1.17.8 / `1.17.8-detail-pressure-priority`; prior payload pin is intentionally retained until the candidate commit exists.
-- PENDING: pin the immutable candidate SHA and verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation.
+- PASS: Dev launcher pins exact immutable v1.17.8 payload candidate `d579ca8981ad1bb0dbe7a434e7d7e36a5b3630eb`; candidate manifest contains all-part v0.1.8 / `0.1.8-detail-pressure-priority`.
+- PENDING: verify recovery parity, then Counting Sheep pauldrons/circlet + OFF→ON + anti-loop revalidation.
 - No Stable/public promotion is authorized or performed.
