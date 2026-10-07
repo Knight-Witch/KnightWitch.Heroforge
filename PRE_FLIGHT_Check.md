@@ -12,5 +12,7 @@
 - PASS: existing source-resolution positive/negative caching, shared textures by URL, exact rollback/outside-edit preservation, body/face ownership, OFF→ON re-arm, event-driven change observation, failure isolation, and disposal contracts are unchanged.
 - PASS: full gates pass: all-part 20/20 + ownership 4/4 (24/24 combined), runtime-delivery 12/12, manifest/divergence consistency, module syntax and git diff check.
 - PASS: feature-registry impact = none; no feature identity/path/ownership/tab/routing change.
-- PENDING: issue-branch commit, immutable Dev pairing/recovery parity, then Counting Sheep exact 512 source+allocation proof followed by OFF→ON/anti-loop and remaining fixture/lifecycle matrix.
+- PASS: issue-branch checkpoint is committed/pushed at `8e0c704bad8b08842b5585d27841d81a4e64c42f` and fast-forward integrated into canonical Dev locally.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.10 / `1.17.10-intrinsic-floor-headroom`; the prior payload pin is intentionally retained until the payload candidate commit exists.
+- PENDING: pin the exact candidate SHA and verify recovery parity, then Counting Sheep exact 512 source+allocation proof followed by OFF→ON/anti-loop and remaining fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

@@ -14,4 +14,4 @@
 
 ## Latest Dev delivery context
 
-Canonical Dev remains v1.17.9 / `1.17.9-progressive-budget`, immutable payload `8f243042c2a704486293c197d0b1f58b611f9fdf`, until v0.1.10 receives a new immutable Dev pairing.
+Dev v1.17.10 / `1.17.10-intrinsic-floor-headroom` payload candidate is being prepared from the validated v0.1.10 tree. The launcher intentionally retains the prior v1.17.9 payload pin until the candidate commit exists.
