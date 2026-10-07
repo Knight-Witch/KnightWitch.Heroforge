@@ -352,9 +352,9 @@
       "path": "features/rendering/Texture_Quality_All_Part_Promotion.js",
       "kind": "feature-service",
       "load": "manifest",
-      "version": "0.1.0",
-      "build": "0.1.0-budgeted-normal-promotion",
-      "versionOrigin": "issue-25-budgeted-normal-promotion-2026-10-06"
+      "version": "0.1.1",
+      "build": "0.1.1-owned-density-structural-sync",
+      "versionOrigin": "issue-25-owned-density-structural-sync-2026-10-06"
     },
     {
       "id": "texture-quality-native-reconcile-ui",
@@ -713,7 +713,7 @@
       "id": "texture-quality-all-part-promotion",
       "title": "Texture Quality All-Part Promotion",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_All_Part_Promotion.js?v=0.1.0-budgeted-normal-promotion",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_All_Part_Promotion.js?v=0.1.1-owned-density-structural-sync",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"

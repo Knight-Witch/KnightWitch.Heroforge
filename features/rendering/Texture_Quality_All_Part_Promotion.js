@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.0
+// @version      0.1.1
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.0';
-  const BUILD = '0.1.0-budgeted-normal-promotion';
+  const VERSION = '0.1.1';
+  const BUILD = '0.1.1-owned-density-structural-sync';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -603,6 +603,32 @@
     return policy.usedSnapshots.find((entry) => entry.o === part) || null;
   }
 
+  function rememberObservedUsed(policy, row, host) {
+    let snapshot = findUsedSnapshot(policy, host.part);
+    if (!snapshot) {
+      snapshot = own(host.part, '_usedTextureSize');
+      snapshot._diag = { display: row.key, key: host.key, kind: 'usedTextureSize' };
+      policy.usedSnapshots.push(snapshot);
+    }
+    return snapshot;
+  }
+
+  function restoreObservedUsed(snapshot) {
+    if (!snapshot || !snapshot.o) return { restored: false, outside: false };
+    try {
+      const current = snapshot.o[snapshot.k];
+      if (current === snapshot.v) return { restored: true, outside: false };
+      if (snapshot.applied !== undefined && current !== snapshot.applied) {
+        return { restored: false, outside: true };
+      }
+      if (snapshot.had && snapshot.d) Object.defineProperty(snapshot.o, snapshot.k, snapshot.d);
+      else delete snapshot.o[snapshot.k];
+      return { restored: true, outside: false };
+    } catch (_) {
+      return { restored: false, outside: false };
+    }
+  }
+
   function applySelection(policy, selection, run) {
     const { row, group, target } = selection;
     const selectedHosts = [];
@@ -611,6 +637,7 @@
       const allocationEdge = Math.max(host.allocation.width, host.allocation.height);
       const desiredScale = allocationEdge > 0 ? target / allocationEdge : 1;
       const currentScale = Number(row.d.atlasScale[host.key]);
+      let needsDensity = false;
       if (target > allocationEdge && (!Number.isFinite(currentScale) || currentScale < desiredScale)) {
         let snapshot = findScaleSnapshot(policy, row, host.key);
         if (!snapshot) {
@@ -618,20 +645,11 @@
           snapshot._diag = { display: row.key, key: host.key, kind: 'atlasScale' };
           policy.scaleSnapshots.push(snapshot);
         }
+        rememberObservedUsed(policy, row, host);
         row.d.atlasScale[host.key] = desiredScale;
         snapshot.applied = row.d.atlasScale[host.key];
-      }
-
-      const currentUsed = Number(host.part._usedTextureSize);
-      if (target > 0 && (!Number.isFinite(currentUsed) || currentUsed < target)) {
-        let snapshot = findUsedSnapshot(policy, host.part);
-        if (!snapshot) {
-          snapshot = own(host.part, '_usedTextureSize');
-          snapshot._diag = { display: row.key, key: host.key, kind: 'usedTextureSize' };
-          policy.usedSnapshots.push(snapshot);
-        }
-        host.part._usedTextureSize = target;
-        snapshot.applied = host.part._usedTextureSize;
+        needsDensity = true;
+        policy.densityDisplays.add(row.d);
       }
 
       selectedHosts.push({
@@ -646,7 +664,8 @@
         target,
         texture: selection.texture,
         url: selection.url,
-        repeatCount: group.uniqueKeys.size
+        repeatCount: group.uniqueKeys.size,
+        needsDensity
       });
 
       boundedPush(run.selected, {
@@ -657,12 +676,12 @@
         currentAllocation: [host.allocation.width, host.allocation.height],
         target,
         source: selection.url,
-        repeatCount: group.uniqueKeys.size
+        repeatCount: group.uniqueKeys.size,
+        needsDensity
       });
     }
 
     policy.selected.push(...selectedHosts);
-    policy.affectedDisplays.add(row.d);
   }
 
   async function waitForStableRows(expectedData, timeout = SETTLE_TIMEOUT) {
@@ -689,19 +708,48 @@
     return null;
   }
 
-  async function rebuildAffected(policy) {
-    const CK = UW && UW.CK;
-    const c = CK && CK.character;
-    if (!CK || !c) throw new Error('HeroForge character is unavailable during all-part rebuild.');
-    const rows = collectRows();
-    const affected = rows.filter((row) => policy.affectedDisplays.has(row.d));
-    for (const row of affected) {
-      if (typeof row.m.buildAtlas !== 'function') throw new Error('HeroForge atlas rebuild capability is unavailable.');
-      row.m.buildAtlas();
+  async function waitForCoverageStable(timeout = SETTLE_TIMEOUT) {
+    const end = Date.now() + timeout;
+    while (Date.now() < end) {
+      const CK = UW && UW.CK;
+      const c = CK && CK.character;
+      const rows = collectRows();
+      const ready = !!(
+        c &&
+        !c._needsUpdating &&
+        !c._inUpdate &&
+        rows.every((row) => (
+          row.display.resourcesReady !== false &&
+          row.display.finished !== false &&
+          row.display.atlas === row.m.resourceAtlas
+        ))
+      );
+      if (ready) return rows;
+      await sleep(POLL_MS);
     }
-    if (typeof c.refresh === 'function') c.refresh();
-    const stable = await waitForStableRows(affected.map((row) => row.d));
-    if (!stable) throw new Error('Timed out waiting for all-part atlas rebuild to settle.');
+    return null;
+  }
+
+  async function reconcileDensity(policy, captureObservedUsed = true) {
+    if (!policy || !policy.densityDisplays || !policy.densityDisplays.size) return collectRows();
+    if (!service || !originals || typeof originals.reconcile !== 'function') {
+      throw new Error('Owned Texture Quality reconcile seam is unavailable for all-part density.');
+    }
+
+    const ok = await originals.reconcile.call(service);
+    if (!ok) throw new Error('Owned Texture Quality reconcile rejected all-part density changes.');
+
+    // Reconcile may legitimately replace the active figure/display set. Wait on
+    // the current live display-data identities, not the prior policy's rows.
+    const expected = collectRows().map((row) => row.d);
+    const stable = await waitForStableRows(expected);
+    if (!stable) throw new Error('Timed out waiting for all-part density reconcile to settle.');
+
+    if (captureObservedUsed) {
+      for (const snapshot of policy.usedSnapshots) {
+        try { snapshot.applied = snapshot.o[snapshot.k]; } catch (_) {}
+      }
+    }
     return stable;
   }
 
@@ -848,21 +896,22 @@
       const result = restoreIfOwned(snapshot);
       restored.push({ ...(snapshot._diag || { kind: 'normal' }), restored: result.restored, outside: result.outside });
     }
-    for (let index = policy.usedSnapshots.length - 1; index >= 0; index -= 1) {
-      const snapshot = policy.usedSnapshots[index];
-      const result = restoreIfOwned(snapshot);
-      restored.push({ ...(snapshot._diag || { kind: 'usedTextureSize' }), restored: result.restored, outside: result.outside });
-    }
     for (let index = policy.scaleSnapshots.length - 1; index >= 0; index -= 1) {
       const snapshot = policy.scaleSnapshots[index];
       const result = restoreIfOwned(snapshot);
       restored.push({ ...(snapshot._diag || { kind: 'atlasScale' }), restored: result.restored, outside: result.outside });
     }
 
-    if (rebuild) {
-      try { await rebuildAffected(policy); } catch (error) {
-        restored.push({ kind: 'rebuild', restored: false, outside: false, error: String(error && error.message || error) });
+    if (rebuild && policy.densityDisplays && policy.densityDisplays.size) {
+      try { await reconcileDensity(policy, false); } catch (error) {
+        restored.push({ kind: 'densityReconcile', restored: false, outside: false, error: String(error && error.message || error) });
       }
+    }
+
+    for (let index = policy.usedSnapshots.length - 1; index >= 0; index -= 1) {
+      const snapshot = policy.usedSnapshots[index];
+      const result = restoreObservedUsed(snapshot);
+      restored.push({ ...(snapshot._diag || { kind: 'usedTextureSize' }), restored: result.restored, outside: result.outside });
     }
 
     active = null;
@@ -876,16 +925,13 @@
     const rows = collectRows();
     return JSON.stringify(rows.map((row) => ({
       d: objectId(row.d),
-      display: objectId(row.display),
-      atlas: [Number(row.display.atlas.width), Number(row.display.atlas.height)],
+      key: row.key,
+      // Structural identity only. Do not include display generations, atlas
+      // allocations, normal bindings, scales, or used sizes: those are
+      // rendering state this service/core reconcile may legitimately change.
       parts: Object.keys(row.parts).sort().map((key) => [
         key,
-        partId(row.parts[key]),
-        allocationRect(row.display.atlas, key) && [
-          allocationRect(row.display.atlas, key).width,
-          allocationRect(row.display.atlas, key).height
-        ],
-        normalUniforms(row.meshes[key]).map((entry) => textureSource(entry.uniform.value))
+        partId(row.parts[key])
       ])
     })));
   }
@@ -937,16 +983,18 @@
           usedSnapshots: [],
           normalSnapshots: [],
           selected: [],
-          affectedDisplays: new Set(),
+          densityDisplays: new Set(),
           plans
         };
         active = policy;
 
         for (const selection of selections) applySelection(policy, selection, run);
-        const stableRows = await rebuildAffected(policy);
+        const stableRows = policy.densityDisplays.size
+          ? await reconcileDensity(policy)
+          : collectRows();
         bindSelectedNormals(policy, stableRows, run);
 
-        const collateral = collateralAfter(plans);
+        const collateral = policy.densityDisplays.size ? collateralAfter(plans) : [];
         const selectedFailures = selectedVerification(policy);
         if (collateral.length || selectedFailures.length) {
           for (const row of collateral) boundedPush(run.failed, row);

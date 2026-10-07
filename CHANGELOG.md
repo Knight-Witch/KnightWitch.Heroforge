@@ -2,14 +2,14 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev implementation: add hidden Texture Quality All-Part Promotion v0.1.0, dynamically enumerating rendered URL-backed normal bindings outside the specialized body/face path.
-- Resolve verified higher normal variants with positive/negative caching and shared resources; plan density per display using source/quality ceilings, current allocations, repeated-instance group cost, and the existing bounded atlas budget.
-- Apply only owned scale/_usedTextureSize/normal changes, reject any native repack that downsizes existing hosts, isolate optional failures, and restore exact owned state without overwriting later outside edits.
-- Add focused VM regression coverage for parsing, target selection, cache reuse, repeated-instance budgeting/downgrade, collateral detection, rollback/outside edits, failure isolation, multi-display enumeration, and disposal. Focused suite passes 13/13.
-- Branch was synchronized with current WITCH_DEV_MAIN (0e6717a2396106480adbc7c0c4c9dccb13704402) before implementation. HF.Status feature-registry check found no new reporter-facing feature ID/path; this remains internal support for existing Texture Quality.
-- Dev delivery: launcher v1.17.0 / `1.17.0-all-part-promotion` is paired to immutable payload `69d7e4eecd371c0d36a49712f986c36a3073661a`, whose manifest contains the new all-part service and matching launcher metadata.
-- Dev-only. No Stable launcher/module/manifest edit or public promotion.
+- #25 Dev correction: Texture Quality All-Part Promotion advances to v0.1.1 / `0.1.1-owned-density-structural-sync`.
+- Counting Sheep live Dev exposed two v0.1.0 defects before fixture-matrix acceptance: density was compounded by forcing generic `_usedTextureSize` alongside `atlasScale`, and the 250 ms Texture Quality UI refresh poll treated all-part's own normal/atlas mutations as scene changes, causing repeated restore/reapply oscillation.
+- v0.1.1 now applies accessory density only through the existing owned Native Reconcile seam, observes/restores native used-size side effects instead of forcing them, skips atlas reconcile for source-only upgrades, and detects scene changes from structural figure/part identity only.
+- Figure replacement rollback now waits on the current live display set rather than stale prior display-data identities, avoiding a bounded-settle timeout during legitimate scene replacement.
+- Regression coverage now includes source-only promotion, density-reconcile failure isolation, structural-signature stability under owned render changes, 250 ms refresh-poll non-retrigger, and exact old-figure rollback on replacement. Focused Texture Quality suite passes 17/17.
+- v0.1.0 was disposed from the active Counting Sheep page after readback proved the loop; core High Res remained ready and HeroForge returned to `_inUpdate=false`, `_needsUpdating=false`, `finished=true`, `resourcesReady=true`.
+- Current public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
-## Latest Stable context
+## Latest Dev delivery context
 
-Stable v2.4.2, payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`; unchanged.
+Canonical Dev v1.17.0 / `1.17.0-all-part-promotion` currently pins immutable payload `69d7e4eecd371c0d36a49712f986c36a3073661a` containing all-part v0.1.0. v0.1.1 must be paired as a new immutable Dev payload before live revalidation.

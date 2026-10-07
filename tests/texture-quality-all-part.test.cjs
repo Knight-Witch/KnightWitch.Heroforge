@@ -13,13 +13,17 @@ function texture(url, size) {
   return { image: { src: url, width: size, height: size }, url };
 }
 
-function coreService() {
+function coreService({ onReconcile = null, onDisable = null } = {}) {
   const core = {
     enabled: false,
     busy: false,
     enable: async () => { core.enabled = true; return true; },
-    disable: async () => { core.enabled = false; return true; },
-    reconcile: async () => true,
+    disable: async () => {
+      if (onDisable) await onDisable(core);
+      core.enabled = false;
+      return true;
+    },
+    reconcile: async () => onReconcile ? onReconcile(core) : true,
     refresh: () => ({ enabled: core.enabled, busy: core.busy }),
     setPersistent: (value) => value,
     getState: () => ({ enabled: core.enabled, busy: core.busy })
@@ -27,8 +31,8 @@ function coreService() {
   return core;
 }
 
-function harness({ character = null, resources = null, settings = null } = {}) {
-  const core = coreService();
+function harness({ character = null, resources = null, settings = null, coreOptions = null } = {}) {
+  const core = coreService(coreOptions || {});
   const original = { ...core };
   const w = {
     KWTextureQualityNativeReconcile: core,
@@ -67,18 +71,32 @@ function runState(trigger = 'test') {
   };
 }
 
-function displayFixture({ keys = ['a'], size = 128, atlasSize = 1024, sharedSource = 'asset' } = {}) {
+function displayFixture({
+  keys = ['a'],
+  size = 128,
+  allocationSize = size,
+  sourceSize = size,
+  usedSize = sourceSize,
+  bakeSize = 512,
+  atlasSize = 1024,
+  sharedSource = 'asset'
+} = {}) {
   const uv = {};
   const parts = {};
   const meshes = {};
   const atlasScale = {};
   keys.forEach((key, index) => {
-    uv[key] = { x: (index * size) / atlasSize, y: 0, z: size / atlasSize, w: size / atlasSize };
-    parts[key] = { id: index + 1, name: key, bakeSize: 512, _usedTextureSize: size };
+    uv[key] = {
+      x: (index * allocationSize) / atlasSize,
+      y: 0,
+      z: allocationSize / atlasSize,
+      w: allocationSize / atlasSize
+    };
+    parts[key] = { id: index + 1, name: key, bakeSize, _usedTextureSize: usedSize };
     meshes[key] = {
       material: {
         uniforms: {
-          normalMap: { value: texture(`/textures/${sharedSource}_nrml_${size}.webp`, size) }
+          normalMap: { value: texture(`/textures/${sharedSource}_nrml_${sourceSize}.webp`, sourceSize) }
         }
       }
     };
@@ -246,9 +264,8 @@ test('rollback restores exact descriptors but preserves outside edits', () => {
   assert.equal(obj2.x, 7);
 });
 
-test('optional promotion failure rolls back owned state without disabling core High Res', async () => {
+test('optional density reconcile failure rolls back owned state without disabling core High Res', async () => {
   const fixture = displayFixture({ keys: ['a'], size: 128, atlasSize: 512 });
-  fixture.modded.buildAtlas = () => { throw new Error('synthetic pack failure'); };
   const store = {};
   const resources = {
     getResource(url) {
@@ -263,7 +280,10 @@ test('optional promotion failure rolls back owned state without disabling core H
   const h = harness({
     character,
     resources,
-    settings: { textureWidthMax: 512, textureHeightMax: 512 }
+    settings: { textureWidthMax: 512, textureHeightMax: 512 },
+    coreOptions: {
+      onReconcile: async () => { throw new Error('synthetic density reconcile failure'); }
+    }
   });
   h.core.enabled = true;
   const baselineScale = fixture.data.atlasScale.a;
@@ -275,7 +295,181 @@ test('optional promotion failure rolls back owned state without disabling core H
   assert.equal(fixture.data.atlasScale.a, baselineScale);
   assert.equal(fixture.parts.a._usedTextureSize, baselineUsed);
   assert.equal(fixture.meshes.a.material.uniforms.normalMap.value, baselineNormal);
-  assert.match(h.api.getState().lastError, /synthetic pack failure/);
+  assert.match(h.api.getState().lastError, /synthetic density reconcile failure/);
+});
+
+test('source-only promotion skips density reconcile and leaves used texture size untouched', async () => {
+  const fixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 512,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024
+  });
+  const store = {};
+  let reconcileCalls = 0;
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (size !== 512) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1024, textureHeightMax: 1024 },
+    coreOptions: {
+      onReconcile: async () => { reconcileCalls += 1; return true; }
+    }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  assert.equal(reconcileCalls, 0, 'source-only promotion must not repack the atlas');
+  assert.equal(fixture.parts.a._usedTextureSize, 128);
+  assert.equal(fixture.data.atlasScale.a, 1);
+  assert.equal(fixture.uv.a.z * fixture.atlas.width, 512);
+  assert.equal(fixture.meshes.a.material.uniforms.normalMap.value.image.width, 512);
+  assert.equal(h.api.getState().activeBindings, 1);
+});
+
+test('scene signature ignores owned rendering changes but detects structural part changes', () => {
+  const fixture = displayFixture({
+    keys: ['a', 'b'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    atlasSize: 1024
+  });
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({ character });
+
+  const baseline = h.api.__test.sceneSignature();
+  fixture.data.atlasScale.a = 4;
+  fixture.parts.a._usedTextureSize = 512;
+  fixture.uv.a.z = 512 / 1024;
+  fixture.uv.a.w = 512 / 1024;
+  fixture.meshes.a.material.uniforms.normalMap.value = texture('/textures/asset_nrml_512.webp', 512);
+
+  assert.equal(
+    h.api.__test.sceneSignature(),
+    baseline,
+    'owned source/density/allocation changes must not look like a scene change'
+  );
+
+  fixture.parts.a.id = 999;
+  assert.notEqual(
+    h.api.__test.sceneSignature(),
+    baseline,
+    'replacing a rendered part must invalidate the structural scene signature'
+  );
+});
+
+test('figure replacement restores the old owned density/source state against the current live scene', async () => {
+  const oldFixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024,
+    sharedSource: 'old'
+  });
+  const newFixture = displayFixture({
+    keys: ['b'],
+    allocationSize: 512,
+    sourceSize: 512,
+    usedSize: 512,
+    bakeSize: 512,
+    atlasSize: 1024,
+    sharedSource: 'new'
+  });
+  const character = { data: oldFixture.data, display: oldFixture.display, allDisplays: {} };
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (!url.includes('/old_') || size !== 512) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const h = harness({
+    character,
+    resources,
+    coreOptions: {
+      onReconcile: async () => {
+        if (character.display === oldFixture.display) {
+          oldFixture.uv.a.z = 512 / oldFixture.atlas.width;
+          oldFixture.uv.a.w = 512 / oldFixture.atlas.height;
+          oldFixture.parts.a._usedTextureSize = 512;
+        }
+        return true;
+      }
+    }
+  });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  assert.equal(oldFixture.data.atlasScale.a, 4);
+  assert.equal(oldFixture.parts.a._usedTextureSize, 512);
+  assert.equal(oldFixture.meshes.a.material.uniforms.normalMap.value.image.width, 512);
+
+  character.data = newFixture.data;
+  character.display = newFixture.display;
+  character.allDisplays = {};
+
+  assert.equal(await h.core.reconcile(), true);
+  assert.equal(oldFixture.data.atlasScale.a, 1);
+  assert.equal(oldFixture.parts.a._usedTextureSize, 128);
+  assert.equal(oldFixture.meshes.a.material.uniforms.normalMap.value.image.width, 128);
+  assert.equal(newFixture.data.atlasScale.b, 1);
+  assert.equal(newFixture.parts.b._usedTextureSize, 512);
+  assert.equal(newFixture.meshes.b.material.uniforms.normalMap.value.image.width, 512);
+});
+
+test('250ms core refresh polling does not retrigger coverage after owned rendering changes', async () => {
+  const fixture = displayFixture({
+    keys: ['a'],
+    allocationSize: 512,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024
+  });
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (size !== 512) return Promise.reject(new Error('404'));
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+  const character = { data: fixture.data, display: fixture.display, allDisplays: {} };
+  const h = harness({ character, resources });
+  h.core.enabled = true;
+
+  assert.equal(await h.api.reconcile(), true);
+  const startedAt = h.api.getState().lastRun.startedAt;
+  for (let i = 0; i < 8; i += 1) h.core.refresh();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  const state = h.api.getState();
+  assert.equal(state.lastRun.startedAt, startedAt);
+  assert.equal(state.busy, false);
+  assert.equal(state.queued, false);
 });
 
 test('all live displays enumerate and disposal only removes this service wrappers', async () => {

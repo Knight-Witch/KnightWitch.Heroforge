@@ -1,18 +1,16 @@
 # Pre-Flight Check
 
-## 2026-10-06 — #25 budgeted all-part High Res Dev implementation
+## 2026-10-06 — #25 all-part High Res v0.1.1 correction
 
-- PASS: live refs were verified before work: `wd/25-texture-coverage@85a0644466c82b928daa10f53498f4e586215f4c` and `WITCH_DEV_MAIN@0e6717a2396106480adbc7c0c4c9dccb13704402`; existing ACTIVE PROTECTED #25 branch reused.
-- PASS: current WITCH_DEV_MAIN was merged into the issue branch before implementation; only rolling-state docs conflicted and canonical Dev runtime-delivery changes were preserved.
-- PASS: new hidden module `texture-quality-all-part-promotion` v0.1.0 / `0.1.0-budgeted-normal-promotion` is registered in manifest moduleRegistry/modules after Active Decal Priority.
-- PASS: service dynamically enumerates all displays/rendered URL-backed normal bindings, excludes specialized core body/face targets, resolves verified variants with positive/negative caching, shares loaded textures by URL, and budgets repeated source groups per display.
-- PASS: selection never intentionally shrinks a host; post-pack verification rejects and rolls back the whole optional pass if any existing atlas allocation is downsized.
-- PASS: owned `atlasScale`, `_usedTextureSize`, and normal uniform bindings snapshot exact prior state and restore only while the applied value is still owned; later outside edits are preserved.
-- PASS: optional source/load/pack failures are isolated from core High Res and expose selected/downgraded/skipped/failed/restored diagnostics.
-- PASS: `node --check`, JSON parsing, and `git diff --check` pass.
-- PASS: focused VM tests pass 13/13 across all-part coverage plus existing Texture Quality ownership/readiness regressions.
-- PASS: HF.Status feature-registry impact gate checked on `HF.Status:dev`; no new reporter-facing feature ID/path is created because this is an internal service under the existing Texture Quality feature.
-- PASS: Dev launcher header/runtime and payload manifest registry are synchronized at v1.17.0 / `1.17.0-all-part-promotion`.
-- PASS: Dev launcher pins immutable payload `69d7e4eecd371c0d36a49712f986c36a3073661a`; the payload commit contains the new all-part module and matching manifest metadata.
-- PENDING: run the required seven-fixture HF-Chat-Bridge live regression matrix and deterministic ON/OFF/scene-lifecycle gates.
+- PASS: existing ACTIVE PROTECTED branch `wd/25-texture-coverage` remains the sole #25 task branch; current canonical Dev history is integrated locally before the correction.
+- PASS: live v0.1.0 fault was diagnosed from Bridge/runtime evidence, not visual guesswork: core High Res was stable on two figures while all-part repeatedly ran `scene-change` coverage and accumulated 82 restores.
+- PASS: source confirmed the feedback path: Native Reconcile UI calls `service.refresh()` every 250 ms, while v0.1.0's refresh wrapper included display generation, atlas allocation, and normal-source state in its scene signature.
+- PASS: faulty optional all-part v0.1.0 was disposed once; readback confirmed its global removed and HeroForge settled with no active update while core/display readiness remained intact.
+- PASS: v0.1.1 no longer writes generic `_usedTextureSize`; density is requested through owned `atlasScale` plus the existing Native Reconcile lifecycle, with native used-size changes observed solely for exact rollback.
+- PASS: source-only upgrades bind verified higher normal resources without unnecessary atlas rebuild/reconcile.
+- PASS: structural scene signature excludes display generations, atlas dimensions/allocations, normal bindings, scales, and used sizes, while still changing for figure/part identity changes.
+- PASS: figure-replacement rollback reconciles against the current live display set, restores old owned state exactly, and does not wait on stale display identities.
+- PASS: focused VM Texture Quality tests pass 17/17, including polling-loop prevention, figure replacement, failure isolation, cache reuse, repeated-instance budgeting, collateral detection, outside-edit preservation, multi-display enumeration, and disposal.
+- PASS: full static/runtime-delivery gates pass: module syntax, JSON/manifest/divergence validation, git diff check, Texture Quality VM 17/17, inherited runtime-delivery 12/12.
+- PENDING: new immutable Dev payload pairing, provider-independent parity, then Counting Sheep revalidation and the remaining required fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

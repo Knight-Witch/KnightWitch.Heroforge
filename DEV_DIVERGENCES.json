@@ -69,7 +69,7 @@
     {
       "issue": 25,
       "status": "dev-implementation-validation",
-      "reason": "All-part High Res coverage is implemented as an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. Core body/face and Active Decal Priority ownership remain separate; no blanket scale or atlas expansion is permitted.",
+      "reason": "All-part High Res coverage is an isolated owned Dev service: dynamic URL-backed normal-source promotion plus per-display, repeated-instance-aware density budgeting. v0.1.1 routes density through the existing Native Reconcile lifecycle, observes rather than forces generic used-size side effects, and detects only structural scene changes so UI refresh polling cannot self-trigger coverage.",
       "paths": [
         "features/rendering/Texture_Quality_Native_Reconcile.js",
         "features/rendering/Texture_Quality_Active_Decal_Priority.js",
@@ -81,6 +81,7 @@
         "Eligible rendered URL-backed normal bindings are resolved dynamically, cached by URL, budgeted per display/group, and never improve by downsizing unrelated hosts.",
         "Body/face derived targets remain under Native Reconcile; Active Decal Priority retains its existing accessory/atlas ownership.",
         "OFF, failure, scene replacement, and disposal restore only values still owned by the all-part service; later outside edits survive.",
+        "The 250 ms Texture Quality UI refresh poll cannot retrigger coverage from all-part-owned source/density/display-generation changes; genuine figure/part structural changes remain detectable.",
         "Required seven-fixture live Dev regression and deterministic rollback gates pass before human visual calibration.",
         "Public Stable remains unchanged."
       ]
