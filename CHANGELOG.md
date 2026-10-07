@@ -2,15 +2,13 @@
 
 ## Latest repository change — 2026-10-07
 
-- #107 Public Beta Tester implementation is integrated into canonical Dev locally and Dev packaging advances to v1.17.13 / `1.17.13-public-beta-channel`.
-- Standalone `WITCH DOCK - BETA TESTER` v0.1.0 layers onto normal Stable, with a separate moving beta manifest, immutable per-module payload SHAs, live reversible module toggles, `IN BETA` labeling, bounded Beta diagnostics, and canonical reporter reuse.
-- Dev Bug Capture UI is v0.4.6 / `0.4.6-context-diagnostic-providers`, adding sanitized local contextual provider selection without changing submitted HF.Status sourceContext.
-- Provider-independent delivery includes the additive `/beta` channel; executable Beta modules remain immutable `/payloads/<sha>/...` content.
-- Promotion cleanup uses one disabled `graduated` manifest revision followed by removal; Git history is the archive.
-- HF.Status issue #112 owns the paired `wd-beta-qa` / `public-beta-testing` taxonomy and Beta/QA triage work.
-- Validation remains green: repository tests 39/39, Worker route tests 14/14, userscript/reporter syntax, JSON parses, and diff check.
-- Public Stable remains v2.4.2 and unchanged.
+- #107 Public Beta Tester infrastructure is paired into canonical Dev v1.17.13 / `1.17.13-public-beta-channel`.
+- Immutable Dev payload candidate `8b92fc76f6ed6715b103d026338da5b0694d5a21` contains the standalone Beta Tester v0.1.0, empty Public Beta manifest, provider-independent `/beta` Worker route source/tests, Bug Capture UI v0.4.6 local contextual diagnostic-provider selection, and Public Beta lifecycle documentation.
+- Beta modules remain explicit immutable payloads with reversible activate/deactivate contracts; Stable remains fully independent from the Beta layer.
+- Beta reports reuse the canonical Witch Dock/HF.Status reporter. HF.Status issue #112 owns the new `wd-beta-qa` / `public-beta-testing` taxonomy and triage bucket.
+- Validation is green: repository tests 39/39, Worker route tests 14/14, userscript/reporter/launcher syntax checks, JSON parses, and diff check.
+- Public Stable remains v2.4.2 and unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev launcher/manifest are prepared at v1.17.13 / `1.17.13-public-beta-channel`. The prior immutable payload pin is intentionally retained until this candidate commit receives its SHA; the next pairing commit will pin that exact v1.17.13 payload.
+Dev v1.17.13 / `1.17.13-public-beta-channel` is paired to immutable payload `8b92fc76f6ed6715b103d026338da5b0694d5a21`. Remaining #107 gates are remote/recovery parity, live custom-domain `/beta` deployment/proof, and Stable+Beta smoke.
