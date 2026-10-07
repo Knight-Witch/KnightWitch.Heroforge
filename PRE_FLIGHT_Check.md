@@ -15,5 +15,6 @@
 - PASS: feature-registry impact = none.
 - PASS: issue-branch checkpoint is committed/pushed at `516ec79898af8fec164ec47dc2251a3e672116d2` and fast-forward integrated into canonical Dev locally.
 - PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.11 / `1.17.11-marginal-value-replan-restore`; the prior payload pin is intentionally retained until the payload candidate commit exists.
-- PENDING: pin the exact payload candidate SHA, verify recovery parity, live-prove Counting Sheep exact 512 source+allocation, then OFF->ON/anti-loop and the remaining required fixture/lifecycle matrix.
+- PASS: Dev launcher pins exact immutable v1.17.11 payload candidate `9c12a336dbe9d983747c3176719b3cc0f772b14a`; candidate manifest contains all-part v0.1.11 / `0.1.11-marginal-value-replan-restore`.
+- PENDING: verify recovery parity, live-prove Counting Sheep exact 512 source+allocation, then OFF->ON/anti-loop and the remaining required fixture/lifecycle matrix.
 - No Stable/public promotion is authorized or performed.

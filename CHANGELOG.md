@@ -13,4 +13,4 @@
 
 ## Latest Dev delivery context
 
-Dev v1.17.11 / `1.17.11-marginal-value-replan-restore` payload candidate is being prepared from the validated v0.1.11 tree. The launcher intentionally retains the prior v1.17.10 payload pin until the candidate commit exists.
+Dev v1.17.11 / `1.17.11-marginal-value-replan-restore` is paired to immutable payload `9c12a336dbe9d983747c3176719b3cc0f772b14a`, containing all-part v0.1.11 / `0.1.11-marginal-value-replan-restore`.
