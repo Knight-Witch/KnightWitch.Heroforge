@@ -1,18 +1,14 @@
 # Pre-Flight Check
 
-## 2026-10-06 — #25 all-part High Res v0.1.1 correction
+## 2026-10-06 — #25 all-part High Res v0.1.2 scene-sync correction
 
-- PASS: existing ACTIVE PROTECTED branch `wd/25-texture-coverage` remains the sole #25 task branch; current canonical Dev history is integrated locally before the correction.
-- PASS: live v0.1.0 fault was diagnosed from Bridge/runtime evidence, not visual guesswork: core High Res was stable on two figures while all-part repeatedly ran `scene-change` coverage and accumulated 82 restores.
-- PASS: source confirmed the feedback path: Native Reconcile UI calls `service.refresh()` every 250 ms, while v0.1.0's refresh wrapper included display generation, atlas allocation, and normal-source state in its scene signature.
-- PASS: faulty optional all-part v0.1.0 was disposed once; readback confirmed its global removed and HeroForge settled with no active update while core/display readiness remained intact.
-- PASS: v0.1.1 no longer writes generic `_usedTextureSize`; density is requested through owned `atlasScale` plus the existing Native Reconcile lifecycle, with native used-size changes observed solely for exact rollback.
-- PASS: source-only upgrades bind verified higher normal resources without unnecessary atlas rebuild/reconcile.
-- PASS: structural scene signature excludes display generations, atlas dimensions/allocations, normal bindings, scales, and used sizes, while still changing for figure/part identity changes.
-- PASS: figure-replacement rollback reconciles against the current live display set, restores old owned state exactly, and does not wait on stale display identities.
-- PASS: focused VM Texture Quality tests pass 17/17, including polling-loop prevention, figure replacement, failure isolation, cache reuse, repeated-instance budgeting, collateral detection, outside-edit preservation, multi-display enumeration, and disposal.
-- PASS: full static/runtime-delivery gates pass: module syntax, JSON/manifest/divergence validation, git diff check, Texture Quality VM 17/17, inherited runtime-delivery 12/12.
-- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.1 / `1.17.1-all-part-stability`; prior payload pin is intentionally retained until the payload candidate commit exists.
-- PASS: Dev launcher pins exact immutable v1.17.1 payload candidate `297dd62e0ea5686a36407edb52c02241c2a656da`; candidate manifest contains all-part v0.1.1 / `0.1.1-owned-density-structural-sync`.
-- PENDING: verify provider-independent parity, then Counting Sheep revalidation and the remaining required fixture/lifecycle matrix.
+- PASS: existing ACTIVE PROTECTED `wd/25-texture-coverage` remains the sole #25 task branch and was fast-forwarded to current canonical Dev v1.17.1 before this correction.
+- PASS: v0.1.1 live Counting Sheep evidence distinguished a stable core High Res service from periodic all-part `scene-change` runs; v0.1.1 was disposed once before further mutation.
+- PASS: remaining self-trigger cause is narrowed to regenerated HeroForge identity fields: display/data object identity and numeric part IDs can change during native reconcile without any user scene change.
+- PASS: v0.1.2 scene signature excludes display/data object identity, numeric part IDs, atlas allocation/state, scales, used sizes, and concrete promoted normal sizes.
+- PASS: scene signature retains display key, rendered host key, stable part metadata, and size-neutral normal-family identity so add/remove/swap remains detectable.
+- PASS: regression proves source/density/allocation changes, numeric part-ID regeneration, and display/data identity replacement do not change the signature; a stable rendered asset identity change does.
+- PASS: v0.1.1 density/source/rollback corrections remain intact: no generic used-size forcing, owned Native Reconcile density, source-only no-repack, current-live-scene rollback, outside-edit preservation.
+- PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 17/17, inherited runtime-delivery 12/12, manifest/divergence validation, and git diff check.
+- PENDING: new immutable Dev payload pairing and recovery parity, then Counting Sheep anti-loop proof and remaining seven-fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.

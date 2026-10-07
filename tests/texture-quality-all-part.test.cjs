@@ -364,10 +364,26 @@ test('scene signature ignores owned rendering changes but detects structural par
   );
 
   fixture.parts.a.id = 999;
+  assert.equal(
+    h.api.__test.sceneSignature(),
+    baseline,
+    'regenerated numeric part ids must not look like a scene change'
+  );
+
+  const replacementData = { ...fixture.data, atlasScale: fixture.data.atlasScale };
+  fixture.display.data = replacementData;
+  character.data = replacementData;
+  assert.equal(
+    h.api.__test.sceneSignature(),
+    baseline,
+    'regenerated display/data identity must not look like a scene change'
+  );
+
+  fixture.parts.a.name = 'replacement-asset';
   assert.notEqual(
     h.api.__test.sceneSignature(),
     baseline,
-    'replacing a rendered part must invalidate the structural scene signature'
+    'stable rendered asset identity changes must invalidate the scene signature'
   );
 });
 

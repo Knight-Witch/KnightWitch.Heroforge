@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.1
+// @version      0.1.2
 // @description  Dev-only budgeted normal-source and atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.1';
-  const BUILD = '0.1.1-owned-density-structural-sync';
+  const VERSION = '0.1.2';
+  const BUILD = '0.1.2-stable-asset-scene-sync';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -43,9 +43,6 @@
   const positiveCache = new Map();
   const negativeCache = new Map();
   const inFlight = new Map();
-  const objectIds = new WeakMap();
-  let objectIdCounter = 1;
-
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   function emptyRun(trigger) {
@@ -64,16 +61,6 @@
 
   function boundedPush(list, row) {
     if (list.length < MAX_DIAGNOSTICS) list.push(row);
-  }
-
-  function objectId(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) return null;
-    let id = objectIds.get(value);
-    if (!id) {
-      id = objectIdCounter++;
-      objectIds.set(value, id);
-    }
-    return id;
   }
 
   function own(o, k) {
@@ -176,7 +163,7 @@
   }
 
   function partId(part) {
-    return part ? [part.id ?? '', part.baseName ?? '', part.name ?? ''].join('|') : null;
+    return part ? [part.baseName ?? '', part.name ?? '', part.slot ?? ''].join('|') : null;
   }
 
   function collectRows() {
@@ -275,8 +262,7 @@
           allocation,
           ideal: idealTarget(part, currentSource, allocation),
           scale: Number(row.d.atlasScale[key]),
-          usedTextureSize: Number(part._usedTextureSize),
-          hostId: `${objectId(row.d)}:${key}:${bindingIndex}`
+          usedTextureSize: Number(part._usedTextureSize)
         });
       }
     }
@@ -921,18 +907,24 @@
     return restored;
   }
 
+  function stableHostIdentity(row, key) {
+    const normalFamilies = normalUniforms(row.meshes[key])
+      .map((entry) => parseNormalSource(textureSource(entry.uniform.value)))
+      .filter(Boolean)
+      .map((parsed) => parsed.key)
+      .sort();
+    return [key, partId(row.parts[key]), normalFamilies];
+  }
+
   function sceneSignature() {
     const rows = collectRows();
     return JSON.stringify(rows.map((row) => ({
-      d: objectId(row.d),
       key: row.key,
-      // Structural identity only. Do not include display generations, atlas
-      // allocations, normal bindings, scales, or used sizes: those are
-      // rendering state this service/core reconcile may legitimately change.
-      parts: Object.keys(row.parts).sort().map((key) => [
-        key,
-        partId(row.parts[key])
-      ])
+      // Stable scene identity only. HeroForge may regenerate display/data
+      // objects and numeric part ids during native reconcile. Host keys,
+      // stable part metadata, and size-neutral normal-family URLs survive
+      // Witch Dock's own promotion while detecting rendered asset changes.
+      parts: Object.keys(row.parts).sort().map((key) => stableHostIdentity(row, key))
     })));
   }
 

@@ -2,14 +2,14 @@
 
 ## Latest repository change — 2026-10-06
 
-- #25 Dev correction: Texture Quality All-Part Promotion advances to v0.1.1 / `0.1.1-owned-density-structural-sync`.
-- Counting Sheep live Dev exposed two v0.1.0 defects before fixture-matrix acceptance: density was compounded by forcing generic `_usedTextureSize` alongside `atlasScale`, and the 250 ms Texture Quality UI refresh poll treated all-part's own normal/atlas mutations as scene changes, causing repeated restore/reapply oscillation.
-- v0.1.1 now applies accessory density only through the existing owned Native Reconcile seam, observes/restores native used-size side effects instead of forcing them, skips atlas reconcile for source-only upgrades, and detects scene changes from structural figure/part identity only.
-- Figure replacement rollback now waits on the current live display set rather than stale prior display-data identities, avoiding a bounded-settle timeout during legitimate scene replacement.
-- Regression coverage now includes source-only promotion, density-reconcile failure isolation, structural-signature stability under owned render changes, 250 ms refresh-poll non-retrigger, and exact old-figure rollback on replacement. Focused Texture Quality suite passes 17/17.
-- v0.1.0 was disposed from the active Counting Sheep page after readback proved the loop; core High Res remained ready and HeroForge returned to `_inUpdate=false`, `_needsUpdating=false`, `finished=true`, `resourcesReady=true`.
-- Current public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
+- #25 Dev correction advances Texture Quality All-Part Promotion to v0.1.2 / `0.1.2-stable-asset-scene-sync`.
+- Counting Sheep live Dev proved v0.1.1 still periodically self-reconciled after the first feedback fix. The remaining discriminator was HeroForge regenerating display/data object identities and numeric part IDs during native reconcile.
+- v0.1.2 removes generated object/numeric IDs from scene-sync detection. Polling now compares stable display keys plus rendered host keys, stable part metadata, and size-neutral normal-family URLs, so Witch Dock source promotion and HeroForge reconcile generations do not appear to be scene changes while real rendered asset swaps still do.
+- v0.1.1's owned-density corrections remain: generic `_usedTextureSize` is never forced, density uses Native Reconcile, source-only promotion does not repack, rollback preserves outside edits, and figure replacement waits on the current live scene.
+- Focused Texture Quality VM tests pass 17/17, including regenerated part-ID/display-data identity stability and real asset-change detection.
+- v0.1.1 was disposed from the active Counting Sheep page before this patch; core High Res remains independently owned.
+- Public Stable remains v2.4.2 and is unchanged. No Stable/public promotion is authorized.
 
 ## Latest Dev delivery context
 
-Dev v1.17.1 / `1.17.1-all-part-stability` is paired to immutable payload `297dd62e0ea5686a36407edb52c02241c2a656da`, containing all-part v0.1.1 / `0.1.1-owned-density-structural-sync`.
+Canonical Dev v1.17.1 / `1.17.1-all-part-stability` currently pins immutable payload `297dd62e0ea5686a36407edb52c02241c2a656da` containing all-part v0.1.1. v0.1.2 must receive a new immutable Dev payload before live revalidation.
