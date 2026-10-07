@@ -12,5 +12,6 @@
 - PASS: regression proves a 512 target that would shrink an unrelated host is rejected, 256 is accepted, and planning leaves live scales/allocations untouched.
 - PASS: full static/runtime-delivery gates pass: module syntax, Texture Quality VM 20/20, inherited runtime-delivery 12/12, and git diff check.
 - PASS: manifest/module URL and DEV_DIVERGENCES consistency gates pass for v0.1.6.
-- PENDING: immutable Dev pairing/recovery parity, then Counting Sheep deterministic selection + anti-loop proof and remaining fixture/lifecycle regression.
+- PASS: Dev launcher header/runtime and manifest launcher registry are prepared at v1.17.6 / `1.17.6-native-packing-preflight`; the prior payload pin is intentionally retained until the candidate commit exists.
+- PENDING: pin the exact immutable candidate, verify recovery parity, then Counting Sheep deterministic selection + anti-loop proof and remaining fixture/lifecycle regression.
 - No Stable/public promotion is authorized or performed.
