@@ -2,12 +2,15 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 Beta manifest revision 4 assigns corrected High Res Phase 2 v0.1.1 / `0.1.1-native-baseline-preflight` to immutable payload `cf0c24a4c31571df53f6c24b4e5dad3ac6bfc2d2`.
-- The package embeds all-part v0.1.13 / `0.1.13-native-baseline-preflight`, which preserves observed live atlas floors during detached packing preflight.
-- The entry remains `defaultEnabled: false`; no tester is automatically opted in by the manifest default.
-- Public Stable source remains unchanged.
-- Next gate is controlled live Counting Sheep proof for shield/fan density, eyebrow preservation, skipped-group reduction, rollback and anti-loop behavior.
+- #25 follows the r4 safe rollback with an exact native-shadow packing preflight.
+- r4 v0.1.13 removed the original false detached veto, but the real HeroForge rebuild then triggered the unchanged collateral guard and rolled back to Stable. This proved that forcing observed live floors into the detached model was too permissive.
+- All-part v0.1.14 / `0.1.14-native-shadow-preflight` now calls the live display's own `buildAtlas` method against a detached shadow object, preserving HeroForge's private minimum-size/reference closure without mutating the live figure.
+- Direct `CK.Atlas` remains only a bounded fallback when no native builder result is available.
+- The real post-rebuild collateral detector and exact rollback remain unchanged.
+- Stable-compatible Beta wrapper is v0.1.2 / `0.1.2-native-shadow-preflight`.
+- Focused all-part/ownership/Beta suites pass 42/42.
+- Public Stable and manifest r4 remain unchanged until this new immutable payload is committed.
 
 ## Latest Dev delivery context
 
-Canonical Dev contains the corrected source and immutable Beta payload. Manifest r4 is the controlled runtime gate; no Stable promotion is authorized.
+Next gate: commit the immutable v0.1.14/v0.1.2 package, stage manifest r5 default-OFF, then controlled Counting Sheep live proof. No Stable promotion is authorized.

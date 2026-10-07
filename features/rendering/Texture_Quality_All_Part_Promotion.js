@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality All-Part Promotion
 // @namespace    KnightWitch
-// @version      0.1.13
+// @version      0.1.14
 // @description  Dev-only independent normal-source and budgeted atlas-density promotion for eligible rendered parts.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityAllPartPromotion';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.13';
-  const BUILD = '0.1.13-native-baseline-preflight';
+  const VERSION = '0.1.14';
+  const BUILD = '0.1.14-native-shadow-preflight';
   const OWNER = 82042525;
   const CORE_TARGETS = new Set(['bodyLower', 'bodyUpper', 'face']);
   const DEFAULT_QUALITY_CEILING = 1024;
@@ -403,13 +403,55 @@
     return Number.isFinite(budget) && budget > 0 ? budget : occupied;
   }
 
-  function baselinePackingOptions(baseline) {
-    const minimumSizes = {};
-    for (const [key, rect] of baseline.map.entries()) {
-      const edge = Math.max(Number(rect.width) || 0, Number(rect.height) || 0);
-      if (edge > 0) minimumSizes[key] = edge;
+  function detachedNativeAtlas(row, scale) {
+    const nativeBuild = row && row.m && row.m.buildAtlas;
+    if (typeof nativeBuild === 'function') {
+      const shadow = {
+        parts: Object.assign({}, row.parts),
+        data: {
+          atlasScale: Object.assign({}, scale),
+          isUHD: () => row.d.isUHD()
+        },
+        resourceAtlas: null
+      };
+      try {
+        nativeBuild.call(shadow);
+        if (shadow.resourceAtlas && typeof shadow.resourceAtlas.getUV === 'function') {
+          return { atlas: shadow.resourceAtlas, mode: 'native-buildAtlas-shadow', error: null };
+        }
+      } catch (error) {
+        return {
+          atlas: null,
+          mode: 'native-buildAtlas-shadow',
+          error: String(error && error.message || error)
+        };
+      }
     }
-    return { minimumSizes };
+
+    const CK = UW && UW.CK;
+    if (!CK || typeof CK.Atlas !== 'function') {
+      return { atlas: null, mode: 'unavailable', error: null };
+    }
+    try {
+      return {
+        atlas: new CK.Atlas(
+          Object.assign({}, row.parts),
+          undefined,
+          undefined,
+          undefined,
+          row.d.isUHD(),
+          Object.assign({}, scale)
+        ),
+        mode: 'direct-CK.Atlas-fallback',
+        error: null
+      };
+    } catch (error) {
+      return {
+        atlas: null,
+        mode: 'direct-CK.Atlas-fallback',
+        error: String(error && error.message || error)
+      };
+    }
   }
 
   function desiredScaleForHost(host, target) {
@@ -457,23 +499,27 @@
     const scale = Object.assign({}, row.d.atlasScale || {});
     for (const selection of selections) applySelectionScale(scale, selection);
 
-    let atlas = null;
-    try {
-      atlas = new CK.Atlas(
-        Object.assign({}, row.parts),
-        undefined,
-        undefined,
-        undefined,
-        row.d.isUHD(),
-        scale,
-        baselinePackingOptions(baseline)
-      );
-    } catch (error) {
+    const built = detachedNativeAtlas(row, scale);
+    const atlas = built.atlas;
+    if (built.error) {
       return {
         ok: false,
         available: true,
         reason: 'native-atlas-preflight-error',
-        error: String(error && error.message || error),
+        error: built.error,
+        mode: built.mode,
+        atlas: null,
+        regressions: [],
+        selectedFailures: []
+      };
+    }
+    if (!atlas) {
+      return {
+        ok: true,
+        available: false,
+        reason: 'native-atlas-preflight-unavailable',
+        error: null,
+        mode: built.mode,
         atlas: null,
         regressions: [],
         selectedFailures: []
@@ -1805,7 +1851,7 @@
       collectHosts,
       groupHosts,
       displayBudget,
-      baselinePackingOptions,
+      detachedNativeAtlas,
       planDisplay,
       collateralAfter,
       releaseOwnedResources,

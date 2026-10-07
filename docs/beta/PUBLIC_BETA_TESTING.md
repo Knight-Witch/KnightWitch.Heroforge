@@ -159,3 +159,14 @@ Revision 4 replaces only the `high-res-phase-2` assignment:
 - Stable minimum remains v2.4.2.
 
 Because Amanda's local preference for this module is already ON, a controlled manifest refresh may replace and reactivate the module in her current session. Treat that refresh as one at-most-once mutation and read back before any retry. The required live proof is specific: both bird-shield families and `fanBattle` must gain the intended density without shrinking `eyebrowL` below its 128x128 baseline or producing any unrelated collateral; then compare total skipped groups/rejection reasons, rollback once, and re-enable for human visual confirmation.
+
+
+### r4 rollback and native-shadow preflight
+
+Manifest r4 safely rejected the v0.1.13 baseline-floor approximation during live activation. Bridge #4645 retained the exact Beta error: `All-part promotion would downsize existing atlas allocations.` Readback #4644 confirmed the failed package left no all-part owner behind and restored exact Stable Active Decal Priority 0.1.1.
+
+The next correction does not relax that guard. All-part v0.1.14 / `0.1.14-native-shadow-preflight` uses the live display's own `buildAtlas` method on a detached shadow object containing only cloned parts, candidate `atlasScale`, `isUHD()`, and a private `resourceAtlas` result slot. Because the native method retains HeroForge's lexical/private slot metadata and atlas options, the preflight now runs the same packing constructor path as the eventual live rebuild without mutating the live display.
+
+If the native shadow builder is unavailable, the old direct `CK.Atlas` path remains only as a bounded fallback. Existing post-rebuild collateral detection and exact rollback are unchanged.
+
+Regression coverage includes both directions: a native shadow build that preserves an unrelated 128 baseline permits the shield-style 512 plan, while a native shadow build that would shrink that unrelated slot rejects/downgrades the 512 candidate before mutation. Focused all-part/ownership/Beta tests pass 42/42. The Stable-compatible wrapper is v0.1.2 / `0.1.2-native-shadow-preflight`.

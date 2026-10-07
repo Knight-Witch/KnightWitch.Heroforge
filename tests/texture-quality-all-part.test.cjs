@@ -1106,6 +1106,18 @@ test('detached native packing preflight preserves live baseline floors before ju
     }
   }
 
+  fixture.modded.buildAtlas = function () {
+    this.resourceAtlas = new NativeLikeAtlas(
+      this.parts,
+      undefined,
+      undefined,
+      undefined,
+      this.data.isUHD(),
+      this.data.atlasScale,
+      { minimumSizes: { eyebrow: 128 } }
+    );
+  };
+
   const character = {
     data: fixture.data,
     display: fixture.display,
@@ -1123,7 +1135,7 @@ test('detached native packing preflight preserves live baseline floors before ju
   const plan = await h.api.__test.planDisplay(row, run);
 
   const shield = plan.selected.find((entry) => entry.group.id.includes('/shield_'));
-  assert.ok(shield, 'valid shield density must not be rejected by a detached baseline mismatch');
+  assert.ok(shield, 'valid shield density must not be rejected when native buildAtlas preserves the unrelated baseline');
   assert.equal(shield.target, 512);
   assert.ok(observedOptions.length > 0);
   assert.equal(observedOptions[0].minimumSizes.eyebrow, 128);
@@ -1131,4 +1143,78 @@ test('detached native packing preflight preserves live baseline floors before ju
     !run.skipped.some((entry) => entry.group.includes('/shield_')),
     'shield must not be reported as native-packing collateral when the live eyebrow floor is preserved'
   );
+});
+
+
+test('native buildAtlas shadow preflight still rejects a genuine collateral shrink', async () => {
+  const fixture = displayFixture({
+    keys: ['shield', 'eyebrow'],
+    allocationSize: 128,
+    sourceSize: 128,
+    usedSize: 128,
+    bakeSize: 512,
+    atlasSize: 1024,
+    sharedSource: 'shield'
+  });
+
+  fixture.meshes.eyebrow.material.uniforms.normalMap.value =
+    texture('/textures/eyebrow_nrml_128.webp', 128);
+  fixture.parts.eyebrow.bakeSize = 128;
+
+  const store = {};
+  const resources = {
+    getResource(url) {
+      const size = Number(url.match(/_(\d+)\.webp$/)[1]);
+      if (!url.includes('/shield_') || ![256, 512].includes(size)) {
+        return Promise.reject(new Error('404'));
+      }
+      store[url] = texture(url, size);
+      return Promise.resolve(store[url]);
+    },
+    getNow(url) { return store[url] || null; },
+    unregister() {}
+  };
+
+  fixture.modded.buildAtlas = function () {
+    const scale = Number(this.data.atlasScale.shield) || 1;
+    const sizes = {
+      shield: scale >= 4 ? 512 : (scale >= 2 ? 256 : 128),
+      eyebrow: scale >= 4 ? 64 : 128
+    };
+    this.resourceAtlas = {
+      width: 1024,
+      height: 1024,
+      getUV(key) {
+        const edge = sizes[key];
+        return edge
+          ? { x: 0, y: 0, z: edge / 1024, w: edge / 1024 }
+          : null;
+      }
+    };
+  };
+
+  const character = {
+    data: fixture.data,
+    display: fixture.display,
+    allDisplays: {}
+  };
+  const h = harness({
+    character,
+    resources,
+    settings: { textureWidthMax: 1024, textureHeightMax: 1024 }
+  });
+
+  const row = h.api.__test.collectRows()[0];
+  const run = runState();
+  const plan = await h.api.__test.planDisplay(row, run);
+  const shield = plan.selected.find((entry) => entry.group.id.includes('/shield_'));
+
+  assert.ok(shield);
+  assert.equal(shield.target, 256, '512 must be rejected when the real native builder would shrink eyebrow');
+  assert.ok(run.downgraded.some((entry) =>
+    entry.group.includes('/shield_') &&
+    entry.from === 512 &&
+    entry.to === 256 &&
+    entry.reason === 'native-packing'
+  ));
 });
