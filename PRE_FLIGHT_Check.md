@@ -1,10 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-08 — #112 Dev repair source snapshot, pre-repin
+## 2026-10-08 — #112 immutable Dev source/launcher pairing
 
-- PASS: edited JS syntax, JSON parsing, git diff --check.
-- PASS: four tests covering native, Core Tweaks, incompatible mode, and immutable channel child URL.
-- PASS: launcher v1.17.15 source and manifest version/build match; #112 explicit Dev divergence recorded.
-- PASS: feature-registry impact none, because same feature ID/owner/path and only compatibility repair.
-- PENDING: immutable payload repin, live Dev startup, full list, actual decal projection/selection smoke and human visual acceptance.
-- Public Stable and High Res Phase 2 unchanged.
+- PASS: complete source payload snapshot commit 94d54f20614d5057c9ee6c2ef593d6553a8afa4b has coherent manifest launcher 1.17.15 and edited-module versions.
+- PASS: launcher 1.17.15 target payload points at that immutable source commit. Dev identity, @namespace, update/download URLs, and Stable boundary retained.
+- PASS: four synthetic tests for native decal fallback, Core Tweaks legacy, incompatibility fail-closed, and channel-local child request.
+- PASS: no feature registry impact; #112 is same user-facing feature and owner. No Stable changes, no High Res changes.
+- PENDING: live HeroForge Dev module-loader status, real full-list selection, projected/unprojected smoke, visual approval, Bitbucket recovery parity.
