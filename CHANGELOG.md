@@ -2,9 +2,9 @@
 
 ## Latest repository change — 2026-10-07
 
-- Retired automatic Phase 1 Texture Quality popup loading in Dev manifest (`texture-quality-beta-notice` disabled by default), preserving the notice implementation for Phase 2 reuse.
-- No High Res rendering functionality or general notifications changed. Public Stable not changed by this Dev update.
+- Removed the obsolete Phase 1 Texture Quality popup from the active Dev registry and manifest modules. The implementation remains in source control for Phase 2 reuse; existing saved enabled preferences cannot reactivate a non-listed module.
+- Public Stable v2.4.3 independently delivered this same narrow retirement through an immutable payload, without promoting unrelated Dev work.
 
 ## Latest Stable release context
 
-Public Stable v2.4.2 remains the baseline; no public promotion is recorded in this Dev commit.
+Public Stable v2.4.3 is the narrow Phase 1 notice retirement; Phase 2 remains in Dev/Beta.
