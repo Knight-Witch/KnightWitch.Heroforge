@@ -377,16 +377,6 @@
       "versionOrigin": "issue-35-hr-diagnostic-capture-2026-09-24"
     },
     {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "path": "features/rendering/Texture_Quality_Beta_Notice.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.2.1",
-      "build": "0.2.1-frd-warning-assets-signoff",
-      "versionOrigin": "stable-promoted-human-approved-2026-09-14"
-    },
-    {
       "id": "json-tool",
       "title": "JSON",
       "path": "tools/JSON_Tool.js",
@@ -733,15 +723,6 @@
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Diagnostics_UI.js?v=0.1.0-hr-capture-v1-ui",
       "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
-      "enabledByDefault": false,
       "hidden": true,
       "type": "heroForgeUI"
     },
