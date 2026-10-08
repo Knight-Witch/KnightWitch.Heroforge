@@ -7,8 +7,8 @@
       "path": "Witch_Dock.user.js",
       "kind": "bootstrap",
       "load": "userscript",
-      "version": "2.4.2",
-      "build": "2.4.2-refresh-compatibility",
+      "version": "2.4.3",
+      "build": "2.4.3-retire-phase1-notice",
       "versionOrigin": "issue-97-stable-self-refresh-compatibility"
     },
     {
@@ -347,16 +347,6 @@
       "versionOrigin": "issue-58-ui-standardization-2026-09-25"
     },
     {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "path": "features/rendering/Texture_Quality_Beta_Notice.js",
-      "kind": "feature-ui",
-      "load": "manifest",
-      "version": "0.2.1",
-      "build": "0.2.1-frd-warning-assets-signoff",
-      "versionOrigin": "stable-promoted-human-approved-2026-09-14"
-    },
-    {
       "id": "json-tool",
       "title": "JSON",
       "path": "tools/JSON_Tool.js",
@@ -616,15 +606,6 @@
       "title": "Texture Quality Native Reconcile UI",
       "tab": "HeroForge UI",
       "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Native_Reconcile_UI.js",
-      "enabledByDefault": true,
-      "hidden": true,
-      "type": "heroForgeUI"
-    },
-    {
-      "id": "texture-quality-beta-notice",
-      "title": "Texture Quality Phase 1 Beta Notice",
-      "tab": "HeroForge UI",
-      "url": "https://witchdock.knightwitch.dev/stable/features/rendering/Texture_Quality_Beta_Notice.js",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
