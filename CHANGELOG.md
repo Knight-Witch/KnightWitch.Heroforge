@@ -2,13 +2,9 @@
 
 ## Latest repository change — 2026-10-07
 
-- #25 adds a new primary heavy-build ceiling fixture record for private `Counting Sheep_BALLROOM.json`.
-- The fixture is user-reported at 1817% kitbash and preserves the same two-character Counting Sheep basis that already passes current Dev High Res, while adding a full ballroom scene and exhibiting a full texture downgrade.
-- Static JSON census records 427 root kit entries, 431 root transform hosts, 55 root atlasScale entries, plus 20 nested baseItem kit entries / 23 transform hosts.
-- The fixture is explicitly routed first to native/Hero Forge ceiling diagnosis with Phase 2 OFF, then to Phase 2 recovery comparison; it is not pre-classified as a Beta coverage bug.
-- The private JSON is not committed; SHA-256 `07f1f7ad8587ee5043f99241885f60c892cdbfccb115ee43a5c6587476a64501` is the durable fixture identity.
-- No runtime/module/manifest/public behavior changed.
+- Retired automatic Phase 1 Texture Quality popup loading in Dev manifest (`texture-quality-beta-notice` disabled by default), preserving the notice implementation for Phase 2 reuse.
+- No High Res rendering functionality or general notifications changed. Public Stable not changed by this Dev update.
 
-## Latest Dev delivery context
+## Latest Stable release context
 
-Public Beta manifest r6 remains live with `high-res-phase-2` as the sole Beta module. Public Stable remains unchanged.
+Public Stable v2.4.2 remains the baseline; no public promotion is recorded in this Dev commit.
