@@ -741,7 +741,7 @@
       "title": "Texture Quality Phase 1 Beta Notice",
       "tab": "HeroForge UI",
       "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/rendering/Texture_Quality_Beta_Notice.js?v=0.2.1-frd-warning-assets-signoff",
-      "enabledByDefault": true,
+      "enabledByDefault": false,
       "hidden": true,
       "type": "heroForgeUI"
     },
