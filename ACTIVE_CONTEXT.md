@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-07 UTC
 **Canonical Dev:** `WITCH_DEV_MAIN`, launcher v1.17.13 / `1.17.13-public-beta-channel`, immutable payload `8b92fc76f6ed6715b103d026338da5b0694d5a21`
-**Public Stable:** `Witch_Scripts`, launcher v2.4.2 / `2.4.2-refresh-compatibility`, immutable payload `93c0de5cd0da1dece3ef286c5a9201c83f1addb7`, current ref `c518402f40e487b1840444efd8948fdff4968998` (separate legacy-wrapper compatibility commit; payload unchanged)
+**Public Stable:** `Witch_Scripts`, launcher v2.4.3 / `2.4.3-retire-phase1-notice`, immutable payload `c58736df715480a978cc8c9e959568c11a962cf3` (retired Phase 1 popup only; live HeroForge smoke pending)
 
 These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).
 
@@ -18,6 +18,8 @@ These are source identities, not a new live runtime validation. Current module v
 | [#34 — HR false restore warning](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/34) | Issue #34 contains observations, evidence IDs, two hypotheses, and next test | Separate product defect. Prove verifier-only versus real restore fault; do not reopen/repeat shipped #24/#32 fixes. |
 
 ## Recently released
+
+- 2026-10-07: Phase 1 Texture Quality popup retired from both channel source manifests; public Stable v2.4.3 launcher references a narrow immutable payload excluding this notice entirely. The notice source/assets are retained for Phase 2. Existing Dev launcher remains pinned to its previous payload, so Dev source retirement is not yet live in that installed channel. Stable live smoke/fresh-install observation remain pending.
 
 - #104 HFJSON delivery aliases are live at `https://witchdock.knightwitch.dev/HFJSON/`; seven active Lob/HF JSON aliases currently redirect to GitGud. Paired HF.Status #89 is production-live and validated. The completed `wd/104-hfjson-delivery` branch was deleted from GitHub at exact queued SHA `7af8245e63e6fbe359542e26885a6b2f61106c1e`; Bitbucket recovery never carried that temporary ref.
 - #90 and #97 shipped to public Stable v2.4.0. Script Status uses `https://status.knightwitch.dev`; integrated reporting uses Witch Dock-specific capabilities, contextual source preservation, General diagnostics/evidence, and HFBR receipts.
