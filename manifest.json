@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.17.14",
-      "build": "1.17.14-retire-phase1-notice",
-      "versionOrigin": "retire-phase1-texture-quality-notice"
+      "version": "1.17.15",
+      "build": "1.17.15-october-decal-compat",
+      "versionOrigin": "issue-112-native-decal-compatibility"
     },
     {
       "id": "witch-dock-notifications",
@@ -166,8 +166,9 @@
       "path": "HeroForge_UI/HF_UI_Slot_Bridge.js",
       "kind": "heroForgeUI",
       "load": "manifest",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.0.1",
+      "build": "1.0.1-immutable-decal-child",
+      "versionOrigin": "issue-112-channel-local-decal-bridge"
     },
     {
       "id": "expanded-decal-slots",
@@ -175,8 +176,9 @@
       "path": "HeroForge_UI/Expanded_Decal_Slots.js",
       "kind": "heroForgeUI",
       "load": "conditional",
-      "version": "1.0.0",
-      "versionOrigin": "baseline-2026-09-06"
+      "version": "1.0.1",
+      "build": "1.0.1-native-decal-fallback",
+      "versionOrigin": "issue-112-native-decal-fallback"
     },
     {
       "id": "corrected-bound-decal-gizmo",
@@ -392,9 +394,9 @@
       "path": "tools/Utilities.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.4.0",
-      "versionOrigin": "issue-97-status-reporter-utilities-sections",
-      "build": "1.4.0-status-reporter-sections"
+      "version": "1.4.1",
+      "build": "1.4.1-channel-local-decal-bridge",
+      "versionOrigin": "issue-112-channel-local-decal-bridge"
     },
     {
       "id": "witch-dock-release-notices",
@@ -818,7 +820,7 @@
       "id": "utilities",
       "title": "Utilities",
       "tab": "Utilities",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Utilities.js?v=1.4.0-status-reporter-sections",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/tools/Utilities.js?v=1.4.1-channel-local-decal-bridge",
       "enabledByDefault": true
     }
   ]

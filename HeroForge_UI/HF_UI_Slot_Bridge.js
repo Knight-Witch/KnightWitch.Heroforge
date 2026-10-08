@@ -4,7 +4,18 @@
   const UW = Function("return typeof " + "unsafeWindow" + " !== 'undefined' ? " + "unsafeWindow" + " : window")();
   const UTILITY_ID = "hf-ui-slot-bridge";
   const STORE_PREFIX = "kw.witchDock.toolEnabled.";
-  const url = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/HeroForge_UI/Expanded_" + "Decal" + "_Slots.js";
+  const RELATIVE_PATH = "HeroForge_UI/Expanded_Decal_Slots.js";
+  // Resolve the child through the channel's immutable payload, not public
+  // Stable source when this bridge is executing in canonical Dev.
+  function getChildURL() {
+    const root = UW.KWWitchDockPayloadRoot;
+    if (typeof root === "string" &&
+        /^https:\/\/witchdock\.knightwitch\.dev\/payloads\/[a-f0-9]{40}\/$/.test(root)) {
+      return root + RELATIVE_PATH;
+    }
+    // Legacy standalone bridge fallback, retained for compatibility.
+    return "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/" + RELATIVE_PATH;
+  }
 
   UW.KW_HeroForgeUI = UW.KW_HeroForgeUI || {};
 
@@ -34,7 +45,7 @@
       return Promise.resolve(false);
     }
 
-    return fetch(url, { cache: "no-store" })
+    return fetch(getChildURL(), { cache: "no-store" })
       .then((res) => res.ok ? res.text() : "")
       .then((code) => {
         run(code);

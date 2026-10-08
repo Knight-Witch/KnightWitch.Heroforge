@@ -111,6 +111,24 @@
         "Graduated modules remain as a disabled tombstone for one manifest revision so open pages can deactivate cleanly, then are removed; Git history is the archive.",
         "Public Stable remains unchanged until an explicitly authorized narrow reporter-seam promotion."
       ]
+    },
+    {
+      "issue": 112,
+      "status": "dev-implementation-pending-live-validation",
+      "reason": "Expanded Decal Slots supports the observed native numbered decal shape when Core Tweaks signature absent; child loads via channel immutable payload, not Stable.",
+      "paths": [
+        "HeroForge_UI/Expanded_Decal_Slots.js",
+        "HeroForge_UI/HF_UI_Slot_Bridge.js",
+        "tools/Utilities.js",
+        "manifest.json",
+        "Witch_Dock_DEV.user.js"
+      ],
+      "acceptance": [
+        "Native decal mode guarded; 96-layer target; incompatible data fails closed",
+        "Legacy Core Tweaks behavior retained; no new index zero",
+        "Channel-local immutable child loading",
+        "Live Dev and human UI gate before any Stable promotion"
+      ]
     }
   ],
   "notes": [

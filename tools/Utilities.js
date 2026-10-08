@@ -2,8 +2,8 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const VERSION = "1.4.0";
-  const BUILD = "1.4.0-status-reporter-sections";
+  const VERSION = "1.4.1";
+  const BUILD = "1.4.1-channel-local-decal-bridge";
   const RESET_DOCK_SIZE_VERSION = "1.0.0";
   const RAW_ROOT = "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/Witch_Scripts/";
   const SCROLL_URL = RAW_ROOT + "HeroForge_UI/Expanded_UI_Scroll_Guards.js";
@@ -134,7 +134,11 @@
         setStatus(statusEl, "Enabled and already applied.");
         return;
       }
-      loadScript(SLOT_URL).then(() => {
+      const bridge = UW.KW_HeroForgeUI && UW.KW_HeroForgeUI.slotBridge;
+      const load = bridge && typeof bridge.load === "function"
+        ? bridge.load()
+        : loadScript(SLOT_URL);
+      Promise.resolve(load).then(() => {
         const next = decalStatus();
         setStatus(statusEl, next && next.applied ? "Enabled and applied." : "Enabled. Refresh may be required.");
       });

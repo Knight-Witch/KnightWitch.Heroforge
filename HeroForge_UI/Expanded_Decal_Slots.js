@@ -12,7 +12,10 @@
     reason: "waiting",
     tries: 0,
     maxTries: 80,
-    delayMs: 250
+    delayMs: 250,
+    version: "1.0.1",
+    build: "1.0.1-native-decal-fallback",
+    sourceMode: ""
   };
 
   UW.KW_HeroForgeUI = UW.KW_HeroForgeUI || {};
@@ -47,6 +50,23 @@
     if (decals[0].label !== "Splatter 0") return false;
     if (decals[1].label !== "Splatter 1") return false;
     return true;
+  }
+
+  // Core Tweaks' historical signature is not the only supported source.
+  // The current native part exposes the same numbered decal layer backing data.
+  // Only accept the observed native shape; do not synthesize Core Tweaks'
+  // separate Splatter 0/font-source changes or alter an existing index 0.
+  function compatibleDecalMode() {
+    if (hasCoreTweaksSignature()) return "core-tweaks";
+    const part = getPart(21022);
+    const decals = part && part.decals;
+    const splatter = decals && decals[1];
+    const projected = decals && decals[2];
+    if (!splatter || !projected ||
+        !Array.isArray(splatter.sources) || !Array.isArray(projected.sources) ||
+        Number(splatter.mapping) !== 1 || Number(projected.mapping) !== 2 ||
+        !getOptions()?.partsBySlot) return "";
+    return "native";
   }
 
   function cloneDecal(source) {
@@ -136,8 +156,9 @@
       setStatus("waiting", "CK.Options unavailable");
       return false;
     }
-    if (!hasCoreTweaksSignature()) {
-      setStatus("waiting", "HF Core Tweaks signature unavailable");
+    const sourceMode = compatibleDecalMode();
+    if (!sourceMode) {
+      setStatus("waiting", "no compatible numbered-decal source");
       return false;
     }
 
@@ -147,6 +168,7 @@
 
     STATE.applied = true;
     STATE.target = TARGET;
+    STATE.sourceMode = sourceMode;
     setStatus("applied", "");
     return true;
   }

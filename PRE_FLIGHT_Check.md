@@ -1,9 +1,10 @@
 # Pre-Flight Check
 
-## 2026-10-07 — Dev launcher repin for retired Phase 1 popup
+## 2026-10-08 — #112 Dev repair source snapshot, pre-repin
 
-- PASS: `manifest.json` parses and `texture-quality-beta-notice` is absent from active `modules` and `moduleRegistry`.
-- PASS: Dev launcher and manifest registry version/build are paired at v1.17.14 / `1.17.14-retire-phase1-notice`.
-- PASS: launcher pins immutable manifest snapshot `39ddee76d6b49c36946c4cf99f73ad9c508ad300`, where the obsolete notice was removed. Channel identity and endpoint metadata were unchanged.
-- PASS: existing High Res modules, notification framework, and Phase 2 Beta were not edited; HF.Status feature registry has no impact because this retires only a superseded announcement, not a reportable feature.
-- PENDING: HeroForge live startup, no-popup fresh-install observation, and custom-domain/Bitbucket parity checks. GitHub source evidence is not live proof.
+- PASS: edited JS syntax, JSON parsing, git diff --check.
+- PASS: four tests covering native, Core Tweaks, incompatible mode, and immutable channel child URL.
+- PASS: launcher v1.17.15 source and manifest version/build match; #112 explicit Dev divergence recorded.
+- PASS: feature-registry impact none, because same feature ID/owner/path and only compatibility repair.
+- PENDING: immutable payload repin, live Dev startup, full list, actual decal projection/selection smoke and human visual acceptance.
+- Public Stable and High Res Phase 2 unchanged.

@@ -1,10 +1,11 @@
 # Changelog
 
-## Latest repository change — 2026-10-07
+## Latest repository change — 2026-10-08
 
-- Dev launcher v1.17.14 / `1.17.14-retire-phase1-notice` now pins immutable payload `39ddee76d6b49c36946c4cf99f73ad9c508ad300`, which excludes the retired Phase 1 Texture Quality popup from module loading. No other Dev features were promoted or modified.
-- Public Stable v2.4.3 independently retired the same Phase 1 notice via its own immutable payload. Notice source/assets remain for Phase 2 reuse.
+- #112: Dev Expanded Decal Slots v1.0.1 now supports current native numbered decal data while retaining Core Tweaks mode and strict fail-closed checks.
+- HF UI Slot Bridge v1.0.1 routes child to channel immutable payload; Utilities v1.4.1 reuses that bridge. Four isolated tests pass. Dev launcher v1.17.15 staged for immutable source repin; live Dev gate pending.
+- #110/#111/#113/#114/#115 remain independent investigations. No Stable/public edits.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 retires the Phase 1 popup; Phase 2 remains in Dev/Beta.
+Stable v2.4.3 retired the Phase 1 notice. Unaffected by #112 Dev work.
