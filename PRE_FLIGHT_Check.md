@@ -1,9 +1,8 @@
 # Pre-Flight Check
 
-## 2026-10-07 — Phase 1 Texture Quality notice retirement (Dev source)
+## 2026-10-07 — Dev manifest legacy Phase 1 notice retirement
 
-- PASS: source inspection confirmed the legacy Phase 1 notice automatically displays when acknowledgement key is absent and its manifest entry was enabled by default.
-- PASS: manifest JSON parses and the targeted `texture-quality-beta-notice` entry is disabled by default.
-- PASS: only the targeted manifest enablement value changes; no module code, rendering, notification runtime or launcher changed.
-- NOT LIVE VALIDATED: installed Dev launcher pins immutable payload `8b92fc76f6ed6715b103d026338da5b0694d5a21`; manifest edit alone is not live delivery.
-- Public Stable is unaffected by this Dev source commit.
+- PASS: legacy Phase 1 notice removed from the Dev active `modules` list and `moduleRegistry` (not merely disabled by default).
+- PASS: Dev manifest JSON parses; notice source/assets preserved; no rendering/high-res module changed.
+- PASS: independent public Stable v2.4.3 retirement uses its own immutable snapshot rather than merging Dev.
+- PENDING: existing Dev launcher still pins payload `8b92fc76f6ed6715b103d026338da5b0694d5a21`; this source change is not active in that installed Dev snapshot until its next validated payload promotion.
