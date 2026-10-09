@@ -1,10 +1,10 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 corrected Decals v1.2.4 payload stage
+## 2026-10-09 — #111 8/9 corrected Dev launcher, live gate pending
 
-- PASS: Canonical project contract/router, #111 handoff, active branch registry/queue, module versioning and Dev workflow read.
-- PASS: Live Bridge #4800 verified prior two-layer preview fully reverted, mapping 8 and mapping 9 both in live native orderedDecals, l0_projected=0, l0_uvSet2=0. Bridge #4801 confirmed both native four-vector color palettes/UV shaders available.
-- PASS: Dev-only targeted code restricts eligible UV circle gradient id1195 to mappings 8 and 9; rejects mapping 7; no figure data writes, no change in timeouts/rollback/cache-key/rebake behavior.
-- PASS: node --check tools/Decals.js, node --test tests/issue111-legacy-uv-preview.test.cjs (1 test, all subassertions including GPU-change/exact-revert), JSON manifest parse, git diff --check.
-- Feature registry: no impact — existing Decals Dev tool path/id and reporter taxonomy unchanged.
-- PENDING: launcher/payload pairing, live Dev two-circle GPU proof and Amanda human visual gate. Public Stable untouched.
+- PASS: canonical project context, issue/handoff, registered branch status, module versioning and Dev routing read.
+- PASS: Bridge #4800/#4801 native saved/active readback, slot eligibility/gradient palette verification and successful prior auto-revert.
+- PASS: targeted Decals v1.2.4 guard against old mapping 7, updated 8/9 tests; one focused node test passed (all subassertions), native vector high-contrast GPU mock readback and zero-change restoration passed.
+- PASS: canonical source/manifest synchronized (Dev launcher v1.17.21; Decals module v1.2.4); launcher immutable payload b179129d4030779e939c062c3ce450cd53a81de5; local source syntax, JSON, git diff --check.
+- PASS: existing Dev divergence #111 accurately reflects owner-corrected target. Feature registry: no impact (existing Decals tool id/path, no taxonomy/routing changes).
+- PENDING: new Dev payload available in live tab, 8/9 actual GPU readback, owner green-circle placement/alignment gate; no Stable promotion.

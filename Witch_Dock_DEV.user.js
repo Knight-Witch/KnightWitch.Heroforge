@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WITCH DOCK - DEV
 // @namespace    KnightWitch
-// @version      1.17.20
+// @version      1.17.21
 // @description  Witch Dock modular Dev bootstrap.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -23,12 +23,12 @@
   "use strict";
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-  const DEV_VERSION = "1.17.20";
-  const DEV_BUILD = "1.17.20-legacy-uv-contrast-native-vectors";
+  const DEV_VERSION = "1.17.21";
+  const DEV_BUILD = "1.17.21-legacy-uv-target-8-9";
   const DEV_SCRIPT_NAME = "WITCH DOCK - DEV";
   const DEV_NAME = `WITCH DOCK - DEV v${DEV_VERSION}`;
   const DEV_BRANCH = "WITCH_DEV_MAIN";
-  const PAYLOAD_REF = "34afdcca8748f6a1920e6b9619f201cd181bf558";
+  const PAYLOAD_REF = "b179129d4030779e939c062c3ce450cd53a81de5";
   const REPO_RAW = "https://witchdock.knightwitch.dev/payloads";
   const PAYLOAD_ROOT = `${REPO_RAW}/${PAYLOAD_REF}/`;
   const MANIFEST_URL = `${PAYLOAD_ROOT}manifest.json`;
