@@ -41,6 +41,7 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 
 | Branch | Owner / source | Why protected | Exit condition |
 |---|---|---|---|
+| `wd/111-legacy-uv-preview` | #111 | Experimental nonpersistent legacy torso UV decal visual preview, chart-specific migration feasibility, native save-safe validation only. | After Dev visual gate and integration to WITCH_DEV_MAIN, preserve evidence then queue exact final SHA; never promote unvalidated preview. |
 | `wd/25-texture-coverage` | #25 | Dev-only coverage closure, owned allocation policy and fixture validation. | After validated integration and remaining #25 gates, preserve evidence and queue exact head; no parallel #25 branch. |
 | `wd/107-public-beta-tester` | #107 | Public Beta Tester bootstrap, manifest/module lifecycle, visible beta labeling, and targeted QA reporting integration. | After beta infrastructure is validated and integrated into canonical Dev, preserve evidence and queue exact head; any future permanent beta delivery ref requires separate explicit permanent-promotion approval. |
 | `wd/59-decals-diagnostic-provider` | #59 | Paused Decals provider checkpoint with unique unmerged work. | When #59 no longer needs the branch, validate preservation, remove this row, and add the exact head to `BRANCH_DELETION_QUEUE.md`. |

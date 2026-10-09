@@ -2,8 +2,8 @@
 
 ## Latest repository change — 2026-10-09
 
-- **Documentation-only #111 UV-investigation result:** January 7 private HARs contain the historical native HeroForge CreationKit, options, mesh response and intact mask/AAID/normal2 maps. The historical mesh response is lossily encoded, so exact old vertex UVs cannot be reconstructed. Verified native bodyUpper/human part 1963 face counts unchanged (6,392/25,566), but UV area shrank 0.690 to 0.606 and UV chart texture islands fit a ~0.94 local linear scale in independent assets. Saved D4/D5 nipple decal positions are unchanged; Witch Dock absent and FRD resolution OFF still reproduce drift. Regression and next bounded legacy *render-only* preview remain under #111.
-- No runtime/module/manifest/public behavior changed.
+- **#111 governance registration only:** Created and registered temporary protected task branch `wd/111-legacy-uv-preview` for a bounded reversible torso UV decal visual preview. Previous January HAR findings remain in #111 and ACTIVE_CONTEXT.md. No experimental renderer modifications integrated to Dev or Stable.
+- **No runtime/module/manifest/public behavior changed.**
 
 ## Latest Stable release context
 
