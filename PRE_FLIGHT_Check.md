@@ -6,5 +6,6 @@
 - PASS: HF-Chat-Bridge v0.4.0 live reads confirmed `ASSET_MANIFEST.booth = booth.b9ab74dd25ad.js`, old bootstrap `/gated/booth.js?version=heroforge06.1.10.13`, failed bootstrap-owned tag, zero native BT and repeated failed attempts.
 - PASS: Bridge v0.3.0 GitHub relay 401 repaired from valid GitHub CLI session to Windows DPAPI. Pairing secret not rotated. Pending GitHub mailbox requests #4685/#4686 and subsequent read-only workbench completed.
 - PASS: Booth Runtime Bootstrap v0.2.3 uses native manifest path, retains version fallback from CK.Settings.artVersionNumber, removes only failed bootstrap-owned tags, backs off retries while retaining rearm and error reporting; native tags are not overwritten.
-- PASS: `node --check` for active Bootstrap and Dev launcher; `node --test tests/issue117-booth-bootstrap.test.cjs` (4/4 pass). Feature registry: no impact, same Booth feature identity/owner/UI.
-- PENDING: immutable Dev launcher/payload pin; live Dev reload and Booth persistence + show-Booth-in-editor user visual gate, scene transitions. No Stable/public promotion.
+- PASS: `node --check` for active Bootstrap and Dev launcher; `node --test tests/issue117-booth-bootstrap.test.cjs` (8/8 pass (four Booth + four existing decal tests)). Feature registry: no impact, same Booth feature identity/owner/UI.
+- PASS: immutable Dev payload snapshot c3063ad0734b0e5ef37490f5c9b47a4912b5950c created and launcher pinned in follow-up commit.
+- PENDING: live Dev reload and Booth persistence + show-Booth-in-editor user visual gate, scene transitions. No Stable/public promotion.
