@@ -3,13 +3,13 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.5";
-  const BUILD = "1.2.5-unique-1178-uv-mappings-13-14";
+  const VERSION = "1.2.6";
+  const BUILD = "1.2.6-manual-lifetime-preview";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1178;
   const TARGET_MAPPINGS = Object.freeze([13, 14]);
-  const MAX_PREVIEW_MS = 120000;
+  // Preview lifetime is manual only. Page/figure replacement discards renderer-only changes.
   const STATE = { preview: null, attempts: 0, lastError: null, lastResult: null, viewer: null };
 
   // Only native decal-bake material uniforms are modified during preview.
@@ -103,26 +103,33 @@
     if (typeof atlas.dilate === "function") atlas.dilate("color");
   }
 
-  function releaseTimer(p) {
-    if (p && p.timer) { clearTimeout(p.timer); p.timer = null; }
-  }
 
   function revert() {
     const p = STATE.preview;
     if (!p) return { ok: true, restored: false, reason: "no-preview" };
     STATE.preview = null;
-    releaseTimer(p);
+    // No expiry timer: restore on explicit Revert or when starting a new preview.
     let restored = 0;
     for (const item of p.items) {
-      if (item.layer.uniforms.l0_uvTranslate && item.layer.uniforms.l0_uvRotateScale) {
+      // Native edits may replace shaders during a long-lived preview.
+      // Restore only preview-owned values; preserve later native changes.
+      let changed = false;
+      if (uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) {
         item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
-        item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
-        if (item.contrastApplied) item.layer.setUniform("colors0", item.originalColors);
-        restored++;
+        changed = true;
       }
+      if (uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) {
+        item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+        changed = true;
+      }
+      if (item.contrastApplied && uniformValue(item.layer, "colors0") === item.appliedColors) {
+        item.layer.setUniform("colors0", item.originalColors);
+        changed = true;
+      }
+      if (changed) restored++;
     }
     const current = UW.CK && UW.CK.character && UW.CK.character.display;
-    if (current === p.ctx.display) {
+    if (restored && current === p.ctx.display) {
       try { nativeRebake(p.ctx); } catch (error) {
         STATE.lastError = "Preview uniforms restored, but native rebake failed: " + String(error.message || error);
         return { ok: false, restored, reason: STATE.lastError };
@@ -156,12 +163,14 @@
         planned: plannedUniforms(t, m, opts)
       };
     });
-    const p = { ctx, items, startedAt: Date.now(), timer: null };
+    const p = { ctx, items, startedAt: Date.now() };
     try {
       for (const item of items) {
         const { translate, matrix } = item.planned;
-        item.layer.setUniform("l0_uvTranslate", new UW.RK.Vec2(translate.x, translate.y));
-        item.layer.setUniform("l0_uvRotateScale", new UW.RK.Vec4(matrix.x, matrix.y, matrix.z, matrix.w));
+        item.appliedTranslation = new UW.RK.Vec2(translate.x, translate.y);
+        item.appliedMatrix = new UW.RK.Vec4(matrix.x, matrix.y, matrix.z, matrix.w);
+        item.layer.setUniform("l0_uvTranslate", item.appliedTranslation);
+        item.layer.setUniform("l0_uvRotateScale", item.appliedMatrix);
         if (opts.highContrast === true) {
           const oldColors = item.originalColors;
           if (!Array.isArray(oldColors) || oldColors.length !== 4 ||
@@ -170,6 +179,7 @@
           }
           const contrastColors = oldColors.map((c, i) => i === 3 ? new UW.RK.Vec4(0, 1, 0, 1) : new UW.RK.Vec3(0, 1, 0));
           item.layer.setUniform("colors0", contrastColors);
+          item.appliedColors = contrastColors;
           item.contrastApplied = true;
         }
       }
@@ -184,7 +194,7 @@
       throw error;
     }
     STATE.preview = p;
-    p.timer = setTimeout(() => { if (STATE.preview === p) revert(); }, MAX_PREVIEW_MS);
+    // No expiry timeout: the owner can inspect the preview at any pace.
     STATE.lastError = null;
     STATE.lastResult = {
       mode: "preview", mappings: items.map(x => x.mapping),
@@ -313,7 +323,7 @@
     if (!view || !view.isConnected) return;
     const result = STATE.lastResult;
     view.textContent = STATE.lastError || (STATE.preview ?
-      "Preview ACTIVE (auto-reverts in 2 minutes). No saved decal coordinates were changed." :
+      "Preview ACTIVE — no timer. Click Revert preview when finished. Saved decals unchanged." :
       result && result.mode === "reverted" ? "Preview reverted. Native shader values restored." :
       "No preview active. Select the original legacy circle layers below.");
   }
@@ -327,7 +337,7 @@
     root.appendChild(heading);
     const warning = document.createElement("div");
     warning.className = "note";
-    warning.textContent = "Dev only. This previews the two verified UV-bound decal ID 1178 layers, M (13) and N (14) on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Restores automatically after two minutes.";
+    warning.textContent = "Dev only. This previews the two verified UV-bound decal ID 1178 layers, M (13) and N (14) on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Stays active until manually reverted or another preview starts; figure reload/replacement discards this temporary renderer state.";
     root.appendChild(warning);
 
     const slots = document.createElement("div");
@@ -368,7 +378,7 @@
     }
 
     const row = document.createElement("div"); row.className = "buttons";
-    const go = document.createElement("button"); go.type = "button"; go.textContent = "Preview correction (2 min)";
+    const go = document.createElement("button"); go.type = "button"; go.textContent = "Preview correction (no timer)";
     const stop = document.createElement("button"); stop.type = "button"; stop.textContent = "Revert preview";
     go.addEventListener("click", () => {
       try {
@@ -384,7 +394,7 @@
     stop.addEventListener("click", () => { revert(); updateStatus(); });
     row.append(go, stop); root.appendChild(row);
     const note = document.createElement("div");note.className = "note";
-    note.textContent = "Preview only: do not save or change figures while active. Revert before making other edits. The 0.94 scale is a measured starting estimate, not an approved correction.";
+    note.textContent = "Preview only: no timeout. Click Revert preview before saving or editing; reloading/replacing the figure discards temporary shader changes. The 0.94 scale is a measured starting estimate, not an approved correction.";
     root.appendChild(note);
     const status = document.createElement("div");status.className = "status";
     root.appendChild(status);

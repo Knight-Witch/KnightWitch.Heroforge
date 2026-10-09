@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.5",
-      "versionOrigin": "issue-111-distinct-id1178-pair-13-14",
-      "build": "1.2.5-unique-1178-uv-mappings-13-14"
+      "version": "1.2.6",
+      "versionOrigin": "issue-111-manual-persistent-visual-preview",
+      "build": "1.2.6-manual-lifetime-preview"
     },
     {
       "id": "booth-runtime-bootstrap",
