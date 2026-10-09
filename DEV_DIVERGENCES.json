@@ -134,7 +134,7 @@
     {
       "issue": 111,
       "status": "dev-preview-pending-live-and-human-validation",
-      "reason": "Legacy upper-body/human UV-chart shrink correction under investigation. Only a bounded, opt-in, manual-until-revert shader-uniform preview for source-verified ID1178 mappings 13/14 (M/N) is implemented; active-only native shader overwrite reconciliation keeps a green diagnostic visible without any auto expiry. Previous targeted ID1195 is a five-copy decal, excluded. No native character JSON changes or permanent migration are permitted before visual validation.",
+      "reason": "Legacy upper-body/human UV-chart shrink correction under investigation. Only a bounded, opt-in, manual-until-revert shader-uniform preview for ID1178 mappings 13/14 (M/N) is implemented, with independent per-decal UV U/V calibration and active-only native shader overwrite reconciliation; no expiry, permanent migration, or saved-figure edits. Previous targeted ID1195 is a five-copy decal, excluded. No native character JSON changes or permanent migration are permitted before visual validation.",
       "paths": [
         "tools/Decals.js",
         "manifest.json",

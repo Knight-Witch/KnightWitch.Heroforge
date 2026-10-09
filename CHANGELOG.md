@@ -2,10 +2,9 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 Dev Decals v1.3.0 — independent M/N UV calibration:** Correct ID1178 M/N highlighting and untimed native refresh preservation now passes human visual gate (owner screenshot). Both nipples are still spatially misplaced, asymmetrically, so the common .94 chart-scale estimate is explicitly rejected.
-- Added four optional separate, bounded UV offsets (U/V for M, U/V for N), shown together in a collapsible calibration section. Each maps only to its own native UV shader layer, with existing global nudge, native part/ID restrictions, cache rebake and ownership-safe manual rollback unchanged. Default scale is now 1.00 (no unvalidated shrink).
-- Node regression proves independent per-decal movements, invalid bound rejection, changed GPU atlas, native overwrite reapplication, manual-only preview with zero expiry, figure-change safety, exact rollback and saved data immutability.
-- Dev launcher still pins previous payload until atomic versioned launcher follow-up. Stable unchanged; no permanent UV migration.
+- **#111 Dev Decals v1.3.0 independent M/N calibration:** User screenshot verifies v1.2.7 persistent vivid-green overlay correctly targets two ID1178 decals but .94 shared UV scale makes spatial placement significantly worse/asymmetric. Correct migration not established. New experimental controls separately adjust M U/V and N U/V (bounded +/- .05 each); neutral default chart scale is 1.00. Preserves existing global offsets, native compatibility checks, active-only repaint reconciliation, manual Revert/no expiry and unmodified saved JSON.
+- **Dev launcher v1.17.25 / 1.17.25-independent-mn-calibration** pins immutable payload **8dbf43e217b3f01f4fe27f03689cd4441bf82534** containing v1.3.0. Canonical context, focused handoff and Dev divergence updated.
+- Static and targeted tests passed incl per-side center math/bounds, full native/GPU rollback, figure switching and unchanged saved data. **Live v1.3.0 human calibration gate pending**; Public Stable unchanged.
 
 ## Latest Stable release context
 
