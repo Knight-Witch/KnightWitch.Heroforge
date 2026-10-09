@@ -1,10 +1,11 @@
 # Pre-Flight Check
 
-## 2026-10-08 — #117 Dev-only Booth issue closeout (documentation only)
+## 2026-10-09 — October regression closeout / #111 UV investigation (documentation only)
 
-- PASS: Read canonical PROJECT_CONTRACT.md and ACTIVE_CONTEXT.md; verified BRANCH_REGISTRY.md and BRANCH_DELETION_QUEUE.md, with no #117 temporary branch to queue or delete.
-- PASS: Live HF-Chat-Bridge request #4693 confirms Dev Auto Host v0.2.3 executed Dev v1.17.16; Bootstrap v0.2.3 loaded native hashed Booth asset successfully once with no failure/duplicate; native `BT` enabled, persistent Booth/Black Canvas active.
-- PASS: Amanda explicitly confirmed both Persistent Booth and Show Booth While Editing work and authorized issue #117 closeout.
-- PASS: Collapsed Dev-only Bootstrap difference into existing open #59 divergence owner; retained Cloudflare primary/fallback concern separately under #118 and active decal issues under #111.
-- PASS: No runtime code, module version, manifest, userscript identity, branch classification or Stable/public code modified.
+- PASS: Canonical PROJECT_CONTRACT.md and ACTIVE_CONTEXT.md read; local WITCH_DEV_MAIN verified clean and synchronized at a89d63c before edits.
+- PASS: GitHub #110, #112, #113 and #115 owner-verified standalone repair closeout comments written, each issue closed completed.
+- PASS: Issue notes explicitly separate Lob standalone candidate installation, Witch Dock Dev-only changes and unverified public/upstream release state.
+- PASS: #111 left open for UV drift with validated historical D5 JSON comparison, and #114 left open as intermittent monitoring. Owner accepts current Witch Dock bound gizmo and defers ADP native toggle order oddities to polish.
+- PASS: September vs October D5 files have identical root decals: bodyUpper, bodyLower, face and splatter; other figure data do differ. Live Bridge #4713 confirms working D5 copy and #4714 nonprojected upper-body slot metadata. No figure saved values mutated and no unproven cause asserted.
+- PASS: Documentation only: no runtime code, standalone script, module version, manifest, Stable/public payload or deployment changed.
 - **No runtime/module/manifest/public behavior changed.**
