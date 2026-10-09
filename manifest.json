@@ -225,8 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.1.0",
-      "versionOrigin": "stable-promoted-host-relocation"
+      "version": "1.2.0",
+      "versionOrigin": "issue-111-reversible-uniform-only-preview",
+      "build": "1.2.0-legacy-uv-preview-only"
     },
     {
       "id": "booth-runtime-bootstrap",
