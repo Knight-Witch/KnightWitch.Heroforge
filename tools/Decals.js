@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.7";
-  const BUILD = "1.2.7-native-repaint-reconcile";
+  const VERSION = "1.3.0";
+  const BUILD = "1.3.0-independent-mn-uv-calibration";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1178;
@@ -145,6 +145,13 @@
     STATE.attempts++;
     revert();
     if (opts.highContrast !== undefined && typeof opts.highContrast !== "boolean") throw Error("Invalid preview diagnostic contrast flag.");
+    // Calibrate each distinct UV decal separately; never assume mirrored
+    // screen-space displacement implies a shared UV-space translation.
+    for (const key of ["mNudgeU", "mNudgeV", "nNudgeU", "nNudgeV"]) {
+      if (opts[key] !== undefined && (!finite(opts[key]) || Math.abs(opts[key]) > 0.05)) {
+        throw Error("Per-decal UV calibration offset is outside the bounded range.");
+      }
+    }
     const ctx = context();
     const available = eligible(ctx);
     const selections = [...new Set(mappings.map(Number))];
@@ -160,7 +167,11 @@
       return {
         mapping, index, layer, originalTranslation: t, originalMatrix: m,
         originalColors: uniformValue(layer, "colors0"), contrastApplied: false,
-        planned: plannedUniforms(t, m, opts)
+        planned: plannedUniforms(t, m, {
+          ...opts,
+          nudgeU: opts.nudgeU + (opts[mapping === 13 ? "mNudgeU" : "nNudgeU"] ?? 0),
+          nudgeV: opts.nudgeV + (opts[mapping === 13 ? "mNudgeV" : "nNudgeV"] ?? 0)
+        })
       };
     });
     const p = { ctx, items, startedAt: Date.now(), data: ctx.display.data, opts: { ...opts }, maintenance: null };
@@ -412,7 +423,7 @@
 
     const fields = {};
     for (const [key, title, initial, min, max, step] of [
-      ["scale", "UV chart scale", 0.94, 0.9, 1.05, 0.005],
+      ["scale", "UV chart scale", 1, 0.9, 1.05, 0.005],
       ["pivotU", "Atlas pivot U", 0.5, 0, 1, 0.01],
       ["pivotV", "Atlas pivot V", 0.5, 0, 1, 0.01],
       ["nudgeU", "Fine offset U", 0, -0.05, 0.05, 0.001],
@@ -426,6 +437,31 @@
       label.append(name, input);
       root.appendChild(label);
     }
+
+    const calibration = document.createElement("details");
+    calibration.open = true;
+    const calibrationHeading = document.createElement("summary");
+    calibrationHeading.textContent = "Independent M / N decal calibration";
+    calibration.appendChild(calibrationHeading);
+    const calibrationNote = document.createElement("div");
+    calibrationNote.className = "note";
+    calibrationNote.textContent = "These offsets are in UV space (not screen left/right). Adjust M and N separately, then click Preview again. All adjustments are temporary.";
+    calibration.appendChild(calibrationNote);
+    for (const [key, title] of [
+      ["mNudgeU", "Decal M — UV offset U"],
+      ["mNudgeV", "Decal M — UV offset V"],
+      ["nNudgeU", "Decal N — UV offset U"],
+      ["nNudgeV", "Decal N — UV offset V"]
+    ]) {
+      const label = document.createElement("label"); label.className = "ctrl";
+      const name = document.createElement("span"); name.textContent = title;
+      const input = document.createElement("input");
+      input.type = "number"; input.value = "0"; input.min = "-0.05"; input.max = "0.05"; input.step = "0.001";
+      fields[key] = input;
+      label.append(name, input);
+      calibration.appendChild(label);
+    }
+    root.appendChild(calibration);
 
     const row = document.createElement("div"); row.className = "buttons";
     const go = document.createElement("button"); go.type = "button"; go.textContent = "Preview correction (no timer)";
@@ -444,7 +480,7 @@
     stop.addEventListener("click", () => { revert(); updateStatus(); });
     row.append(go, stop); root.appendChild(row);
     const note = document.createElement("div");note.className = "note";
-    note.textContent = "Preview only: no timeout. Click Revert preview before saving or editing; reloading/replacing the figure discards temporary shader changes. The 0.94 scale is a measured starting estimate, not an approved correction.";
+    note.textContent = "Preview only: no timeout. Click Revert preview before saving or editing; reloading/replacing the figure discards temporary shader changes. Use scale 1.00 as an unchanged baseline. The earlier 0.94 shrink was visually disproved; independent M/N offsets are calibration only, not a proven migration.";
     root.appendChild(note);
     const status = document.createElement("div");status.className = "status";
     root.appendChild(status);

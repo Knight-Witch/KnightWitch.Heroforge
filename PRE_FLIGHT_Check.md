@@ -1,10 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 untimed Dev preview native repaint repair
+## 2026-10-09 — #111 independent M/N calibration payload stage
 
-- PASS: canonical contract/router and issue #111, version registry, live Bridge diagnostics.
-- CONFIRMED: #4818 active preview state, #4819/#4822 green material colors; #4828 pale colors restored behind unchanged logical active preview confirmed #4829. Native shader state changed asynchronously; exact writer unresolved.
-- PASS: Dev Decals v1.2.7 active-only identity monitoring and native rebake; no auto expiry; figure/mesh/decal checks prevent cross-figure writes, manually controlled Revert intact.
-- PASS: focused Node regression (native overwrite, refresh, selective restore, no expiry, figure replacement, exact GPU rollback); syntax/static checks, module registry versions/builds, JSON and diff.
-- PASS: launcher v1.17.24 points to immutable v1.2.7 payload a223096d2c442000a80a27fb2b430059a77e76cc; feature registry unaffected (existing Decals Dev tool).
-- PENDING: HTTP delivery and live after user-convenient reload, visual M/N persistence and alignment; no Stable promotion.
+- PASS: canonical contract/router, focused #111 investigation and module versioning read.
+- PASS: owner screenshot demonstrates v1.2.7 native persistence and correct M/N targeting but gross and unequal nipple alignment at .94. Live Bridge #4830 confirms module v1.2.7 previewActive true, mappings 13/14, colors both vivid-green, refreshes 3; saved positions unchanged. No need to re-investigate green pipeline.
+- PASS: Dev Decals v1.3.0 additive independent M/N U/V fields, default scale1.00; strict ±.05 per-side numeric validation, existing total nudge limit and renderer-only guards remain.
+- PASS: Node syntax, focused Node regression including independent displacement/rejection, unchanged manual Revert, native overwrite reapplication, restored exact GPU and saved state. Manifest registry numeric/build sync, JSON and git diff --check.
+- PENDING: immutable Dev launcher pin and live human visual UV calibration gate. Public Stable unchanged.
