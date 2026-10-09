@@ -1,9 +1,11 @@
 # Pre-Flight Check
 
-## 2026-10-08 — #112 immutable Dev source/launcher pairing
+## 2026-10-08 — User smoke triage, Booth + bone feature routing (documentation only)
 
-- PASS: complete source payload snapshot commit 94d54f20614d5057c9ee6c2ef593d6553a8afa4b has coherent manifest launcher 1.17.15 and edited-module versions.
-- PASS: launcher 1.17.15 target payload points at that immutable source commit. Dev identity, @namespace, update/download URLs, and Stable boundary retained.
-- PASS: four synthetic tests for native decal fallback, Core Tweaks legacy, incompatibility fail-closed, and channel-local child request.
-- PASS: no feature registry impact; #112 is same user-facing feature and owner. No Stable changes, no High Res changes.
-- PENDING: live HeroForge Dev module-loader status, real full-list selection, projected/unprojected smoke, visual approval, Bitbucket recovery parity.
+- PASS: read canonical PROJECT_CONTRACT.md and ACTIVE_CONTEXT.md before work; referenced #110–#115 and created #116/#117 in GitHub.
+- PASS: updated ACTIVE_CONTEXT.md authoritative active routes with user-confirmed Lob/WD smoke and actionable next gates for #116/#117.
+- PASS: observed Bridge GitHub mailbox issues #4685/#4686 pending; Desktop Commander relay log confirms HTTP 401 Unauthorized, despite valid separate gh CLI credentials. Do not misclassify as HeroForge/Booth diagnosis.
+- PASS: working standalone scripts and existing Witch Dock runtime untouched; no source code, module, manifest, launcher, delivery, or Stable change.
+- PENDING: Bridge credential repair, read-only Booth state/reproduction, UV decal semantic/visual diagnosis, no-reload bone toggle implementation and human visual gates.
+
+**No runtime/module/manifest/public behavior changed.**
