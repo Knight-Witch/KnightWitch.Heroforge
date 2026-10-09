@@ -2,11 +2,11 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 correct distinct decal pair (Dev only):** The nipple decal pair is native bodyUpper decal ID 1178 at mappings 13/14, labeled M/N (two copies); prior ID 1195 mappings 7,8,9,10,12 is a separate five-copy circle. Owner confirmed previously highlighted 1195 overlays were not nipples.
-- Bumped Decals **v1.2.5 / 1.2.5-unique-1178-uv-mappings-13-14** and restricted the temporary renderer-only high-contrast/UV preview to source-verified id1178 mappings 13/14. Old targets 7/8/9 are not eligible; native unprojected/UV eligibility, bounded scale, cache bake, saved-coordinate immutability and 2-minute rollback are retained.
-- Focused mock regression now covers real native slot IDs, inverted/non-inverted UV matrices, unlike prior samples, high-contrast gradient alpha=0, negative eligibility, GPU pixel changes, failure restore and exact rollback.
-- **Launcher v1.17.21 still pins prior payload while new Decals payload is staged.** Human-visible correction remains unconfirmed. No Stable changes.
+- **#111 corrected actual upperbody two-copy decal identity:** five-copy circle ID1195 at mappings 7/8/9/10/12 is unrelated to two-copy decal ID1178 at native mappings 13/14 (M/N). Amanda visually confirmed prior test targeted the wrong circles.
+- Dev Decals v1.2.5 / 1.2.5-unique-1178-uv-mappings-13-14 permits only matching ID1178 and M/N with reversible native bake/high-contrast/UV scale preview, unchanged saved data, two-minute restoration. Targeted regression uses actual UV matrices and original palette.
+- Dev launcher v1.17.22 / 1.17.22-unique-id1178-mn-preview pins immutable payload 80f3134638c184ffbae8fac433dc4dfbc8f3539c, plus router/handoff/divergence updates.
+- Live and human two-copy visibility/alignment gates remain pending; public Stable unchanged.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 contains no #111 experimental Decals preview. No Stable promotion authorized.
+Public Stable v2.4.3 contains no #111 experiment.
