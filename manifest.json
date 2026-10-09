@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.3",
-      "versionOrigin": "issue-111-high-contrast-native-color-shape",
-      "build": "1.2.3-native-rgb-vector-compat"
+      "version": "1.2.4",
+      "versionOrigin": "issue-111-owner-corrected-targets-8-9",
+      "build": "1.2.4-target-mappings-8-9"
     },
     {
       "id": "booth-runtime-bootstrap",
