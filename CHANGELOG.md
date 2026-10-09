@@ -2,9 +2,8 @@
 
 ## Latest repository change — 2026-10-09
 
-- **Documentation-only October regression closeout:** #110, #112, #113 and #115 closed completed with Amanda's live verification of Lob standalone script repairs and explicit caveat that upstream/public distribution is unverified. Active #111 narrowed to upper-body UV decal drift; #114 remains intermittent Bone HUD monitoring, and #116 is a separate feature request.
-- **#111 evidence:** original September D5 and current October D5 JSON exports have identical decal records across bodyUpper, bodyLower, face and splatter (including nipple layers 7/8). Live D5 working copy 59725825 confirmed in Bridge #4713; #4714 confirms nonprojected bodyUpper UV slots. Distinguish HeroForge Oct 7 seam/UV/bake changes from ADP/Full Res atlas effects before corrective changes. Bound gizmo owner-accepted working; cloned toggle UI issue deferred as polish.
-- **No runtime/module/manifest/public behavior changed.**
+- **Documentation-only #111 UV-investigation result:** January 7 private HARs contain the historical native HeroForge CreationKit, options, mesh response and intact mask/AAID/normal2 maps. The historical mesh response is lossily encoded, so exact old vertex UVs cannot be reconstructed. Verified native bodyUpper/human part 1963 face counts unchanged (6,392/25,566), but UV area shrank 0.690 to 0.606 and UV chart texture islands fit a ~0.94 local linear scale in independent assets. Saved D4/D5 nipple decal positions are unchanged; Witch Dock absent and FRD resolution OFF still reproduce drift. Regression and next bounded legacy *render-only* preview remain under #111.
+- No runtime/module/manifest/public behavior changed.
 
 ## Latest Stable release context
 
