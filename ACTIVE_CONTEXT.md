@@ -1,7 +1,7 @@
 # Active Context — WITCH_DEV_MAIN
 
 **Updated:** 2026-10-09 UTC
-**Canonical Dev:** WITCH_DEV_MAIN launcher v1.17.20 / 1.17.20-legacy-uv-contrast-native-vectors; immutable payload PENDING_PIN (native Vec3/Vec4 source, live GPU contrast pending)
+**Canonical Dev:** WITCH_DEV_MAIN launcher v1.17.20 / 1.17.20-legacy-uv-contrast-native-vectors; immutable payload 34afdcca8748f6a1920e6b9619f201cd181bf558 (source pinned, live GPU contrast pending)
 **Public Stable:** `Witch_Scripts`, launcher v2.4.3 / `2.4.3-retire-phase1-notice`, immutable payload `c58736df715480a978cc8c9e959568c11a962cf3` (retired Phase 1 popup only; live HeroForge smoke pending)
 
 These are source identities, not a new live runtime validation. Current module versions/builds come from the channel manifest. Branch inventory/lifecycle comes only from [BRANCH_REGISTRY.md](BRANCH_REGISTRY.md) and [BRANCH_DELETION_QUEUE.md](BRANCH_DELETION_QUEUE.md).
