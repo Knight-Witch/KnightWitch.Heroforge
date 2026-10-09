@@ -1,11 +1,10 @@
 # Pre-Flight Check
 
-## 2026-10-08 — #117 Booth native gated asset (Dev only)
+## 2026-10-08 — #117 Dev-only Booth issue closeout (documentation only)
 
-- PASS: authoritative PROJECT_CONTRACT.md / ACTIVE_CONTEXT.md, module/version and runtime-delivery policy read. Existing Dev #59 Booth divergence retained, new #117 open owner added. Stable unaffected.
-- PASS: HF-Chat-Bridge v0.4.0 live reads confirmed `ASSET_MANIFEST.booth = booth.b9ab74dd25ad.js`, old bootstrap `/gated/booth.js?version=heroforge06.1.10.13`, failed bootstrap-owned tag, zero native BT and repeated failed attempts.
-- PASS: Bridge v0.3.0 GitHub relay 401 repaired from valid GitHub CLI session to Windows DPAPI. Pairing secret not rotated. Pending GitHub mailbox requests #4685/#4686 and subsequent read-only workbench completed.
-- PASS: Booth Runtime Bootstrap v0.2.3 uses native manifest path, retains version fallback from CK.Settings.artVersionNumber, removes only failed bootstrap-owned tags, backs off retries while retaining rearm and error reporting; native tags are not overwritten.
-- PASS: `node --check` for active Bootstrap and Dev launcher; `node --test tests/issue117-booth-bootstrap.test.cjs` (8/8 pass (four Booth + four existing decal tests)). Feature registry: no impact, same Booth feature identity/owner/UI.
-- PASS: immutable Dev payload snapshot c3063ad0734b0e5ef37490f5c9b47a4912b5950c created and launcher pinned in follow-up commit.
-- PENDING: live Dev reload and Booth persistence + show-Booth-in-editor user visual gate, scene transitions. No Stable/public promotion.
+- PASS: Read canonical PROJECT_CONTRACT.md and ACTIVE_CONTEXT.md; verified BRANCH_REGISTRY.md and BRANCH_DELETION_QUEUE.md, with no #117 temporary branch to queue or delete.
+- PASS: Live HF-Chat-Bridge request #4693 confirms Dev Auto Host v0.2.3 executed Dev v1.17.16; Bootstrap v0.2.3 loaded native hashed Booth asset successfully once with no failure/duplicate; native `BT` enabled, persistent Booth/Black Canvas active.
+- PASS: Amanda explicitly confirmed both Persistent Booth and Show Booth While Editing work and authorized issue #117 closeout.
+- PASS: Collapsed Dev-only Bootstrap difference into existing open #59 divergence owner; retained Cloudflare primary/fallback concern separately under #118 and active decal issues under #111.
+- PASS: No runtime code, module version, manifest, userscript identity, branch classification or Stable/public code modified.
+- **No runtime/module/manifest/public behavior changed.**

@@ -43,7 +43,7 @@
     {
       "issue": 59,
       "status": "dev-diagnostic-provider-expansion",
-      "reason": "Issue #59 remains the Dev-only provider-expansion owner. Public Stable v2.4.0 now includes the shared General Diagnostics Core and integrated reporter surface; Dev remains ahead only for staged Texture Quality, Booth, JSON/ReCK, and allowlisted script-compat providers plus their supporting tool seams. The Decals provider is still paused on its protected task branch.",
+      "reason": "Issue #59 remains the Dev-only provider-expansion owner. Public Stable v2.4.0 now includes the shared General Diagnostics Core and integrated reporter surface; Dev remains ahead only for staged Texture Quality, Booth, JSON/ReCK, and allowlisted script-compat providers plus their supporting tool seams. The Decals provider is still paused on its protected task branch. Resolved #117 native Booth gated-asset fix v0.2.3 remains a Dev-only delta, with both toggles human-verified; no Stable promotion.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -63,7 +63,8 @@
         "ReCK observation is passive and does not replace or wrap CK.tryLoadCharacter.",
         "Script Compatibility is allowlisted/read-only and reports actual HeroForge kit/slot override effects without enumerating Tampermonkey/extensions or exporting function/script source.",
         "Kit heat uses only the currently validated zero-argument observational seam; no cap/slot/model mutation is permitted.",
-        "Stable v2.4.0 contains General capture/reporter infrastructure; remaining provider expansions stay Dev-only until separately approved."
+        "Stable v2.4.0 contains General capture/reporter infrastructure; remaining provider expansions stay Dev-only until separately approved.",
+        "Booth Bootstrap v0.2.3 honors the native hashed asset, cleans only its failed tags with bounded retries, and remains a Dev-only delta pending independent Stable authorization."
       ]
     },
     {
@@ -128,22 +129,6 @@
         "Legacy Core Tweaks behavior retained; no new index zero",
         "Channel-local immutable child loading",
         "Live Dev and human UI gate before any Stable promotion"
-      ]
-    },
-    {
-      "issue": 117,
-      "status": "dev-booth-native-compatibility-repair",
-      "reason": "HeroForge provides a hashed gated Booth asset through ASSET_MANIFEST.booth. Former Witch Dock bootstrap derived a stale version URL, left an errored owned script tag, and retried without cooldown. Dev fix follows the same native asset mapping, discards only its failed tags, and backs off on failures.",
-      "paths": [
-        "features/booth/Booth_Runtime_Bootstrap.js",
-        "Witch_Dock_DEV.user.js",
-        "manifest.json"
-      ],
-      "acceptance": [
-        "Live Dev loads hashed Booth asset, native BT initializes and Persistent Booth is restored",
-        "Manual Session Booth, Black Canvas, and saved-default paths retain native ownership and safe lifecycle",
-        "Failed bootstrap-owned tags recover with cooldown without deleting native script tags or duplicating loads",
-        "No Stable promotion until narrow Dev live proof and human visual approval"
       ]
     }
   ],
