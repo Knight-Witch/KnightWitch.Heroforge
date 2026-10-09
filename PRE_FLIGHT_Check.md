@@ -1,9 +1,10 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 native overwrite persistence payload
+## 2026-10-09 — #111 untimed Dev preview native repaint repair
 
-- PASS: canonical contract/router and #111 focused evidence reviewed; version registry followed.
-- Confirmed failure boundary: Bridge #4818 previewActive true; #4819/#4822 palette green. #4828 later returned original pale native materials, but #4829 still previewActive true. A native/other paint update overwrites shader, no preview-state clear.
-- PASS: v1.2.7 active-preview-only 2-second reconciliation guard; no expiry timer; native figure/data/material/ID checks before reapplying; exact original snapshot/restoration and no saved data writes.
-- PASS: Node syntax and focused regression including simulated native overwrite, selective native ownership, figure switch, GPU restoration and no timeout. Manifest version/build, git diff --check.
-- PENDING: immutable Dev launcher pairing, delivery and owner-convenient live smoke. Public Stable untouched.
+- PASS: canonical contract/router and issue #111, version registry, live Bridge diagnostics.
+- CONFIRMED: #4818 active preview state, #4819/#4822 green material colors; #4828 pale colors restored behind unchanged logical active preview confirmed #4829. Native shader state changed asynchronously; exact writer unresolved.
+- PASS: Dev Decals v1.2.7 active-only identity monitoring and native rebake; no auto expiry; figure/mesh/decal checks prevent cross-figure writes, manually controlled Revert intact.
+- PASS: focused Node regression (native overwrite, refresh, selective restore, no expiry, figure replacement, exact GPU rollback); syntax/static checks, module registry versions/builds, JSON and diff.
+- PASS: launcher v1.17.24 points to immutable v1.2.7 payload a223096d2c442000a80a27fb2b430059a77e76cc; feature registry unaffected (existing Decals Dev tool).
+- PENDING: HTTP delivery and live after user-convenient reload, visual M/N persistence and alignment; no Stable promotion.
