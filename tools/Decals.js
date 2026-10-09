@@ -3,12 +3,12 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.4";
-  const BUILD = "1.2.4-target-mappings-8-9";
+  const VERSION = "1.2.5";
+  const BUILD = "1.2.5-unique-1178-uv-mappings-13-14";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
-  const TARGET_DECAL = 1195;
-  const TARGET_MAPPINGS = Object.freeze([8, 9]);
+  const TARGET_DECAL = 1178;
+  const TARGET_MAPPINGS = Object.freeze([13, 14]);
   const MAX_PREVIEW_MS = 120000;
   const STATE = { preview: null, attempts: 0, lastError: null, lastResult: null, viewer: null };
 
@@ -142,7 +142,7 @@
     const available = eligible(ctx);
     const selections = [...new Set(mappings.map(Number))];
     if (!selections.length || selections.some(mapping => !TARGET_MAPPINGS.includes(mapping))) {
-      throw Error("Select either legacy circle 8 or 9, or both.");
+      throw Error("Select either verified decal M (13) or N (14), or both.");
     }
     const active = available.filter(x => selections.includes(x.mapping));
     if (active.length !== selections.length) throw Error("The selected native UV circle decal layer is unavailable or not eligible.");
@@ -327,7 +327,7 @@
     root.appendChild(heading);
     const warning = document.createElement("div");
     warning.className = "note";
-    warning.textContent = "Dev only. This previews existing UV-bound circle decal layers 8 and 9 on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Restores automatically after two minutes.";
+    warning.textContent = "Dev only. This previews the two verified UV-bound decal ID 1178 layers, M (13) and N (14) on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Restores automatically after two minutes.";
     root.appendChild(warning);
 
     const slots = document.createElement("div");
@@ -338,7 +338,7 @@
       const input = document.createElement("input");
       input.type = "checkbox"; input.checked = true;
       picks.set(mapping, input);
-      label.append(input, document.createTextNode("Circle " + mapping));
+      label.append(input, document.createTextNode("Decal " + (mapping === 13 ? "M" : "N") + " (mapping " + mapping + ")"));
       slots.appendChild(label);
     }
     root.appendChild(slots);
