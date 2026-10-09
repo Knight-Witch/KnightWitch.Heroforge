@@ -2,8 +2,9 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 task branch Dev payload preparation:** Decals 1.2.0 experimental reversible uniform-only UV preview and isolated tests are staged. Dev launcher metadata prepared as v1.17.17 / 1.17.17-legacy-uv-preview to pair with a future immutable Dev payload. Its PAYLOAD_REF remains old until exact validated payload commit is promoted and pinned; this branch is not a public or live release.
-- No saved figure data or Stable/public changes.
+- **Dev-only #111 experimental UV preview:** Decals module v1.2.0 adds an explicitly selected, bounded shader-uniform-only preview for legacy torso part 1963 circle mappings 7/8, with revert button/two-minute timeout and no saved character edits or permanent Apply. Dev launcher v1.17.17 pins immutable source/payload commit 4d25fcd04378d919774f98e67fae4180aefac59f. Branch wd/111-legacy-uv-preview remains protected pending visual gate.
+- Mock test, syntax, version/build and source seam checks passed. Live HeroForge rendering, restore, D4/D5/Blood Moon human alignment are **NOT yet validated**. HF.Status new reporter-facing subfeature entry to be coordinated before public release.
+- Stable/public runtime unchanged.
 
 ## Latest Stable release context
 
