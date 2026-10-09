@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 protected task branch:** Decals v1.2.2 adds an optional temporary vivid-green gradient-palette override while previewing selected legacy bodyUpper UV circles; a synchronous bounded GPU pixel comparator verifies the render effect and restores the exact original uniform objects, atlas, cache key and saved figure data. Uses 2-minute preview timeout, fail-closed checks, existing native ownership.
-- Node syntax, deterministic isolated UV/contrast/GPU rollback tests PASS. Actual live contrast/pixel visibility not yet tested; no alignment correction accepted.
-- Canonical Dev / Stable unchanged by this task-branch commit.
+- **#111 experimental branch:** Decals v1.2.3 preserves the actual native gradient palette vector contract: three RGB Vec3 values followed by one RGBA Vec4. The prior contrast test used Vec4 for each, and live HeroForge v1.2.2 correctly refused mismatched palette shape without editing user data.
+- Tests: native RGB/RGBA shape mock, vivid GPU pixel comparison and exact restoration of palette identities, UV uniforms, cache/pixels, and saved coordinates PASS. Real live high-contrast proof still pending.
+- No Stable/public changes.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 carries no #111 migration or preview feature.
+Stable v2.4.3 has no #111 runtime.

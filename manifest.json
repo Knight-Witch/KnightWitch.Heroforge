@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.2",
-      "versionOrigin": "issue-111-opt-in-vivid-palette-gpu-discriminator",
-      "build": "1.2.2-high-contrast-evidence"
+      "version": "1.2.3",
+      "versionOrigin": "issue-111-native-palette-vec3-vec4-source-shape",
+      "build": "1.2.3-native-rgb-vector-compat"
     },
     {
       "id": "booth-runtime-bootstrap",

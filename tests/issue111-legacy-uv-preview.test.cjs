@@ -2,6 +2,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 class Vec2{constructor(x,y){this.x=x;this.y=y;}}
+class Vec3{constructor(x,y,z){Object.assign(this,{x,y,z});}}
 class Vec4{constructor(x,y,z,w){Object.assign(this,{x,y,z,w});}}
 function layer(x){let uniform={l0_uvTranslate:{value:new Vec2(x,-1.3523384900661357)},l0_uvRotateScale:{value:new Vec4(26.460396188044154,0,0,26.460396188044154)},l0_projected:{value:0},l0_uvSet2:{value:0}};return {uniforms:uniform,setUniform(name,value){uniform[name].value=value}};}
 const rows=[];for(let i=0;i<5;i++)rows.push({mapping:i,id:1});rows[3]={mapping:7,id:1195};rows[4]={mapping:8,id:1195};
@@ -9,7 +10,7 @@ const mats=[];mats[3]=layer(-11.674714896672224);mats[4]=layer(-13.7915465917157
 const original=[mats[3],mats[4]].map(x=>({t:x.uniforms.l0_uvTranslate.value,m:x.uniforms.l0_uvRotateScale.value}));
 let calls=[];let fail=false;
 const display={data:{meta:{character_name:'D5 OCT'},parts:{bodyUpper:1963},decals:{bodyUpper:{7:{id:1195,h:-.04,v:-.43,s:-4.78},8:{id:1195,h:.04,v:-.43,s:-4.78}}}},modded:{orderedDecals:{bodyUpper:rows}},meshes:{bodyUpper:{bakeMaterials:{colorDecals:mats}}},colorBake:{getBakeMeshes:(which)=>{assert.equal(which,'color');return {bodyUpper:{}}},atlasBaker:{bakeAtlas:(which,meshes)=>{calls.push('atlas');if(fail)throw Error('Test atlas failure')},dilate:()=>{calls.push('dilate')}}}};
-const registered=[];const sandbox={window:{setTimeout:()=>{},WitchDock:{registerTool(tool){registered.push(tool)}},RK:{Vec2,Vec4},CK:{character:{display}}},console,setTimeout:(fn)=>{return setTimeout(fn,5e3)},clearTimeout};
+const registered=[];const sandbox={window:{setTimeout:()=>{},WitchDock:{registerTool(tool){registered.push(tool)}},RK:{Vec2,Vec3,Vec4},CK:{character:{display}}},console,setTimeout:(fn)=>{return setTimeout(fn,5e3)},clearTimeout};
 vm.runInNewContext(fs.readFileSync(__dirname+'/../tools/Decals.js','utf8'),sandbox);
 const cap=sandbox.window.KWLegacyTorsoUVPreview;
 assert.ok(cap);
@@ -64,8 +65,8 @@ console.log('PASS: actual GPU readback probe changed and reversion verified with
 mats.forEach(mat=>{
   if (!mat) return;
   mat.uniforms.colors0={value:[
-    new Vec4(1,1,1,1),new Vec4(.945,.929,1,1),
-    new Vec4(1,1,1,1),new Vec4(1,0,0,.21176470588235294)
+    new Vec3(1,1,1),new Vec3(.945,.929,1),
+    new Vec3(1,1,1),new Vec4(1,0,0,.21176470588235294)
   ]};
 });
 const originalPalette=mats[3].uniforms.colors0.value;

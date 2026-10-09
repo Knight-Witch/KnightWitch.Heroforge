@@ -1,9 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 vivid diagnostic shader proof (protected branch)
+## 2026-10-09 — #111 actual native color palette shape compatibility
 
-- PASS: Branch wd/111-legacy-uv-preview is registered protected, issue #111 routed in canonical Dev. No Stable/public changes.
-- PASS: Historical evidence and earlier live GPU proof #4776–#4779 reviewed; actual weak circleGradient color/alpha confirmed and prior unchanged owner visual result preserved as failure.
-- PASS: v1.2.2 source and moduleRegistry synchronized. New option explicitly opt-in and affects only native colorDecals selected materials for bodyUpper part 1963, saved decal id1195, nonprojected mapping 7/8. Original palette objects/UV uniforms restored by Revert/timeout/error.
-- PASS: Node syntax plus mock atlas color-pixel comparison, return-to-baseline pixel equality, object identity, invalid contrast input rejection, saved coordinate immutability.
-- HOLD: Real live GPU high-contrast proof and owner visual acceptance, then precise one-time migration math; no speculative Apply or stable promotion.
+- PASS: Live Bridge #4783 rejected inaccurate 4×Vec4 palette; #4784 confirms actual three RGB Vec3 plus one RGBA Vec4 (alpha 0.2117647). No user figure values modified; fail-closed/rollback successful.
+- PASS: Renderer API RK.Vec3/RK.Vec4 present in #4785. Decals source/manifest synchronized to v1.2.3. No external script modified.
+- PASS: JS syntax and mock GPU high-contrast proof, restoration, invalid-input rejection and saved-character immutability checks.
+- HOLD: Real live color pixel readback; only after that ask owner to load all original D5 decals for visual gate.
+- No Stable/public promotion or persistent migration.
