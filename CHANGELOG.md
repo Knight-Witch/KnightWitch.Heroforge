@@ -2,9 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 task branch Dev payload preparation:** Decals 1.2.0 experimental reversible uniform-only UV preview and isolated tests are staged. Dev launcher metadata prepared as v1.17.17 / 1.17.17-legacy-uv-preview to pair with a future immutable Dev payload. Its PAYLOAD_REF remains old until exact validated payload commit is promoted and pinned; this branch is not a public or live release.
-- No saved figure data or Stable/public changes.
+- **#111 experimental branch:** Decals v1.2.1 adds bounded live GPU color-atlas pixel readback comparison before/during/after a transient UV preview (aggregate pixel counts/checksums only, no image export). This addresses the first owner's unchanged visual result and discriminates real atlas refresh from invisible shader uniform edits. Existing preview remains opt-in, auto-reverted and save-safe; no Apply action.
+- Tests: Node syntax and deterministic mocked GPU readback/rollback PASS. Live GPU and visual tests pending.
+- No public/Stable changes.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 retired the Phase 1 notice. Lob's October standalone repairs are not Witch Dock Stable releases; Booth #117 fix remains Dev only.
+Stable v2.4.3 retires Phase 1 notice; no #111 runtime is shipped publicly.

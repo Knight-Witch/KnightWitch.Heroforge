@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.0",
-      "versionOrigin": "issue-111-reversible-uniform-only-preview",
-      "build": "1.2.0-legacy-uv-preview-only"
+      "version": "1.2.1",
+      "versionOrigin": "issue-111-live-gpu-pixel-rollback-probe",
+      "build": "1.2.1-atlas-pixel-evidence"
     },
     {
       "id": "booth-runtime-bootstrap",

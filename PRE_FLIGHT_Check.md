@@ -1,11 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 staged Dev launcher/payload pairing
+## 2026-10-09 — #111 task branch GPU pixel diagnostic
 
-- PASS: Protected #111 work branch registered; no unowned branches.
-- PASS: Decals 1.2.0 source and moduleRegistry synchronized; launcher script @version, DEV_VERSION and DEV_BUILD synchronized with registry v1.17.17.
-- PASS: Javascript source syntax and bounded mock preview/revert/fail-closed regression tests passed; saved decals unchanged.
-- PASS: Bridge #4745–#4746 verifies D5 native atlas APIs and mappings 7/8 required for preview are present.
-- HOLD: Exact payload pairing: branch launcher intentionally still pins prior immutable payload; canonical Dev promotion will pin the validated source commit in a subsequent narrow launcher commit.
-- HOLD: Native live render/restore, human visual gate on D5, D4 and Blood Moon, registry subfeature entry before public release.
-- No Stable/public runtime modified.
+- PASS: Isolated source v1.2.1 version/build synchronized with manifest; D5 native RGBA color atlas texture and shader material were traced through live Bridge #4768–#4772.
+- PASS: Native `getAtlasBakeKey` includes l0_uvTranslate/l0_uvRotateScale; color display material references AtlasBaker.targetsRGBA[color]. First visual test reported unchanged despite successful uniform writes; not represented as a visual pass.
+- PASS: JS syntax and bounded simulated WebGL pixel readback test: actual changed byte detection after preview, zero changed bytes after rollback, native uniform identity and saved figure data preserved.
+- HOLD: Actual GPU readback not yet run on live HeroForge; task branch diagnostic must be paired and promoted into Dev before that test. No visual success claimed.
+- No public/Stable changes. Existing #34 HR restore warning isolated.
