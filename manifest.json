@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.1",
-      "versionOrigin": "issue-111-live-gpu-pixel-rollback-probe",
-      "build": "1.2.1-atlas-pixel-evidence"
+      "version": "1.2.2",
+      "versionOrigin": "issue-111-opt-in-vivid-palette-gpu-discriminator",
+      "build": "1.2.2-high-contrast-evidence"
     },
     {
       "id": "booth-runtime-bootstrap",

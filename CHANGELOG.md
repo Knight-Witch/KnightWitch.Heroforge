@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 experimental branch:** Decals v1.2.1 adds bounded live GPU color-atlas pixel readback comparison before/during/after a transient UV preview (aggregate pixel counts/checksums only, no image export). This addresses the first owner's unchanged visual result and discriminates real atlas refresh from invisible shader uniform edits. Existing preview remains opt-in, auto-reverted and save-safe; no Apply action.
-- Tests: Node syntax and deterministic mocked GPU readback/rollback PASS. Live GPU and visual tests pending.
-- No public/Stable changes.
+- **#111 protected task branch:** Decals v1.2.2 adds an optional temporary vivid-green gradient-palette override while previewing selected legacy bodyUpper UV circles; a synchronous bounded GPU pixel comparator verifies the render effect and restores the exact original uniform objects, atlas, cache key and saved figure data. Uses 2-minute preview timeout, fail-closed checks, existing native ownership.
+- Node syntax, deterministic isolated UV/contrast/GPU rollback tests PASS. Actual live contrast/pixel visibility not yet tested; no alignment correction accepted.
+- Canonical Dev / Stable unchanged by this task-branch commit.
 
 ## Latest Stable release context
 
-Stable v2.4.3 retires Phase 1 notice; no #111 runtime is shipped publicly.
+Public Stable v2.4.3 carries no #111 migration or preview feature.
