@@ -2,9 +2,8 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 experimental task branch only:** Decals v1.2.0 preview-only UI computes bounded uniform transforms for user-selected legacy UV circle layers 7/8 on human upper body part 1963, forces a native atlas rebake without modifying figure JSON, and restores original material uniforms on demand or after two minutes. It has no one-time Apply action. Deterministic source/rollback/mock-bake tests pass. Live HeroForge visual and integration gates are pending.
-- Dev launcher remains pinned to the existing immutable payload. No experimental code in canonical Dev or Stable.
-- **No Stable/public behavior changed.**
+- **#111 task branch Dev payload preparation:** Decals 1.2.0 experimental reversible uniform-only UV preview and isolated tests are staged. Dev launcher metadata prepared as v1.17.17 / 1.17.17-legacy-uv-preview to pair with a future immutable Dev payload. Its PAYLOAD_REF remains old until exact validated payload commit is promoted and pinned; this branch is not a public or live release.
+- No saved figure data or Stable/public changes.
 
 ## Latest Stable release context
 
