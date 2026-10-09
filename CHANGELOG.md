@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-08
 
-- **Documentation-only triage update** from Amanda's latest October 8 standalone Lob / Witch Dock smoke. Restored decal visibility/native settings, body/facial bone enumeration (after enabling addon menu), independent XYZ scaling and extended movement; recorded remaining UV control/deformation and intermittent bound gizmo concerns under #111.
-- Created priority Witch Dock issue **#116** for live, no-reload bone visibility toggles; created urgent issue **#117** for Persistent Booth / Booth-in-editor failure, with read-only Bridge diagnosis pending GitHub relay 401 authentication repair.
-- **No runtime/module/manifest/public behavior changed.**
+- Issue #117: Dev-only Booth Runtime Bootstrap v0.2.3 repairs the actual HeroForge gated-asset filename mismatch: native `ASSET_MANIFEST.booth` now selects the current hashed Booth script. Reuses native script ownership; only bootstrap-owned failed tags are cleared, with bounded retry cooldown. Dev launcher v1.17.16 pins the paired immutable payload after snapshot.
+- Live pre-fix Bridge evidence: HeroForge manifest `booth.b9ab74dd25ad.js`; old bootstrap requested `/gated/booth.js?version=heroforge06.1.10.13`, script status `error`, native `BT` absent; 13 failed attempts. Bridge GitHub 401 separately repaired with refreshed encrypted relay credential; ping and workbench succeeded.
+- Four isolated Booth bootstrap tests pass; **updated Dev live visual verification pending**. No public Stable change.
 
 ## Latest Stable release context
 
-Stable v2.4.3 retired the Phase 1 notice. No public promotion of October repairs.
+Stable v2.4.3 retired the Phase 1 notice. No public promotion of October Booth or decal repairs.

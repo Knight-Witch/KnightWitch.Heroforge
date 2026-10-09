@@ -3,13 +3,15 @@
 
   const UW = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
   const FEATURE_ID = 'booth.runtime-bootstrap';
-  const VERSION = '0.2.2';
-  const BUILD = '0.2.2-readonly-diagnostic-state';
+  const VERSION = '0.2.3';
+  const BUILD = '0.2.3-manifest-asset-failed-load-recovery';
   const API_KEY = 'KW_WD_BOOTH_BOOTSTRAP';
   const STORE_CONSENT = 'kw.witchDock.booth.consent.v1';
   const POLL_MS = 200;
   const STABLE_REQUIRED = 4;
   const RUNTIME_TIMEOUT_MS = 12000;
+  const RETRY_BASE_MS = 1200;
+  const RETRY_MAX_MS = 20000;
 
   const state = {
     enabled: true,
@@ -34,7 +36,9 @@
     lastCompletedAt: 0,
     lastError: null,
     directSessionRequests: 0,
-    lastDirectSessionRequestAt: 0
+    lastDirectSessionRequestAt: 0,
+    failedBootstraps: 0,
+    nextRetryAt: 0
   };
 
   function recordError(where, error) {
@@ -194,6 +198,7 @@
     }
 
     const direct = [
+      () => UW.CK && UW.CK.Settings && UW.CK.Settings.artVersionNumber,
       () => UW.HF_VERSION,
       () => UW.CK && UW.CK.version,
       () => UW.CK && UW.CK.VERSION
@@ -207,19 +212,46 @@
     return null;
   }
 
-  function diagnosticScriptPath() {
+  function resolveBoothAsset() {
     const version = deriveHeroForgeVersion();
-    return '/gated/booth.js' + (version ? '?version=' + encodeURIComponent(version) : '');
+    // Follow Hero Forge's native gated-script loader: use the published
+    // ASSET_MANIFEST.booth hash rather than a legacy art-version URL.
+    try {
+      const named = UW.ASSET_MANIFEST && UW.ASSET_MANIFEST.booth;
+      if (typeof named === 'string' &&
+          /^[A-Za-z0-9_.-]+\.js(?:\?[A-Za-z0-9_.=&%-]+)?$/.test(named)) {
+        return { version, path: '/gated/' + named, source: 'native-asset-manifest' };
+      }
+    } catch {}
+    return {
+      version,
+      path: '/gated/booth.js' + (version ? '?version=' + encodeURIComponent(version) : ''),
+      source: 'native-version-fallback'
+    };
+  }
+
+  function diagnosticScriptPath() {
+    return resolveBoothAsset().path;
   }
 
   function boothScriptPath() {
-    const version = deriveHeroForgeVersion();
-    state.lastVersion = version;
-    const path = '/gated/booth.js' + (version ? '?version=' + encodeURIComponent(version) : '');
-    state.lastScriptPath = path;
-    try { state.lastScriptUrl = new URL(path, location.origin).href; }
-    catch { state.lastScriptUrl = path; }
-    return path;
+    const asset = resolveBoothAsset();
+    state.lastVersion = asset.version;
+    state.loaderStrategy = asset.source;
+    state.lastScriptPath = asset.path;
+    try { state.lastScriptUrl = new URL(asset.path, location.origin).href; }
+    catch { state.lastScriptUrl = asset.path; }
+    return asset.path;
+  }
+
+  function removeFailedOwnedBoothScripts() {
+    // Failed bootstrap-owned tags can never emit a future load event.
+    // Hero Forge-owned tags remain under native control.
+    try {
+      for (const script of document.querySelectorAll('script[data-kw-booth-runtime-bootstrap="1"]')) {
+        if (script.getAttribute('data-status') === 'error') script.remove();
+      }
+    } catch {}
   }
 
   function matchingBoothScripts(path) {
@@ -288,7 +320,11 @@
     return new Promise((resolve, reject) => {
       try {
         const path = boothScriptPath();
+        removeFailedOwnedBoothScripts();
         const existing = matchingBoothScripts(path);
+        if (existing.some((script) => script.getAttribute('data-status') === 'error')) {
+          throw new Error('Native HeroForge Booth script is already in error state; native loader owns recovery.');
+        }
         if (existing.length) {
           state.loaderStrategy = existing.some((script) => script.getAttribute('data-kw-booth-runtime-bootstrap') === '1')
             ? 'reuse-bootstrap-script'
@@ -388,10 +424,16 @@
       await reconcileWitchDockDefaults();
       state.completedForDataRef = saved.dataRef;
       state.bootstrapCount += 1;
+      state.failedBootstraps = 0;
+      state.nextRetryAt = 0;
       state.lastCompletedAt = Date.now();
       return true;
     } catch (error) {
       recordError('bootstrap', error);
+      state.failedBootstraps += 1;
+      state.nextRetryAt = Date.now() + Math.min(
+        RETRY_MAX_MS, RETRY_BASE_MS * Math.pow(2, Math.min(4, state.failedBootstraps - 1))
+      );
       return false;
     } finally {
       state.inFlight = false;
@@ -407,7 +449,7 @@
   }
 
   function requestSession(trigger) {
-    if (!state.enabled || state.inFlight || nativeBoothReady()) return false;
+    if (!state.enabled || state.inFlight || nativeBoothReady() || Date.now() < state.nextRetryAt) return false;
     const requested = sessionBoothRequest();
     if (!requested) return false;
 
@@ -427,7 +469,7 @@
       }
 
       const sessionRequest = sessionBoothRequest();
-      if (sessionRequest && !nativeBoothReady() && !state.inFlight) {
+      if (sessionRequest && !nativeBoothReady() && !state.inFlight && Date.now() >= state.nextRetryAt) {
         bootstrap(sessionRequest, 'session-booth-view');
       }
 
@@ -452,7 +494,7 @@
 
           if (state.stableCount >= STABLE_REQUIRED &&
               state.completedForDataRef !== saved.dataRef &&
-              !state.inFlight) {
+              !state.inFlight && Date.now() >= state.nextRetryAt) {
             bootstrap(saved, 'saved-persistence');
           }
         }
@@ -494,6 +536,9 @@
       lastError: state.lastError,
       directSessionRequests: state.directSessionRequests,
       lastDirectSessionRequestAt: state.lastDirectSessionRequestAt,
+      failedBootstraps: state.failedBootstraps,
+      nextRetryAt: state.nextRetryAt,
+      expectedBoothAssetPath: diagnosticPath,
       btPresent: !!UW.BT,
       btSetBoothMode: !!(UW.BT && typeof UW.BT.setBoothMode === 'function')
     };
