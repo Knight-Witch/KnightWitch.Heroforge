@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 Dev-only:** Decals v1.2.2 opt-in high-contrast legacy torso UV preview temporarily renders selected faint circle-gradient layer green to discriminate if live visible nipple marks are controlled by the candidate shader layers. Existing original gradient palette, UV uniform objects, native atlas and cached pixels are restored on Revert/timeout/failure, with no figure data modifications or permanent Apply.
-- Prior v1.2.1 live GPU readback: 19 changed pixels (UV scale .94) / 11 (large U offset), max intensity delta 3/255; restored pixel-perfect. This explains why Amanda saw no movement; first human gate FAIL, not a visual pass.
-- Mock UV, vivid-palette, pixel-readback and native-rollback tests PASS. Dev launcher v1.17.19 pinned to immutable contrast payload 1da92c1c99e96668823bdfa6cd48ee433704f1bf. No Stable/public change.
+- **Dev-only #111 compatibility:** Decals v1.2.3 uses the actual native shader gradient palette vector array (3×Vec3 RGB + 1×Vec4 RGBA). The previous live v1.2.2 high-contrast preview refused a wrongly assumed all-Vec4 structure and restored uniformly. v1.2.3 preserves original palette refs and saved UV decals across previews and revert.
+- Dev launcher v1.17.20 prepared; immutable payload to be pinned next. JS syntax and simulated native Vec3/Vec4 contrast/readback/restore tests PASS. Real GPU visual test pending; previous no-visible-change result remains FAIL.
+- No permanent Apply or Stable/public change.
 
 ## Latest Stable release context
 
-Stable v2.4.3 carries no #111 code.
+Stable v2.4.3 does not include #111.

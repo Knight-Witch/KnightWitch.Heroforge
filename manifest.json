@@ -7,9 +7,9 @@
       "path": "Witch_Dock_DEV.user.js",
       "kind": "dev-bootstrap",
       "load": "userscript",
-      "version": "1.17.19",
-      "build": "1.17.19-legacy-uv-contrast",
-      "versionOrigin": "issue-111-diagnostic-high-contrast"
+      "version": "1.17.20",
+      "build": "1.17.20-legacy-uv-contrast-native-vectors",
+      "versionOrigin": "issue-111-live-vivid-gradient-proof"
     },
     {
       "id": "witch-dock-notifications",
@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.2",
-      "versionOrigin": "issue-111-gpu-visibility-contrast",
-      "build": "1.2.2-high-contrast-evidence"
+      "version": "1.2.3",
+      "versionOrigin": "issue-111-high-contrast-native-color-shape",
+      "build": "1.2.3-native-rgb-vector-compat"
     },
     {
       "id": "booth-runtime-bootstrap",

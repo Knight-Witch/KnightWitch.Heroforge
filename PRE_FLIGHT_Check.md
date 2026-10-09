@@ -1,10 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 high-contrast renderer discriminator, Dev preparation
+## 2026-10-09 — #111 RGB/RGBA contrast repair, Dev-only
 
-- PASS: Project contract/active router, versioning/branch governance, issue #111 and native shader color/atlas evidence reviewed.
-- PASS: Decals v1.2.2 and launcher v1.17.19 source + manifest synchronized, paired with immutable Dev payload 1da92c1c99e96668823bdfa6cd48ee433704f1bf.
-- PASS: Node static syntax and bounded mock GPU pixel/contrast comparison and exact palette/UV/atlas restoration, saved data unchanged, invalid contrast argument rejected.
-- PASS: Live D5 initial preview invoked exactly once and reverted; owner reported unchanged. Live #4776/4777 verified minuscule actual GPU color difference and exact rollback; #4779 identified circleGradient red alpha ~0.21.
-- HOLD: Real high-contrast GPU proof on loaded D5; missing other decals after ordinary refresh require owner manual load only when ready for visual gate.
-- No permanent Apply, Stable or public promotion. Bridge is dev infrastructure only.
+- PASS: Current contract/router/version registry and protected temporary branch read; native HeroForge palette structure proved via Bridge #4784, API via #4785.
+- PASS: Decals v1.2.3 and launcher v1.17.20 source plus manifest synchronized; pinned immutable Dev payload to be set in follow-up release commit.
+- PASS: Node syntax and focused mock GPU/palette contrast, saved-coordinates immutability, original color and UV uniform restoration, error gates.
+- HOLD: Live GPU pixel proof on D5 before owner visual gate; owner will be asked to manually reload D5 only once proof passes and both circles are actively rendered.
+- No Stable/public promotion, no persistent UV migration.

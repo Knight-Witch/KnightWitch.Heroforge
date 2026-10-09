@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.2";
-  const BUILD = "1.2.2-high-contrast-evidence";
+  const VERSION = "1.2.3";
+  const BUILD = "1.2.3-native-rgb-vector-compat";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1195;
@@ -165,10 +165,10 @@
         if (opts.highContrast === true) {
           const oldColors = item.originalColors;
           if (!Array.isArray(oldColors) || oldColors.length !== 4 ||
-              oldColors.some(c => !c || ![c.x, c.y, c.z, c.w].every(finite))) {
+              oldColors.some((c, i) => !c || ![c.x, c.y, c.z, ...(i === 3 ? [c.w] : [])].every(finite))) {
             throw Error("Native gradient palette is incompatible with contrast preview.");
           }
-          const contrastColors = oldColors.map(() => new UW.RK.Vec4(0, 1, 0, 1));
+          const contrastColors = oldColors.map((c, i) => i === 3 ? new UW.RK.Vec4(0, 1, 0, 1) : new UW.RK.Vec3(0, 1, 0));
           item.layer.setUniform("colors0", contrastColors);
           item.contrastApplied = true;
         }
