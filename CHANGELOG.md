@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **Dev-only #111 experimental UV preview:** Decals module v1.2.0 adds an explicitly selected, bounded shader-uniform-only preview for legacy torso part 1963 circle mappings 7/8, with revert button/two-minute timeout and no saved character edits or permanent Apply. Dev launcher v1.17.17 pins immutable source/payload commit 4d25fcd04378d919774f98e67fae4180aefac59f. Branch wd/111-legacy-uv-preview remains protected pending visual gate.
-- Mock test, syntax, version/build and source seam checks passed. Live HeroForge rendering, restore, D4/D5/Blood Moon human alignment are **NOT yet validated**. HF.Status new reporter-facing subfeature entry to be coordinated before public release.
-- Stable/public runtime unchanged.
+- **Dev-only #111 diagnostics after failed human visual preview:** Decals v1.2.1 adds a bounded GPU color atlas pixel readback discriminator. First two-layer preview did alter native uniforms, but Amanda visually observed no movement. The diagnostic snapshots only torso color pixels and returns aggregate changes across preview/revert; no raw texture exported or saved decals modified. Dev launcher v1.17.18 will pin this module at one immutable commit.
+- JS syntax, bounded mock readback/rollback checks passed. Live GPU pixel proof and human visual correction are NOT validated.
+- Stable/public runtime unchanged; no permanent migration Apply exists.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 retired the Phase 1 notice. Lob's October standalone repairs are not Witch Dock Stable releases; Booth #117 fix remains Dev only.
+Stable v2.4.3 retired Phase 1 notice; no #111 runtime is publicly shipped.

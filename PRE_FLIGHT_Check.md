@@ -1,12 +1,11 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 experimental UV preview Dev integration
+## 2026-10-09 — #111 live GPU pixel-diagnostic integration
 
-- PASS: Canonical Dev bootstrap, branch registry/queue, source, module versioning, runtime delivery and Dev workflow followed. Task branch wd/111-legacy-uv-preview remains protected until human visual acceptance.
-- PASS: Isolated `Decals.js` v1.2.0 and targeted regression test: pure transformation, two-layer/single-layer, invalid inputs, uniform restoration on success/failure, no saved character data edits.
-- PASS: Live baseline read-only Bridge #4735, #4745, #4746 verified D5 part, UV shader material indices, RenderKit vector types, atlas methods and exact circle IDs/mappings.
-- PASS: Dev launcher v1.17.17 @version/DEV_VERSION/DEV_BUILD synchronized with manifest; one immutable payload 4d25fcd for launcher/core/modules; no new external API grants or delivery endpoints.
-- HOLD: New launcher not yet reloaded/live-smoke verified. Shader-only preview visible atlas and full rollback need Bridge and visual acceptance. Do not describe as confirmed correction.
-- NOTE: Existing High Res restore warning #34 occurred during prior HR OFF test; an unbiased clean-load baseline is required for visual proof.
-- NOTE: Existing Decals-tab reporter feature ID remains; new permanent functionality requires HF.Status feature-registry follow-up before public promotion.
-- Stable/public runtime unchanged; no permanent native decal save migration exists in this Dev preview.
+- PASS: Canonical contract/context, #111 task branch, source and native HeroForge color atlas pipeline inspected.
+- PASS: v1.2.1 Decals module and v1.17.18 Dev launcher source/manifest registry versions and builds synchronized; immutable payload pin to be added as the next release-stage commit.
+- PASS: JS syntax and deterministic mock GPU readback test: pixel change during UV preview, zero pixel difference after revert, existing shader uniform object restored and figure JSON unaltered.
+- PASS: Live Bridge #4766–#4767 verified both D5 circle layers active and successful uniform updates; Amanda reports NO visible motion, therefore no correction accepted. Live #4769–#4772 confirmed decal uniforms participate in native getKey and renderer display material references the color atlas.
+- HOLD: GPU pixel comparison in the real HeroForge session is required, followed by owner visual test only after mechanism is verified. Existing High Res #34 restore defect remains separate.
+- PASS: Existing `wd-decals` feature-registry ID is still the affected Decals tool, no public/reporter taxonomy change published. No permanent migration or user-save mutation.
+- Public Stable remains unchanged.

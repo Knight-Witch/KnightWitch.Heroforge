@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.0";
-  const BUILD = "1.2.0-legacy-uv-preview-only";
+  const VERSION = "1.2.1";
+  const BUILD = "1.2.1-atlas-pixel-evidence";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1195;
@@ -181,6 +181,89 @@
     return STATE.lastResult;
   }
 
+  // DEV diagnostic only. Compare *actual GPU color atlas* bytes before, during and after
+  // a reversible preview. No character/snapshot data leaves the browser; only aggregates.
+  function readTorsoAtlas(ctx) {
+    const atlas = ctx.bake.atlasBaker;
+    const rt = atlas.getRGBATarget("color");
+    const uv = ctx.display.atlas.getUV("bodyUpper");
+    const renderer = ctx.CK.renderManager && ctx.CK.renderManager.renderer;
+    if (!rt || !uv || !renderer || typeof renderer.readRenderTargetPixels !== "function" ||
+        ![uv.x, uv.y, uv.z, uv.w].every(finite)) {
+      throw Error("GPU color atlas readback is unavailable.");
+    }
+    const x = Math.round(uv.x * rt.width), y = Math.round(uv.y * rt.height);
+    const w = Math.round(uv.z * rt.width), h = Math.round(uv.w * rt.height);
+    if (w <= 0 || h <= 0 || w > 1024 || h > 1024 ||
+        x < 0 || y < 0 || x + w > rt.width || y + h > rt.height) {
+      throw Error("Atlas readback rectangle is outside bounded torso slot.");
+    }
+    const bytes = new Uint8Array(w * h * 4);
+    renderer.readRenderTargetPixels(rt, x, y, w, h, bytes);
+    let nonzero = 0, checksum = 2166136261;
+    for (let i = 0; i < bytes.length; i++) {
+      if (bytes[i]) nonzero++;
+      checksum = Math.imul(checksum ^ bytes[i], 16777619) >>> 0;
+    }
+    if (!nonzero) throw Error("GPU torso readback is empty/unavailable.");
+    return { bytes, checksum, nonzero, w, h };
+  }
+
+  function compareReadbacks(a, b) {
+    if (a.w !== b.w || a.h !== b.h) throw Error("Color atlas dimensions changed during probe.");
+    let changedPixels = 0, maxDelta = 0, totalDelta = 0;
+    let minX = a.w, minY = a.h, maxX = -1, maxY = -1;
+    for (let i = 0; i < a.bytes.length; i += 4) {
+      let changed = false;
+      for (let c = 0; c < 4; c++) {
+        const d = Math.abs(a.bytes[i + c] - b.bytes[i + c]);
+        if (d) changed = true;
+        totalDelta += d;
+        if (d > maxDelta) maxDelta = d;
+      }
+      if (changed) {
+        changedPixels++;
+        const index = i / 4, x = index % a.w, y = Math.floor(index / a.w);
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+    return {
+      changedPixels, maxDelta, totalDelta,
+      bbox: changedPixels ? { minX, minY, maxX, maxY } : null,
+      checksumBefore: a.checksum, checksumAfter: b.checksum
+    };
+  }
+
+  function probePixels(opts, mappings) {
+    if (STATE.preview) throw Error("Revert the active preview before pixel probe.");
+    const ctx = context();
+    const originalKey = String((ctx.bake.atlasBaker.atlasTargetKeys.color || {}).bodyUpper || "");
+    const original = readTorsoAtlas(ctx);
+    let during = null, duringKey = "", rollback = null, final = null;
+    try {
+      preview(opts, mappings);
+      during = readTorsoAtlas(ctx);
+      duringKey = String((ctx.bake.atlasBaker.atlasTargetKeys.color || {}).bodyUpper || "");
+    } finally {
+      rollback = revert();
+      final = readTorsoAtlas(ctx);
+    }
+    const out = {
+      previewVsOriginal: compareReadbacks(original, during),
+      restoredVsOriginal: compareReadbacks(original, final),
+      cacheKeyChanged: originalKey !== duringKey,
+      cacheKeyRestored: originalKey === String((ctx.bake.atlasBaker.atlasTargetKeys.color || {}).bodyUpper || ""),
+      rollback, width: original.w, height: original.h,
+      originalNonzero: original.nonzero, duringNonzero: during.nonzero,
+      noSavedDataTouched: true
+    };
+    STATE.lastResult = { mode: "pixel-probe", ...out };
+    return out;
+  }
+
   function getState() {
     return {
       id: TOOL_ID, version: VERSION, build: BUILD, attempts: STATE.attempts,
@@ -190,7 +273,7 @@
     };
   }
 
-  UW.KWLegacyTorsoUVPreview = Object.freeze({ version: VERSION, build: BUILD, plannedUniforms, getState, preview, revert });
+  UW.KWLegacyTorsoUVPreview = Object.freeze({ version: VERSION, build: BUILD, plannedUniforms, getState, preview, revert, probePixels });
 
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
