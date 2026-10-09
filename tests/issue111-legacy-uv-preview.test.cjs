@@ -10,7 +10,7 @@ const mats=[];mats[8]=layer(5.822999337374146);mats[8].uniforms.l0_uvTranslate.v
 const original=[mats[8],mats[9]].map(x=>({t:x.uniforms.l0_uvTranslate.value,m:x.uniforms.l0_uvRotateScale.value}));
 let calls=[];let fail=false;
 const display={data:{meta:{character_name:'D5 OCT'},parts:{bodyUpper:1963},decals:{bodyUpper:{7:{id:1195},8:{id:1195},9:{id:1195},10:{id:1195},12:{id:1195},13:{id:1178,h:-.3381433171858332,v:.2054117741571864,s:-5.301546897272633},14:{id:1178,h:-.17767723927837797,v:.20821986050701233,s:-5.301546897272633}}}},modded:{orderedDecals:{bodyUpper:rows}},meshes:{bodyUpper:{bakeMaterials:{colorDecals:mats}}},colorBake:{getBakeMeshes:(which)=>{assert.equal(which,'color');return {bodyUpper:{}}},atlasBaker:{bakeAtlas:(which,meshes)=>{calls.push('atlas');if(fail)throw Error('Test atlas failure')},dilate:()=>{calls.push('dilate')}}}};
-const registered=[];const scheduled=[];const sandbox={window:{setTimeout:()=>{},WitchDock:{registerTool(tool){registered.push(tool)}},RK:{Vec2,Vec3,Vec4},CK:{character:{display}}},console,setTimeout:(fn)=>{scheduled.push(fn);return scheduled.length},clearTimeout:()=>{}};
+const registered=[];const scheduled=[];const maintenanceFns=[];const clearedMaintenance=[];const sandbox={window:{setTimeout:()=>{},setInterval:(fn)=>{maintenanceFns.push(fn);return maintenanceFns.length},clearInterval:(id)=>{clearedMaintenance.push(id)},WitchDock:{registerTool(tool){registered.push(tool)}},RK:{Vec2,Vec3,Vec4},CK:{character:{display}}},console,setTimeout:(fn)=>{scheduled.push(fn);return scheduled.length},clearTimeout:()=>{}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/../tools/Decals.js','utf8'),sandbox);
 const cap=sandbox.window.KWLegacyTorsoUVPreview;
 assert.ok(cap);
@@ -21,7 +21,7 @@ const plan=cap.plannedUniforms(original[0].t,original[0].m,opts);
 assert.ok(Math.abs(plan.oldCenter.x-((.5-5.822999337374146)/-32.887114976191086))<1e-12);
 assert.ok(Math.abs(plan.center.x-(.5+.94*(plan.oldCenter.x-.5)))<1e-12);
 assert.ok(Math.abs(plan.matrix.x-(-32.887114976191086/.94))<1e-12);
-const result=cap.preview(opts,[13,14]);assert.equal(result.mappings.length,2);assert.equal(cap.getState().previewActive,true);assert.equal(scheduled.length,0,'no automatic timeout scheduled');
+const result=cap.preview(opts,[13,14]);assert.equal(result.mappings.length,2);assert.equal(cap.getState().previewActive,true);assert.equal(scheduled.length,0,'no automatic timeout scheduled');assert.equal(maintenanceFns.length,1,'lightweight maintenance attached while preview active');
 assert.notStrictEqual(mats[8].uniforms.l0_uvTranslate.value,original[0].t);
 assert.equal(JSON.stringify(display.data.decals),before,'character saved data immutable');
 const restored=cap.revert();assert.equal(restored.restored,2);
@@ -86,6 +86,30 @@ assert.throws(()=>cap.preview({...opts,highContrast:"yes"},[13]),/contrast flag/
 rows[8].id=1195;assert.throws(()=>cap.preview(opts,[13]),/not eligible/);rows[8].id=1178;
 display.data.decals.bodyUpper[13].id=1195;assert.throws(()=>cap.preview(opts,[13]),/not eligible/);display.data.decals.bodyUpper[13].id=1178;
 assert.equal(JSON.stringify(display.data.decals),before);
+const nativeOverwrite=cap.preview({...opts,highContrast:true},[13,14]);
+const beforeOverwriteRefreshes=cap.getState().refreshes;
+const currentMaintenance=maintenanceFns[maintenanceFns.length-1];
+mats[8].setUniform("colors0",originalPalette);
+assert.strictEqual(mats[8].uniforms.colors0.value,originalPalette);
+currentMaintenance();
+assert.equal(cap.getState().previewActive,true);
+assert.equal(cap.getState().refreshes,beforeOverwriteRefreshes+1);
+assert.equal(mats[8].uniforms.colors0.value[0].y,1,'native overwrite must trigger reapplication of vivid green');
+cap.revert();
+assert.strictEqual(mats[8].uniforms.colors0.value,originalPalette);
+assert.ok(clearedMaintenance.length>0);
+assert.equal(scheduled.length,0,'maintenance has no expiry timeout');
+assert.equal(JSON.stringify(display.data.decals),before);
+
+const originalData=display.data;
+cap.preview({...opts,highContrast:true},[13,14]);
+display.data={...originalData};
+maintenanceFns[maintenanceFns.length-1]();
+assert.equal(cap.getState().previewActive,false,'changing figures disables old preview');
+assert.strictEqual(mats[8].uniforms.colors0.value,originalPalette);
+display.data=originalData;
+assert.equal(JSON.stringify(display.data.decals),before);
+
 const extended=cap.preview(opts,[13,14]);
 const outsideTranslation=new Vec2(42,21);
 mats[8].setUniform("l0_uvTranslate",outsideTranslation);

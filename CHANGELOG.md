@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **#111 manual persistent preview for multitasking:** Dev Decals **v1.2.6 / 1.2.6-manual-lifetime-preview** removes all two-minute auto-revert timers. M/N ID1178 UV preview remains active until manual Revert or replacement preview. Reload/figure replacement discards temporary shader changes. No saved figure coordinates touched; selective rollback preserves later native edits.
-- Updated Dev launcher **v1.17.23 / 1.17.23-manual-uv-preview**, immutable payload **4b0fc10d37a952224d6595d7d94bf71d7755fabf**. Existing Dev UI controls now clearly say no timer. Focused deterministic no-timer, GPU rollback, native ownership and saved-data tests pass.
-- Updated canonical #111 context/handoff; live delivery and owner visual verification on next user-convenient reload pending. Public Stable unchanged.
+- **#111 Dev Decals v1.2.7 / 1.2.7-native-repaint-reconcile:** Untimed ID1178 M/N UV preview can lose its temporary green shader uniforms when HeroForge/native paint updates them behind the still-active preview state. Added active-only 2-second light ownership monitoring; only when overwritten, reapply/rebase through the existing safe snapshot and native rebake path. No timeout or saved data writes.
+- If figure/data/torso material/decals change, the monitor stops and abandons its old temporary shader overlays without rebaking a new figure. Explicit Revert and replacement preview continue to work; native replacement values remain owner-protected.
+- Node regression verifies simulated post-preview native overwrite is visibly green again in materials, manual rollback, no expiry, GPU readback restore, and figure replacement cleanup. Dev launcher/payload pairing pending; no Stable changes.
 
 ## Latest Stable release context
 
-Public Stable v2.4.3 contains no #111 preview.
+Public Stable v2.4.3 contains no #111 experimental preview.

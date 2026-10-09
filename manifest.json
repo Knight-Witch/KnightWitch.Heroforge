@@ -225,9 +225,9 @@
       "path": "tools/Decals.js",
       "kind": "tool",
       "load": "manifest",
-      "version": "1.2.6",
-      "versionOrigin": "issue-111-manual-persistent-visual-preview",
-      "build": "1.2.6-manual-lifetime-preview"
+      "version": "1.2.7",
+      "versionOrigin": "issue-111-native-overwrite-reconcile",
+      "build": "1.2.7-native-repaint-reconcile"
     },
     {
       "id": "booth-runtime-bootstrap",

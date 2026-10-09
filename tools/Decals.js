@@ -3,14 +3,14 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.6";
-  const BUILD = "1.2.6-manual-lifetime-preview";
+  const VERSION = "1.2.7";
+  const BUILD = "1.2.7-native-repaint-reconcile";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1178;
   const TARGET_MAPPINGS = Object.freeze([13, 14]);
-  // Preview lifetime is manual only. Page/figure replacement discards renderer-only changes.
-  const STATE = { preview: null, attempts: 0, lastError: null, lastResult: null, viewer: null };
+  // Never expire a preview by time. Lightweight monitoring only reapplies after native overwrites.
+  const STATE = { preview: null, attempts: 0, lastError: null, lastResult: null, viewer: null, refreshes: 0 };
 
   // Only native decal-bake material uniforms are modified during preview.
   // Character.data, CK.activeTweak, save/load, external scripts, and module-owned caches are not touched.
@@ -108,7 +108,7 @@
     const p = STATE.preview;
     if (!p) return { ok: true, restored: false, reason: "no-preview" };
     STATE.preview = null;
-    // No expiry timer: restore on explicit Revert or when starting a new preview.
+    if (p.maintenance) { window.clearInterval(p.maintenance); p.maintenance = null; }
     let restored = 0;
     for (const item of p.items) {
       // Native edits may replace shaders during a long-lived preview.
@@ -158,12 +158,12 @@
       const t = uniformValue(layer, "l0_uvTranslate");
       const m = uniformValue(layer, "l0_uvRotateScale");
       return {
-        mapping, layer, originalTranslation: t, originalMatrix: m,
+        mapping, index, layer, originalTranslation: t, originalMatrix: m,
         originalColors: uniformValue(layer, "colors0"), contrastApplied: false,
         planned: plannedUniforms(t, m, opts)
       };
     });
-    const p = { ctx, items, startedAt: Date.now() };
+    const p = { ctx, items, startedAt: Date.now(), data: ctx.display.data, opts: { ...opts }, maintenance: null };
     try {
       for (const item of items) {
         const { translate, matrix } = item.planned;
@@ -194,7 +194,57 @@
       throw error;
     }
     STATE.preview = p;
-    // No expiry timeout: the owner can inspect the preview at any pace.
+    // Lightweight active-only reconciliation. Native paint/color bakes can
+    // overwrite a temporary shader while leaving our logical preview active.
+    // Rebase on the current native values and restore the preview only when
+    // the same figure, mesh, decal identities, and layer objects still exist.
+    p.maintenance = window.setInterval(() => {
+      if (STATE.preview !== p) return;
+      try {
+        const d = UW.CK && UW.CK.character && UW.CK.character.display;
+        if (!d || d !== ctx.display || d.data !== p.data ||
+          !d.meshes || d.meshes.bodyUpper !== ctx.mesh ||
+          !d.data.parts || d.data.parts.bodyUpper !== TARGET_PART ||
+          !d.data.decals || d.data.decals.bodyUpper !== ctx.records ||
+          p.items.some(item => {
+            const record = ctx.records[item.mapping];
+            const order = d.modded && d.modded.orderedDecals && d.modded.orderedDecals.bodyUpper;
+            return !record || record.id !== TARGET_DECAL ||
+              !Array.isArray(order) || !order[item.index] ||
+              Number(order[item.index].mapping) !== item.mapping ||
+              order[item.index].id !== TARGET_DECAL ||
+              d.meshes.bodyUpper.bakeMaterials.colorDecals[item.index] !== item.layer;
+          })) {
+          window.clearInterval(p.maintenance);
+          STATE.preview = null;
+          // Restore only values still owned by this preview on abandoned layers.
+          for (const item of p.items) {
+            if (uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
+            if (uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+            if (item.contrastApplied && uniformValue(item.layer, "colors0") === item.appliedColors) item.layer.setUniform("colors0", item.originalColors);
+          }
+          STATE.lastError = "Preview ended because the figure or native decal layers changed. No saved coordinates modified.";
+          updateStatus();
+          return;
+        }
+        const overwritten = p.items.some(item =>
+          uniformValue(item.layer, "l0_uvTranslate") !== item.appliedTranslation ||
+          uniformValue(item.layer, "l0_uvRotateScale") !== item.appliedMatrix ||
+          (item.contrastApplied && uniformValue(item.layer, "colors0") !== item.appliedColors));
+        if (!overwritten) return;
+        // At most one rebake per interval; preserve new native assignments
+        // through the existing ownership-aware revert before reapplying.
+        STATE.refreshes++;
+        preview(p.opts, p.items.map(item => item.mapping));
+      } catch (error) {
+        if (STATE.preview === p) {
+          window.clearInterval(p.maintenance);
+          p.maintenance = null;
+          STATE.lastError = "Native refresh displaced the preview: " + String(error.message || error);
+          updateStatus();
+        }
+      }
+    }, 2000);
     STATE.lastError = null;
     STATE.lastResult = {
       mode: "preview", mappings: items.map(x => x.mapping),
@@ -294,7 +344,7 @@
       id: TOOL_ID, version: VERSION, build: BUILD, attempts: STATE.attempts,
       previewActive: !!STATE.preview,
       activeMappings: STATE.preview ? STATE.preview.items.map(x => x.mapping) : [],
-      lastError: STATE.lastError, lastResult: STATE.lastResult
+      lastError: STATE.lastError, lastResult: STATE.lastResult, refreshes: STATE.refreshes
     };
   }
 
@@ -323,7 +373,7 @@
     if (!view || !view.isConnected) return;
     const result = STATE.lastResult;
     view.textContent = STATE.lastError || (STATE.preview ?
-      "Preview ACTIVE — no timer. Click Revert preview when finished. Saved decals unchanged." :
+      "Preview ACTIVE — no expiry timer; native paint resets are reconciled. Click Revert preview when finished." :
       result && result.mode === "reverted" ? "Preview reverted. Native shader values restored." :
       "No preview active. Select the original legacy circle layers below.");
   }
