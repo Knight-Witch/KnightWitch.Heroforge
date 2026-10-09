@@ -1,11 +1,10 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 live GPU pixel-diagnostic integration
+## 2026-10-09 — #111 high-contrast renderer discriminator, Dev preparation
 
-- PASS: Canonical contract/context, #111 task branch, source and native HeroForge color atlas pipeline inspected.
-- PASS: v1.2.1 Decals module and v1.17.18 Dev launcher source/manifest registry versions and builds synchronized; immutable payload paired to source commit ee0c16bbda302ee8a4a97bbfc4efd3982b185077.
-- PASS: JS syntax and deterministic mock GPU readback test: pixel change during UV preview, zero pixel difference after revert, existing shader uniform object restored and figure JSON unaltered.
-- PASS: Live Bridge #4766–#4767 verified both D5 circle layers active and successful uniform updates; Amanda reports NO visible motion, therefore no correction accepted. Live #4769–#4772 confirmed decal uniforms participate in native getKey and renderer display material references the color atlas.
-- HOLD: GPU pixel comparison in the real HeroForge session is required, followed by owner visual test only after mechanism is verified. Existing High Res #34 restore defect remains separate.
-- PASS: Existing `wd-decals` feature-registry ID is still the affected Decals tool, no public/reporter taxonomy change published. No permanent migration or user-save mutation.
-- Public Stable remains unchanged.
+- PASS: Project contract/active router, versioning/branch governance, issue #111 and native shader color/atlas evidence reviewed.
+- PASS: Decals v1.2.2 and launcher v1.17.19 source + manifest synchronized, exact immutable Dev payload to be pinned after source commit.
+- PASS: Node static syntax and bounded mock GPU pixel/contrast comparison and exact palette/UV/atlas restoration, saved data unchanged, invalid contrast argument rejected.
+- PASS: Live D5 initial preview invoked exactly once and reverted; owner reported unchanged. Live #4776/4777 verified minuscule actual GPU color difference and exact rollback; #4779 identified circleGradient red alpha ~0.21.
+- HOLD: Real high-contrast GPU proof on loaded D5; missing other decals after ordinary refresh require owner manual load only when ready for visual gate.
+- No permanent Apply, Stable or public promotion. Bridge is dev infrastructure only.

@@ -2,10 +2,10 @@
 
 ## Latest repository change — 2026-10-09
 
-- **Dev-only #111 diagnostics after failed human visual preview:** Decals v1.2.1 adds a bounded GPU color atlas pixel readback discriminator. First two-layer preview did alter native uniforms, but Amanda visually observed no movement. The diagnostic snapshots only torso color pixels and returns aggregate changes across preview/revert; no raw texture exported or saved decals modified. Dev launcher v1.17.18 pins immutable payload ee0c16bbda302ee8a4a97bbfc4efd3982b185077.
-- JS syntax, bounded mock readback/rollback checks passed. Live GPU pixel proof and human visual correction are NOT validated.
-- Stable/public runtime unchanged; no permanent migration Apply exists.
+- **#111 Dev-only:** Decals v1.2.2 opt-in high-contrast legacy torso UV preview temporarily renders selected faint circle-gradient layer green to discriminate if live visible nipple marks are controlled by the candidate shader layers. Existing original gradient palette, UV uniform objects, native atlas and cached pixels are restored on Revert/timeout/failure, with no figure data modifications or permanent Apply.
+- Prior v1.2.1 live GPU readback: 19 changed pixels (UV scale .94) / 11 (large U offset), max intensity delta 3/255; restored pixel-perfect. This explains why Amanda saw no movement; first human gate FAIL, not a visual pass.
+- Mock UV, vivid-palette, pixel-readback and native-rollback tests PASS. Dev launcher v1.17.19 payload pairing pending. No Stable/public change.
 
 ## Latest Stable release context
 
-Stable v2.4.3 retired Phase 1 notice; no #111 runtime is publicly shipped.
+Stable v2.4.3 carries no #111 code.

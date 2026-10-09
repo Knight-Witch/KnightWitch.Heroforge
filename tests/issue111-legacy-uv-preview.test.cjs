@@ -48,7 +48,8 @@ bake.bakeAtlas=(which,meshes)=>{bake.atlasTargetKeys.color.bodyUpper=String(mats
 display.atlas={getUV:()=>({x:0,y:0,z:1,w:1})};
 sandbox.window.CK.renderManager={renderer:{readRenderTargetPixels(target,x,y,w,h,pixels){
   assert.equal(w,16);assert.equal(h,16);
-  const v=Math.round(mats[3].uniforms.l0_uvTranslate.value.x*10000) & 255;
+  const vivid=mats[3].uniforms.colors0 && mats[3].uniforms.colors0.value[3].x === 0 ? 97 : 0;
+  const v=(Math.round(mats[3].uniforms.l0_uvTranslate.value.x*10000)+vivid) & 255;
   for(let i=0;i<pixels.length;i++)pixels[i]=(i*7+v)&255;
 }}};
 const proof=cap.probePixels(opts,[7,8]);
@@ -59,3 +60,28 @@ assert.ok(proof.originalNonzero>0);
 assert.strictEqual(mats[3].uniforms.l0_uvTranslate.value,original[0].t);
 assert.equal(JSON.stringify(display.data.decals),before);
 console.log('PASS: actual GPU readback probe changed and reversion verified without saved data edits');
+
+mats.forEach(mat=>{
+  if (!mat) return;
+  mat.uniforms.colors0={value:[
+    new Vec4(1,1,1,1),new Vec4(.945,.929,1,1),
+    new Vec4(1,1,1,1),new Vec4(1,0,0,.21176470588235294)
+  ]};
+});
+const originalPalette=mats[3].uniforms.colors0.value;
+const vivid=cap.probePixels({...opts,highContrast:true},[7,8]);
+assert.ok(vivid.previewVsOriginal.changedPixels>0);
+assert.equal(vivid.restoredVsOriginal.changedPixels,0);
+assert.strictEqual(mats[3].uniforms.colors0.value,originalPalette);
+assert.equal(JSON.stringify(display.data.decals),before);
+const vividOnce=cap.preview({...opts,highContrast:true},[7,8]);
+assert.equal(vividOnce.highContrast,true);
+assert.notStrictEqual(mats[3].uniforms.colors0.value,originalPalette);
+assert.strictEqual(mats[3].uniforms.colors0.value[0].y,1);
+const restoredAgain=cap.revert();
+assert.equal(restoredAgain.restored,2);
+assert.strictEqual(mats[3].uniforms.colors0.value,originalPalette);
+assert.throws(()=>cap.preview({...opts,highContrast:"yes"},[7]),/contrast flag/);
+assert.equal(JSON.stringify(display.data.decals),before);
+console.log('PASS: vivid diagnostic palette changed GPU pixels and restored exact original object');
+console.log('PASS: contrast preview only accepts boolean flag, restores all saved data');

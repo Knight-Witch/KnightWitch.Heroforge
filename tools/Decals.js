@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.2.1";
-  const BUILD = "1.2.1-atlas-pixel-evidence";
+  const VERSION = "1.2.2";
+  const BUILD = "1.2.2-high-contrast-evidence";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1195;
@@ -117,6 +117,7 @@
       if (item.layer.uniforms.l0_uvTranslate && item.layer.uniforms.l0_uvRotateScale) {
         item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
         item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+        if (item.contrastApplied) item.layer.setUniform("colors0", item.originalColors);
         restored++;
       }
     }
@@ -136,6 +137,7 @@
   function preview(opts, mappings) {
     STATE.attempts++;
     revert();
+    if (opts.highContrast !== undefined && typeof opts.highContrast !== "boolean") throw Error("Invalid preview diagnostic contrast flag.");
     const ctx = context();
     const available = eligible(ctx);
     const selections = [...new Set(mappings.map(Number))];
@@ -150,6 +152,7 @@
       const m = uniformValue(layer, "l0_uvRotateScale");
       return {
         mapping, layer, originalTranslation: t, originalMatrix: m,
+        originalColors: uniformValue(layer, "colors0"), contrastApplied: false,
         planned: plannedUniforms(t, m, opts)
       };
     });
@@ -159,12 +162,23 @@
         const { translate, matrix } = item.planned;
         item.layer.setUniform("l0_uvTranslate", new UW.RK.Vec2(translate.x, translate.y));
         item.layer.setUniform("l0_uvRotateScale", new UW.RK.Vec4(matrix.x, matrix.y, matrix.z, matrix.w));
+        if (opts.highContrast === true) {
+          const oldColors = item.originalColors;
+          if (!Array.isArray(oldColors) || oldColors.length !== 4 ||
+              oldColors.some(c => !c || ![c.x, c.y, c.z, c.w].every(finite))) {
+            throw Error("Native gradient palette is incompatible with contrast preview.");
+          }
+          const contrastColors = oldColors.map(() => new UW.RK.Vec4(0, 1, 0, 1));
+          item.layer.setUniform("colors0", contrastColors);
+          item.contrastApplied = true;
+        }
       }
       nativeRebake(ctx);
     } catch (error) {
       for (const item of items) {
         item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
         item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+        if (item.contrastApplied) item.layer.setUniform("colors0", item.originalColors);
       }
       try { nativeRebake(ctx); } catch (_) {}
       throw error;
@@ -174,6 +188,7 @@
     STATE.lastError = null;
     STATE.lastResult = {
       mode: "preview", mappings: items.map(x => x.mapping),
+      highContrast: opts.highContrast === true,
       sample: items.map(x => ({ mapping: x.mapping, oldCenter: x.planned.oldCenter, newCenter: x.planned.center })),
       at: p.startedAt
     };
@@ -312,7 +327,7 @@
     root.appendChild(heading);
     const warning = document.createElement("div");
     warning.className = "note";
-    warning.textContent = "Dev only. This previews existing UV-bound circle decal layers 7 and 8 on torso part 1963. It does not update saved JSON or apply a permanent migration. Restores automatically after two minutes.";
+    warning.textContent = "Dev only. This previews existing UV-bound circle decal layers 7 and 8 on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Restores automatically after two minutes.";
     root.appendChild(warning);
 
     const slots = document.createElement("div");
@@ -327,6 +342,13 @@
       slots.appendChild(label);
     }
     root.appendChild(slots);
+    const contrastLabel = document.createElement("label");
+    contrastLabel.className = "note";
+    const contrast = document.createElement("input");
+    contrast.type = "checkbox";
+    contrast.checked = false;
+    contrastLabel.append(contrast, document.createTextNode("Temporary vivid-green decal highlight (diagnostic only)"));
+    root.appendChild(contrastLabel);
 
     const fields = {};
     for (const [key, title, initial, min, max, step] of [
@@ -351,6 +373,7 @@
     go.addEventListener("click", () => {
       try {
         const opts = Object.fromEntries(Object.entries(fields).map(([k, el]) => [k, Number(el.value)]));
+        opts.highContrast = contrast.checked;
         const mappings = Array.from(picks).filter(([, el]) => el.checked).map(([mapping]) => mapping);
         preview(opts, mappings);
       } catch (error) {
