@@ -1,9 +1,11 @@
 # Pre-Flight Check
 
-## 2026-10-10 — #59/#35 immutable private Dev payload stage
+## 2026-10-10 — #59/#35 private Dev v1.17.28 pairing
 
-- PASS: PR #124 source is merged to current `WITCH_DEV_MAIN`; task branch remains ACTIVE PROTECTED through live validation.
-- PASS: payload manifest identifies launcher v1.17.28 / `1.17.28-high-res-diagnostic-context` and the three synchronized diagnostic module versions/builds.
-- PASS: focused lifecycle/provider/ownership tests 8/8 and scoped repository tests 59/59 before payload staging; syntax and `git diff --check` pass.
+- PASS: Dev launcher `@version`, `DEV_VERSION`, `DEV_BUILD`, manifest launcher registry, and visible Dev version source are synchronized at v1.17.28 / `1.17.28-high-res-diagnostic-context`.
+- PASS: launcher pins immutable payload `649d39004ee2dc8726713d75dc85bf5361f35826`; payload contains the paired manifest and diagnostic module versions/builds.
+- PASS: fixed Tampermonkey identity, namespace, custom-domain update/download URLs, `WITCH_DEV_MAIN` channel, and custom-domain immutable payload routing are preserved.
+- PASS: full repository Node test suite 63/63 after replacing the obsolete v1.17.16 hard-code with current manifest pairing checks; syntax, JSON parse, and `git diff --check` pass.
 - PASS: no HF.Status feature-registry impact and no Beta-manifest impact.
-- PASS: no Public Beta, Public Stable, or deployment behavior changed. The currently served v1.17.27 launcher remains untouched until the next paired commit pins this exact payload SHA.
+- PASS: Public Beta, Public Stable, and deployment infrastructure are unchanged.
+- PENDING: custom-domain/live Bridge loader, provider snapshot, and one bounded reversible comparison/failure-context gate.

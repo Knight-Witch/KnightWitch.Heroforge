@@ -118,7 +118,8 @@ test('manifest and Dev versions are paired',()=>{
   const userscript=fs.readFileSync(path.join(root,'Witch_Dock_DEV.user.js'),'utf8');
   assert.equal(reg.version,'0.2.3');
   assert.ok(loader.url.endsWith('v='+reg.build));
-  assert.equal(launch.version,'1.17.16');
-  assert.ok(userscript.includes('@version      1.17.16'));
-  assert.ok(userscript.includes('const DEV_VERSION = "1.17.16"'));
+  assert.match(launch.version,/^\d+\.\d+\.\d+$/);
+  assert.ok(userscript.includes('@version      '+launch.version));
+  assert.ok(userscript.includes('const DEV_VERSION = "'+launch.version+'"'));
+  assert.ok(userscript.includes('const DEV_BUILD = "'+launch.build+'"'));
 });
