@@ -41,6 +41,7 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 
 | Branch | Owner / source | Why protected | Exit condition |
 |---|---|---|---|
+| `wd/120-pin-launcher` | #120 | Pin v1.17.27 Dev launcher to immutable diagnostic-evidence payload 7c0e51f; never touch Stable. | Merge tested launcher to WITCH_DEV_MAIN; validate domain and live Dev; queue exact-SHA cleanup. |
 | `wd/120-dev-payload` | #120 | Stage paired manifest launcher v1.17.27 and reporter v0.4.7 as immutable Dev payload; no Stable. | Merge validated Dev payload to WITCH_DEV_MAIN then queue exact SHA cleanup. |
 | `wd/120-diagnostic-evidence-integrity` | #120 | Dev-only client classifier/contract normalization, attachment warning and regression tests. | Integrate verified changes to WITCH_DEV_MAIN, preserve provenance, then queue exact SHA for cleanup; no Stable promotion. |
 | `wd/111-legacy-uv-preview` | #111 | Experimental nonpersistent legacy torso UV decal visual preview, chart-specific migration feasibility, native save-safe validation only. | After Dev visual gate and integration to WITCH_DEV_MAIN, preserve evidence then queue exact final SHA; never promote unvalidated preview. |
