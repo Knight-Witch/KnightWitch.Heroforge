@@ -3,8 +3,8 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const FEATURE_ID = "witch-dock-bug-capture-ui";
-  const VERSION = "0.4.6";
-  const BUILD = "0.4.6-context-diagnostic-providers";
+  const VERSION = "0.4.7";
+  const BUILD = "0.4.7-manual-diagnostic-contract";
   const TOOL_ID = "bug-capture";
   const GLOBAL = "KWWitchDockBugReporter";
   const OVERLAY_ID = "kwBugReporterOverlay";

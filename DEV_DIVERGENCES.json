@@ -90,7 +90,7 @@
     {
       "issue": 107,
       "status": "dev-public-beta-infrastructure",
-      "reason": "Public Beta is an additive optional layer over normal Stable, not a replacement Stable build. The standalone Beta Tester owns its own moving manifest, immutable beta-module payload references, live reversible module lifecycle, visible IN BETA labeling, and bounded Beta diagnostic provider. Stable remains independent when Beta is absent, disabled, offline, or broken. Dev reporter v0.4.6 adds only a local contextual diagnostic-provider selection seam; provider IDs are not added to the HF.Status submitted sourceContext.",
+      "reason": "Public Beta is an additive optional layer over normal Stable, not a replacement Stable build. The standalone Beta Tester owns its own moving manifest, immutable beta-module payload references, live reversible module lifecycle, visible IN BETA labeling, and bounded Beta diagnostic provider. Stable remains independent when Beta is absent, disabled, offline, or broken. Dev reporter v0.4.7 retains the contextual provider seam and adds the issue #120 manual legacy High Res diagnostic JSON recognition/warning fix; provider IDs are not added to the HF.Status submitted sourceContext.",
       "paths": [
         "beta/Witch_Dock_Beta_Tester.user.js",
         "beta/manifest.json",
