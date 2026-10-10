@@ -1,5 +1,13 @@
 # Issue #111 — Legacy bodyUpper UV drift: chat handoff (2026-10-09)
 
+## 2026-10-09 — separate color IDs for five other torso circles (latest)
+
+- **Owner request:** other upper-body circle decals are body markings, so distinguish each visually using a different temporary color and the same mapping/color names in the Dock. Owner's D5 nipple candidate at scale 1.00, pivot .5/.5, global nudges0, M(+.0054,-.00035), N(-.0054,-.00035) appears correctly located and sized; High Res ON/OFF seem visually consistent. This remains human-only qualitative support, not a general UV migration.
+- Bridge #4833 confirmed native D5 active bodyUpper ID1195 at mappings 7/8/9/10/12, all unprojected UV set1, and native 4-vector RGBA palettes. Two nipple ID1178 mappings 13/14 remain separate. No need to infer layer IDs from ordinal user-facing numbers.
+- New **Dev launcher v1.17.26 / Decals v1.4.0** (bc09e5ddea0df30f06757015940bce8ce5c1955e) adds opt-in "Identify other upper-body circle decals (ID 1195)" with visible swatch legend: **7 Cyan, 8 Yellow, 9 Magenta, 10 Orange, 12 Blue**. Change only these five bake-layer color vectors; **do not change any of their UV translation/rotation/scale**, saved records or global geometry. Owner may uncheck both M/N to identify only body circles, or include calibrated M/N with other circles together.
+- Existing normal M/N preview, per-side calibration, temporary green, active-only 2-second native overwrite maintenance, unbounded manual lifetime/explicit Revert, figure-change ownership checks and exact material rollback preserved. Mock tests cover both 5-only and combined, five unique IDs, projected/incomplete rejection, reassertion and restoration.
+- **Next gate:** load v1.4.0 live at convenient time, verify all five rendered distinct colors and rollback via Bridge, then owner visually identify their positions (including lower back) in screenshots. Different decal IDs and chart locations may need different UV correction; never copy nipple-specific offsets automatically. Validate D4/Blood Moon before any persistent migration or Stable action.
+
 ## 2026-10-09 latest owner screenshot and independent calibration Dev
 
 - **Human result:** D5 with Dev v1.17.24/Decals v1.2.7 has persistent vivid-green overlays on the **CORRECT** ID1178 native M/N 13/14 decals. Owner screenshot in Chat shows each red center inside a green ring, but both are considerably rightward from nipple centers; the image-right overlay is also visibly below its nipple, while image-left is especially far right. The attempted uniform .94 UV-chart scale does not achieve alignment and may worsen it. This is not an acceptable migration correction. Screenshot is in Chat only, not committed to public repo.

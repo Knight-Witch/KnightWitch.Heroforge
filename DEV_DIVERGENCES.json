@@ -134,15 +134,15 @@
     {
       "issue": 111,
       "status": "dev-preview-pending-live-and-human-validation",
-      "reason": "Legacy upper-body/human UV-chart shrink correction under investigation. Only a bounded, opt-in, manual-until-revert shader-uniform preview for ID1178 mappings 13/14 (M/N) is implemented, with independent per-decal UV U/V calibration and active-only native shader overwrite reconciliation; no expiry, permanent migration, or saved-figure edits. Previous targeted ID1195 is a five-copy decal, excluded. No native character JSON changes or permanent migration are permitted before visual validation.",
+      "reason": "Legacy upper-body/human UV-chart shrink correction under investigation. Only a bounded, opt-in, manual-until-revert shader-uniform preview for ID1178 mappings 13/14 (M/N) is implemented, with independent per-decal UV U/V calibration and active-only native shader overwrite reconciliation; no expiry, permanent migration, or saved-figure edits. Distinct ID1195 five-copy circle decals are now optionally color-identified with five different swatches and original UV placement untouched; permanent conversion still excluded. No native character JSON changes or permanent migration are permitted before visual validation.",
       "paths": [
         "tools/Decals.js",
         "manifest.json",
         "Witch_Dock_DEV.user.js"
       ],
       "acceptance": [
-        "Preview matches native bodyUpper/human part 1963 and only verified UV-bound ID1178 mappings 13/14.",
-        "Shader uniforms and atlas rendering are restored exactly by Revert or two-minute timeout; saved decal values never change.",
+        "Preview requires native bodyUpper/human part 1963. M/N calibration is restricted to ID1178 mappings 13/14; optional color identification is restricted to ID1195 mappings 7/8/9/10/12, with original native UV vectors unchanged.",
+        "Shader uniforms and atlas rendering are restored on manual Revert or replacement preview, with no time limit; native overwrite recovery and figure-change cleanup preserve ownership. Saved decal values never change.",
         "Fail closed if nonnative, projected, changed figure, missing atlas/geometry or unsupported decal layer.",
         "D4, D5 and independent Blood Moon visual comparisons needed before deriving one-time native saved-coordinate mapping.",
         "No Stable/public promotion until explicit owner approval."
