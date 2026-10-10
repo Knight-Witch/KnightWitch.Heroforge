@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - Texture Quality Native Reconcile
 // @namespace    KnightWitch
-// @version      0.4.2
+// @version      0.5.0
 // @description  Dev-only native HeroForge texture-quality service validated from HFC alpha.3.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -18,8 +18,8 @@
     console.warn('[Witch Dock texture quality] Service already loaded; refresh the page to replace it.');
     return;
   }
-  const VERSION = '0.4.2';
-  const BUILD = '0.4.2-owned-lifecycle-entry';
+  const VERSION = '0.5.0';
+  const BUILD = '0.5.0-retained-diagnostic-lifecycle';
   const PERSIST_KEY = 'kw.witchDock.textureQuality.persistent';
   const AUTO_READY_TIMEOUT = 30000;
   const AUTO_STABLE_MS = 1200;
@@ -30,6 +30,8 @@
   const BAKE = 2048;
   const USED = 1024; // minimum source seed; body masks use the native supported size up to 1024px
   const OWNER = 82042049;
+  const DIAGNOSTIC_ATTEMPT_LIMIT = 5;
+  const DIAGNOSTIC_STAGE_LIMIT = 12;
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   let session = null;
@@ -45,7 +47,10 @@
   let autoPromise = null;
   let sceneSyncPromise = null;
   let autoAttemptedIdentity = null;
+  let diagnosticAttemptCounter = 0;
+  let activeDiagnosticAttempt = null;
   const listeners = new Set();
+  const diagnosticAttempts = [];
 
   const own = (o, k) => ({
     o,
@@ -79,6 +84,254 @@
     } catch (_) {
       return null;
     }
+  }
+
+  function nowIso() {
+    try { return new Date().toISOString(); }
+    catch (_) {
+      const stamp = typeof Date !== 'undefined' && typeof Date.now === 'function' ? Date.now() : 0;
+      return `epoch-ms:${stamp}`;
+    }
+  }
+
+  function boundedDiagnosticText(value, max = 1200) {
+    if (value == null) return null;
+    const text = String(value);
+    return text.length > max ? `${text.slice(0, max)}…` : text;
+  }
+
+  function cloneDiagnostic(value) {
+    try { return JSON.parse(JSON.stringify(value)); }
+    catch (_) { return null; }
+  }
+
+  function diagnosticFailureCode(message, phase) {
+    const text = String(message || '');
+    if (/AAID/i.test(text)) return /did not load|resource/i.test(text) ? 'HR_AAID_RESOURCE_NOT_READY' : 'HR_AAID_BINDING_VERIFY_FAILED';
+    if (/mask/i.test(text)) return /did not load|resource/i.test(text) ? 'HR_MASK_RESOURCE_NOT_READY' : 'HR_MASK_BINDING_VERIFY_FAILED';
+    if (/atlas|source\/allocation/i.test(text)) return 'HR_ATLAS_OR_SOURCE_VERIFY_FAILED';
+    if (/color-bake cache/i.test(text)) return 'HR_COLOR_BAKE_REFRESH_VERIFY_FAILED';
+    if (/timed out|did not settle|did not become ready/i.test(text)) return 'HR_READINESS_TIMEOUT';
+    if (/figure|character|target parts changed/i.test(text)) return 'HR_RUNTIME_IDENTITY_CHANGED';
+    if (String(phase || '').startsWith('restore') || String(phase || '').startsWith('disable')) return 'HR_RESTORE_FAILED';
+    if (String(phase || '').startsWith('reconcile')) return 'HR_RECONCILE_FAILED';
+    return 'HR_ENABLE_FAILED';
+  }
+
+  function diagnosticBinding(mesh, uniformName) {
+    const material = mesh && mesh.bakeMaterials && mesh.bakeMaterials.color;
+    let texture = null;
+    try {
+      texture = material && typeof material.getUniform === 'function'
+        ? material.getUniform(uniformName)
+        : null;
+    } catch (_) {}
+    const descriptor = diagnosticTextureRef(texture);
+    return {
+      materialReady: !!material,
+      texture: descriptor,
+      ready: !!(descriptor && descriptor.size && descriptor.size[0] > 0 && descriptor.size[1] > 0),
+      fallback1x1: !!(descriptor && descriptor.size && descriptor.size[0] === 1 && descriptor.size[1] === 1)
+    };
+  }
+
+  function diagnosticFigureState(source, index) {
+    if (!source) return null;
+    const d = source.d || null;
+    const display = source.display || null;
+    const m = source.m || null;
+    const parts = m && m.parts || source.parts || {};
+    const meshes = display && display.meshes || source.meshes || {};
+    const atlas = display && display.atlas;
+    const resourceAtlas = m && m.resourceAtlas;
+    const masks = source.masks || null;
+    const aaids = source.aaids || null;
+    const targets = {};
+
+    for (const key of TARGETS) {
+      const part = parts && parts[key];
+      const mesh = meshes && meshes[key];
+      const maskRef = masks && BODIES.includes(key) ? masks[key] : null;
+      const aaidRef = aaids && BODIES.includes(key) ? aaids[key] : null;
+      targets[key] = {
+        part: {
+          identity: partId(part),
+          bakeSize: Number.isFinite(Number(part && part.bakeSize)) ? Number(part.bakeSize) : null,
+          usedTextureSize: Number.isFinite(Number(part && part._usedTextureSize)) ? Number(part._usedTextureSize) : null,
+          hasAAID: part && typeof part.hasAAID === 'boolean' ? part.hasAAID : null
+        },
+        atlasScale: Number.isFinite(Number(d && d.atlasScale && d.atlasScale[key])) ? Number(d.atlasScale[key]) : null,
+        allocation: allocation(atlas, key),
+        meshReady: !!mesh,
+        maskDecision: BODIES.includes(key) ? {
+          requestedPath: masks && Array.isArray(masks.paths) ? masks.paths[BODIES.indexOf(key)] || null : null,
+          requestedSize: masks && masks.sizes ? Number(masks.sizes[key]) || null : null,
+          selectedTexture: diagnosticTextureRef(maskRef),
+          overrideOwned: !!(mesh && maskRef && mesh.masksMapOverride === maskRef)
+        } : null,
+        aaidDecision: BODIES.includes(key) ? {
+          required: aaidRef ? !!aaidRef.required : null,
+          requestedPath: aaidRef && aaidRef.path || null,
+          requestedSize: aaidRef && Number(aaidRef.size) || null,
+          selectedTexture: diagnosticTextureRef(aaidRef && aaidRef.texture)
+        } : null,
+        bindings: BODIES.includes(key) ? {
+          masksMap: diagnosticBinding(mesh, 'masksMap'),
+          aaidMap: diagnosticBinding(mesh, 'aaidMap')
+        } : null
+      };
+    }
+
+    const paints = display && display.colorBake && display.colorBake.paints;
+    return {
+      key: source.key || '',
+      label: source.primary ? 'primary' : (source.key || `figure-${index + 1}`),
+      primary: !!source.primary,
+      targetIds: source.ids ? { ...source.ids } : Object.fromEntries(TARGETS.map((key) => [key, partId(parts[key])])),
+      atlas: {
+        display: atlasSize(atlas),
+        resource: atlasSize(resourceAtlas),
+        sameObject: !!atlas && atlas === resourceAtlas
+      },
+      readiness: {
+        resourcesReady: display ? display.resourcesReady !== false : false,
+        finished: display ? display.finished !== false : false,
+        colorBakeReady: !!paints,
+        colorBakeSetupAvailable: !!(paints && typeof paints.setupMaterials === 'function'),
+        aaidLookupOwned: !!(source.aaidLookupWrappers && source.aaidLookupWrappers.some((entry) => (
+          entry && entry.paints === paints && paints && paints.getAAID === entry.wrapper
+        )))
+      },
+      adoptedGenerations: Number(source.adoptions) || 0,
+      restoreColorBakeRefreshes: Number(source.restoreColorBakeRefreshes) || 0,
+      targets
+    };
+  }
+
+  function diagnosticLifecycleSnapshot(phase, diagnosticSession = session) {
+    let cap = null;
+    try { cap = capabilities(); } catch (error) { cap = { ok: false, reason: String(error) }; }
+    const sources = diagnosticSession && Array.isArray(diagnosticSession.pipelines)
+      ? diagnosticSession.pipelines
+      : (cap && cap.ok && Array.isArray(cap.pipelines) ? cap.pipelines : []);
+    const character = diagnosticSession && diagnosticSession.c || cap && cap.c || null;
+    return {
+      capturedAt: nowIso(),
+      phase: String(phase || 'unknown'),
+      flags: {
+        enabled,
+        busy,
+        persistent,
+        sessionSuppressed,
+        autoPending: !!autoPromise,
+        sceneSyncPending: !!sceneSyncPromise
+      },
+      status: {
+        text: boundedDiagnosticText(statusText, 600),
+        error: statusError,
+        lastError: boundedDiagnosticText(lastError, 1200)
+      },
+      readiness: {
+        capabilityOk: !!(cap && cap.ok),
+        capabilityReason: cap && !cap.ok ? boundedDiagnosticText(cap.reason, 800) : null,
+        characterNeedsUpdating: character ? !!character._needsUpdating : null,
+        characterInUpdate: character ? !!character._inUpdate : null,
+        sessionMatchesCharacter: diagnosticSession ? sameCharacter(diagnosticSession) : null
+      },
+      sessionPresent: !!diagnosticSession,
+      figureCount: sources.length,
+      figures: sources.slice(0, 6).map(diagnosticFigureState).filter(Boolean),
+      figuresTruncated: Math.max(0, sources.length - 6),
+      verification: cloneDiagnostic(lastVerification),
+      restoreVerification: cloneDiagnostic(lastRestoreVerification)
+    };
+  }
+
+  function beginDiagnosticAttempt(operation, diagnosticSession = session) {
+    diagnosticAttemptCounter += 1;
+    const attempt = {
+      attemptId: `tq-${Date.now().toString(36)}-${diagnosticAttemptCounter.toString(36)}`,
+      operation: String(operation || 'unknown'),
+      startedAt: nowIso(),
+      completedAt: null,
+      outcome: 'running',
+      lastPhase: 'before',
+      before: diagnosticLifecycleSnapshot('before', diagnosticSession),
+      during: [],
+      failure: null,
+      restoration: null,
+      after: null,
+      cleanupSubsequentlyClearedSession: null
+    };
+    activeDiagnosticAttempt = attempt;
+    return attempt;
+  }
+
+  function checkpointDiagnosticAttempt(attempt, phase, diagnosticSession = session, detail = null) {
+    if (!attempt || attempt !== activeDiagnosticAttempt) return;
+    attempt.lastPhase = String(phase || 'during');
+    if (attempt.during.length >= DIAGNOSTIC_STAGE_LIMIT) return;
+    attempt.during.push({
+      phase: attempt.lastPhase,
+      detail: boundedDiagnosticText(detail, 800),
+      state: diagnosticLifecycleSnapshot(attempt.lastPhase, diagnosticSession)
+    });
+  }
+
+  function failDiagnosticAttempt(attempt, error, diagnosticSession = session, extra = null) {
+    if (!attempt || attempt !== activeDiagnosticAttempt || attempt.failure) return;
+    const message = boundedDiagnosticText(error && error.message || error, 1600);
+    attempt.failure = {
+      capturedAt: nowIso(),
+      phase: attempt.lastPhase,
+      code: diagnosticFailureCode(message, attempt.lastPhase),
+      message,
+      verifierEvidence: cloneDiagnostic(extra && extra.verification || lastVerification || lastRestoreVerification),
+      resourceEvidence: cloneDiagnostic(error && error.kwDiagnosticEvidence || extra && extra.resourceEvidence || null),
+      state: diagnosticLifecycleSnapshot('failure-pre-cleanup', diagnosticSession)
+    };
+  }
+
+  function finishDiagnosticAttempt(attempt, outcome, diagnosticSession = session, restoration = null) {
+    if (!attempt || attempt !== activeDiagnosticAttempt) return;
+    attempt.completedAt = nowIso();
+    attempt.outcome = String(outcome || (attempt.failure ? 'failed' : 'completed'));
+    attempt.restoration = cloneDiagnostic(restoration);
+    attempt.after = diagnosticLifecycleSnapshot('after', diagnosticSession);
+    attempt.cleanupSubsequentlyClearedSession = !!(
+      attempt.failure && attempt.failure.state && attempt.failure.state.sessionPresent && !session
+    );
+    diagnosticAttempts.unshift(attempt);
+    while (diagnosticAttempts.length > DIAGNOSTIC_ATTEMPT_LIMIT) diagnosticAttempts.pop();
+    activeDiagnosticAttempt = null;
+  }
+
+  function getDiagnosticLifecycle() {
+    return cloneDiagnostic({
+      semantics: {
+        evidenceType: 'observational-runtime-evidence',
+        analysisStatus: 'not-analyzed',
+        causalityClaimed: false
+      },
+      active: activeDiagnosticAttempt,
+      recentAttempts: diagnosticAttempts
+    });
+  }
+
+  function getRetainedFailureContext() {
+    const failures = diagnosticAttempts.filter((attempt) => attempt && attempt.failure);
+    if (activeDiagnosticAttempt && activeDiagnosticAttempt.failure) failures.unshift(activeDiagnosticAttempt);
+    return cloneDiagnostic({
+      semantics: {
+        evidenceType: 'retained-pre-cleanup-runtime-evidence',
+        analysisStatus: 'not-analyzed',
+        causalityClaimed: false
+      },
+      available: failures.length > 0,
+      reason: failures.length ? null : 'no-retained-texture-quality-failure',
+      count: failures.length,
+      records: failures.slice(0, DIAGNOSTIC_ATTEMPT_LIMIT)
+    });
   }
 
   function readPersistent() {
@@ -290,6 +543,15 @@
     } catch (_) {}
   }
 
+  function resourceLoadError(message, resourceType, decisions) {
+    const error = new Error(message);
+    error.kwDiagnosticEvidence = {
+      resourceType: String(resourceType || 'unknown'),
+      decisions: cloneDiagnostic(decisions)
+    };
+    return error;
+  }
+
   async function loadAAIDs(row, R) {
     const hi = !!(row.m.settings && row.m.settings.hiRez);
     const refs = {};
@@ -302,7 +564,9 @@
       }
       const size = supportedAAIDSize(part);
       const path = part.getAAIDPath(hi, size);
-      if (!path) throw new Error(`Could not resolve supported ${key} body AAID.`);
+      if (!path) {
+        throw resourceLoadError(`Could not resolve supported ${key} body AAID.`, 'aaid', refs);
+      }
       refs[key] = { required: true, path, size, texture: null };
       requestResource(R, path, 'png');
     }
@@ -325,7 +589,14 @@
       ref.texture = R.getNow(ref.path);
       const dims = texSize(ref.texture);
       if (dims[0] !== ref.size || dims[1] !== ref.size) {
-        throw new Error(`Valid ${ref.size}px ${key} body AAID did not load.`);
+        throw resourceLoadError(`Valid ${ref.size}px ${key} body AAID did not load.`, 'aaid', Object.fromEntries(
+          Object.entries(refs).map(([slot, value]) => [slot, value ? {
+            required: !!value.required,
+            path: value.path || null,
+            requestedSize: Number(value.size) || null,
+            actualTexture: diagnosticTextureRef(value.texture)
+          } : null])
+        ));
       }
     }
     return refs;
@@ -335,7 +606,9 @@
     const hi = !!(row.m.settings && row.m.settings.hiRez);
     const sizes = Object.fromEntries(BODIES.map((key) => [key, supportedMaskSize(row.parts[key], s)]));
     const paths = BODIES.map((key) => resolveMaskPath(row.parts[key], hi, sizes[key]));
-    if (!paths[0] || !paths[1]) throw new Error('Could not resolve supported body masks.');
+    if (!paths[0] || !paths[1]) {
+      throw resourceLoadError('Could not resolve supported body masks.', 'mask', { paths, sizes });
+    }
 
     paths.forEach((path) => requestResource(R, path, 'webp'));
     const end = Date.now() + 5000;
@@ -355,7 +628,11 @@
       const size = sizes[key];
       const dims = texSize(textures[index]);
       if (dims[0] !== size || dims[1] !== size) {
-        throw new Error(`Valid ${size}px ${key} body mask did not load.`);
+        throw resourceLoadError(`Valid ${size}px ${key} body mask did not load.`, 'mask', {
+          paths,
+          sizes,
+          textures: Object.fromEntries(BODIES.map((slot, textureIndex) => [slot, diagnosticTextureRef(textures[textureIndex])]))
+        });
       }
     }
     return { bodyLower: textures[0], bodyUpper: textures[1], paths, sizes };
@@ -943,21 +1220,30 @@
     return out;
   }
 
-  async function restoreSession(s) {
+  async function restoreSession(s, diagnosticAttempt = null) {
     for (const p of s.pipelines) restorePolicy(p);
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-policy-released', s);
     nativeRestore(s);
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-native-refresh-requested', s);
     let settled = await waitForStableScene(SETTLE_TIMEOUT);
     if (!settled) throw new Error('Timed out waiting for native reconciliation to settle.');
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-native-refresh-settled', s);
 
     restoreAdoptedNativeSources(s);
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-native-sources-adopted', s);
     settled = await waitForStableScene(SETTLE_TIMEOUT);
     if (!settled) throw new Error('Timed out waiting for restored native materials to settle.');
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-native-materials-settled', s);
 
     await refreshAdoptedNativeColorBakes(s);
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-color-bake-refreshed', s);
     settled = await waitForStableScene(SETTLE_TIMEOUT);
     if (!settled) throw new Error('Timed out waiting for refreshed native color bake to settle.');
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-color-bake-settled', s);
 
     const verification = verifyNativeRestore(s);
+    lastRestoreVerification = verification;
+    checkpointDiagnosticAttempt(diagnosticAttempt, 'restore-verification-complete', s, verification.ok ? 'ok' : verification.reason);
     if (!verification.ok) throw new Error(verification.reason);
     return verification;
   }
@@ -974,15 +1260,22 @@
   function diagnosticTextureRef(texture) {
     if (!texture || typeof texture !== 'object') return null;
     let source = null;
+    let imageComplete = null;
     try {
       const image = texture.image;
       source = image && (image.currentSrc || image.src) || texture.path || texture.url || null;
+      imageComplete = image && typeof image.complete === 'boolean' ? image.complete : null;
     } catch (_) {}
+    if (typeof source === 'string') source = source.split(/[?#]/, 1)[0].slice(0, 1000);
+    const size = texSize(texture);
     return {
       uuid: typeof texture.uuid === 'string' ? texture.uuid : null,
       name: typeof texture.name === 'string' ? texture.name : null,
-      size: texSize(texture),
-      source: typeof source === 'string' ? source.slice(0, 1000) : null
+      size,
+      source: typeof source === 'string' ? source : null,
+      imageComplete,
+      dimensionsReady: size[0] > 0 && size[1] > 0,
+      needsUpdate: typeof texture.needsUpdate === 'boolean' ? texture.needsUpdate : null
     };
   }
 
@@ -1041,6 +1334,8 @@
   }
 
   function getDiagnosticState() {
+    const lifecycle = getDiagnosticLifecycle();
+    const retained = getRetainedFailureContext();
     return {
       version: VERSION,
       build: BUILD,
@@ -1053,6 +1348,16 @@
       statusText,
       statusError,
       lastError,
+      lastVerification: cloneDiagnostic(lastVerification),
+      lastRestoreVerification: cloneDiagnostic(lastRestoreVerification),
+      diagnosticLifecycle: {
+        activeAttemptId: lifecycle && lifecycle.active && lifecycle.active.attemptId || null,
+        activeOperation: lifecycle && lifecycle.active && lifecycle.active.operation || null,
+        recentAttemptCount: lifecycle && Array.isArray(lifecycle.recentAttempts) ? lifecycle.recentAttempts.length : 0,
+        retainedFailureCount: retained && Number(retained.count) || 0,
+        evidenceType: 'observational-runtime-evidence',
+        analysisStatus: 'not-analyzed'
+      },
       session: diagnosticSessionState()
     };
   }
@@ -1127,6 +1432,9 @@
       resetAutoAttempt();
     }
     if (busy || enabled) return enabled;
+    const diagnosticAttempt = beginDiagnosticAttempt(automatic ? 'enable-automatic' : 'enable', session);
+    let diagnosticOutcome = 'failed';
+    let diagnosticRestoration = null;
     busy = true;
     lastError = null;
     lastRestoreVerification = null;
@@ -1142,6 +1450,7 @@
         pipelines: cap.pipelines.map(createPipeline),
         partSnapshots: []
       };
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'session-created', s);
 
       await Promise.all(s.pipelines.map(async (p) => {
         const row = cap.pipelines.find((entry) => entry.d === p.d);
@@ -1150,27 +1459,43 @@
           loadAAIDs(row, cap.R)
         ]);
       }));
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'resource-decisions-loaded', s);
       if (!adoptAll(s)) throw new Error('HeroForge changed while masks loaded.');
       for (const p of s.pipelines) applyPolicy(s, p);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'policy-applied', s);
       session = s;
       nativeReconcile(s);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'native-reconcile-requested', s);
       await settle(s);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'native-reconcile-settled', s);
       lastVerification = verify(s);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'enable-verification-complete', s, lastVerification.ok ? 'ok' : lastVerification.reason);
       if (!lastVerification.ok) throw new Error(lastVerification.reason);
       enabled = true;
+      diagnosticOutcome = 'completed';
       setStatus(onStatusText(lastVerification), false);
       return true;
     } catch (error) {
       lastError = String(error && error.message || error);
+      failDiagnosticAttempt(diagnosticAttempt, error, s || session, { verification: lastVerification });
       enabled = false;
       if (persistent) markAutoAttempted();
       const policyTouched = !!(s && s.pipelines.some((p) => p.scales.length || p.partsSeen.length || p.meshesSeen.length));
       if (policyTouched && sameCharacter(s)) {
         try {
-          lastRestoreVerification = await restoreSession(s);
+          lastRestoreVerification = await restoreSession(s, diagnosticAttempt);
+          diagnosticRestoration = { attempted: true, ok: true, verification: cloneDiagnostic(lastRestoreVerification) };
         } catch (restoreError) {
           lastError += ` | restore: ${String(restoreError && restoreError.message || restoreError)}`;
+          diagnosticRestoration = {
+            attempted: true,
+            ok: false,
+            message: boundedDiagnosticText(restoreError && restoreError.message || restoreError, 1600),
+            verification: cloneDiagnostic(lastRestoreVerification)
+          };
         }
+      } else {
+        diagnosticRestoration = { attempted: false, ok: null, reason: 'policy-not-touched-or-character-changed' };
       }
       if (session === s) session = null;
       setStatus(`FAILED — ${lastError}`, true);
@@ -1178,6 +1503,7 @@
       return false;
     } finally {
       busy = false;
+      finishDiagnosticAttempt(diagnosticAttempt, diagnosticOutcome, session, diagnosticRestoration);
       emit();
     }
   }
@@ -1193,23 +1519,36 @@
       return true;
     }
 
+    const diagnosticAttempt = beginDiagnosticAttempt('disable-restore', session);
+    let diagnosticOutcome = 'failed';
+    let diagnosticRestoration = null;
     busy = true;
     setStatus('Restoring source policy…', false);
     const s = session;
 
     try {
       if (!sameCharacter(s)) throw new Error('HeroForge character/data changed; stale snapshots not restored.');
-      lastRestoreVerification = await restoreSession(s);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'disable-restore-started', s);
+      lastRestoreVerification = await restoreSession(s, diagnosticAttempt);
+      diagnosticRestoration = { attempted: true, ok: true, verification: cloneDiagnostic(lastRestoreVerification) };
       enabled = false;
       session = null;
       lastVerification = null;
       lastError = null;
+      diagnosticOutcome = 'completed';
       setStatus(persistent
         ? 'OFF for this session — Persistent High Res will return after reload.'
         : 'OFF — source values restored; native atlases retained.', false);
       return true;
     } catch (error) {
       lastError = String(error && error.message || error);
+      failDiagnosticAttempt(diagnosticAttempt, error, s, { verification: lastRestoreVerification });
+      diagnosticRestoration = {
+        attempted: true,
+        ok: false,
+        message: boundedDiagnosticText(error && error.message || error, 1600),
+        verification: cloneDiagnostic(lastRestoreVerification)
+      };
       enabled = false;
       session = null;
       setStatus(`OFF / restore warning — ${lastError}`, true);
@@ -1217,6 +1556,7 @@
       return false;
     } finally {
       busy = false;
+      finishDiagnosticAttempt(diagnosticAttempt, diagnosticOutcome, session, diagnosticRestoration);
       emit();
     }
   }
@@ -1242,22 +1582,36 @@
     if (document.hidden || document.visibilityState !== 'visible') return false;
 
     autoPromise = (async () => {
+      const diagnosticAttempt = beginDiagnosticAttempt('persistent-readiness', session);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'waiting-for-stable-scene', session);
       while (persistent && !sessionSuppressed && !enabled) {
-        if (document.hidden || document.visibilityState !== 'visible') return false;
+        if (document.hidden || document.visibilityState !== 'visible') {
+          finishDiagnosticAttempt(diagnosticAttempt, 'aborted-hidden', session, null);
+          return false;
+        }
         const cap = await waitForStableScene(AUTO_READY_TIMEOUT);
-        if (!persistent || sessionSuppressed || enabled) return false;
+        if (!persistent || sessionSuppressed || enabled) {
+          finishDiagnosticAttempt(diagnosticAttempt, 'aborted-state-changed', session, null);
+          return false;
+        }
         if (!cap) {
           markAutoAttempted();
           lastError = 'HeroForge renderer did not become ready for Persistent High Res.';
           setStatus(`Persistent High Res failed — ${lastError}`, true);
+          const error = new Error(lastError);
+          failDiagnosticAttempt(diagnosticAttempt, error, session);
+          finishDiagnosticAttempt(diagnosticAttempt, 'failed', session, null);
           return false;
         }
+        checkpointDiagnosticAttempt(diagnosticAttempt, 'stable-scene-ready', session, `${cap.pipelines.length} figure(s)`);
+        finishDiagnosticAttempt(diagnosticAttempt, 'completed', session, null);
         markAutoAttempted();
         setStatus(`Persistent High Res — enabling for ${cap.pipelines.length} figure${cap.pipelines.length === 1 ? '' : 's'}…`, false);
         // Enter through the public service so the existing accessory/budget owner
         // runs before the core snapshots and rebuilds the native pipeline.
         return UW[GLOBAL].enable({ automatic: true });
       }
+      finishDiagnosticAttempt(diagnosticAttempt, 'aborted-loop-ended', session, null);
       return false;
     })().finally(() => {
       autoPromise = null;
@@ -1289,25 +1643,35 @@
   async function reconcile(options = {}) {
     handleStaleFigure();
     if (busy || !enabled || !session) return false;
+    const diagnosticAttempt = beginDiagnosticAttempt(options.sceneSync ? 'reconcile-scene-sync' : 'reconcile', session);
+    let diagnosticOutcome = 'failed';
     busy = true;
     lastError = null;
     setStatus(options.sceneSync ? 'Updating High Res for scene figures…' : 'Reconciling natively…', false);
 
     try {
       await syncMembership(session);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'membership-synchronized', session);
       for (const p of session.pipelines) applyPolicy(session, p);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'policy-reapplied', session);
       nativeReconcile(session);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'native-reconcile-requested', session);
       await settle(session);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'native-reconcile-settled', session);
       lastVerification = verify(session);
+      checkpointDiagnosticAttempt(diagnosticAttempt, 'reconcile-verification-complete', session, lastVerification.ok ? 'ok' : lastVerification.reason);
       if (!lastVerification.ok) throw new Error(lastVerification.reason);
+      diagnosticOutcome = 'completed';
       setStatus(onStatusText(lastVerification), false);
       return true;
     } catch (error) {
       lastError = String(error && error.message || error);
+      failDiagnosticAttempt(diagnosticAttempt, error, session, { verification: lastVerification });
       setStatus(`${options.sceneSync ? 'Scene sync' : 'Reconcile'} failed — ${lastError}`, true);
       return false;
     } finally {
       busy = false;
+      finishDiagnosticAttempt(diagnosticAttempt, diagnosticOutcome, session, null);
       emit();
     }
   }
@@ -1357,6 +1721,8 @@
     onChange,
     getState: snapshotState,
     getDiagnosticState,
+    getDiagnosticLifecycle,
+    getRetainedFailureContext,
     verify: () => session ? verify(session) : { ok: false, reason: 'No active session.' },
     capabilities: () => {
       const cap = capabilities();

@@ -2,7 +2,7 @@
 
 **Status:** Binding branch-lifecycle registry  
 **Canonical branch:** `WITCH_DEV_MAIN`  
-**Last audited:** 2026-09-29 UTC
+**Last audited:** 2026-10-10 UTC
 
 This file is the authoritative classification of live Witch Dock branches. Branch intent must not be reconstructed from chat memory, branch names, old handoffs, or issue state when this registry already answers it.
 
@@ -41,6 +41,7 @@ Permanent entries may change only through the **Permanent promotion / replacemen
 
 | Branch | Owner / source | Why protected | Exit condition |
 |---|---|---|---|
+| `wd/59-high-res-diagnostic-context` | #59 / #35 | System-wide High Res diagnostic capture improvement: retain bounded pre-cleanup lifecycle failure evidence and expose meaningful before/during/failure/after Texture Quality provider state without changing rendering behavior. | After private Dev implementation and live validation are integrated into `WITCH_DEV_MAIN`, preserve evidence, remove this row, and add the exact final SHA to `BRANCH_DELETION_QUEUE.md`; no Stable promotion. |
 | `wd/120-pin-launcher` | #120 | Pin v1.17.27 Dev launcher to immutable diagnostic-evidence payload 7c0e51f; never touch Stable. | Merge tested launcher to WITCH_DEV_MAIN; validate domain and live Dev; queue exact-SHA cleanup. |
 | `wd/120-dev-payload` | #120 | Stage paired manifest launcher v1.17.27 and reporter v0.4.7 as immutable Dev payload; no Stable. | Merge validated Dev payload to WITCH_DEV_MAIN then queue exact SHA cleanup. |
 | `wd/120-diagnostic-evidence-integrity` | #120 | Dev-only client classifier/contract normalization, attachment warning and regression tests. | Integrate verified changes to WITCH_DEV_MAIN, preserve provenance, then queue exact SHA for cleanup; no Stable promotion. |

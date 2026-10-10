@@ -23,7 +23,7 @@
     {
       "issue": 35,
       "status": "canonical-dev-diagnostic-provider",
-      "reason": "Issue #35 implementation is complete; the issue remains open as the standing owner of the intentionally Dev-only High Res Diagnostics v0.1.3. Original validation passed; public Stable intentionally does not include the provider.",
+      "reason": "Issue #35 remains the standing owner of the intentionally Dev-only High Res diagnostic runtime. Under #59, the v0.2.0 capture service now consumes bounded lifecycle/failure evidence exposed by Native Reconcile v0.5.0; public Stable intentionally does not include this provider stack.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
@@ -33,7 +33,8 @@
       ],
       "acceptance": [
         "Historical implementation checkpoint: Dev launcher v1.5.9 resolved payload c4fe7ef7f6307578823706de552b44b8a2a378dd with immutable=25, fallback=0, failed=0. Current identity is routed by ACTIVE_CONTEXT.md; this is not a required downgrade.",
-        "Capture Current State is observational.",
+        "Capture Current State is observational and labels indexed provider data as runtime evidence, not analysis or a causal conclusion.",
+        "The bounded lifecycle record preserves before/during/failure-pre-cleanup/after state, AAID and mask decisions, atlas allocations, material bindings/readiness, verifier inputs, and restoration outcome where the runtime exposes them.",
         "Controlled Native OFF to High Res ON comparison restores original state.",
         "Comparison sections are addressable without whole-snapshot retrieval.",
         "Diagnostics UI is registered under Utilities and Booth remains untouched.",
@@ -43,10 +44,12 @@
     {
       "issue": 59,
       "status": "dev-diagnostic-provider-expansion",
-      "reason": "Issue #59 remains the Dev-only provider-expansion owner. Public Stable v2.4.0 now includes the shared General Diagnostics Core and integrated reporter surface; Dev remains ahead only for staged Texture Quality, Booth, JSON/ReCK, and allowlisted script-compat providers plus their supporting tool seams. The Decals provider is still paused on its protected task branch. Resolved #117 native Booth gated-asset fix v0.2.3 remains a Dev-only delta, with both toggles human-verified; no Stable promotion.",
+      "reason": "Issue #59 remains the Dev-only provider-expansion owner. Public Stable v2.4.0 now includes the shared General Diagnostics Core and integrated reporter surface; Dev remains ahead for staged Texture Quality, Booth, JSON/ReCK, and allowlisted script-compat providers plus their supporting tool seams. Texture Quality v0.2.0 now retains bounded pre-cleanup lifecycle failure evidence supplied by Native Reconcile v0.5.0. The Decals provider is still paused on its protected task branch. Resolved #117 native Booth gated-asset fix v0.2.3 remains a Dev-only delta, with both toggles human-verified; no Stable promotion.",
       "paths": [
         "Witch_Dock_DEV.user.js",
         "manifest.json",
+        "features/rendering/Texture_Quality_Native_Reconcile.js",
+        "features/rendering/Texture_Quality_Diagnostics.js",
         "features/diagnostics/Texture_Quality_Diagnostic_Provider.js",
         "features/diagnostics/Booth_Diagnostic_Provider.js",
         "tools/Booth.js",
@@ -58,6 +61,8 @@
       ],
       "acceptance": [
         "Previously validated General, Texture Quality, and Booth snapshot behavior remains observational and opt-in.",
+        "Texture Quality capture preserves bounded before/during/failure/after lifecycle records, requested and bound mask/AAID facts, texture dimensions/readiness, atlas allocations, verification inputs, and restoration outcomes without changing High Res rendering decisions.",
+        "Provider summaries explicitly state observational-runtime-evidence / not-analyzed / causalityClaimed=false so HF.Status indexing cannot be mistaken for engineering analysis.",
         "Booth retains only bounded sanitized settings save/load operation metadata; imported/exported JSON and filenames are excluded.",
         "JSON provider captures bulk-backup workflow metadata plus ReCK/general character-JSON capability/operation evidence without editor text or raw character JSON.",
         "ReCK observation is passive and does not replace or wrap CK.tryLoadCharacter.",
