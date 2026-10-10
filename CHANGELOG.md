@@ -2,9 +2,9 @@
 
 ## Latest repository change — 2026-10-10
 
-- Private Dev launcher v1.17.28 / `1.17.28-high-res-diagnostic-context` now pins immutable payload `649d39004ee2dc8726713d75dc85bf5361f35826` containing the #59/#35 High Res diagnostic evidence improvements.
-- Corrected the Booth bootstrap regression gate to verify the current manifest launcher version/build instead of obsolete hard-coded v1.17.16.
-- Public Beta and Public Stable remain unchanged; live Dev Bridge verification is the remaining gate.
+- Private Dev launcher v1.17.29 / `1.17.29-isolated-diagnostic-sections` pins immutable payload `6e3a32bb5b4b5859f80a8a7c8d31a6403a16733d`.
+- Diagnostics Core v0.1.1 applies independent bounded privacy-filtered budgets per addressable provider section, preventing a large material-binding inventory from erasing later state/resource/verification evidence.
+- Full repository Node suite passes 65/65. Public Beta and Public Stable remain unchanged; affected live section readback and the reversible lifecycle comparison remain the final Dev gates.
 
 ## Latest Stable release context
 
