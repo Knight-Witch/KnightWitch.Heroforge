@@ -14,3 +14,7 @@ Manual JSON now detects v1 envelopes and legacy High Res schema 1 snapshots/comp
 
 ## Issue #120 — Dev integration checkpoint
 - Reporter module 0.4.7 / 0.4.7-manual-diagnostic-contract with paired manifest/build; no HF.Status feature registry change (existing reporter only), no Stable change. Exact original HFBR Dev files and sections verified by HF.Status #134; historical Dev indexed without rewriting R2. Live Witch Dock Dev launcher re-pairing and human UI smoke remain acceptance gates.
+
+## 2026-10-10 — #120 Dev diagnostic evidence launcher pairing
+- Dev launcher v1.17.27 / 1.17.27-manual-json-evidence pins immutable source payload `7c0e51f74360a1838d840bc740bae567e9899762`, including Bug Reporter UI v0.4.7, without changing Public Stable or #111 diagnostics.
+- Local gates: module 8/8 focused tests, manifest version/build/fallback matched, launcher source syntax/identity consistent. Domain and live browser smoke separately verified as applicable; no human HeroForge visual confirmation assumed.
