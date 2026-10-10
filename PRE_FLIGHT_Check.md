@@ -1,9 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-09 — #111 five-circle color identifiers, Dev v1.17.26
+## 2026-10-10 — #111 private January HAR comparison (documentation only)
 
-- PASS: canonical project contract/current router, focused #111, branch registry and queue, MODULE_VERSIONING consulted. No new branches; task branch retained ACTIVE PROTECTED.
-- PASS: Bridge #4833 current D5 native bodyUpper census: ID1195 mappings 7/8/9/10/12 present and projected=0, uvSet2=0; 4-channel shader palettes eligible. M/N ID1178 mappings 13/14 remain a distinct group; no saved JSON writes.
-- PASS: Decals v1.4.0 color legends and diagnostic only affect five ID1195 palette values; ref UV vectors unchanged. Both color-only and combined previews pass. Native color overwrite and strict layer/figure ownership handling unchanged. Manual no-expiry Revert restores exact values.
-- PASS: focused Node test, launcher and Decals source syntax, manifest registry v1.17.26/v1.4.0, divergence JSON, git diff --check. Feature registry unchanged (existing Dev Decals tool).
-- PENDING: immutable payload and launcher HTTP delivery readback, live Dev color identification validation/human mapping inspection; no Stable or permanent coordinate conversion.
+- PASS: current PROJECT_CONTRACT.md and ACTIVE_CONTEXT.md read first; focused #111 handoff only, no full logs.
+- PASS: four private Jan7 Blood Moon HARs parsed locally on authorized computer; no raw capture/credentials copied to repo/chat.
+- PASS: matched bodyLower part ID25057 Jan v62, uvArea=.691, no uvPadded, 3660/14596 faces, to live Bridge #4835 v90, uvArea=.634, uvPadded=1, same counts. Control bodyUpper1963 v45/.690 to v66/.606, same 6392/25566 faces and padding change.
+- Keep inference bounded: UV metadata changed in both slots; actual old/new UV vertices, persisted decal drift and anthro coverage are not proven.
+- PASS: documentation/router-only update; git diff --check and guarded Dev-head comparison before push. No runtime/module/manifests/version, Bridge mutation, saved data, Stable or deployment changes.

@@ -1,5 +1,12 @@
 # Issue #111 — Legacy bodyUpper UV drift: chat handoff (2026-10-09)
 
+## 2026-10-10 — lower-body January HAR comparison (new confirmed scope evidence)
+
+- Four independent **private Jan7 Blood Moon HARs** (no-kitbash and three Chrome graphics captures) were parsed read-only and compared to current live D5 metadata on HF-Chat-Bridge #4835. Do NOT publish full HARs, network URLs or local file paths.
+- Same part IDs: **bodyLower humanToes 25057** January v62, uvArea=0.691, keywords uvPadded absent, faces=3660/facesHiRez=14596. Current v90, uvArea=0.634, uvPadded=1, face counts unchanged. **bodyUpper human 1963** January v45, uvArea=.690, uvPadded absent, faces6392/25566; current v66, uvArea=.606, uvPadded=1, same faces.
+- Lower uvArea falls about **8.25%**; upper by **12.17%**. Both slots exhibit UV-related part metadata changes with unchanged face counts. This is confirmed metadata change, **not proof of a complete chart mapping transform, universal decal drift, or change to all anthropomorphic body parts**. Previous owner observation that a lower-body humanoid decal looked unaffected is still a valid narrow visual result but NOT proof that lowerBody metadata remained unchanged.
+- Next discriminator: verify historical versus current saved native lower-body decal positions for the SAME part25057 and corresponding decal UV-set selection. Cross-slot or horse source labels alone do not determine the destination UV chart. A lower/horse decal UV-bound to bodyUpper could inherit bodyUpper chart changes even if its source label belongs elsewhere. Do not copy D5 M/N-specific offsets to all decals, modify saved figures, or promote Stable.
+
 ## 2026-10-09 — separate color IDs for five other torso circles (latest)
 
 - **Owner request:** other upper-body circle decals are body markings, so distinguish each visually using a different temporary color and the same mapping/color names in the Dock. Owner's D5 nipple candidate at scale 1.00, pivot .5/.5, global nudges0, M(+.0054,-.00035), N(-.0054,-.00035) appears correctly located and sized; High Res ON/OFF seem visually consistent. This remains human-only qualitative support, not a general UV migration.
