@@ -4,8 +4,8 @@
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const GLOBAL = "KWWitchDockDiagnostics";
   const FEATURE_ID = "witch-dock-diagnostics-core";
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-general-capture-v1";
+  const VERSION = "0.1.1";
+  const BUILD = "0.1.1-isolated-provider-section-budgets";
   const DIAGNOSTIC_CONTRACT_VERSION = 1;
   const GENERAL_SCHEMA_VERSION = 1;
   const EVENT_LIMIT = 80;
@@ -503,6 +503,33 @@
     };
   }
 
+  function normalizeProviderCapture(rawResult) {
+    const raw = rawResult && typeof rawResult === "object" ? rawResult : {};
+    const rawSections = raw.sections && typeof raw.sections === "object" ? raw.sections : {};
+    const sections = {};
+
+    // A large evidence area (for example, material uniforms) must not consume
+    // the shared walk budget and erase later, independently addressable areas.
+    // Keep every area bounded and privacy-filtered, but budget it separately.
+    for (const sectionName of Object.keys(rawSections).sort().slice(0, 80)) {
+      sections[sectionName] = normalize(rawSections[sectionName], {
+        maxDepth: 12,
+        maxKeys: 900,
+        maxArray: 1200,
+        maxString: 1400,
+        maxNodes: 4000
+      });
+    }
+
+    return {
+      summary: normalize(raw.summary, { maxDepth: 6, maxKeys: 160, maxArray: 160, maxString: 700, maxNodes: 1200 }) || {},
+      sections: sections,
+      coverage: normalize(raw.coverage, { maxDepth: 6, maxKeys: 160, maxArray: 240, maxString: 700, maxNodes: 2400 }) || [],
+      warnings: normalize(raw.warnings, { maxDepth: 6, maxKeys: 160, maxArray: 160, maxString: 900, maxNodes: 1600 }) || [],
+      events: normalize(raw.events, { maxDepth: 7, maxKeys: 180, maxArray: 240, maxString: 900, maxNodes: 2400 }) || []
+    };
+  }
+
   function captureContext(captureId, mode, frozenGeneral) {
     return Object.freeze({
       captureId: captureId,
@@ -598,7 +625,7 @@
         let failure = null;
         try {
           result = await Promise.resolve(def.capture(context, frozenSeeds.get(id)));
-          result = normalize(result, { maxDepth: 12, maxKeys: 900, maxArray: 1200, maxString: 1400, maxNodes: 12000 }) || {};
+          result = normalizeProviderCapture(result);
         } catch (error) {
           failure = recordError("provider-capture:" + id, error);
           result = {

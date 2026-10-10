@@ -180,11 +180,20 @@
 
     const coverageRows = [
       coverage("state", state),
-      coverage("figures", figures),
+      coverage("figures", figures, {
+        bounded: true,
+        reason: "bounded-figure-and-part-inventory"
+      }),
       coverage("paint-state", paintState),
       coverage("atlas", atlas),
-      coverage("materials", materials),
-      coverage("resources", resources),
+      coverage("materials", materials, {
+        bounded: true,
+        reason: "bounded-material-binding-evidence"
+      }),
+      coverage("resources", resources, {
+        bounded: true,
+        reason: "referenced-resources-only"
+      }),
       coverage("color-bake", colorBake),
       coverage("verification", verification),
       coverage("lifecycle", lifecycle, {
