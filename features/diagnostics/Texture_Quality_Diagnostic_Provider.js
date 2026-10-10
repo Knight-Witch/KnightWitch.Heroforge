@@ -5,8 +5,8 @@
   const FEATURE_ID = "texture-quality-diagnostic-provider";
   const PROVIDER_ID = "texture-quality";
   const PROVIDER_SCHEMA_VERSION = 1;
-  const VERSION = "0.1.0";
-  const BUILD = "0.1.0-legacy-diagnostic-adapter";
+  const VERSION = "0.2.0";
+  const BUILD = "0.2.0-retained-lifecycle-evidence";
   const MAX_REGISTER_TRIES = 120;
 
   if (UW.KWTextureQualityDiagnosticProvider &&
@@ -85,7 +85,9 @@
     const diag = legacy();
     return {
       nativeState: safeCall(hr && hr.getDiagnosticState && hr.getDiagnosticState.bind(hr), null),
-      legacyState: safeCall(diag && diag.getState && diag.getState.bind(diag), null)
+      legacyState: safeCall(diag && diag.getState && diag.getState.bind(diag), null),
+      lifecycle: safeCall(hr && hr.getDiagnosticLifecycle && hr.getDiagnosticLifecycle.bind(hr), null),
+      failureContext: safeCall(hr && hr.getRetainedFailureContext && hr.getRetainedFailureContext.bind(hr), null)
     };
   }
 
@@ -107,6 +109,8 @@
     const resources = diag.getLatestSection("resources");
     const colorBake = diag.getLatestSection("colorBake");
     const verification = diag.getLatestSection("verification");
+    const legacyLifecycle = diag.getLatestSection("lifecycle");
+    const legacyFailureContext = diag.getLatestSection("failureContext");
     const warnings = diag.getLatestSection("warnings");
     const events = diag.getLatestSection("events");
     const legacySummary = diag.getLatestSection("summary");
@@ -115,18 +119,49 @@
       const hr = nativeService();
       return hr && typeof hr.getDiagnosticState === "function" ? hr.getDiagnosticState() : null;
     }, null);
+    const currentLifecycle = safeCall(function () {
+      const hr = nativeService();
+      return hr && typeof hr.getDiagnosticLifecycle === "function" ? hr.getDiagnosticLifecycle() : null;
+    }, legacyLifecycle);
+    const currentFailureContext = safeCall(function () {
+      const hr = nativeService();
+      return hr && typeof hr.getRetainedFailureContext === "function" ? hr.getRetainedFailureContext() : null;
+    }, legacyFailureContext);
+
+    const frozenState = frozenSeed ? {
+      nativeState: frozenSeed.nativeState || null,
+      legacyState: frozenSeed.legacyState || null,
+      lifecycle: frozenSeed.lifecycle ? {
+        activeAttemptId: frozenSeed.lifecycle.active && frozenSeed.lifecycle.active.attemptId || null,
+        activeOperation: frozenSeed.lifecycle.active && frozenSeed.lifecycle.active.operation || null,
+        recentAttemptCount: Array.isArray(frozenSeed.lifecycle.recentAttempts) ? frozenSeed.lifecycle.recentAttempts.length : 0
+      } : null,
+      failureContext: frozenSeed.failureContext ? {
+        available: !!frozenSeed.failureContext.available,
+        count: Number(frozenSeed.failureContext.count) || 0,
+        reason: frozenSeed.failureContext.reason || null
+      } : null
+    } : null;
 
     const state = {
-      frozen: frozenSeed || null,
+      frozen: frozenState,
       current: {
         diagnostics: latestState,
         native: currentNative
       }
     };
 
-    const failureContext = {
+    const lifecycle = frozenSeed && frozenSeed.lifecycle || currentLifecycle || legacyLifecycle || null;
+    const failureContext = frozenSeed && frozenSeed.failureContext || currentFailureContext || legacyFailureContext || {
+      semantics: {
+        evidenceType: "retained-pre-cleanup-runtime-evidence",
+        analysisStatus: "not-analyzed",
+        causalityClaimed: false
+      },
       available: false,
-      reason: "retained-pre-cleanup-failure-context-not-yet-implemented"
+      reason: "native-retained-failure-context-unavailable",
+      count: 0,
+      records: []
     };
 
     const sections = {
@@ -138,6 +173,7 @@
       resources: resources,
       "color-bake": colorBake,
       verification: verification,
+      lifecycle: lifecycle,
       "failure-context": failureContext,
       events: events
     };
@@ -151,9 +187,13 @@
       coverage("resources", resources),
       coverage("color-bake", colorBake),
       coverage("verification", verification),
+      coverage("lifecycle", lifecycle, {
+        status: lifecycle ? "captured-bounded" : "unavailable",
+        reason: lifecycle ? "bounded-native-lifecycle-attempts" : "native-lifecycle-evidence-unavailable"
+      }),
       coverage("failure-context", failureContext, {
-        status: "unavailable",
-        reason: failureContext.reason
+        status: failureContext && failureContext.available ? "captured-bounded" : "not-applicable",
+        reason: failureContext && failureContext.available ? "bounded-retained-pre-cleanup-failures" : (failureContext && failureContext.reason || "no-retained-texture-quality-failure")
       }),
       coverage("events", events, {
         bounded: true,
@@ -171,7 +211,12 @@
       figureCount: Array.isArray(figures) ? figures.length : null,
       warningCodes: warningList.map(function (row) { return row.code; }),
       aaidFallback1x1Count: countAaidFallbacks(resources),
-      retainedFailureContextAvailable: false,
+      lifecycleAttemptCount: lifecycle && Array.isArray(lifecycle.recentAttempts) ? lifecycle.recentAttempts.length : 0,
+      retainedFailureContextAvailable: !!(failureContext && failureContext.available),
+      retainedFailureCount: failureContext && Number(failureContext.count) || 0,
+      evidenceType: "observational-runtime-evidence",
+      analysisStatus: "not-analyzed",
+      causalityClaimed: false,
       legacyCaptureId: result.captureId || null
     };
 
@@ -211,7 +256,9 @@
       capabilities: {
         snapshot: true,
         comparison: ["native-off-to-high-res"],
-        retainedFailureContext: false,
+        retainedFailureContext: true,
+        lifecycleEvidence: ["before", "during", "failure-pre-cleanup", "after"],
+        evidenceSemantics: "observational-not-analyzed",
         legacyDiagnosticVersion: diag.version || null,
         legacyDiagnosticBuild: diag.build || null
       },

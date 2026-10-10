@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Witch Dock DEV - High Res Diagnostic Capture
 // @namespace    KnightWitch
-// @version      0.1.3
+// @version      0.2.0
 // @description  Structured read-only diagnostics and controlled OFF-to-ON comparison for Texture Quality.
 // @match        https://www.heroforge.com/*
 // @match        https://heroforge.com/*
@@ -16,8 +16,8 @@
   const GLOBAL = 'KWTextureQualityDiagnostics';
   if (UW[GLOBAL]) return;
 
-  const VERSION = '0.1.3';
-  const BUILD = '0.1.3-addressable-comparison-sections';
+  const VERSION = '0.2.0';
+  const BUILD = '0.2.0-retained-lifecycle-evidence';
   const FORMAT = 'witch-dock.hr-diagnostic';
   const SCHEMA_VERSION = 1;
   const TARGETS = ['bodyLower', 'bodyUpper', 'face'];
@@ -30,7 +30,7 @@
   const SECTION_NAMES = [
     'environment', 'witchDock', 'highRes', 'scene', 'figures', 'paintState',
     'atlas', 'materials', 'colorBake', 'resources',
-    'verification', 'warnings', 'events', 'coverage'
+    'verification', 'lifecycle', 'failureContext', 'warnings', 'events', 'coverage'
   ];
 
   let operationBusy = false;
@@ -177,7 +177,7 @@
     try {
       const image = texture && texture.image;
       const source = image && (image.currentSrc || image.src) || texture.path || texture.url || null;
-      return typeof source === 'string' ? boundedString(source, 1200) : null;
+      return typeof source === 'string' ? boundedString(source.split(/[?#]/, 1)[0], 1200) : null;
     } catch (_) {
       return null;
     }
@@ -189,12 +189,22 @@
 
   function textureDescriptor(texture, ctx, role, owner) {
     if (!texture || typeof texture !== 'object') return null;
+    const size = texSize(texture);
+    let imageComplete = null;
+    try {
+      imageComplete = texture.image && typeof texture.image.complete === 'boolean'
+        ? texture.image.complete
+        : null;
+    } catch (_) {}
     const descriptor = {
       objectId: objectId(texture),
       uuid: typeof texture.uuid === 'string' ? texture.uuid : null,
       name: typeof texture.name === 'string' ? boundedString(texture.name, 300) : null,
-      size: texSize(texture),
-      source: textureSource(texture)
+      size,
+      source: textureSource(texture),
+      imageComplete,
+      dimensionsReady: size[0] > 0 && size[1] > 0,
+      needsUpdate: typeof texture.needsUpdate === 'boolean' ? texture.needsUpdate : null
     };
 
     if (ctx && descriptor.objectId) {
@@ -336,7 +346,8 @@
       uuid: typeof material.uuid === 'string' ? material.uuid : null,
       name: boundedString(material.name, 300),
       type: boundedString(material.type || material.constructor && material.constructor.name, 200),
-      uniforms: {}
+      uniforms: {},
+      bindings: {}
     };
     const uniforms = material.uniforms && typeof material.uniforms === 'object' ? material.uniforms : {};
     const keys = Object.keys(uniforms).sort().slice(0, 120);
@@ -358,10 +369,20 @@
     if (Object.keys(uniforms).length > keys.length) out.uniforms.__truncatedKeys = Object.keys(uniforms).length - keys.length;
 
     if (typeof material.getUniform === 'function') {
-      try {
-        const masksMap = material.getUniform('masksMap');
-        out.masksMap = textureDescriptor(masksMap, ctx, 'material:masksMap', owner);
-      } catch (_) {}
+      for (const binding of ['masksMap', 'aaidMap', 'gradientsMap']) {
+        try {
+          const texture = material.getUniform(binding);
+          const descriptor = textureDescriptor(texture, ctx, 'material:' + binding, owner);
+          out.bindings[binding] = {
+            texture: descriptor,
+            ready: !!(descriptor && descriptor.dimensionsReady),
+            fallback1x1: !!(descriptor && descriptor.size && descriptor.size[0] === 1 && descriptor.size[1] === 1)
+          };
+          if (binding === 'masksMap') out.masksMap = descriptor;
+        } catch (_) {
+          out.bindings[binding] = { texture: null, ready: false, fallback1x1: false };
+        }
+      }
     }
     return out;
   }
@@ -537,6 +558,21 @@
     return rows;
   }
 
+  function captureFailureWarnings(failureContext) {
+    const records = failureContext && Array.isArray(failureContext.records) ? failureContext.records : [];
+    return records.slice(0, 8).map((attempt) => {
+      const failure = attempt && attempt.failure || {};
+      return {
+        code: failure.code || 'HR_RETAINED_FAILURE',
+        message: boundedString(failure.message, 1200),
+        source: 'retained-pre-cleanup-failure',
+        attemptId: attempt && attempt.attemptId || null,
+        operation: attempt && attempt.operation || null,
+        phase: failure.phase || null
+      };
+    });
+  }
+
   function captureScene(CK, rows) {
     const c = CK && CK.character;
     return {
@@ -650,7 +686,7 @@
     })).sort((a, b) => String(a.objectId).localeCompare(String(b.objectId)));
   }
 
-  function captureCoverage(rows, paintState, atlas, materials, colorBake, highResPrivate) {
+  function captureCoverage(rows, paintState, atlas, materials, colorBake, highResPrivate, lifecycle, failureContext) {
     const paintMissing = paintState.filter((row) => row.paints == null && row.paintByIntent == null).map((row) => row.figureId);
     const colorMissing = colorBake.filter((row) => !row.state).map((row) => row.figureId);
     return [
@@ -662,6 +698,8 @@
       { area: 'materialBindings', status: materials.length ? 'captured-bounded' : 'unavailable', detail: 'Up to 220 display meshes per figure and 120 uniforms per material.' },
       { area: 'colorBake', status: colorMissing.length ? 'partial' : 'captured-bounded', detail: colorMissing.length ? 'missing: ' + colorMissing.join(', ') : 'Structural state and texture targets; raw pixels intentionally excluded.' },
       { area: 'resourceInventory', status: 'captured-referenced-only', detail: 'Resources referenced by captured materials, masks, and color-bake targets.' },
+      { area: 'lifecycle', status: lifecycle ? 'captured-bounded' : 'unavailable', detail: lifecycle ? 'Before/during/failure/after attempts retained by Texture Quality.' : 'Native lifecycle evidence API unavailable.' },
+      { area: 'failureContext', status: failureContext && failureContext.available ? 'captured-bounded' : 'not-applicable', detail: failureContext && failureContext.available ? `${Number(failureContext.count) || 0} retained failure(s).` : 'No retained Texture Quality failure.' },
       { area: 'networkRequestHistory', status: 'not-captured' },
       { area: 'rawTexturePixels', status: 'not-captured' },
       { area: 'eventHistory', status: 'captured-from-diagnostic-module-load', detail: 'Does not reconstruct events before this module loaded.' }
@@ -697,6 +735,8 @@
     const primaryAtlas = Array.isArray(pkg.atlas) ? (pkg.atlas.find((row) => row.figureId === 'primary') || pkg.atlas[0]) : null;
     const primaryPaint = Array.isArray(pkg.paintState) ? (pkg.paintState.find((row) => row.figureId === 'primary') || pkg.paintState[0]) : null;
     const hr = pkg.highRes && pkg.highRes.public || {};
+    const retainedFailures = pkg.failureContext && Number(pkg.failureContext.count) || 0;
+    const recentAttempts = pkg.lifecycle && Array.isArray(pkg.lifecycle.recentAttempts) ? pkg.lifecycle.recentAttempts.length : 0;
     return {
       captureId: pkg.metadata.captureId,
       captureMode: pkg.metadata.captureMode,
@@ -710,7 +750,12 @@
       primaryPaintsHash: primaryPaint && primaryPaint.paintsHash || null,
       primaryPaintByIntentHash: primaryPaint && primaryPaint.paintByIntentHash || null,
       warningCodes: (pkg.warnings || []).map((row) => row.code).filter(Boolean),
-      referencedResourceCount: Array.isArray(pkg.resources) ? pkg.resources.length : 0
+      referencedResourceCount: Array.isArray(pkg.resources) ? pkg.resources.length : 0,
+      lifecycleAttemptCount: recentAttempts,
+      retainedFailureCount: retainedFailures,
+      evidenceType: 'observational-runtime-evidence',
+      analysisStatus: 'not-analyzed',
+      causalityClaimed: false
     };
   }
 
@@ -723,8 +768,12 @@
 
     let publicState = null;
     let privateState = null;
+    let lifecycle = null;
+    let failureContext = null;
     try { publicState = hr && typeof hr.getState === 'function' ? hr.getState() : null; } catch (error) { publicState = { statusError: true, lastError: String(error) }; }
     try { privateState = hr && typeof hr.getDiagnosticState === 'function' ? hr.getDiagnosticState() : null; } catch (error) { privateState = { error: String(error) }; }
+    try { lifecycle = hr && typeof hr.getDiagnosticLifecycle === 'function' ? hr.getDiagnosticLifecycle() : null; } catch (error) { lifecycle = { error: String(error) }; }
+    try { failureContext = hr && typeof hr.getRetainedFailureContext === 'function' ? hr.getRetainedFailureContext() : null; } catch (error) { failureContext = { available: false, error: String(error) }; }
 
     const captured = captureRows(CK, rows, ctx);
     captureCounter += 1;
@@ -758,12 +807,14 @@
       colorBake: captured.colorBake,
       resources: finalizeResources(ctx),
       verification: captureVerification(publicState),
-      warnings: captureWarnings(publicState),
+      lifecycle: normalize(lifecycle, { maxDepth: 14, maxKeys: 900, maxArray: 600, maxNodes: 12000 }),
+      failureContext: normalize(failureContext, { maxDepth: 14, maxKeys: 900, maxArray: 600, maxNodes: 12000 }),
+      warnings: captureWarnings(publicState).concat(captureFailureWarnings(failureContext)),
       events: cloneJson(events),
       coverage: null
     };
 
-    pkg.coverage = captureCoverage(rows, pkg.paintState, pkg.atlas, pkg.materials, pkg.colorBake, privateState);
+    pkg.coverage = captureCoverage(rows, pkg.paintState, pkg.atlas, pkg.materials, pkg.colorBake, privateState, pkg.lifecycle, pkg.failureContext);
     pkg.metadata.durationMs = Math.round((performance.now() - started) * 10) / 10;
     pkg.summary = summaryFor(pkg);
     pkg.manifest = sectionManifest(pkg);
