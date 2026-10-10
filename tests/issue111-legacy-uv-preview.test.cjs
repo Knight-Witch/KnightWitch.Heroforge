@@ -6,7 +6,7 @@ class Vec3{constructor(x,y,z){Object.assign(this,{x,y,z});}}
 class Vec4{constructor(x,y,z,w){Object.assign(this,{x,y,z,w});}}
 function layer(x){let uniform={l0_uvTranslate:{value:new Vec2(x,-1.3523384900661357)},l0_uvRotateScale:{value:new Vec4(26.460396188044154,0,0,26.460396188044154)},l0_projected:{value:0},l0_uvSet2:{value:0}};return {uniforms:uniform,setUniform(name,value){uniform[name].value=value}};}
 const rows=[{mapping:99,id:1625},{mapping:2,id:22968},{mapping:3,id:22968},...[7,8,9,10,12].map(mapping=>({mapping,id:1195})),{mapping:13,id:1178},{mapping:14,id:1178}];
-const mats=[];mats[8]=layer(5.822999337374146);mats[8].uniforms.l0_uvTranslate.value.y=23.69895812226639;mats[8].uniforms.l0_uvRotateScale.value=new Vec4(-32.887114976191086,0,0,-32.887114976191086);mats[9]=layer(-10.100265691295313);mats[9].uniforms.l0_uvTranslate.value.y=-22.791307980916123;mats[9].uniforms.l0_uvRotateScale.value=new Vec4(32.887114976191086,0,0,32.887114976191086);
+const mats=[];for(let j=3;j<=7;j++)mats[j]=layer(j);mats[8]=layer(5.822999337374146);mats[8].uniforms.l0_uvTranslate.value.y=23.69895812226639;mats[8].uniforms.l0_uvRotateScale.value=new Vec4(-32.887114976191086,0,0,-32.887114976191086);mats[9]=layer(-10.100265691295313);mats[9].uniforms.l0_uvTranslate.value.y=-22.791307980916123;mats[9].uniforms.l0_uvRotateScale.value=new Vec4(32.887114976191086,0,0,32.887114976191086);
 const original=[mats[8],mats[9]].map(x=>({t:x.uniforms.l0_uvTranslate.value,m:x.uniforms.l0_uvRotateScale.value}));
 let calls=[];let fail=false;
 const display={data:{meta:{character_name:'D5 OCT'},parts:{bodyUpper:1963},decals:{bodyUpper:{7:{id:1195},8:{id:1195},9:{id:1195},10:{id:1195},12:{id:1195},13:{id:1178,h:-.3381433171858332,v:.2054117741571864,s:-5.301546897272633},14:{id:1178,h:-.17767723927837797,v:.20821986050701233,s:-5.301546897272633}}}},modded:{orderedDecals:{bodyUpper:rows}},meshes:{bodyUpper:{bakeMaterials:{colorDecals:mats}}},colorBake:{getBakeMeshes:(which)=>{assert.equal(which,'color');return {bodyUpper:{}}},atlasBaker:{bakeAtlas:(which,meshes)=>{calls.push('atlas');if(fail)throw Error('Test atlas failure')},dilate:()=>{calls.push('dilate')}}}};
@@ -129,6 +129,58 @@ assert.equal(cap.getState().previewActive,false,'changing figures disables old p
 assert.strictEqual(mats[8].uniforms.colors0.value,originalPalette);
 display.data=originalData;
 assert.equal(JSON.stringify(display.data.decals),before);
+
+// All other bodyUpper circles have the same ID1195 but distinct native mappings.
+const others=[7,8,9,10,12];
+const nativeOthers=[3,4,5,6,7].map(i=>({
+  index:i, translation:mats[i].uniforms.l0_uvTranslate.value,
+  matrix:mats[i].uniforms.l0_uvRotateScale.value,
+  colors:mats[i].uniforms.colors0.value
+}));
+const colored=cap.preview({...opts,scale:1,colorCodeOtherCircles:true},[]);
+assert.equal(colored.circleColors.length,5);
+assert.deepEqual(Array.from(colored.circleColors,x=>x.mapping),others);
+assert.deepEqual(Array.from(colored.circleColors,x=>x.name),["Cyan","Yellow","Magenta","Orange","Blue"]);
+assert.equal(colored.sample.length,0,'circle identifier must not move M/N');
+assert.deepEqual(Array.from(cap.getState().activeMappings),others);
+for(const ref of nativeOthers) {
+  assert.strictEqual(mats[ref.index].uniforms.l0_uvTranslate.value,ref.translation,
+    'reference decals must retain native UV translation');
+  assert.strictEqual(mats[ref.index].uniforms.l0_uvRotateScale.value,ref.matrix,
+    'reference decals must retain native scale/matrix');
+  assert.notStrictEqual(mats[ref.index].uniforms.colors0.value,ref.colors);
+  assert.equal(mats[ref.index].uniforms.colors0.value[3].w,1,'identifier visible as opaque');
+}
+const priorRefreshes=cap.getState().refreshes;
+mats[5].setUniform("colors0",nativeOthers[2].colors);
+maintenanceFns[maintenanceFns.length-1]();
+assert.equal(cap.getState().refreshes,priorRefreshes+1,'reference palettes also survive native paint overwrites');
+assert.equal(mats[5].uniforms.colors0.value[0].y,0,'magenta diagnostic reapplied');
+cap.revert();
+for(const ref of nativeOthers) {
+  assert.strictEqual(mats[ref.index].uniforms.colors0.value,ref.colors,'exact reference palette restoration');
+  assert.strictEqual(mats[ref.index].uniforms.l0_uvTranslate.value,ref.translation);
+  assert.strictEqual(mats[ref.index].uniforms.l0_uvRotateScale.value,ref.matrix);
+}
+assert.equal(JSON.stringify(display.data.decals),before);
+rows[5].id=1178;
+assert.throws(()=>cap.preview({...opts,colorCodeOtherCircles:true},[]),/Five distinct/);
+rows[5].id=1195;
+mats[7].uniforms.l0_projected.value=1;
+assert.throws(()=>cap.preview({...opts,colorCodeOtherCircles:true},[]),/Five distinct/);
+mats[7].uniforms.l0_projected.value=0;
+assert.throws(()=>cap.preview({...opts,colorCodeOtherCircles:"yes"},[]),/flag/);
+const both=cap.preview({...calibration,highContrast:true,colorCodeOtherCircles:true},[13,14]);
+assert.deepEqual(Array.from(both.mappings),[13,14,7,8,9,10,12]);
+assert.equal(both.sample.length,2);
+assert.equal(both.circleColors.length,5);
+assert.equal(cap.getState().previewActive,true);
+cap.revert();
+for(const ref of nativeOthers)assert.strictEqual(mats[ref.index].uniforms.colors0.value,ref.colors);
+assert.strictEqual(mats[8].uniforms.colors0.value,originalPalette);
+assert.equal(JSON.stringify(display.data.decals),before);
+assert.equal(scheduled.length,0,'no auto expiry when identifying body circles');
+console.log('PASS: five distinct ID1195 mapped colors, legend, native refresh, id/projected guards, combined and circle-only manual revert');
 
 const extended=cap.preview(opts,[13,14]);
 const outsideTranslation=new Vec2(42,21);

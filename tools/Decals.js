@@ -3,12 +3,22 @@
 
   const UW = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
   const TOOL_ID = "decals-dev";
-  const VERSION = "1.3.0";
-  const BUILD = "1.3.0-independent-mn-uv-calibration";
+  const VERSION = "1.4.0";
+  const BUILD = "1.4.0-five-circle-id-colors";
   const STYLE_ID = "kw-decals-dev-style";
   const TARGET_PART = 1963;
   const TARGET_DECAL = 1178;
   const TARGET_MAPPINGS = Object.freeze([13, 14]);
+  // The five other native UV-bound bodyUpper circles, distinct from M/N ID1178.
+  // Each identifier gets a stable, owner-readable diagnostic hue.
+  const REFERENCE_DECAL_ID = 1195;
+  const REFERENCE_CIRCLES = Object.freeze([
+    { mapping: 7, name: "Cyan", hex: "#00e5ff", rgb: [0, 0.9, 1] },
+    { mapping: 8, name: "Yellow", hex: "#ffff00", rgb: [1, 1, 0] },
+    { mapping: 9, name: "Magenta", hex: "#ff00e6", rgb: [1, 0, 0.9] },
+    { mapping: 10, name: "Orange", hex: "#ff8c00", rgb: [1, 0.55, 0] },
+    { mapping: 12, name: "Blue", hex: "#3478ff", rgb: [0.2, 0.47, 1] }
+  ]);
   // Never expire a preview by time. Lightweight monitoring only reapplies after native overwrites.
   const STATE = { preview: null, attempts: 0, lastError: null, lastResult: null, viewer: null, refreshes: 0 };
 
@@ -78,12 +88,12 @@
     return { CK, display, mesh, bake, records, ordered };
   }
 
-  function eligible(ctx) {
+  function eligible(ctx, targets = TARGET_MAPPINGS, decalId = TARGET_DECAL) {
     return ctx.ordered.map((entry, index) => ({ entry, index })).filter(({ entry, index }) => {
       const mapping = Number(entry && entry.mapping);
-      if (!TARGET_MAPPINGS.includes(mapping) || entry.id !== TARGET_DECAL) return false;
+      if (!targets.includes(mapping) || entry.id !== decalId) return false;
       const rec = ctx.records[mapping];
-      if (!rec || rec.id !== TARGET_DECAL || rec.forceProjectedScript === true) return false;
+      if (!rec || rec.id !== decalId || rec.forceProjectedScript === true) return false;
       const layer = ctx.mesh.bakeMaterials && ctx.mesh.bakeMaterials.colorDecals && ctx.mesh.bakeMaterials.colorDecals[index];
       const projected = uniformValue(layer, "l0_projected");
       const uvSet2 = uniformValue(layer, "l0_uvSet2");
@@ -114,11 +124,11 @@
       // Native edits may replace shaders during a long-lived preview.
       // Restore only preview-owned values; preserve later native changes.
       let changed = false;
-      if (uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) {
+      if (item.role !== "reference" && uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) {
         item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
         changed = true;
       }
-      if (uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) {
+      if (item.role !== "reference" && uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) {
         item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
         changed = true;
       }
@@ -145,6 +155,9 @@
     STATE.attempts++;
     revert();
     if (opts.highContrast !== undefined && typeof opts.highContrast !== "boolean") throw Error("Invalid preview diagnostic contrast flag.");
+    if (opts.colorCodeOtherCircles !== undefined && typeof opts.colorCodeOtherCircles !== "boolean") {
+      throw Error("Invalid circle identification flag.");
+    }
     // Calibrate each distinct UV decal separately; never assume mirrored
     // screen-space displacement implies a shared UV-space translation.
     for (const key of ["mNudgeU", "mNudgeV", "nNudgeU", "nNudgeV"]) {
@@ -155,17 +168,24 @@
     const ctx = context();
     const available = eligible(ctx);
     const selections = [...new Set(mappings.map(Number))];
-    if (!selections.length || selections.some(mapping => !TARGET_MAPPINGS.includes(mapping))) {
+    if ((!selections.length && opts.colorCodeOtherCircles !== true) || selections.some(mapping => !TARGET_MAPPINGS.includes(mapping))) {
       throw Error("Select either verified decal M (13) or N (14), or both.");
     }
     const active = available.filter(x => selections.includes(x.mapping));
     if (active.length !== selections.length) throw Error("The selected native UV circle decal layer is unavailable or not eligible.");
+    const referenceActive = opts.colorCodeOtherCircles === true ?
+      eligible(ctx, REFERENCE_CIRCLES.map(x => x.mapping), REFERENCE_DECAL_ID) : [];
+    if (opts.colorCodeOtherCircles === true &&
+      (referenceActive.length !== REFERENCE_CIRCLES.length ||
+        REFERENCE_CIRCLES.some(color => !referenceActive.some(x => x.mapping === color.mapping)))) {
+      throw Error("Five distinct ID1195 native UV circle layers are required for identification.");
+    }
     const items = active.map(({ mapping, index }) => {
       const layer = ctx.mesh.bakeMaterials.colorDecals[index];
       const t = uniformValue(layer, "l0_uvTranslate");
       const m = uniformValue(layer, "l0_uvRotateScale");
       return {
-        mapping, index, layer, originalTranslation: t, originalMatrix: m,
+        mapping, index, decalId: TARGET_DECAL, role: "calibration", layer, originalTranslation: t, originalMatrix: m,
         originalColors: uniformValue(layer, "colors0"), contrastApplied: false,
         planned: plannedUniforms(t, m, {
           ...opts,
@@ -174,9 +194,34 @@
         })
       };
     });
-    const p = { ctx, items, startedAt: Date.now(), data: ctx.display.data, opts: { ...opts }, maintenance: null };
+    for (const { mapping, index } of referenceActive) {
+      const layer = ctx.mesh.bakeMaterials.colorDecals[index];
+      const color = REFERENCE_CIRCLES.find(c => c.mapping === mapping);
+      items.push({
+        mapping, index, decalId: REFERENCE_DECAL_ID, role: "reference", color,
+        layer, originalTranslation: uniformValue(layer, "l0_uvTranslate"),
+        originalMatrix: uniformValue(layer, "l0_uvRotateScale"),
+        originalColors: uniformValue(layer, "colors0"), contrastApplied: false
+      });
+    }
+    const p = { ctx, items, selectedMappings: selections, startedAt: Date.now(),
+      data: ctx.display.data, opts: { ...opts }, maintenance: null };
     try {
       for (const item of items) {
+        if (item.role === "reference") {
+          const colors = item.originalColors;
+          if (!Array.isArray(colors) || colors.length !== 4 ||
+              colors.some((c, i) => !c || ![c.x, c.y, c.z, ...(i === 3 ? [c.w] : [])].every(finite))) {
+            throw Error("Native ID1195 circle palette is incompatible with color ID preview.");
+          }
+          const [r, g, b] = item.color.rgb;
+          const applied = colors.map((c, i) => i === 3 ?
+            new UW.RK.Vec4(r, g, b, 1) : new UW.RK.Vec3(r, g, b));
+          item.layer.setUniform("colors0", applied);
+          item.appliedColors = applied;
+          item.contrastApplied = true;
+          continue; // Reference circles are recolored only; position/scale unchanged.
+        }
         const { translate, matrix } = item.planned;
         item.appliedTranslation = new UW.RK.Vec2(translate.x, translate.y);
         item.appliedMatrix = new UW.RK.Vec4(matrix.x, matrix.y, matrix.z, matrix.w);
@@ -197,8 +242,10 @@
       nativeRebake(ctx);
     } catch (error) {
       for (const item of items) {
-        item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
-        item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+        if (item.role !== "reference") {
+          item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
+          item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+        }
         if (item.contrastApplied) item.layer.setUniform("colors0", item.originalColors);
       }
       try { nativeRebake(ctx); } catch (_) {}
@@ -220,18 +267,18 @@
           p.items.some(item => {
             const record = ctx.records[item.mapping];
             const order = d.modded && d.modded.orderedDecals && d.modded.orderedDecals.bodyUpper;
-            return !record || record.id !== TARGET_DECAL ||
+            return !record || record.id !== item.decalId ||
               !Array.isArray(order) || !order[item.index] ||
               Number(order[item.index].mapping) !== item.mapping ||
-              order[item.index].id !== TARGET_DECAL ||
+              order[item.index].id !== item.decalId ||
               d.meshes.bodyUpper.bakeMaterials.colorDecals[item.index] !== item.layer;
           })) {
           window.clearInterval(p.maintenance);
           STATE.preview = null;
           // Restore only values still owned by this preview on abandoned layers.
           for (const item of p.items) {
-            if (uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
-            if (uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
+            if (item.role !== "reference" && uniformValue(item.layer, "l0_uvTranslate") === item.appliedTranslation) item.layer.setUniform("l0_uvTranslate", item.originalTranslation);
+            if (item.role !== "reference" && uniformValue(item.layer, "l0_uvRotateScale") === item.appliedMatrix) item.layer.setUniform("l0_uvRotateScale", item.originalMatrix);
             if (item.contrastApplied && uniformValue(item.layer, "colors0") === item.appliedColors) item.layer.setUniform("colors0", item.originalColors);
           }
           STATE.lastError = "Preview ended because the figure or native decal layers changed. No saved coordinates modified.";
@@ -239,14 +286,14 @@
           return;
         }
         const overwritten = p.items.some(item =>
-          uniformValue(item.layer, "l0_uvTranslate") !== item.appliedTranslation ||
-          uniformValue(item.layer, "l0_uvRotateScale") !== item.appliedMatrix ||
+          (item.role !== "reference" && uniformValue(item.layer, "l0_uvTranslate") !== item.appliedTranslation) ||
+          (item.role !== "reference" && uniformValue(item.layer, "l0_uvRotateScale") !== item.appliedMatrix) ||
           (item.contrastApplied && uniformValue(item.layer, "colors0") !== item.appliedColors));
         if (!overwritten) return;
         // At most one rebake per interval; preserve new native assignments
         // through the existing ownership-aware revert before reapplying.
         STATE.refreshes++;
-        preview(p.opts, p.items.map(item => item.mapping));
+        preview(p.opts, p.selectedMappings);
       } catch (error) {
         if (STATE.preview === p) {
           window.clearInterval(p.maintenance);
@@ -260,7 +307,12 @@
     STATE.lastResult = {
       mode: "preview", mappings: items.map(x => x.mapping),
       highContrast: opts.highContrast === true,
-      sample: items.map(x => ({ mapping: x.mapping, oldCenter: x.planned.oldCenter, newCenter: x.planned.center })),
+      sample: items.filter(x => x.role === "calibration").map(x => ({
+        mapping: x.mapping, oldCenter: x.planned.oldCenter, newCenter: x.planned.center
+      })),
+      circleColors: items.filter(x => x.role === "reference").map(x => ({
+        mapping: x.mapping, name: x.color.name, hex: x.color.hex
+      })),
       at: p.startedAt
     };
     updateStatus();
@@ -355,6 +407,8 @@
       id: TOOL_ID, version: VERSION, build: BUILD, attempts: STATE.attempts,
       previewActive: !!STATE.preview,
       activeMappings: STATE.preview ? STATE.preview.items.map(x => x.mapping) : [],
+      colorIdentifications: STATE.preview ? STATE.preview.items.filter(x => x.role === "reference")
+        .map(x => ({ mapping: x.mapping, name: x.color.name })) : [],
       lastError: STATE.lastError, lastResult: STATE.lastResult, refreshes: STATE.refreshes
     };
   }
@@ -375,6 +429,9 @@
       .kwuv button:disabled{opacity:.5;cursor:not-allowed}
       .kwuv .buttons{display:flex;gap:9px;flex-wrap:wrap}
       .kwuv .status{white-space:pre-wrap;word-break:break-word;font-size:11px;background:#161616;padding:8px;border-radius:5px}
+      .kwuv .id-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:6px;padding:6px 0}
+      .kwuv .id-legend span{display:flex;align-items:center;gap:6px}
+      .kwuv .id-swatch{display:inline-block;width:12px;height:12px;border:1px solid #888;border-radius:3px;flex:none}
     `;
     document.head.appendChild(style);
   }
@@ -398,7 +455,7 @@
     root.appendChild(heading);
     const warning = document.createElement("div");
     warning.className = "note";
-    warning.textContent = "Dev only. This previews the two verified UV-bound decal ID 1178 layers, M (13) and N (14) on torso part 1963. Optional green contrast makes subtle gradients obvious. It does not update saved JSON or apply a permanent migration. Stays active until manually reverted or another preview starts; figure reload/replacement discards this temporary renderer state.";
+    warning.textContent = "Dev only. The independent M/N nipple calibration (ID1178) is separate from optional color identifiers for the five other upper-body circles (ID1195). Neither option edits saved figure JSON or applies a permanent migration. Preview stays active until manually reverted or replaced.";
     root.appendChild(warning);
 
     const slots = document.createElement("div");
@@ -463,6 +520,34 @@
     }
     root.appendChild(calibration);
 
+    const bodyCircles = document.createElement("details");
+    bodyCircles.open = true;
+    const bodyTitle = document.createElement("summary");
+    bodyTitle.textContent = "Identify other upper-body circle decals (ID 1195)";
+    bodyCircles.appendChild(bodyTitle);
+    const identifyLabel = document.createElement("label");
+    identifyLabel.className = "note";
+    const identify = document.createElement("input");
+    identify.type = "checkbox"; identify.checked = false;
+    identifyLabel.append(identify, document.createTextNode(
+      "Color-code five other torso circles (no position changes)"));
+    bodyCircles.appendChild(identifyLabel);
+    const legend = document.createElement("div");
+    legend.className = "id-legend";
+    for (const circle of REFERENCE_CIRCLES) {
+      const entry = document.createElement("span");
+      const swatch = document.createElement("i");
+      swatch.className = "id-swatch";
+      swatch.style.backgroundColor = circle.hex;
+      entry.append(swatch, document.createTextNode("Mapping " + circle.mapping + " — " + circle.name));
+      legend.appendChild(entry);
+    }
+    bodyCircles.appendChild(legend);
+    const help = document.createElement("div"); help.className = "note";
+    help.textContent = "Tick this and Preview to recolor ID1195 mappings 7/8/9/10/12. You may uncheck both M/N to identify only the other circles. Manual Revert restores native palettes.";
+    bodyCircles.appendChild(help);
+    root.appendChild(bodyCircles);
+
     const row = document.createElement("div"); row.className = "buttons";
     const go = document.createElement("button"); go.type = "button"; go.textContent = "Preview correction (no timer)";
     const stop = document.createElement("button"); stop.type = "button"; stop.textContent = "Revert preview";
@@ -470,6 +555,7 @@
       try {
         const opts = Object.fromEntries(Object.entries(fields).map(([k, el]) => [k, Number(el.value)]));
         opts.highContrast = contrast.checked;
+        opts.colorCodeOtherCircles = identify.checked;
         const mappings = Array.from(picks).filter(([, el]) => el.checked).map(([mapping]) => mapping);
         preview(opts, mappings);
       } catch (error) {
