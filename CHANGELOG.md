@@ -2,9 +2,9 @@
 
 ## Latest repository change — 2026-10-10
 
-- **#59/#35 High Res diagnostic evidence candidate:** Native Reconcile v0.5.0 now retains five bounded lifecycle attempts with explicit before/during/failure-pre-cleanup/after snapshots, verifier/resource evidence, and restoration outcomes. Standalone High Res Diagnostics v0.2.0 and the generic Texture Quality provider v0.2.0 expose those records as addressable evidence.
-- Added explicit mask/AAID selection and binding facts, texture dimensions/readiness, atlas allocations, lifecycle coverage, and `observational-runtime-evidence` / `not-analyzed` / `causalityClaimed=false` semantics.
-- Rendering policy, retries, cleanup, privacy exclusions, Public Beta, and Public Stable are unchanged. Private Dev live integration/Bridge validation remains next.
+- Staged the immutable private Dev payload for #59/#35 High Res diagnostic evidence with launcher manifest identity v1.17.28 / `1.17.28-high-res-diagnostic-context`.
+- Payload includes Native Reconcile v0.5.0, High Res Diagnostics v0.2.0, and Texture Quality provider v0.2.0 from merged PR #124.
+- Public Beta, Public Stable, and the currently served Dev launcher remain unchanged until the paired launcher commit.
 
 ## Latest Stable release context
 

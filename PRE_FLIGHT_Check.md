@@ -1,11 +1,9 @@
 # Pre-Flight Check
 
-## 2026-10-10 — #59/#35 High Res diagnostic evidence source candidate
+## 2026-10-10 — #59/#35 immutable private Dev payload stage
 
-- PASS: source ownership resolved to #59 runtime implementation with #35 standing divergence and #88 provider design; task branch `wd/59-high-res-diagnostic-context` is ACTIVE PROTECTED.
-- PASS: syntax checks for Native Reconcile v0.5.0, High Res Diagnostics v0.2.0, and Texture Quality provider v0.2.0.
-- PASS: focused lifecycle/provider/ownership tests 8/8; failure evidence is captured before cleanup/restoration, restore verification is retained before throw, and automatic enable still enters the existing readiness-gated public path.
-- PASS: manifest registry/source-local versions/builds and legacy module URLs are synchronized; `git diff --check` passes.
-- PASS: no HF.Status feature-registry impact (same Texture Quality feature ID, paths, and engineering ownership); no Beta-manifest impact.
-- PASS: no rendering policy, timeout, retry, supported lifecycle mutation, raw character JSON, account/session data, Public Beta, Public Stable, or deployment change.
-- PENDING: immutable private Dev launcher/payload pairing and live Bridge snapshot/comparison/failure-context verification.
+- PASS: PR #124 source is merged to current `WITCH_DEV_MAIN`; task branch remains ACTIVE PROTECTED through live validation.
+- PASS: payload manifest identifies launcher v1.17.28 / `1.17.28-high-res-diagnostic-context` and the three synchronized diagnostic module versions/builds.
+- PASS: focused lifecycle/provider/ownership tests 8/8 and scoped repository tests 59/59 before payload staging; syntax and `git diff --check` pass.
+- PASS: no HF.Status feature-registry impact and no Beta-manifest impact.
+- PASS: no Public Beta, Public Stable, or deployment behavior changed. The currently served v1.17.27 launcher remains untouched until the next paired commit pins this exact payload SHA.
