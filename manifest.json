@@ -415,9 +415,9 @@
       "path": "features/diagnostics/Witch_Dock_Diagnostics_Core.js",
       "kind": "feature-service",
       "load": "module-loader",
-      "version": "0.1.0",
-      "build": "0.1.0-general-capture-v1",
-      "versionOrigin": "issue-59-general-capture-v1"
+      "version": "0.1.1",
+      "build": "0.1.1-isolated-provider-section-budgets",
+      "versionOrigin": "issue-59-high-res-diagnostic-context"
     },
     {
       "id": "hf-status-reporter-client",
@@ -740,7 +740,7 @@
       "id": "witch-dock-diagnostics-core",
       "title": "Witch Dock Diagnostics Core",
       "tab": "HeroForge UI",
-      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Diagnostics_Core.js?v=0.1.0-general-capture-v1",
+      "url": "https://raw.githubusercontent.com/Knight-Witch/KnightWitch.Heroforge/WITCH_DEV_MAIN/features/diagnostics/Witch_Dock_Diagnostics_Core.js?v=0.1.1-isolated-provider-section-budgets",
       "enabledByDefault": true,
       "hidden": true,
       "type": "heroForgeUI"
