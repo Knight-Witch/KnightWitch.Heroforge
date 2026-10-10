@@ -54,3 +54,6 @@ These are source identities, not a new live runtime validation. Current module v
 - Public Stable v2.4.0 contains the approved #90/#97 scope; future Stable changes still require explicit narrow approval.
 
 Completed #59 General/Texture Quality/Booth OFF results and #90 static/mock detail are preserved exactly in [bfd8c9f:ACTIVE_CONTEXT.md](https://github.com/Knight-Witch/KnightWitch.Heroforge/blob/bfd8c9fc3a25d6589d1d51f3f9b4f95f11c16574/ACTIVE_CONTEXT.md). Read only the needed section. [Investigation guide](docs/investigations/README.md) routes evidence/Bridge procedure; [MASTER.md](MASTER.md) maps other policy. Backlog remains [issue #8](https://github.com/Knight-Witch/KnightWitch.Heroforge/issues/8).
+
+## Oct 10 2026 - Diagnostic evidence integrity, #120 (Dev candidate)
+Manual JSON now detects v1 envelopes and legacy High Res schema 1 snapshots/comparisons. Preserves bytes; visibly warns on unsupported/unreadable content; uses generic JSON transport for unsupported evidence rather than inventing invalid kind. Local tests 8/8 passing. Task branch is private and not deployed or promoted. Paired HF.Status #134 and coordination #24 are open; real HFBR attachment verification pending.

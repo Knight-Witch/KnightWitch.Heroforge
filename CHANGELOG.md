@@ -8,3 +8,6 @@
 ## Latest Stable release context
 
 Public Stable v2.4.3 contains no #111 experimental preview.
+
+## Oct 10 2026 - Diagnostic evidence integrity, #120 (Dev candidate)
+Manual JSON now detects v1 envelopes and legacy High Res schema 1 snapshots/comparisons. Preserves bytes; visibly warns on unsupported/unreadable content; uses generic JSON transport for unsupported evidence rather than inventing invalid kind. Local tests 8/8 passing. Task branch is private and not deployed or promoted. Paired HF.Status #134 and coordination #24 are open; real HFBR attachment verification pending.

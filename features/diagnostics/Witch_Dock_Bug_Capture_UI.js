@@ -930,14 +930,14 @@
 
   function renderEvidenceList(kindFilter) {
     const box = el("div", { class: "kwbr-evidence" });
-    const shown = state.evidence.map(function (item, index) { return { item: item, index: index }; }).filter(function (row) { return kindFilter === "diagnostic" ? row.item.kind === "diagnostic-json" : row.item.kind !== "diagnostic-json"; });
+    const shown = state.evidence.map(function (item, index) { return { item: item, index: index }; }).filter(function (row) { return kindFilter === "diagnostic" ? (row.item.kind === "diagnostic-json" || row.item.manualDiagnostic) : (row.item.kind !== "diagnostic-json" && !row.item.manualDiagnostic); });
     if (!shown.length) box.appendChild(el("div", { class: "kwbr-help", text: kindFilter === "diagnostic" ? "No diagnostic captures attached yet." : "No evidence files attached yet." }));
     shown.forEach(function (entry) {
       const item = entry.item;
       const row = el("div", { class: "kwbr-evidence-row" });
       row.appendChild(el("div", { class: "kwbr-evidence-main" }, [
         el("div", { class: "kwbr-evidence-name", text: item.fileName }),
-        el("div", { class: "kwbr-evidence-meta", text: item.kind + " · " + Number(item.sizeBytes || 0).toLocaleString() + " bytes · " + evidenceLabel(item) + (item.needsReattach ? " · reattach required" : "") })
+        el("div", { class: "kwbr-evidence-meta", text: item.kind + " · " + Number(item.sizeBytes || 0).toLocaleString() + " bytes · " + evidenceLabel(item) + (item.needsReattach ? " · reattach required" : "") + (item.evidenceWarning ? " · WARNING: " + item.evidenceWarning : "") + (item.evidenceNote ? " · " + item.evidenceNote : "") })
       ]));
       row.appendChild(el("button", { type: "button", class: "kwbr-remove", text: "Remove", on: { click: function () {
         state.evidence.splice(entry.index, 1);
@@ -964,23 +964,50 @@
     else if (/json/i.test(type) || /\.json$/i.test(file.name)) kind = "figure-json";
     const base = {
       clientAttachmentId: uuid(), kind: kind, fileName: file.name || "evidence", mediaType: type || (kind === "figure-json" ? "application/json" : "application/octet-stream"), sizeBytes: file.size,
-      origin: "manual-upload", capturedAt: nowIso(), evidenceRole: "additional", evidencePurpose: "user-supplied", evidenceSession: "user-supplied", persistence: "metadata-only", needsReattach: false, blob: file
+      origin: "manual-upload", capturedAt: nowIso(), evidenceRole: "additional", evidencePurpose: "user-supplied", evidenceSession: "user-supplied", persistence: "metadata-only", needsReattach: false, manualDiagnostic: !!opts.expectDiagnostic, blob: file
     };
-    if (kind === "figure-json") {
+    if (kind === "figure-json" && !opts.forceKind) {
       file.text().then(function (text) {
         try {
           const parsed = JSON.parse(text);
-          if (parsed && parsed.diagnosticContractVersion && parsed.captureId) {
+          const hasEnvelope = parsed && typeof parsed === "object" && !Array.isArray(parsed) &&
+            Number(parsed.diagnosticContractVersion) === 1 && typeof parsed.captureId === "string" && !!parsed.captureId.trim();
+          const hrMetadata = parsed && typeof parsed === "object" && parsed.metadata;
+          const legacyHr = parsed && parsed.format === "witch-dock.hr-diagnostic" &&
+            (parsed.schemaVersion === 1 || parsed.schemaVersion === "1") && hrMetadata && typeof hrMetadata === "object" &&
+            (parsed.kind === "comparison" ? typeof hrMetadata.comparisonId === "string" && !!hrMetadata.comparisonId :
+              typeof hrMetadata.captureId === "string" && !!hrMetadata.captureId);
+          if (hasEnvelope || legacyHr) {
             base.kind = "diagnostic-json";
             base.diagnosticPayload = parsed;
             base.persistence = "inline";
             base.evidencePurpose = "user-supplied";
+            if (legacyHr) base.evidenceNote = "Legacy High Res diagnostic: original file preserved; server normalization required for indexing.";
+          } else if (opts.expectDiagnostic || (parsed && typeof parsed === "object" &&
+              (parsed.format || parsed.diagnosticContractVersion || parsed.captureId))) {
+            base.kind = "figure-json"; // Canonical v1 transport has no generic JSON kind; do not invent an unsupported "other" upload.
+            base.evidenceWarning = "Unsupported diagnostic format: retained as generic JSON evidence (figure-json transport); NOT indexed as a diagnostic.";
           }
-        } catch (_) {}
+        } catch (_) {
+          if (opts.expectDiagnostic) {
+            base.kind = "figure-json";
+            base.evidenceWarning = "Invalid JSON: retained as generic JSON evidence (figure-json transport); NOT indexed as a diagnostic.";
+          }
+        }
+        state.evidence.push(base);
+        if (base.evidenceWarning) state.message = base.fileName + ": " + base.evidenceWarning;
+        if (typeof opts.onAdded === "function") opts.onAdded(base);
+        render();
+      }).catch(function () {
+        if (opts.expectDiagnostic) {
+          base.kind = "figure-json";
+          base.evidenceWarning = "File could not be read; generic JSON upload only (figure-json transport); diagnostic indexing unavailable.";
+          state.message = base.fileName + ": " + base.evidenceWarning;
+        }
         state.evidence.push(base);
         if (typeof opts.onAdded === "function") opts.onAdded(base);
         render();
-      }).catch(function () { state.evidence.push(base); if (typeof opts.onAdded === "function") opts.onAdded(base); render(); });
+      });
       return;
     }
     state.evidence.push(base);
@@ -1056,7 +1083,7 @@
     const original = state.originalCaptureState;
     const input = el("input", { type: "file", multiple: "multiple", accept: ".json,application/json" });
     input.style.display = "none";
-    input.addEventListener("change", function () { Array.from(input.files || []).forEach(addFile); input.value = ""; });
+    input.addEventListener("change", function () { Array.from(input.files || []).forEach(function (file) { addFile(file, { expectDiagnostic: true }); }); input.value = ""; });
     const rows = [
       el("div", { class: "kwbr-help", text: providers.length ? ("Selected feature will capture General + " + providers.join(", ") + ".") : "General diagnostics are available for this classification; no feature-specific provider is currently mapped." }),
       el("div", { class: original === "failed" ? "kwbr-warning" : "kwbr-help", text: "Original context capture: " + original + (state.originalCaptureError ? " — " + state.originalCaptureError : "") }),
@@ -1108,6 +1135,9 @@
       reviewCell("Diagnostics", String(state.evidence.filter(function (item) { return item.kind === "diagnostic-json"; }).length) + " capture(s)")
     ]);
     const rows = [grid, field("Anything else?", textarea(state.report.additionalNotes, function (v) { state.report.additionalNotes = v; }, { maxlength: 3000, rows: 3 }))];
+    for (const item of state.evidence.filter(function (entry) { return !!entry.evidenceWarning; })) {
+      rows.push(el("div", { class: "kwbr-warning", text: item.fileName + ": " + item.evidenceWarning }));
+    }
     if (state.submitError) rows.push(el("div", { class: "kwbr-error", text: state.submitError }));
     rows.push(el("div", { class: "kwbr-footer" }, [
       button("Save Draft", saveCurrentDraft),
@@ -1306,6 +1336,9 @@
       evidenceSession: item.evidenceSession || "user-supplied",
       persistence: generatedDiagnostic ? "inline" : "metadata-only",
       needsReattach: !generatedDiagnostic,
+      ...(item.manualDiagnostic ? { manualDiagnostic: true } : {}),
+      ...(item.evidenceWarning ? { evidenceWarning: item.evidenceWarning } : {}),
+      ...(item.evidenceNote ? { evidenceNote: item.evidenceNote } : {}),
       ...(generatedDiagnostic ? { note: "Generated diagnostic bytes can be reconstructed from the retained diagnostic capture." } : { note: "Reattach this local file after resuming the draft." })
     };
   }
@@ -1445,6 +1478,9 @@
       el("div", { class: "kwbr-review" }, [reviewCell("HFBR", receipt.reportId), reviewCell("State", receipt.state || "received"), reviewCell("Received", receipt.receivedAt || ""), reviewCell("Duplicate", receipt.duplicate ? "yes" : "no")]),
       el("div", { class: "kwbr-actions" }, [button("Copy HFBR", function () { navigator.clipboard && navigator.clipboard.writeText(receipt.reportId).catch(function () {}); }), button("Close", closeReporter, "primary")])
     ]));
+    for (const item of state.evidence.filter(function (entry) { return !!entry.evidenceWarning; })) {
+      root.querySelector(".kwbr-step-body").appendChild(el("div", { class: "kwbr-warning", text: item.fileName + ": " + item.evidenceWarning }));
+    }
     return root;
   }
 
